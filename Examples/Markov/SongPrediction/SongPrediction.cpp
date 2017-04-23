@@ -131,4 +131,6 @@ int main()
 	{
 		std::cout << tr->name << " - " << tr->album->name << " - " << tr->artist->name << std::endl;
 	}
+	
+	std::cout << "\n\nFinished." << std::endl;
 }
