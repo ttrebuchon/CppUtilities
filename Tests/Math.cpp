@@ -6,28 +6,49 @@
 using namespace Util;
 using namespace Math;
 
-#define go
+#define OUTPUT
+
+#ifdef OUTPUT
+#define check(x, n) dout << (x).toString() << " == " << #n << std::endl; \
+assert_ex((x).toString() == #n)
+#else
+#define check(x, n) assert_ex((x).toString() == #n)
+#endif
+
 bool Testing::Math()
 {
-	#ifdef go
-	Term t(4);
+	Term _4(4);
+	check(_4, 4);
 	
-	Term t2(4);
-	Term t3 = t + t2;
-	Term t4 = t3.eval();
-	#endif
+	Term _4__4 = _4 + _4;
+	check(_4__4, 4 + 4);
 	
-	dout << t3.toString() << std::endl;
-	dout << t4.toString() << std::endl;
+	Term _8 = _4__4.eval();
+	check(_8, 8);
 	
-	dout << t.exp << " - " << t.exp->type() << std::endl;
-	dout << t2.exp << " - " << t2.exp->type() << std::endl;
-	dout << t3.exp << " - " << t3.exp->type() << std::endl;
-	for (auto exp : ((Addition*)t3.exp)->operands)
-	{
-		dout << "\t" << exp << " - " << exp->type() << std::endl;
-	}
-	dout << t4.exp << " - " << t4.exp->type() << std::endl;
+	Term x("x");
+	check(x, x);
+	
+	Term _3 = 3;
+	check(_3, 3);
+	
+	Term y = "y";
+	check(y, y);
+	
+	Term z = 'z';
+	check(z, z);
+	
+	check(2*x, 2*x);
+	check((x*2).eval(), 2*x);
+	check((x + x).eval(), 2*x);
+	check(x + y, x + y);
+	check((x + x + 4).eval(), 2*x + 4);
+	
+	Term x2 = x^2;
+	check(x2, x^2);
+	
+	check((x*x).eval(), x^2);
+	
 	
 	return true;
 }

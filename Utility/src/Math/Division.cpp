@@ -81,5 +81,10 @@ namespace Math
 		return new Division(top, bottom);
 	}
 	
+	bool Division::equals(const Expression* exp) const
+	{
+		throw NotImp();
+	}
+	
 }
 }

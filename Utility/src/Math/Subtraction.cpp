@@ -136,5 +136,10 @@ namespace Math
 		}
 		return s;
 	}
+	
+	bool Subtraction::equals(const Expression* exp) const
+	{
+		throw NotImp();
+	}
 }
 }

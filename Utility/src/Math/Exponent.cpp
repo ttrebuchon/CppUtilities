@@ -97,5 +97,10 @@ namespace Math
 		return new Exponent(b, e);
 	}
 	
+	bool Exponent::equals(const Expression* exp) const
+	{
+		throw NotImp();
+	}
+	
 }
 }

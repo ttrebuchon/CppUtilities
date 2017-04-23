@@ -1,6 +1,7 @@
 #include <Math/Addition.h>
 
 #include <Math/Num.h>
+#include <Math/Multiplication.h>
 
 
 namespace Util
@@ -40,10 +41,14 @@ namespace Math
 	{
 		for (int i = 0; i < operands.size(); i++)
 		{
-			//delete operands[i];
+			delete operands[i];
 		}
 		//operands.clear();
 	}
+	
+	
+	
+	
 	
 	String Addition::toString() const
 	{
@@ -61,12 +66,12 @@ namespace Math
 			}
 			if (o->multiTerm())
 			{
-				s << "(";
+				//s << "(";
 			}
 			s << o->toString();
 			if (o->multiTerm())
 			{
-				s << ")";
+				//s << ")";
 			}
 		}
 		return s;
@@ -89,6 +94,23 @@ namespace Math
 				ops.push_back(e);
 			}
 		}
+		
+		auto v = group(ops);
+		for (auto t : v)
+		{
+			if (std::get<1>(t) == 1)
+			{
+				ops.push_back(std::get<0>(t));
+			}
+			else
+			{
+				Num* co = new Num(std::get<1>(t));
+				ops.push_back(new Multiplication(co, std::get<0>(t)));
+				delete co;
+				delete std::get<0>(t);
+			}
+		}
+		
 		if (ops.size() > 0)
 		{
 			if (n != 0)
@@ -122,6 +144,11 @@ namespace Math
 			c->operands.push_back(operands[i]->copy());
 		}
 		return c;
+	}
+	
+	bool Addition::equals(const Expression* exp) const
+	{
+		throw NotImp();
 	}
 	
 	

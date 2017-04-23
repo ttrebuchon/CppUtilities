@@ -1,5 +1,5 @@
 #include <Math/Num.h>
-
+#include <iomanip>
 
 namespace Util
 {
@@ -17,7 +17,8 @@ namespace Math
 	
 	String Num::toString() const
 	{
-		return std::to_string(n);
+		return (std::stringstream() << std::setprecision(9) << n).str();
+		//return std::to_string(n);
 	}
 	
 	long double Num::value() const
@@ -33,6 +34,24 @@ namespace Math
 	Expression* Num::copy() const
 	{
 		return new Num(n);
+	}
+	
+	bool Num::equals(const Expression* e) const
+	{
+		if (e->type() == type())
+		{
+			return (value() == ((Num*)e)->value());
+		}
+		
+		auto ee = e->eval();
+		if (ee->type() == type())
+		{
+			long double n = ((Num*)ee)->value();
+			delete ee;
+			return (value() == n);
+		}
+		
+		return false;
 	}
 }
 }

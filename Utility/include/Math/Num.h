@@ -27,6 +27,8 @@ namespace Math
 		
 		virtual Expression* copy() const override;
 		
+		virtual bool equals(const Expression*) const override;
+		
 	};
 	
 	

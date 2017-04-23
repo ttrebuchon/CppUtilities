@@ -12,6 +12,7 @@ namespace Math
 		public:
 		std::vector<const Expression*> operands;
 		
+		
 		protected:
 		
 		public:
@@ -24,6 +25,8 @@ namespace Math
 		virtual Exp_type::type type() const { return exp_type.Addition; }
 		
 		virtual Expression* copy() const override;
+		
+		virtual bool equals(const Expression*) const override;
 		
 		friend class Subtraction;
 		

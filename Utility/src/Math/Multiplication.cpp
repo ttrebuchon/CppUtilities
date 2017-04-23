@@ -1,6 +1,7 @@
 #include <Math/Multiplication.h>
 
 #include <Math/Num.h>
+#include <Math/Exponent.h>
 
 namespace Util
 {
@@ -8,6 +9,18 @@ namespace Math
 {
 	Multiplication::Multiplication(const Expression* e1, const Expression* e2) : operands()
 	{
+		if (e1->multiTerm() && !e2->multiTerm())
+		{
+			std::swap(e1, e2);
+		}
+		
+		if (e2->type() == exp_type.Num && e1->type() != exp_type.Num)
+		{
+			std::swap(e1, e2);
+		}
+		
+		
+		
 		if (e1->type() == type())
 		{
 			for (auto op : ((Multiplication*)e1)->operands)
@@ -96,6 +109,23 @@ namespace Math
 			return new Num(0);
 		}
 		
+		auto v = group(ops);
+		for (auto t : v)
+		{
+			if (std::get<1>(t) == 1)
+			{
+				ops.push_back(std::get<0>(t));
+			}
+			else
+			{
+				Num* co = new Num(std::get<1>(t));
+				ops.push_back(new Exponent(std::get<0>(t), co));
+				delete co;
+				delete std::get<0>(t);
+			}
+		}
+		
+		
 		if (ops.size() > 0)
 		{
 			if (n != 1)
@@ -128,6 +158,11 @@ namespace Math
 			c->operands.push_back(operands[i]->copy());
 		}
 		return c;
+	}
+	
+	bool Multiplication::equals(const Expression* exp) const
+	{
+		throw NotImp();
 	}
 	
 }

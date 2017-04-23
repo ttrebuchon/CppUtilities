@@ -4,6 +4,10 @@
 
 #include "TypeEnum.h"
 
+#include <Exception/NotImplemented.h>
+
+#include <vector>
+#include <tuple>
 
 namespace Util
 {
@@ -33,6 +37,8 @@ namespace Math
 		
 		virtual Expression* copy() const = 0;
 		
+		virtual bool equals(const Expression*) const = 0;
+		
 		Multiplication* operator*(Expression*) const;
 		Exponent* operator^(Expression*) const;
 		Division* operator/(Expression*) const;
@@ -40,6 +46,8 @@ namespace Math
 		Subtraction* operator-(Expression*) const;
 		
 	};
+	
+	std::vector<std::tuple<Expression*, int>> group(std::vector<Expression*>&);
 	
 	
 }

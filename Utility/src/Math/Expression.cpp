@@ -38,5 +38,36 @@ namespace Math
 	
 	
 	
+	
+	std::vector<std::tuple<Expression*, int>> group(std::vector<Expression*>& vec)
+	{
+		std::vector<std::tuple<Expression*, int>> v;
+		
+		for (auto it = vec.begin(); it != vec.end();)
+		{
+			int n = 0;
+			for (auto s = it+1; s != vec.end(); ++s)
+			{
+				if ((*it)->equals(*s))
+				{
+					n++;
+					--s;
+					delete (*(s+1));
+					vec.erase(s+1);
+				}
+			}
+			++n;
+			v.emplace_back(*it, n);
+			vec.erase(it);
+			
+			it = vec.begin();
+		}
+		
+		return v;
+	}
+	
+	
+	
+	
 }
 }

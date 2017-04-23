@@ -3,6 +3,7 @@
 #include "Operation.h"
 
 #include <vector>
+#include <tuple>
 
 namespace Util
 {
@@ -25,6 +26,8 @@ namespace Math
 		virtual Exp_type::type type() const { return exp_type.Multiplication; }
 		
 		virtual Expression* copy() const override;
+		
+		virtual bool equals(const Expression*) const override;
 		
 	};
 	
