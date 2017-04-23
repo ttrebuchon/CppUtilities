@@ -3,6 +3,10 @@
 #include <Math/Addition.h>
 #include <Math/Num.h>
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
 namespace Util
 {
 namespace Math
@@ -16,6 +20,10 @@ namespace Math
 				right.push_back(op->copy());
 			}
 		}
+		else
+		{
+			right.push_back(r->copy());
+		}
 	}
 	
 	Subtraction::~Subtraction()
@@ -26,7 +34,7 @@ namespace Math
 		{
 			delete op;
 		}
-		right.clear();
+		//right.clear();
 	}
 	
 	String Subtraction::toString() const
@@ -35,12 +43,12 @@ namespace Math
 		
 		if (left->multiTerm())
 		{
-			s << "(";
+			//s << "(";
 		}
 		s << left->toString();
 		if (left->multiTerm())
 		{
-			s << ")";
+			//s << ")";
 		}
 		
 		
@@ -119,6 +127,14 @@ namespace Math
 				s->right.push_back(ops[i]);
 			}
 			return s;
+		}
+		
+		
+		
+		if (nL == NULL)
+		{
+			nL = new Num(((Num*)l)->value() - n);
+			delete l;
 		}
 		return nL;
 	}
