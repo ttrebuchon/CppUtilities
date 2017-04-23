@@ -45,9 +45,16 @@ class Testing
 
 class DebugOut
 {
-	static std::ostream* out;
-	static DebugOut inst;
-	static bool disabled;
+	public:
+	static std::ostream*& nOut() {
+		static std::ostream* o = new std::ostream(new NullBuffer());
+		return o;
+	}
+	
+	static std::ostream*& rOut() {
+		static std::ostream* o = &std::cerr;
+		return o;
+	}
 	
 	class NullBuffer : public std::streambuf
 	{
@@ -60,20 +67,26 @@ class DebugOut
 	
 	public:
 	
-	DebugOut();
-	
-	static void Disable()
-	{
-		if (!disabled)
-		{
-		out = new std::ostream(new NullBuffer());
-		disabled = true;
-		}
+	static bool& enabled() {
+		static bool b = 
+		#ifdef DEBUG
+		true;
+		#else
+		false;
+		#endif
+		return b;
 	}
 	
 	static std::ostream& Out()
 	{
-		return *out;
+		if (enabled())
+		{
+			return *rOut();
+		}
+		else
+		{
+			return *nOut();
+		}
 	}
 	
 	

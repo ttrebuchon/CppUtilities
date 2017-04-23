@@ -6,20 +6,13 @@
 #include <fstream>
 
 
-std::ostream* DebugOut::out(&std::cerr);
-DebugOut DebugOut::inst;
-bool DebugOut::disabled = false;
-
-DebugOut::DebugOut()
-{
-	#ifndef TEST_DEBUG
-	Disable();
-	#endif
-}
-
-
 int main(int argc, char**argv)
 {
+	#ifdef TEST_DEBUG
+	DebugOut::enabled() = true;
+	#else
+	DebugOut::enabled() = false;
+	#endif
 	Testing::run();
 	return 0;
 }
