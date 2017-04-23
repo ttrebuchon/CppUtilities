@@ -9,7 +9,6 @@ namespace Math
 	class Addition : public Operation
 	{
 		private:
-		public:
 		std::vector<const Expression*> operands;
 		
 		

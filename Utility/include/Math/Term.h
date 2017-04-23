@@ -12,7 +12,6 @@ namespace Math
 	class Term
 	{
 		private:
-		public:
 		Expression* exp;
 		
 		protected:
