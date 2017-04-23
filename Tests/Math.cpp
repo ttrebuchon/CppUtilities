@@ -8,23 +8,59 @@ using namespace Math;
 
 #define OUTPUT
 
+
+
 #ifdef OUTPUT
+
 #define check(x, n) dout << (x).toString() << " == " << #n << std::endl; \
 assert_ex((x).toString() == #n)
+
+    #ifdef ALIVE_COUNTER
+    #define check_alive(x) dout << "\tAlive: " << Expression::alive() << std::endl; \
+assert_ex(Expression::alive() == x)
+
+    #define p_alive dout << "\tAlive: " << Expression::alive() << std::endl
+
+    #else
+
+    #define check_alive(x)
+
+    #define p_alive
+
+    #endif
+
 #else
+
 #define check(x, n) assert_ex((x).toString() == #n)
+
+    #ifdef ALIVE_COUNTER
+
+    #define check_alive(x) assert_ex(Expression::alive() == x)
+
+    #else
+
+    #define check_alive(x)
+
+    #endif
+
+#define p_alive
+
 #endif
 
-bool Testing::Math()
+bool TestMath()
 {
+	
 	Term _4(4);
 	check(_4, 4);
+	check_alive(1);
 	
 	Term _4__4 = _4 + _4;
 	check(_4__4, 4 + 4);
+	check_alive(4);
 	
 	Term _8 = _4__4.eval();
 	check(_8, 8);
+	check_alive(5);
 	
 	Term x("x");
 	check(x, x);
@@ -49,6 +85,15 @@ bool Testing::Math()
 	
 	check((x*x).eval(), x^2);
 	
-	
+	p_alive;
 	return true;
+}
+
+bool Testing::Math()
+{
+	bool result = TestMath();
+	dout << "\n\n" << std::endl;
+	check_alive(0);
+	return result;
+	
 }

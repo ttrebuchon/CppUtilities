@@ -10,6 +10,7 @@ namespace Util
 {
 namespace Math
 {
+	
 	Multiplication* Expression::operator*(Expression* e) const
 	{
 		return new Multiplication(this, e);

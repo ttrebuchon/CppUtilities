@@ -26,7 +26,16 @@ namespace Math
 		protected:
 		
 		public:
-		virtual ~Expression() {}
+		#ifdef DEBUG
+		#define ALIVE_COUNTER
+		static int& alive() { static int a = 0; return a; }
+		Expression() { alive()++; }
+		#endif
+		virtual ~Expression() {
+			#ifdef DEBUG
+			alive()--;
+			#endif
+			}
 		
 		
 		virtual String toString() const = 0;
