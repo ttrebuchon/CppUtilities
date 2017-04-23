@@ -58,9 +58,11 @@ $(target): $(stLibTarget).a $(libobjects) $(testobjects) makefile
 	$(CXX) -o $(target) $(CXXFLAGS) -std=c++11 $(testobjects) -L. -l$(name) $(PREPROC_FLAGS)
 
 
-$(stLibTarget).a: $(libobjects) makefile
+$(stLibTarget).a: $(libobjects)
 	ar rvs $(stLibTarget).a $(libobjects)
 	
+Tests.o: makefile Tests.cpp
+	$(CXX) $(CXXFLAGS) -c Tests.cpp
 
 -include $(libdeps)
 -include $(testdeps)
