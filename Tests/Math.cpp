@@ -7,7 +7,7 @@ using namespace Util;
 using namespace Math;
 
 #define OUTPUT
-
+#define ALIVE_OUT
 
 
 #ifdef OUTPUT
@@ -16,11 +16,20 @@ using namespace Math;
 assert_ex((x).toString() == #n)
 
     #ifdef ALIVE_COUNTER
-    #define check_alive(x) dout << "\tAlive: " << Expression::alive() << std::endl; \
+    
+    #define check_alive(x) p_alive; \
 assert_ex(Expression::alive() == x)
 
-    #define p_alive dout << "\tAlive: " << Expression::alive() << std::endl
+        #ifdef ALIVE_OUT
 
+        #define p_alive dout << "\tAlive: " << Expression::alive() << std::endl
+    
+        #else
+    
+        #define p_alive
+    
+        #endif
+    
     #else
 
     #define check_alive(x)
@@ -84,6 +93,14 @@ bool TestMath()
 	check(x2, x^2);
 	
 	check((x*x).eval(), x^2);
+	
+	Term _6__2 = Term(6)^2;
+	check(_6__2, 6^2);
+	check(_6__2.eval(), 36);
+	
+	Term _9__7 = Term(9) - 7;
+	check(_9__7, 9 - 7);
+	check(_9__7.eval(), 2);
 	
 	p_alive;
 	return true;
