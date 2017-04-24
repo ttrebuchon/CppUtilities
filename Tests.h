@@ -37,6 +37,7 @@ class Testing
 	static bool Stopwatch();
 	static bool String();
 	static bool Math();
+	static bool Lazy();
 };
 
 

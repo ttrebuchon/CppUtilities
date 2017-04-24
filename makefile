@@ -26,8 +26,12 @@ Math_cpp = $(wildcard Utility/src/Math/*.cpp)
 Math = $(Math_cpp:.cpp=.o)
 #*/
 
+LazyLoad_cpp = $(wildcard Utility/src/LazyLoad/*.cpp)
+LazyLoad = $(LazyLoad_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
@@ -37,7 +41,9 @@ testobjects = Tests.o $(Tests)
 
 NAMESPACE=Utils
 
-PREPROC_FLAGS = -DUtil=$(NAMESPACE) -D__NS__="$(NAMESPACE)" -DDEBUG -DSEED -DTEST_DEBUG 
+PREPROC_FLAGS_1 = -DUtil=$(NAMESPACE) -D__NS__="$(NAMESPACE)" -DDEBUG -DSEED -DTEST_DEBUG
+
+PREPROC_FLAGS = $(PREPROC_FLAGS_1) -DSHORT_TEST
 
 WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -Wfatal-errors
 

@@ -6,6 +6,7 @@
 #include <fstream>
 
 
+
 int main(int argc, char**argv)
 {
 	#ifdef TEST_DEBUG
@@ -31,13 +32,16 @@ void Testing::run()
 	#endif
 	try
 	{
+	RUN(Lazy());
+	RUN(Math());
+	#ifndef SHORT_TEST
 	RUN(Func());
-	RUN(NNST());
 	RUN(CustomException());
-	RUN(Markov());
 	RUN(Stopwatch());
 	RUN(String());
-	RUN(Math());
+	RUN(Markov());
+	RUN(NNST());
+	#endif
 	}
 	catch (std::string& s)
 	{
@@ -56,7 +60,7 @@ void Testing::run()
 	#endif
 	
 	tout << "Tests Completed." << std::endl;
-	#ifndef SEED
+	//#ifndef SEED
 	tout << "Failures? " << (failures ? "Yes" : "No") << std::endl;
-	#endif
+	//#endif
 }
