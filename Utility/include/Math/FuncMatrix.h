@@ -32,6 +32,7 @@ namespace Math
 		virtual Matrix<Dims, Elem, Index>* mul(const double) override;
 		virtual Matrix<Dims, Elem, Index>* add(const Matrix<Dims, Elem, Index>&) override;
 		virtual Matrix<Dims, Elem, Index>* sub(const Matrix<Dims, Elem, Index>&) override;
+		virtual Matrix<Dims, Elem, Index>* clone() const override;
 		
 	};
 	
@@ -53,12 +54,14 @@ namespace Math
 		public:
 		
 		FuncMatrix(std::function<Elem(Index)> f);
+		Elem operator[](Index i) override;
+		
 		
 		virtual std::string toString() const override;
-		Elem operator[](Index i);
 		virtual Matrix<1, Elem, Index>* mul(const double) override;
 		virtual Matrix<1, Elem, Index>* add(const Matrix<1, Elem, Index>&) override;
 		virtual Matrix<1, Elem, Index>* sub(const Matrix<1, Elem, Index>&) override;
+		virtual Matrix<1, Elem, Index>* clone() const override;
 	};
 	
 	

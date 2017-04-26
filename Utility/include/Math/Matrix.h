@@ -17,7 +17,10 @@ namespace Math
 		
 		
 		public:
-		_MatrixBase_();
+		_MatrixBase_() : size()
+		{
+			
+		}
 		
 		
 		virtual std::string toString() const = 0;
@@ -45,6 +48,9 @@ namespace Math
 		virtual Matrix<Dims, Elem, Index>* sub(const Matrix<Dims, Elem, Index>&) = 0;
 		
 		
+		virtual Matrix<Dims, Elem, Index>* clone() const = 0;
+		
+		
 	};
 	
 	
@@ -63,7 +69,8 @@ namespace Math
 		protected:
 		
 		public:
-		Matrix();
+		Matrix() : _MatrixBase_<Dims, Elem, Index>() { }
+		virtual ~Matrix() { }
 		
 		virtual Matrix<Dims-1, Elem, Index>* operator[](Index i) = 0;
 		
@@ -82,7 +89,8 @@ namespace Math
 		protected:
 		
 		public:
-		Matrix();
+		Matrix() : _MatrixBase_<1, Elem, Index>() {}
+		virtual ~Matrix() { }
 		
 		virtual Elem operator[](Index i) = 0;
 		
