@@ -35,7 +35,7 @@ bool Testing::Lazy()
 {
 	Util::LazyLoad<std::string*> l;
 	*l = "Hello";
-	std::cout << l->c_str() << std::endl;
+	dout << l->c_str() << std::endl;
 	assert_ex(strcmp(l->c_str(), "Hello") == 0);
 	
 	Util::LazyLoad<std::string> ls;

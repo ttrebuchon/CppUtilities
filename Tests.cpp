@@ -4,6 +4,8 @@
 #include "Tests.h"
 #include <time.h>
 #include <fstream>
+#include <utility>
+#include <vector>
 
 
 
@@ -17,14 +19,21 @@ int main(int argc, char**argv)
 	Testing::run();
 	return 0;
 }
+#define TEST_FAILS test_fails
+
 
 #define tout std::cout
 #define testBr "---------------------"
 
-#define RUN(x) try { tout << "Running " << #x << "..." << std::endl; x; tout << #x << " has completed." << std::endl; } catch (std::exception& e) { tout << "\n\nException caught in " << #x << ": \n" << e.what() << std::endl; failures = true; } catch (StringException* ex) { tout << "\n\nStringException* caught in " << #x << ": \n" << ex->what() << std::endl; failures = true; }tout << testBr << "\n\n\n\n\n" << testBr << std::endl;
+#define RUN(x) try { tout << "Running " << #x << "..." << std::endl; x; tout << #x << " has completed." << std::endl; } catch (std::exception& e) { tout << "\n\nException caught in " << #x << ": \n" << e.what() << std::endl; failures = true; TEST_FAILS .emplace_back(#x, std::current_exception()); } catch (StringException* ex) { tout << "\n\nStringException* caught in " << #x << ": \n" << ex->what() << std::endl; failures = true; TEST_FAILS .emplace_back(#x, std::current_exception()); } tout << testBr << "\n\n\n\n\n" << testBr << std::endl;
+
+
+
+typedef std::pair<std::string, std::exception_ptr> Test_Fail;
 
 void Testing::run()
 {
+	std::vector<Test_Fail> TEST_FAILS;
 	bool failures = false;
 	#ifdef SEED
 	unsigned int seed = time(NULL);
@@ -60,7 +69,26 @@ void Testing::run()
 	#endif
 	
 	tout << "Tests Completed." << std::endl;
-	//#ifndef SEED
-	tout << "Failures? " << (failures ? "Yes" : "No") << std::endl;
-	//#endif
+	tout << "Failures? " << (failures ? "Yes\n\n" : "No") << std::endl;
+	
+	
+	for (Test_Fail f : TEST_FAILS)
+	{
+		tout << "Exception in test " << f.first << ":\n";
+		try
+		{
+			std::rethrow_exception(f.second);
+		}
+		catch (const std::exception& e)
+		{
+			tout << e.what();
+		}
+		catch (const std::exception* e)
+		{
+			tout << e->what();
+		}
+		tout << "\n" << std::endl;
+	}
+	
+	
 }
