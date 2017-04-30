@@ -19,7 +19,8 @@ namespace Util
 	{
 		std::string type;
 		
-		BaseLink() { type = "base"; }
+		BaseLink() : type("base"), nexts(), combined(), totCount(0)
+		{ }
 		
 		std::map<Configuration, Option<T>> nexts;
 		

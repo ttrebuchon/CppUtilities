@@ -5,7 +5,7 @@
 
 #include <cstdlib>
 
-#include <iostream> //DEBUG
+
 namespace Util
 {
 	namespace Markov_Int
@@ -45,6 +45,7 @@ namespace Util
 				{
 					select--;
 				}
+				
 				int index = 0;
 				for (auto KV : link->combined)
 				{
