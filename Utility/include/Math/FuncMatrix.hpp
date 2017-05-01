@@ -3,11 +3,16 @@
 #include "FuncMatrix.h"
 #include <tuple>
 #include <Func/TupleArgs.h>
+#include <Exception/Exception.h>
 
 namespace Util
 {
 namespace Math
 {
+	UTIL_CUSTOM_EXCEPTION(MatrixInvalidSizeException, );
+	
+	
+	
 	//For a tuple of "Args", reverse
 	//the ordering of the items
 	template <typename ...Args>
@@ -157,6 +162,14 @@ namespace Math
 	template <int Dims, typename Elem, typename Index>
 	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value removed) const
 	{
+		for (auto size : this->size)
+		{
+			if (size <= 1)
+			{
+				throw MatrixInvalidSizeException();
+			}
+		}
+		auto defco = Func(def);
 		auto ret = new FuncMatrix<Dims, Elem, Index>(
 		[=] (auto... args)
 		{
@@ -174,7 +187,7 @@ namespace Math
 			//Use call_tuple_args() to
 			//call def with the
 			//modified arguments
-			return call_tuple_args(def, _Helpers::ProcHelper<Dims>::Proc(removed, std::make_tuple(args...)));
+			return call_tuple_args(defco, _Helpers::ProcHelper<Dims>::Proc(removed, std::make_tuple(args...)));
 		});
 		for (auto i = 0; i < Dims; i++)
 		{
@@ -247,7 +260,7 @@ namespace Math
 	template <typename Elem, typename Index>
 	Matrix<1, Elem, Index>* FuncMatrix<1, Elem, Index>::submatrix(std::tuple<Index> t) const
 	{
-		throw NotImp();
+		throw MatrixInvalidSizeException();
 	}
 	
 	
