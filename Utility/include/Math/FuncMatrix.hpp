@@ -91,10 +91,67 @@ namespace Math
 	}
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	template <int N, int ...Nums>
+	class _ProcHelper
+	{
+		public:
+		template <typename ...Args>
+		static std::tuple<Args...> Proc(std::tuple<Args...> deleted, std::tuple<Args...> arguments)
+		{
+			return _ProcHelper<N-1, N-1, Nums...>::Proc(deleted, arguments);
+		}
+	};
+	
+	template <int ...Nums>
+	class _ProcHelper<0, Nums...>
+	{
+		public:
+		template <typename ...Args>
+		static std::tuple<Args...> Proc(std::tuple<Args...> deleted, std::tuple<Args...> arguments)
+		{
+			auto offset = [](auto removed, auto arg)
+			{
+				if (arg < removed)
+				{
+					return arg;
+				}
+				return arg + 1;
+			};
+			return std::make_tuple(offset(std::get<Nums>(deleted), std::get<Nums>(arguments))...);
+		}
+	};
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	template <int Dims, typename Elem, typename Index>
 	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::submatrix(typename TupleBuilder<Dims, Index>::value t) const
 	{
-		throw NotImp();
+		auto ret = new FuncMatrix<Dims, Elem, Index>(
+		[=] (auto... args)
+		{
+			return call_tuple_args(def, _ProcHelper<Dims>::Proc(t, std::make_tuple(args...)));
+		});
+		for (auto i = 0; i < Dims; i++)
+		{
+			ret->size[i] = this->size[i] - 1;
+		}
+		return ret;
 	}
 	
 	
