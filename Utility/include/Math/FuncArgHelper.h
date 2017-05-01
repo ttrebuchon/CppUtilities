@@ -2,6 +2,10 @@
 
 namespace Util
 {
+namespace Math
+{
+namespace _Helpers
+{
 	template <int N, typename T, typename Ret, typename ...Args>
 	class FuncArgHelper
 	{
@@ -32,4 +36,6 @@ namespace Util
 		typedef std::function<Ret(Args...)> type;
 	};
 	
+}
+}
 }

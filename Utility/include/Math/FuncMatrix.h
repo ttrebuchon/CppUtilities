@@ -17,7 +17,7 @@ namespace Math
 	{
 		private:
 		
-		typedef typename FuncArgHelper<Dims, Index, Elem>::type Func; 
+		typedef typename _Helpers::FuncArgHelper<Dims, Index, Elem>::type Func; 
 		
 		Func def;
 		
@@ -36,7 +36,7 @@ namespace Math
 		virtual Matrix<Dims, Elem, Index>* sub(const Matrix<Dims, Elem, Index>&) override;
 		virtual Matrix<Dims, Elem, Index>* clone() const override;
 		virtual Matrix<Dims, Elem, Index>* T() const override;
-		virtual Matrix<Dims, Elem, Index>* submatrix(typename TupleBuilder<Dims, Index>::value) const override;
+		virtual Matrix<Dims, Elem, Index>* submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const override;
 		
 	};
 	

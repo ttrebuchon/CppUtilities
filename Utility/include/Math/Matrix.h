@@ -58,7 +58,8 @@ namespace Math
 	};
 	
 	
-	
+	namespace _Helpers
+	{
 	
 	
 	template <int N, typename T, typename ...Args>
@@ -72,6 +73,8 @@ namespace Math
 	{
 		typedef std::tuple<Args...> value;
 	};
+	
+	}
 	
 	
 	
@@ -100,7 +103,7 @@ namespace Math
 		}
 		
 		virtual Matrix<Dims, Elem, Index>* T() const = 0;
-		virtual Matrix<Dims, Elem, Index>* submatrix(typename TupleBuilder<Dims, Index>::value) const = 0;
+		virtual Matrix<Dims, Elem, Index>* submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const = 0;
 		
 	};
 	

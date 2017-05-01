@@ -140,7 +140,7 @@ namespace Math
 	
 	
 	template <int Dims, typename Elem, typename Index>
-	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::submatrix(typename TupleBuilder<Dims, Index>::value t) const
+	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value t) const
 	{
 		auto ret = new FuncMatrix<Dims, Elem, Index>(
 		[=] (auto... args)
