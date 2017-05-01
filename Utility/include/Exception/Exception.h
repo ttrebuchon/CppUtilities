@@ -11,6 +11,7 @@
 	std::string func; \
 	std::string _what; \
 	const char* _whatC; \
+	const std::string className = #name; \
 	\
 	public: \
 	name(std::string file, int line, std::string func) : file(file), line(line), func(func), _what(""), _whatC(NULL) \
@@ -45,6 +46,10 @@
 	if (_what == "") \
 	{ \
 	    std::string message = #msg; \
+	    if (message == "") \
+	    { \
+	    	message = className; \
+	    } \
 		std::stringstream ss; \
 		if (file != "") \
 		{ \
