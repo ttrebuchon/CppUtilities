@@ -8,6 +8,8 @@ namespace Util
 {
 namespace Math
 {
+	//For a tuple of "Args", reverse
+	//the ordering of the items
 	template <typename ...Args>
 	auto reverseTuple(Args... args);
 	
@@ -37,7 +39,10 @@ namespace Math
 	};
 	
 	
-	
+	//Create a new matrix of one less
+	//dimension (The value at this[i])
+	//by plugging the "i" argument in
+	//and returning a new functional
 	template <int Dims, typename Elem, typename Index>
 	Matrix<Dims-1, Elem, Index>* FuncMatrix<Dims, Elem, Index>::operator[](Index i)
 	{
@@ -74,6 +79,10 @@ namespace Math
 		return new FuncMatrix(*this);
 	}
 	
+	//Transpose the matrix by reversing
+	//the order of the functions
+	//arguments 
+	//Ex: f(i, j, k) => f(k, j, i)
 	template <int Dims, typename Elem, typename Index>
 	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::T() const
 	{
@@ -97,20 +106,25 @@ namespace Math
 	
 	
 	
-	
+	namespace _Helpers
+	{
+	//Helper that offsets index
+	//arguments if necessary for
+	//creating a new functional for a
+	//submatrix
 	template <int N, int ...Nums>
-	class _ProcHelper
+	class ProcHelper
 	{
 		public:
 		template <typename ...Args>
 		static std::tuple<Args...> Proc(std::tuple<Args...> deleted, std::tuple<Args...> arguments)
 		{
-			return _ProcHelper<N-1, N-1, Nums...>::Proc(deleted, arguments);
+			return ProcHelper<N-1, N-1, Nums...>::Proc(deleted, arguments);
 		}
 	};
 	
 	template <int ...Nums>
-	class _ProcHelper<0, Nums...>
+	class ProcHelper<0, Nums...>
 	{
 		public:
 		template <typename ...Args>
@@ -127,6 +141,7 @@ namespace Math
 			return std::make_tuple(offset(std::get<Nums>(deleted), std::get<Nums>(arguments))...);
 		}
 	};
+	}
 	
 	
 	
@@ -140,12 +155,26 @@ namespace Math
 	
 	
 	template <int Dims, typename Elem, typename Index>
-	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value t) const
+	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value removed) const
 	{
 		auto ret = new FuncMatrix<Dims, Elem, Index>(
 		[=] (auto... args)
 		{
-			return call_tuple_args(def, _ProcHelper<Dims>::Proc(t, std::make_tuple(args...)));
+			//Package the functional's
+			//arguments into a tuple
+			//Pass both that and the
+			//submatrix() arg tuple
+			//containing the indexes of
+			//the removed rows/cols
+			//into Proc() to have the
+			//functional's indexes be
+			//offset if necessary, and
+			//return a tuple of
+			//corrected args,
+			//Use call_tuple_args() to
+			//call def with the
+			//modified arguments
+			return call_tuple_args(def, _Helpers::ProcHelper<Dims>::Proc(removed, std::make_tuple(args...)));
 		});
 		for (auto i = 0; i < Dims; i++)
 		{

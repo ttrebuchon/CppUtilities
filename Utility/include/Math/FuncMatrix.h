@@ -17,6 +17,9 @@ namespace Math
 	{
 		private:
 		
+		//std::function<Elem(Index...)>
+		//where there are "Dims" number
+		//of Index arguments
 		typedef typename _Helpers::FuncArgHelper<Dims, Index, Elem>::type Func; 
 		
 		Func def;
