@@ -67,7 +67,18 @@ namespace Math
 			return __Base_matrix_t_(ptr->sub(mat.ptr));
 		}
 		
+		Index* size() const
+		{
+			return ptr->size;
+		}
+		
+		
 	};
+	
+	
+	
+	
+	
 	
 	
 	template <int Dims, typename Elem, typename Index = int>
@@ -87,7 +98,24 @@ namespace Math
 			return matrix_t<Dims-1, Elem, Index>((*this->ptr)[i]);
 		}
 		
+		
+		matrix_t<Dims, Elem, Index> T() const
+		{
+			return matrix_t(this->ptr->T());
+		}
+		
+		template <typename ...Args>
+		matrix_t<Dims, Elem, Index> submatrix(Args... args) const
+		{
+			return matrix_t(this->ptr->submatrix(std::make_tuple(args...)));
+		}
+		
 	};
+	
+	
+	
+	
+	
 	
 	template <typename Elem, typename Index>
 	class matrix_t<1, Elem, Index> : public __Base_matrix_t_<1, Elem, Index>

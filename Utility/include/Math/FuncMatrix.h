@@ -10,6 +10,8 @@ namespace Util
 namespace Math
 {
 	
+	
+	
 	template <int Dims, typename Elem, typename Index = int>
 	class FuncMatrix : public Matrix<Dims, Elem, Index>
 	{
@@ -33,6 +35,8 @@ namespace Math
 		virtual Matrix<Dims, Elem, Index>* add(const Matrix<Dims, Elem, Index>&) override;
 		virtual Matrix<Dims, Elem, Index>* sub(const Matrix<Dims, Elem, Index>&) override;
 		virtual Matrix<Dims, Elem, Index>* clone() const override;
+		virtual Matrix<Dims, Elem, Index>* T() const override;
+		virtual Matrix<Dims, Elem, Index>* submatrix(typename TupleBuilder<Dims, Index>::value) const override;
 		
 	};
 	
@@ -62,6 +66,10 @@ namespace Math
 		virtual Matrix<1, Elem, Index>* add(const Matrix<1, Elem, Index>&) override;
 		virtual Matrix<1, Elem, Index>* sub(const Matrix<1, Elem, Index>&) override;
 		virtual Matrix<1, Elem, Index>* clone() const override;
+		
+		virtual Matrix<2, Elem, Index>* T() const override;
+		virtual Matrix<1, Elem, Index>* submatrix(std::tuple<Index>) const override;
+		
 	};
 	
 	

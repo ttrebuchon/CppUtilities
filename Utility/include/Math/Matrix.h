@@ -4,6 +4,7 @@ namespace Util
 {
 namespace Math
 {
+	
 	template <int Dims, typename Elem, typename Index>
 	class Matrix;
 	
@@ -13,10 +14,12 @@ namespace Math
 		private:
 		
 		protected:
-		Index size[Dims];
+		
 		
 		
 		public:
+		Index size[Dims];
+		
 		_MatrixBase_() : size()
 		{
 			
@@ -51,6 +54,23 @@ namespace Math
 		virtual Matrix<Dims, Elem, Index>* clone() const = 0;
 		
 		
+		
+	};
+	
+	
+	
+	
+	
+	template <int N, typename T, typename ...Args>
+	struct TupleBuilder
+	{
+		typedef typename TupleBuilder<N-1, T, T, Args...>::value value;
+	};
+	
+	template <typename T, typename ...Args>
+	struct TupleBuilder<0, T, Args...>
+	{
+		typedef std::tuple<Args...> value;
 	};
 	
 	
@@ -79,6 +99,9 @@ namespace Math
 			return (*this)[i];
 		}
 		
+		virtual Matrix<Dims, Elem, Index>* T() const = 0;
+		virtual Matrix<Dims, Elem, Index>* submatrix(typename TupleBuilder<Dims, Index>::value) const = 0;
+		
 	};
 	
 	template <typename Elem, typename Index>
@@ -98,6 +121,9 @@ namespace Math
 		{
 			return (*this)[i];
 		}
+		
+		virtual Matrix<2, Elem, Index>* T() const = 0;
+		virtual Matrix<1, Elem, Index>* submatrix(std::tuple<Index>) const = 0;
 		
 	};
 }
