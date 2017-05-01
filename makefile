@@ -30,8 +30,12 @@ LazyLoad_cpp = $(wildcard Utility/src/LazyLoad/*.cpp)
 LazyLoad = $(LazyLoad_cpp:.cpp=.o)
 #*/
 
+Sleep_cpp = $(wildcard Utility/src/Sleep/*.cpp)
+Sleep = $(Sleep_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
@@ -41,16 +45,24 @@ testobjects = Tests.o $(Tests)
 
 NAMESPACE=Utils
 
-PREPROC_FLAGS_1 = -DUtil=$(NAMESPACE) -D__NS__="$(NAMESPACE)" -DDEBUG -DSEED -DTEST_DEBUG
+PREPROC_FLAGS = -DUtil=$(NAMESPACE) -D__NS__="$(NAMESPACE)"
 
-PREPROC_FLAGS = $(PREPROC_FLAGS_1) -DSHORT_TEST
+PREPROC_FLAGS := $(PREPROC_FLAGS) -DSHORT_TEST
+
+PREPROC_FLAGS := $(PREPROC_FLAGS) -DDEBUG
+
+PREPROC_FLAGS := $(PREPROC_FLAGS) -DSEED
+
+PREPROC_FLAGS := $(PREPROC_FLAGS) -DTEST_DEBUG
+
+
 
 WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -Wfatal-errors
 
 FLAGS = -I Utility/include
 
 CXX = g++
-CXXFLAGS = -std=c++11 -MMD -fpic -I . $(PREPROC_FLAGS) -Wall $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS)
+CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) -Wall $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS)
 libdeps = $(libobjects:.o=.d)
 testdeps = $(testobjects:.o=.d)
 name = Utility

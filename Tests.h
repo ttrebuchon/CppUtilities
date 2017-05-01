@@ -38,6 +38,7 @@ class Testing
 	static bool String();
 	static bool Math();
 	static bool Lazy();
+	static bool Sleep();
 };
 
 
