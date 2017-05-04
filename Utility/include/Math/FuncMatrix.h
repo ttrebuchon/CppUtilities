@@ -30,7 +30,7 @@ namespace Math
 		
 		FuncMatrix(Func f);
 		
-		Matrix<Dims-1, Elem, Index>* operator[](Index i) override;
+		Matrix<Dims-1, Elem, Index>* operator[](Index i) const override;
 		
 		
 		virtual std::string toString() const override;
@@ -40,6 +40,7 @@ namespace Math
 		virtual Matrix<Dims, Elem, Index>* clone() const override;
 		virtual Matrix<Dims, Elem, Index>* T() const override;
 		virtual Matrix<Dims, Elem, Index>* submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const override;
+		//virtual Elem minor(typename _Helpers::TupleBuilder<Dims, Index>::value) const override;
 		
 	};
 	
@@ -61,7 +62,7 @@ namespace Math
 		public:
 		
 		FuncMatrix(std::function<Elem(Index)> f);
-		Elem operator[](Index i) override;
+		Elem operator[](Index i) const override;
 		
 		
 		virtual std::string toString() const override;

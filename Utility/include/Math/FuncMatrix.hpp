@@ -3,15 +3,12 @@
 #include "FuncMatrix.h"
 #include <tuple>
 #include <Func/TupleArgs.h>
-#include <Exception/Exception.h>
-
-#include <iostream>
 
 namespace Util
 {
 namespace Math
 {
-	UTIL_CUSTOM_EXCEPTION(MatrixInvalidSizeException, );
+	
 	
 	
 	
@@ -51,9 +48,15 @@ namespace Math
 	//by plugging the "i" argument in
 	//and returning a new functional
 	template <int Dims, typename Elem, typename Index>
-	Matrix<Dims-1, Elem, Index>* FuncMatrix<Dims, Elem, Index>::operator[](Index i)
+	Matrix<Dims-1, Elem, Index>* FuncMatrix<Dims, Elem, Index>::operator[](Index i) const
 	{
-		return new FuncMatrix<Dims-1, Elem, Index>(([=](auto ...args) -> Elem { return def(i, args...); }));
+		auto tmp = new FuncMatrix<Dims-1, Elem, Index>(([=](auto ...args) -> Elem { return def(i, args...); }));
+		
+		for (auto i = 1; i < Dims; i++)
+		{
+			tmp->size[i-1] = this->size[i];
+		}
+		return tmp;
 	}
 	
 	template <int Dims, typename Elem, typename Index>
@@ -264,15 +267,12 @@ namespace Math
 		}
 	};
 	
-	template <typename ...Args>
-	struct ConcatArgs
-	{
-		template <typename ...TArgs>
-		static std::tuple<Args..., TArgs...> Get(Args... args, std::tuple<TArgs...> t)
-		{
-			return std::tuple_cat(std::make_tuple(args...), t);
-		}
-	};
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -323,6 +323,7 @@ namespace Math
 		{
 			ret->size[i] = this->size[i] - 1;
 		}
+		
 		return ret;
 	}
 	
@@ -402,7 +403,7 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index>
-	Elem FuncMatrix<1, Elem, Index>::operator[](Index i)
+	Elem FuncMatrix<1, Elem, Index>::operator[](Index i) const
 	{
 		return def(i);
 	}

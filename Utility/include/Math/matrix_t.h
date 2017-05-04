@@ -72,6 +72,11 @@ namespace Math
 			return ptr->size;
 		}
 		
+		Elem det() const
+		{
+			return ptr->det();
+		}
+		
 		
 	};
 	

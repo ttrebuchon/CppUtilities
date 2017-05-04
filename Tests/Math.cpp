@@ -176,6 +176,7 @@ bool TestMath()
 			}
 			dout << "]" << std::endl;
 		}
+		dout << "\n\n" << std::endl;
 	};
 	
 	/*for (int i = 0; i < matTest.size()[0]; i++)
@@ -225,15 +226,15 @@ bool TestMath()
 	dout << "\n\nContracting Matrices..." << std::endl;
 	
 	print_matrix(matTest);
-	dout << "\n\n" << std::endl;
+	//dout << "\n\n" << std::endl;
 	print_matrix(matTestT);
-	dout << "\n\n" << std::endl;
+	//dout << "\n\n" << std::endl;
 	
 	
 	auto matTestC = matTest.contract(matTestT);
 	dout << "\n\nContracted Matrix: " << std::endl;
 	print_matrix(matTestC);
-	dout << "\n\n" << std::endl;
+	//dout << "\n\n" << std::endl;
 	auto matTest_4 = matTest;
 	matTest_4.size()[0] = matTest_4.size()[1] = 4;
 	for (int i = 0; i < 1; i++)
@@ -241,11 +242,14 @@ bool TestMath()
 		matTest_4 = matTest_4.contract(matTest_4);
 	}
 	print_matrix(matTest_4);
-	dout << "\n\n" << std::endl;
+	//dout << "\n\n" << std::endl;
 	print_matrix(matTest_4);
 	
 	
-	
+	dout << "Determinant: " << std::endl;
+	print_matrix(matTestC.submatrix(0, 0));
+	dout << matTestC.submatrix(0, 0).det() << std::endl;
+	dout << matTestC.submatrix(0, 0).contract(matTestC.submatrix(0, 0)).det() << std::endl;
 	
 	
 	
