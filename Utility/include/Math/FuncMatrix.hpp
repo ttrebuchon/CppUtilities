@@ -60,12 +60,6 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	std::string FuncMatrix<Dims, Elem, Index>::toString() const
-	{
-		throw NotImp();
-	}
-	
-	template <int Dims, typename Elem, typename Index>
 	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::mul(const double)
 	{
 		throw NotImp();
@@ -247,6 +241,17 @@ namespace Math
 		}
 	};
 	
+	template <typename Elem, typename Index>
+	struct Caller<1, Elem, Index>
+	{
+		template <typename ...Args>
+		static Elem PostfixCaller_T(Elem e, std::tuple<>)
+		{
+			return e;
+		}
+	};
+	
+	
 	template <int N, int ...Nums>
 	struct TuplePost
 	{
@@ -266,6 +271,19 @@ namespace Math
 			return std::make_tuple(std::get<Nums>(tup)...);
 		}
 	};
+	
+	template <typename T>
+	bool try_delete(T t)
+	{
+		return false;
+	}
+	
+	template <typename T>
+	bool try_delete(T* t)
+	{
+		delete t;
+		return true;
+	}
 	
 	
 	
@@ -357,10 +375,11 @@ namespace Math
 				auto m2_tmp = am->at(i);
 				
 				auto m2_args_tup = _Helpers::TuplePost<Dims2-1>::Get(std::make_tuple(args...));
-				auto m2_args = _Helpers::ConcatArgs<Matrix<Dims2-1, Elem, Index>*>::Get(m2_tmp, m2_args_tup);
+				//auto m2_args = _Helpers::ConcatArgs<Matrix<Dims2-1, Elem, Index>*>::Get(m2_tmp, m2_args_tup);
+				auto m2_args = std::tuple_cat(std::make_tuple(m2_tmp), m2_args_tup);
 				Elem m_2_val = _Helpers::Caller<Dims2, Elem, Index>::PostfixCaller_T(m2_tmp, m2_args_tup);
-				 
-				delete m2_tmp;
+				
+				_Helpers::try_delete(m2_tmp);
 				val += m_1->at(i)*m_2_val;
 			}
 			return val;
@@ -406,13 +425,6 @@ namespace Math
 	Elem FuncMatrix<1, Elem, Index>::operator[](Index i) const
 	{
 		return def(i);
-	}
-	
-	
-	template <typename Elem, typename Index>
-	std::string FuncMatrix<1, Elem, Index>::toString() const
-	{
-		throw NotImp();
 	}
 	
 	template <typename Elem, typename Index>

@@ -4,6 +4,7 @@
 #include <tuple>
 #include <Func/TupleArgs.h>
 #include "FuncArgHelper.h"
+#include <sstream>
 
 namespace Util
 {
@@ -185,6 +186,25 @@ namespace Math
 		return val;
 	}
 	
+	template <int Dims, typename Elem, typename Index>
+	std::string Matrix<Dims, Elem, Index>::toString() const
+	{
+		std::stringstream val;
+		val << "[ ";
+		for (Index i = 0; i < this->size[0]; i++)
+		{
+			if (i > 0)
+			{
+				val << ", ";
+			}
+			auto tmp = this->at(i);
+			val << tmp->toString();
+			delete tmp;
+		}
+		val << " ]";
+		return val.str();
+	}
+	
 	
 	
 	
@@ -232,6 +252,23 @@ namespace Math
 		}
 		
 		return at(0);
+	}
+	
+	template <typename Elem, typename Index>
+	std::string Matrix<1, Elem, Index>::toString() const
+	{
+		std::stringstream val;
+		val << "[";
+		for (Index i = 0; i < this->size[0]; i++)
+		{
+			if (i > 0)
+			{
+				val << ", ";
+			}
+			val << this->at(i);
+		}
+		val << "]";
+		return val.str();
 	}
 	
 }

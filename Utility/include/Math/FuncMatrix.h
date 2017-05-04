@@ -33,7 +33,6 @@ namespace Math
 		Matrix<Dims-1, Elem, Index>* operator[](Index i) const override;
 		
 		
-		virtual std::string toString() const override;
 		virtual Matrix<Dims, Elem, Index>* mul(const double) override;
 		virtual Matrix<Dims, Elem, Index>* add(const Matrix<Dims, Elem, Index>&) override;
 		virtual Matrix<Dims, Elem, Index>* sub(const Matrix<Dims, Elem, Index>&) override;
@@ -65,7 +64,6 @@ namespace Math
 		Elem operator[](Index i) const override;
 		
 		
-		virtual std::string toString() const override;
 		virtual Matrix<1, Elem, Index>* mul(const double) override;
 		virtual Matrix<1, Elem, Index>* add(const Matrix<1, Elem, Index>&) override;
 		virtual Matrix<1, Elem, Index>* sub(const Matrix<1, Elem, Index>&) override;

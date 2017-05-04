@@ -102,6 +102,8 @@ namespace Math
 		Matrix() : _MatrixBase_<Dims, Elem, Index>() { }
 		virtual ~Matrix() { }
 		
+		virtual std::string toString() const override;
+		
 		virtual Matrix<Dims-1, Elem, Index>* operator[](Index i) const = 0;
 		
 		virtual Matrix<Dims-1, Elem, Index>* at(Index i) const
@@ -131,6 +133,8 @@ namespace Math
 		public:
 		Matrix() : _MatrixBase_<1, Elem, Index>() {}
 		virtual ~Matrix() { }
+		
+		virtual std::string toString() const override;
 		
 		virtual Elem operator[](Index i) const = 0;
 		

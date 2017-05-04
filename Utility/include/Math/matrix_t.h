@@ -118,8 +118,11 @@ namespace Math
 		template <int Dims2>
 		matrix_t<Dims+Dims2-2, Elem, Index> contract(matrix_t<Dims2, Elem, Index> m)
 		{
-			return matrix_t(this->ptr->contract(m.ptr));
+			return matrix_t<Dims+Dims2-2, Elem, Index>(this->ptr->contract(m.ptr));
 		}
+		
+		template <int D2, typename E2, typename I2> 
+		friend class matrix_t;
 		
 	};
 	
@@ -144,6 +147,9 @@ namespace Math
 		{
 			return (*this->ptr)[i];
 		}
+		
+		template <int D2, typename E2, typename I2> 
+		friend class matrix_t;
 		
 	};
 	
