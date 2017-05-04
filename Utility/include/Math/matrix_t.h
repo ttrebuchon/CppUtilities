@@ -110,6 +110,12 @@ namespace Math
 			return matrix_t(this->ptr->submatrix(std::make_tuple(args...)));
 		}
 		
+		template <int Dims2>
+		matrix_t<Dims+Dims2-2, Elem, Index> contract(matrix_t<Dims2, Elem, Index> m)
+		{
+			return matrix_t(this->ptr->contract(m.ptr));
+		}
+		
 	};
 	
 	

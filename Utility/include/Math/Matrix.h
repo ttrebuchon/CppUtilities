@@ -105,6 +105,9 @@ namespace Math
 		virtual Matrix<Dims, Elem, Index>* T() const = 0;
 		virtual Matrix<Dims, Elem, Index>* submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const = 0;
 		
+		template <int Dims2>
+		Matrix<Dims+Dims2-2, Elem, Index>* contract(Matrix<Dims2, Elem, Index>*);
+		
 	};
 	
 	template <typename Elem, typename Index>
@@ -129,6 +132,9 @@ namespace Math
 		virtual Matrix<1, Elem, Index>* submatrix(std::tuple<Index>) const = 0;
 		
 	};
+	
+	template <int Dims1, int Dims2, typename Elem, typename Index, template <int, typename, typename> typename T, template <int, typename, typename> typename H>
+	Matrix<Dims1+Dims2-2, Elem, Index>* MatrixContract(T<Dims1, Elem, Index>*, H<Dims2, Elem, Index>*);
 }
 }
 

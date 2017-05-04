@@ -164,15 +164,31 @@ bool TestMath()
 	matTest.size()[0] = matTest_n;
 	matTest.size()[1] = matTest_m;
 	
-	for (int i = 0;/* i < 10 || */i < matTest.size()[0]; i++)
+	
+	auto print_matrix = [](auto m)
+	{
+		for (auto i = 0; i < m.size()[0]; i++)
+		{
+			dout << "[ ";
+			for (auto j = 0; j < m.size()[1]; j++)
+			{
+				dout << m[i][j] << ", ";
+			}
+			dout << "]" << std::endl;
+		}
+	};
+	
+	/*for (int i = 0; i < matTest.size()[0]; i++)
 	{
 		dout << "[ ";
-		for (int j = 0;/* j < 10 || */j < matTest.size()[1]; j++)
+		for (int j = 0; j < matTest.size()[1]; j++)
 		{
 			dout << matTest[i][j] << ", ";
 		}
 		dout << "]" << std::endl;
-	}
+	}*/
+	
+	print_matrix(matTest);
 	
 	
 	
@@ -183,7 +199,7 @@ bool TestMath()
 	assert_ex(matTestT.size()[0] == matTest.size()[1]);
 	assert_ex(matTestT.size()[1] == matTest.size()[0]);
 	dout << "\n\nTransposed: " << std::endl;
-	for (int i = 0; i < matTestT.size()[0]; i++)
+	/*for (int i = 0; i < matTestT.size()[0]; i++)
 	{
 		dout << "[ ";
 		for (int j = 0; j < matTestT.size()[1]; j++)
@@ -192,7 +208,8 @@ bool TestMath()
 			assert_ex(matTestT[i][j] == matTest[j][i]);
 		}
 		dout << "]" << std::endl;
-	}
+	}*/
+	print_matrix(matTestT);
 	
 	
 	int removeX, removeY;
@@ -200,16 +217,36 @@ bool TestMath()
 	removeY = 0;
 	dout << "\n\nSubmatrix: (" << removeY << ", " << removeX << ")" << std::endl;
 	auto matTestSM = matTestT.submatrix(removeY, removeX);
-	for (int i = 0; i < matTestSM.size()[0]; i++)
+	
+	print_matrix(matTestSM);
+	
+	
+	matTest.size()[0] = matTest.size()[1] = matTestT.size()[0] = matTestT.size()[1] = 3;
+	dout << "\n\nContracting Matrices..." << std::endl;
+	
+	print_matrix(matTest);
+	dout << "\n\n" << std::endl;
+	print_matrix(matTestT);
+	dout << "\n\n" << std::endl;
+	
+	
+	auto matTestC = matTest.contract(matTestT);
+	dout << "\n\nContracted Matrix: " << std::endl;
+	print_matrix(matTestC);
+	dout << "\n\n" << std::endl;
+	auto matTest_4 = matTest;
+	matTest_4.size()[0] = matTest_4.size()[1] = 4;
+	for (int i = 0; i < 1; i++)
 	{
-		dout << "[ ";
-		for (int j = 0; j < matTestSM.size()[1]; j++)
-		{
-			dout << matTestSM[i][j] << ", ";
-			assert_ex(matTestSM[i][j] == matTestT[i + (i >= removeY ? 1 : 0)][j + (j >= removeX ? 1 : 0)]);
-		}
-		dout << "]" << std::endl;
+		matTest_4 = matTest_4.contract(matTest_4);
 	}
+	print_matrix(matTest_4);
+	dout << "\n\n" << std::endl;
+	print_matrix(matTest_4);
+	
+	
+	
+	
 	
 	
 	

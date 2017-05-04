@@ -5,6 +5,8 @@
 #include <Func/TupleArgs.h>
 #include <Exception/Exception.h>
 
+#include <iostream>
+
 namespace Util
 {
 namespace Math
@@ -146,6 +148,134 @@ namespace Math
 			return std::make_tuple(offset(std::get<Nums>(deleted), std::get<Nums>(arguments))...);
 		}
 	};
+	
+	
+	
+	
+	
+	template <int ...Nums> struct seq { };
+	
+	template <int First, int Last, int ...Nums>
+	struct seqgen
+	{
+		typedef typename seqgen<First, Last-1, Last, Nums...>::value value;
+	};
+	
+	template <int First, int... Nums>
+	struct seqgen<First, First, Nums...>
+	{
+		typedef seq<First, Nums...> value;
+	};
+	
+	
+	template <typename T, typename ...Args, int ...Nums>
+	std::tuple<Args...> tuple_remove_first_inner(std::tuple<T, Args...> t, seq<Nums...>)
+	{
+		return std::make_tuple(std::get<Nums>(t)...);
+	}
+	
+	
+	template <typename T, typename ...Args>
+	std::tuple<Args...> tuple_remove_first(std::tuple<T, Args...> t)
+	{
+		return tuple_remove_first_inner(t, typename seqgen<1, sizeof...(Args)>::value());
+	}
+	
+	
+	
+	
+	
+	
+	
+	template <int N, typename Elem, typename Index>
+	struct Caller
+	{
+		template <typename ...Args>
+		static Matrix<1, Elem, Index>* PrefixCaller(Matrix<N, Elem, Index>* m, Index i, Args... args)
+	{
+		auto m2 = (*m)[i];
+		auto m3 = Caller<N-1, Elem, Index>::PrefixCaller(m2, args...);
+		delete m2;
+		return m3;		
+	}
+		
+		template <typename ...Args>
+		static Elem PostfixCaller(Matrix<N-1, Elem, Index>* m, Index i, Args... args)
+		{
+			auto m2 = (*m)[i];
+			auto m3 = Caller<N-1, Elem, Index>::PostfixCaller(m2, args...);
+			delete m2;
+			return m3;
+		}
+		
+		template <typename ...Args>
+		static Elem PostfixCaller_T(Matrix<N-1, Elem, Index>* m, std::tuple<Index, Args...> argsT)
+		{
+			auto m2 = (*m)[std::get<0>(argsT)];
+			auto m3 = Caller<N-1, Elem, Index>::PostfixCaller_T(m2, tuple_remove_first(argsT));
+			delete m2;
+			return m3;
+		}
+	
+	};
+	
+	template <typename Elem, typename Index>
+	struct Caller<2, Elem, Index>
+	{
+		template <typename ...Args>
+		static Matrix<1, Elem, Index>* PrefixCaller(Matrix<2, Elem, Index>* m, Index i, Args... args)
+	{
+		auto m2 = (*m)[i];
+		return m2;
+	}
+	template <typename ...Args>
+	static Elem PostfixCaller(Matrix<1, Elem, Index>* m, Index i, Args... args)
+		{
+			auto m2 = (*m)[i];
+			return m2;
+		}
+		
+		
+	template <typename ...Args>
+		static Elem PostfixCaller_T(Matrix<1, Elem, Index>* m, std::tuple<Index, Args...> argsT)
+		{
+			auto m2 = (*m)[std::get<0>(argsT)];
+			return m2;
+		}
+	};
+	
+	template <int N, int ...Nums>
+	struct TuplePost
+	{
+		template <typename ...Args>
+		static auto Get(std::tuple<Args...> tup)
+		{
+			return TuplePost<N-1, Nums..., (sizeof...(Args)-N)>::Get(tup);
+		}
+	};
+	
+	template <int ...Nums>
+	struct TuplePost<0, Nums...>
+	{
+		template <typename ...Args>
+		static auto Get(std::tuple<Args...> tup)
+		{
+			return std::make_tuple(std::get<Nums>(tup)...);
+		}
+	};
+	
+	template <typename ...Args>
+	struct ConcatArgs
+	{
+		template <typename ...TArgs>
+		static std::tuple<Args..., TArgs...> Get(Args... args, std::tuple<TArgs...> t)
+		{
+			return std::tuple_cat(std::make_tuple(args...), t);
+		}
+	};
+	
+	
+	
 	}
 	
 	
@@ -195,6 +325,63 @@ namespace Math
 		}
 		return ret;
 	}
+	
+	
+	
+	
+	template <int Dims, typename Elem, typename Index>
+	template <int Dims2>
+	Matrix<Dims+Dims2-2, Elem, Index>* Matrix<Dims, Elem, Index>::contract(Matrix<Dims2, Elem, Index>* m)
+	{
+		const int nDims = Dims+Dims2-2;
+		if (this->size[Dims-1] != m->size[0] || this->size[Dims-1] <= 0)
+		{
+			throw MatrixInvalidSizeException();
+		}
+		
+		auto am = (m->clone());
+		
+		
+		
+		
+		auto tclone = this->clone();
+		auto res = new FuncMatrix<nDims, Elem, Index>([=] (auto... args)
+		{
+			
+			auto m_1 = _Helpers::Caller<Dims, Elem, Index>::PrefixCaller(tclone, args...);
+			Elem val = 0;
+			for (Index i = 0; i < am->size[0]; i++)
+			{
+				
+				auto m2_tmp = am->at(i);
+				
+				auto m2_args_tup = _Helpers::TuplePost<Dims2-1>::Get(std::make_tuple(args...));
+				auto m2_args = _Helpers::ConcatArgs<Matrix<Dims2-1, Elem, Index>*>::Get(m2_tmp, m2_args_tup);
+				Elem m_2_val = _Helpers::Caller<Dims2, Elem, Index>::PostfixCaller_T(m2_tmp, m2_args_tup);
+				 
+				delete m2_tmp;
+				val += m_1->at(i)*m_2_val;
+			}
+			return val;
+			delete m_1;
+		});
+		
+		
+		
+		
+		
+		for (int i = 0; i < Dims-1; i++)
+		{
+			res->size[i] = this->size[i];
+		}
+		for (int i = 1; i < Dims2; i++)
+		{
+			res->size[i+Dims-2] = m->size[i];
+		}
+		return res;
+	}
+	
+	
 	
 	
 	
