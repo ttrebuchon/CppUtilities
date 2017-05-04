@@ -1,4 +1,4 @@
-#include "../Tests.h"
+#include "../Tests_Helpers.h"
 
 
 #include <Math/Math.h>
@@ -251,6 +251,105 @@ bool TestMath()
 	dout << matTestC.submatrix(0, 0).det() << std::endl;
 	dout << matTestC.submatrix(0, 0).contract(matTestC.submatrix(0, 0)).det() << std::endl;
 	
+	auto testDets = [=] (auto m1, auto m2)
+	{
+		//dout << "\n\n" << std::endl;
+		auto m3 = m1.contract(m2);
+		
+		/*print_matrix(m1);
+		print_matrix(m2);
+		print_matrix(m3);*/
+		
+		auto d1 = m1.det();
+		//dout << "Det 1: " << d1 << std::endl;
+		auto d2 = m2.det();
+		//dout << "Det 2: " << d2 << std::endl;
+		auto d3 = m3.det();
+		//dout << "Det 3: " << d3 << std::endl;
+		
+		assert_ex(d3 == d1*d2);
+	};
+	
+	matrix_t<2, double> matTestD = new FuncMatrix<2, double>([](int i, int j) { return (i % j) + (j % i); });
+	
+	
+	matTestD.size()[0] = matTestD.size()[1] = 4;
+	testDets(matTestD.submatrix(0, 0), matTestD.T().submatrix(0, 0));
+	
+	const int consec_size = 2;
+	const int consec_dims = 2;
+	
+	auto consecutive_func = [consec_size] (auto i, auto j)
+	{
+		i += 1;
+		j += 1;
+		return (j + (i-1)*consec_size);
+	};
+	
+	matrix_t<consec_dims, double, int> consec_m = new FuncMatrix<consec_dims, double, int>(consecutive_func);
+	for (int i = 0; i < consec_dims; i++)
+	{
+		consec_m.size()[i] = consec_size;
+	}
+	
+	print_matrix(consec_m);
+	
+	auto consecutive_func_3 = [consec_size] (auto i, auto j, auto k)
+	{
+		i += 1;
+		j += 1;
+		k += 1;
+		return ((j-1)*consec_size + (i-1)*consec_size*consec_size + k);
+	};
+	
+	matrix_t<consec_dims+1, double, int> consec_m_3 = new FuncMatrix<consec_dims+1, double, int>(consecutive_func_3);
+	for (int i = 0; i < consec_dims+1; i++)
+	{
+		consec_m_3.size()[i] = consec_size;
+	}
+	
+	dout << consec_m_3.toString() << std::endl;
+	matrix_t<1, double, int> consec_m_1 = new FuncMatrix<1, double, int>([consec_size] (auto i){
+		return i+1;
+	});
+	consec_m_1.size()[0] = consec_size;
+	
+	/*dout << consec_m_1.toString() << std::endl;
+	
+	dout << consec_m_3.contract(consec_m_1).toString() << std::endl;
+	
+	dout << "M3 Det: " << consec_m_3.det() << std::endl;
+	dout << "M2 Det: " << consec_m.det() << std::endl;
+	
+	dout << "M3 • M2 Det: " << consec_m_3.contract(consec_m).det() << std::endl;
+	dout << "M3 • M2:\n" << consec_m_3.contract(consec_m).toString() << std::endl;
+	
+	
+	
+	dout << "M2 • M1:\n" << consec_m.contract(consec_m_1).toString() << std::endl;*/
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -265,7 +364,7 @@ bool TestMath()
 	return true;
 }
 
-bool Testing::Math()
+bool IntermediateMath()
 {
 	bool result = TestMath();
 	dout << "\n\n" << std::endl;
