@@ -20,11 +20,15 @@ namespace Math
 		virtual String toString() const override;
 		virtual Expression* eval() const override;
 		
+		virtual Expression* expand() const override;
+		
 		virtual Exp_type::type type() const { return exp_type.Exponent; }
 		
 		virtual Expression* copy() const override;
 		
 		virtual bool equals(const Expression*) const override;
+		
+		virtual bool contains(const Expression*) const override;
 		
 	};
 	

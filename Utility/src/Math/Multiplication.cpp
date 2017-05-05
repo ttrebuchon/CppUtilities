@@ -2,6 +2,9 @@
 
 #include <Math/Num.h>
 #include <Math/Exponent.h>
+#include <Math/Division.h>
+
+#include <iostream>
 
 namespace Util
 {
@@ -84,6 +87,74 @@ namespace Math
 	
 	Expression* Multiplication::eval() const
 	{
+		std::vector<Division*> divOps;
+		std::vector<int> divIndexes;
+		for (int i = 0; i < operands.size(); i++)
+		{
+			if (operands[i]->type() == exp_type.Division)
+			{
+				divIndexes.push_back(i);
+				divOps.push_back((Division*)operands[i]);
+			}
+		}
+		if (divOps.size() > 0)
+		{
+			//TODO
+			std::vector<const Expression*> tops, bottoms;
+			for (Division* div : divOps)
+			{
+				tops.push_back(div->top);
+				bottoms.push_back(div->bottom);
+			}
+			
+			for (int i = 0; i < operands.size(); i++)
+			{
+				if (std::find(divIndexes.begin(), divIndexes.end(), i) != divIndexes.end())//contains(i))
+				{
+					continue;
+				}
+				tops.push_back(operands[i]);
+			}
+			Multiplication* nTop = new Multiplication(tops[0], tops[1]);
+			for (int i = 2; i < tops.size(); i++)
+			{
+				nTop->operands.push_back(tops[i]->copy());
+			}
+			
+			Expression* nBottom = NULL;
+			
+			//TODO
+			if (bottoms.size() == 1)
+			{
+				nBottom = bottoms[0]->copy();
+			}
+			else
+			{
+				nBottom = new Multiplication(bottoms[0], bottoms[1]);
+				auto mnBottom = (Multiplication*)nBottom;
+				for (auto i = 2; i < bottoms.size(); i++)
+				{
+					mnBottom->operands.push_back(bottoms[i]->copy());
+				}
+			}
+			
+			auto nDiv = new Division(nTop, nBottom);
+			delete nTop;
+			delete nBottom;
+			
+			auto nDiv_eval = nDiv->eval();
+			delete nDiv;
+			return nDiv_eval;
+			
+		}
+		
+		
+		
+		
+		
+		
+		
+		
 		long double n = 1;
 		std::vector<Expression*> ops;
 		for (auto op : operands)
@@ -149,6 +220,22 @@ namespace Math
 		
 		return new Num(n);
 	}
+	
+	Expression* Multiplication::expand() const
+	{
+		auto ex1 = operands[0]->expand();
+		auto ex2 = operands[1]->expand();
+		auto exp = new Multiplication(ex1, ex2);
+		delete ex1;
+		delete ex2;
+		
+		for (int i = 2; i < operands.size(); i++)
+		{
+			exp->operands.push_back(operands[i]->expand());
+		}
+		
+		return exp;
+	}
 		
 	Expression* Multiplication::copy() const
 	{
@@ -161,6 +248,11 @@ namespace Math
 	}
 	
 	bool Multiplication::equals(const Expression* exp) const
+	{
+		throw NotImp();
+	}
+	
+	bool Multiplication::contains(const Expression* exp) const
 	{
 		throw NotImp();
 	}

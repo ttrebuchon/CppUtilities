@@ -25,6 +25,11 @@ namespace Math
 		return copy();
 	}
 	
+	Expression* Var::expand() const
+	{
+		return copy();
+	}
+	
 	Expression* Var::copy() const
 	{
 		return new Var(name);
@@ -43,6 +48,11 @@ namespace Math
 		}
 		delete evaled;
 		return false;
+	}
+	
+	bool Var::contains(const Expression* exp) const
+	{
+		throw NotImp();
 	}
 	
 	

@@ -1,8 +1,10 @@
 #include <Math/Exponent.h>
 
 #include <Math/Num.h>
+#include <Math/Multiplication.h>
 
 #include <cmath>
+#include <iostream>
 
 namespace Util
 {
@@ -92,12 +94,80 @@ namespace Math
 		return e;
 	}
 	
+	Expression* Exponent::expand() const
+	{
+		auto evaled = eval();
+		if (evaled->type() != type())
+		{
+			return evaled;
+		}
+		
+		auto e = ((Exponent*)evaled)->e;
+		auto b = ((Exponent*)evaled)->b;
+		
+		
+		if (e->type() == exp_type.Num)
+		{
+			Multiplication* exp = new Multiplication(b, b);
+			long double e_value = ((Num*)e)->value();
+			int i = 2;
+			for (i = 2; i < (int)e_value; i++)
+			{
+				exp->operands.push_back(b->copy());
+			}
+			if ((int)e_value != e_value)
+			{
+			auto diff = new Num(e_value - i);
+			exp->operands.push_back(new Exponent(b, diff));
+			delete diff;
+			}
+			std::cout << "-->" << exp->toString() << std::endl;
+			return exp;
+			
+		}
+		return evaled;
+		
+		
+	}
+	
 	Expression* Exponent::copy() const
 	{
 		return new Exponent(b, e);
 	}
 	
 	bool Exponent::equals(const Expression* exp) const
+	{
+		bool result = false;
+		auto ev = eval();
+		auto e_exp = exp->eval();
+		if (ev->type() != type())
+		{
+			result = ev->equals(e_exp);
+			delete ev;
+			delete e_exp;
+			return result;
+		}
+		
+		Exponent* ex = (Exponent*)ev;
+		
+		if (e_exp->type() == type())
+		{
+			Exponent* t = (Exponent*)e_exp;
+			if (ex->b->equals(t->b) && ex->e->equals(t->e))
+			{
+				delete t;
+				delete ev;
+				return true;
+			}
+			
+			throw NotImp();
+		}
+		
+		return false;
+		
+	}
+	
+	bool Exponent::contains(const Expression* exp) const
 	{
 		throw NotImp();
 	}

@@ -23,11 +23,15 @@ namespace Math
 		
 		virtual Expression* eval() const;
 		
+		virtual Expression* expand() const override;
+		
 		bool multiTerm() const override { return false; }
 		
 		virtual Expression* copy() const override;
 		
 		virtual bool equals(const Expression*) const override;
+		
+		virtual bool contains(const Expression*) const override;
 		
 	};
 	

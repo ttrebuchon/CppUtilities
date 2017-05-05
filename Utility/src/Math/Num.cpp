@@ -31,6 +31,11 @@ namespace Math
 		return copy();
 	}
 	
+	Expression* Num::expand() const
+	{
+		return copy();
+	}
+	
 	Expression* Num::copy() const
 	{
 		return new Num(n);
@@ -52,6 +57,11 @@ namespace Math
 		}
 		
 		return false;
+	}
+	
+	bool Num::contains(const Expression* exp) const
+	{
+		return equals(exp);
 	}
 }
 }

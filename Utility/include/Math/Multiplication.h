@@ -14,7 +14,7 @@ namespace Math
 		private:
 		
 		protected:
-		std::vector<Expression*> operands;
+		std::vector<const Expression*> operands;
 		
 		public:
 		Multiplication(const Expression*, const Expression*);
@@ -23,11 +23,18 @@ namespace Math
 		virtual String toString() const override;
 		virtual Expression* eval() const override;
 		
+		virtual Expression* expand() const override;
+		
 		virtual Exp_type::type type() const { return exp_type.Multiplication; }
 		
 		virtual Expression* copy() const override;
 		
 		virtual bool equals(const Expression*) const override;
+		
+		virtual bool contains(const Expression*) const override;
+		
+		friend class Division;
+		friend class Exponent;
 		
 	};
 	

@@ -135,6 +135,11 @@ namespace Math
 		return new Num(n);
 		
 	}
+	
+	Expression* Addition::expand() const
+	{
+		return eval();
+	}
 		
 	Expression* Addition::copy() const
 	{
@@ -147,6 +152,11 @@ namespace Math
 	}
 	
 	bool Addition::equals(const Expression* exp) const
+	{
+		throw NotImp();
+	}
+	
+	bool Addition::contains(const Expression* exp) const
 	{
 		throw NotImp();
 	}

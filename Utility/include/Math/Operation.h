@@ -17,6 +17,8 @@ namespace Math
 		
 		bool multiTerm() const override { return true; }
 		
+		friend class Expression;
+		
 	};
 	
 	

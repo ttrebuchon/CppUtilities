@@ -139,6 +139,23 @@ namespace Math
 		return nL;
 	}
 	
+	Expression* Subtraction::expand() const
+	{
+		auto left_expand = left->expand();
+		auto right0_expand = right[0]->expand();
+		
+		auto exp = new Subtraction(left_expand, right0_expand);
+		delete left_expand;
+		delete right0_expand;
+		
+		for (int i = 1; i < right.size(); i++)
+		{
+			exp->right.push_back(right[i]->expand());
+		}
+		
+		return exp;
+	}
+	
 	Expression* Subtraction::copy() const
 	{
 		if (right.size() <= 0)
@@ -154,6 +171,11 @@ namespace Math
 	}
 	
 	bool Subtraction::equals(const Expression* exp) const
+	{
+		throw NotImp();
+	}
+	
+	bool Subtraction::contains(const Expression* exp) const
 	{
 		throw NotImp();
 	}
