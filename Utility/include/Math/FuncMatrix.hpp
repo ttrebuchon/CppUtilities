@@ -3,6 +3,7 @@
 #include "FuncMatrix.h"
 #include <tuple>
 #include <Func/TupleArgs.h>
+#include <Exception/NotImplemented.h>
 
 namespace Util
 {

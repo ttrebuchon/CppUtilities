@@ -11,8 +11,6 @@
 #include "Addition.h"
 #include "Subtraction.h"
 
-#include "Matrix.h"
-
 namespace Util
 {
 namespace Math
