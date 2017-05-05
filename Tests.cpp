@@ -42,6 +42,7 @@ void Testing::run()
 	#endif
 	try
 	{
+	RUN(Matrix());
 	RUN(Math());
 	#ifndef SHORT_TEST
 	RUN(Sleep());
