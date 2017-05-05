@@ -62,7 +62,7 @@ WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -Wfatal-errors
 FLAGS = -I Utility/include
 
 CXX = g++
-CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) -Wall $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS)
+CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) -Wall $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Ofast
 libdeps = $(libobjects:.o=.d)
 testdeps = $(testobjects:.o=.d)
 name = Utility
