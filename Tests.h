@@ -21,6 +21,7 @@ class Testing
 	static bool Matrix();
 	static bool Lazy();
 	static bool Sleep();
+	static bool Neural();
 };
 
 

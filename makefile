@@ -34,8 +34,12 @@ Sleep_cpp = $(wildcard Utility/src/Sleep/*.cpp)
 Sleep = $(Sleep_cpp:.cpp=.o)
 #*/
 
+NeuralNet_cpp = $(wildcard Utility/src/NeuralNet/*.cpp)
+NeuralNet = $(NeuralNet_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
@@ -62,7 +66,7 @@ WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -Wfatal-errors
 FLAGS = -I Utility/include
 
 CXX = g++
-CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) -Wall $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Ofast
+CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) -Wall $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Og
 libdeps = $(libobjects:.o=.d)
 testdeps = $(testobjects:.o=.d)
 name = Utility

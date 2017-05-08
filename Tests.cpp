@@ -44,6 +44,7 @@ void Testing::run()
 	{
 	RUN(Matrix());
 	RUN(Math());
+	RUN(Neural());
 	#ifndef SHORT_TEST
 	RUN(Sleep());
 	RUN(Lazy());
