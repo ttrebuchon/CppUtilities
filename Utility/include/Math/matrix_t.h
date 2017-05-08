@@ -2,6 +2,7 @@
 
 #include "Matrix.h"
 #include <iostream>
+#include "FuncArgHelper.h"
 
 namespace Util
 {
@@ -90,9 +91,18 @@ namespace Math
 	class matrix_t : public __Base_matrix_t_<Dims, Elem, Index>
 	{
 		
+		//typedef typename _Helpers::FuncArgHelper<Dims, Index, Elem>::type Func;
+		
 		
 		public:
 		matrix_t(typename matrix_t::ptr_t * ptr) : __Base_matrix_t_<Dims, Elem, Index>(ptr) { }
+		
+		
+		matrix_t(
+		typename _Helpers::FuncArgHelper<Dims, Index, Elem>::type f
+		) : __Base_matrix_t_<Dims, Elem, Index>(new FuncMatrix<Dims, Elem, Index>(f)) {}
+		
+		
 		matrix_t(const matrix_t& m) : __Base_matrix_t_<Dims, Elem, Index>(m) { }
 		virtual ~matrix_t() { }
 		
@@ -139,6 +149,11 @@ namespace Math
 		public:
 		
 		matrix_t(typename matrix_t::ptr_t * ptr) : __Base_matrix_t_<1, Elem, Index>(ptr) { }
+		
+		matrix_t(
+		typename _Helpers::FuncArgHelper<1, Index, Elem>::type f
+		) : __Base_matrix_t_<1, Elem, Index>(new FuncMatrix<1, Elem, Index>(f)) {}
+		
 		matrix_t(const matrix_t& m) : __Base_matrix_t_<1, Elem, Index>(m) { }
 		
 		virtual ~matrix_t() { }

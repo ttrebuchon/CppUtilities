@@ -31,32 +31,38 @@ namespace Math
 		}
 		
 		
-		virtual std::string toString() const = 0;
-		
 		template <typename Num>
 		Matrix<Dims, Elem, Index>* operator*(const Num n)
 		{
 			return mul(n);
 		}
 		
-		virtual Matrix<Dims, Elem, Index>* mul(const double) = 0;
-		
 		virtual Matrix<Dims, Elem, Index>* operator+(const Matrix<Dims, Elem, Index>& mat)
 		{
 			return add(mat);
 		}
-		
-		virtual Matrix<Dims, Elem, Index>* add(const Matrix<Dims, Elem, Index>&) = 0;
 		
 		virtual Matrix<Dims, Elem, Index>* operator-(const Matrix<Dims, Elem, Index>& mat)
 		{
 			return sub(mat);
 		}
 		
+		virtual int rank() const
+		{
+			return Dims;
+		}
+		
+		
+		
+		virtual std::string toString() const = 0;
+		
+		virtual Matrix<Dims, Elem, Index>* mul(const double) = 0;
+		
+		virtual Matrix<Dims, Elem, Index>* add(const Matrix<Dims, Elem, Index>&) = 0;
+		
 		virtual Matrix<Dims, Elem, Index>* sub(const Matrix<Dims, Elem, Index>&) = 0;
 		
 		virtual Elem det() const = 0;
-		
 		
 		virtual Matrix<Dims, Elem, Index>* clone() const = 0;
 		
