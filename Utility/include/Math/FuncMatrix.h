@@ -26,14 +26,19 @@ namespace Math
 		
 		protected:
 		
+		
+		
 		public:
 		
 		FuncMatrix(Func f);
+		
+		virtual std::string imp() const override { return "FuncMatrix"; }
 		
 		Matrix<Dims-1, Elem, Index>* operator[](Index i) const override;
 		
 		
 		virtual Matrix<Dims, Elem, Index>* mul(const double) override;
+		virtual Matrix<Dims, Elem, Index>* mul(const Matrix<Dims, Elem, Index>&) override;
 		virtual Matrix<Dims, Elem, Index>* add(const Matrix<Dims, Elem, Index>&) override;
 		virtual Matrix<Dims, Elem, Index>* sub(const Matrix<Dims, Elem, Index>&) override;
 		virtual Matrix<Dims, Elem, Index>* clone() const override;
@@ -58,6 +63,8 @@ namespace Math
 		
 		protected:
 		
+		virtual std::string imp() const override { return "FuncMatrix"; }
+		
 		public:
 		
 		FuncMatrix(std::function<Elem(Index)> f);
@@ -65,6 +72,7 @@ namespace Math
 		
 		
 		virtual Matrix<1, Elem, Index>* mul(const double) override;
+		virtual Matrix<1, Elem, Index>* mul(const Matrix<1, Elem, Index>&) override;
 		virtual Matrix<1, Elem, Index>* add(const Matrix<1, Elem, Index>&) override;
 		virtual Matrix<1, Elem, Index>* sub(const Matrix<1, Elem, Index>&) override;
 		virtual Matrix<1, Elem, Index>* clone() const override;

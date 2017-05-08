@@ -8,6 +8,13 @@ namespace Util
 {
 namespace Math
 {
+	template <int Dims, typename Elem, typename Index = int>
+	class matrix_t;
+	
+	template <int Dims, typename Elem, typename Index>
+	matrix_t<Dims, Elem, Index> make_matrix_t(Matrix<Dims, Elem, Index>*);
+	
+	
 	template <int Dims, typename Elem, typename Index>
 	class __Base_matrix_t_
 	{
@@ -58,14 +65,24 @@ namespace Math
 		}
 		
 		
-		__Base_matrix_t_<Dims, Elem, Index> operator+(const __Base_matrix_t_<Dims, Elem, Index>& mat)
+		matrix_t<Dims, Elem, Index> operator+(const __Base_matrix_t_<Dims, Elem, Index>& mat)
 		{
-			return __Base_matrix_t_(ptr->add(mat.ptr));
+			return /*__Base_matrix_t_*/make_matrix_t(ptr->add(mat.ptr));
 		}
 		
-		__Base_matrix_t_<Dims, Elem, Index> operator-(const __Base_matrix_t_<Dims, Elem, Index>& mat)
+		matrix_t<Dims, Elem, Index> operator-(const __Base_matrix_t_<Dims, Elem, Index>& mat)
 		{
-			return __Base_matrix_t_(ptr->sub(mat.ptr));
+			return /*__Base_matrix_t_*/make_matrix_t(ptr->sub(mat.ptr));
+		}
+		
+		matrix_t<Dims, Elem, Index> operator*(const __Base_matrix_t_<Dims, Elem, Index>& mat)
+		{
+			return /*__Base_matrix_t_*/make_matrix_t(ptr->mul(mat.ptr));
+		}
+		
+		matrix_t<Dims, Elem, Index> operator*(const double n)
+		{
+			return /*__Base_matrix_t_*/make_matrix_t(ptr->mul(n));
 		}
 		
 		Index* size() const
@@ -87,7 +104,7 @@ namespace Math
 	
 	
 	
-	template <int Dims, typename Elem, typename Index = int>
+	template <int Dims, typename Elem, typename Index>
 	class matrix_t : public __Base_matrix_t_<Dims, Elem, Index>
 	{
 		
@@ -167,6 +184,13 @@ namespace Math
 		friend class matrix_t;
 		
 	};
+	
+	
+	template <int Dims, typename Elem, typename Index>
+	matrix_t<Dims, Elem, Index> make_matrix_t(Matrix<Dims, Elem, Index>* ptr)
+	{
+		return matrix_t<Dims, Elem, Index>(ptr);
+	}
 	
 }
 }

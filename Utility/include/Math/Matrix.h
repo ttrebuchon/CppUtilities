@@ -22,13 +22,19 @@ namespace Math
 		
 		
 		
+		
 		public:
 		Index size[Dims];
 		
 		_MatrixBase_() : size()
 		{
-			
+			for (auto i = 0; i < Dims; i++)
+			{
+				size[i] = -1;
+			}
 		}
+		
+		virtual std::string imp() const = 0;
 		
 		
 		template <typename Num>
@@ -58,15 +64,35 @@ namespace Math
 		
 		virtual Matrix<Dims, Elem, Index>* mul(const double) = 0;
 		
+		virtual Matrix<Dims, Elem, Index>* mul(const Matrix<Dims, Elem, Index>&) = 0;
+		
+		virtual Matrix<Dims, Elem, Index>* mul(const Matrix<Dims, Elem, Index>* m)
+		{
+			return mul(*m);
+		}
+		
 		virtual Matrix<Dims, Elem, Index>* add(const Matrix<Dims, Elem, Index>&) = 0;
 		
+		virtual Matrix<Dims, Elem, Index>* add(const Matrix<Dims, Elem, Index>* m)
+		{
+			return add(*m);
+		}
+		
 		virtual Matrix<Dims, Elem, Index>* sub(const Matrix<Dims, Elem, Index>&) = 0;
+		
+		virtual Matrix<Dims, Elem, Index>* sub(const Matrix<Dims, Elem, Index>* m)
+		{
+			return sub(*m);
+		}
 		
 		virtual Elem det() const = 0;
 		
 		virtual Matrix<Dims, Elem, Index>* clone() const = 0;
 		
 		
+		
+		template <int otherDims, typename otherElem, typename otherIndex>
+		friend class _MatrixBase_;
 		
 	};
 	

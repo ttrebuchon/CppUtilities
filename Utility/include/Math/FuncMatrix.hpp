@@ -61,21 +61,164 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::mul(const double)
+	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::mul(const double n)
 	{
-		throw NotImp();
+		auto ret = new FuncMatrix<Dims, Elem, Index>([=] (auto... args)
+		{
+			return def(args...)*n;
+		});
+		for (auto i = 0; i < Dims; i++)
+		{
+			ret->size[i] = this->size[i];
+		}
+		return ret;
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::add(const Matrix<Dims, Elem, Index>&)
+	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::mul(const Matrix<Dims, Elem, Index>& m)
 	{
-		throw NotImp();
+		Index nSize[Dims];
+		for (int i = 0; i < Dims; i++)
+		{
+			nSize[i] = -1;
+			if (this->size[i] == 0 || m.size[i] == 0)
+			{
+				throw MatrixInvalidSizeException();
+			}
+			
+			if (m.size[i] > 0)
+			{
+				nSize[i] = m.size[i];
+			}
+			
+			if ((this->size[i] < nSize[i] && this->size[i] > 0) || (nSize[i] < 0 && this->size[i] > 0))
+			{
+				nSize[i] = this->size[i];
+			}
+			
+			if (nSize[i] == 0)
+			{
+				nSize[i] = -1;
+			}
+		}
+		
+		if (m.imp() == "FuncMatrix")
+		{
+			FuncMatrix<Dims, Elem, Index>& M = (FuncMatrix<Dims, Elem, Index>&)m;
+			
+			auto ret = new FuncMatrix<Dims, Elem, Index>([=] (auto... args)
+			{
+				return (def(args...) * M.def(args...));
+			});
+			for (auto i = 0; i < Dims; i++)
+			{
+				ret->size[i] = nSize[i];
+			}
+			return ret;
+		}
+		else
+		{
+			throw NotImp();
+		}
+		
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::sub(const Matrix<Dims, Elem, Index>&)
+	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::add(const Matrix<Dims, Elem, Index>& m)
 	{
-		throw NotImp();
+		Index nSize[Dims];
+		for (int i = 0; i < Dims; i++)
+		{
+			nSize[i] = -1;
+			if (this->size[i] == 0 || m.size[i] == 0)
+			{
+				throw MatrixInvalidSizeException();
+			}
+			
+			if (m.size[i] > 0)
+			{
+				nSize[i] = m.size[i];
+			}
+			
+			if ((this->size[i] < nSize[i] && this->size[i] > 0) || (nSize[i] < 0 && this->size[i] > 0))
+			{
+				nSize[i] = this->size[i];
+			}
+			
+			if (nSize[i] == 0)
+			{
+				nSize[i] = -1;
+			}
+		}
+		
+		if (m.imp() == "FuncMatrix")
+		{
+			FuncMatrix<Dims, Elem, Index>& M = (FuncMatrix<Dims, Elem, Index>&)m;
+			
+			auto ret = new FuncMatrix<Dims, Elem, Index>([=] (auto... args)
+			{
+				return (def(args...) + M.def(args...));
+			});
+			for (auto i = 0; i < Dims; i++)
+			{
+				ret->size[i] = nSize[i];
+			}
+			return ret;
+		}
+		else
+		{
+			throw NotImp();
+		}
+		
+	}
+	
+	template <int Dims, typename Elem, typename Index>
+	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::sub(const Matrix<Dims, Elem, Index>& m)
+	{
+		Index nSize[Dims];
+		for (int i = 0; i < Dims; i++)
+		{
+			nSize[i] = -1;
+			if (this->size[i] == 0 || m.size[i] == 0)
+			{
+				throw MatrixInvalidSizeException();
+			}
+			
+			if (m.size[i] > 0)
+			{
+				nSize[i] = m.size[i];
+			}
+			
+			if ((this->size[i] < nSize[i] && this->size[i] > 0) || (nSize[i] < 0 && this->size[i] > 0))
+			{
+				nSize[i] = this->size[i];
+			}
+			
+			if (nSize[i] == 0)
+			{
+				nSize[i] = -1;
+			}
+		}
+		
+		if (m.imp() == "FuncMatrix")
+		{
+			FuncMatrix<Dims, Elem, Index>& M = (FuncMatrix<Dims, Elem, Index>&)m;
+			
+			auto ret = new FuncMatrix<Dims, Elem, Index>([=] (auto... args)
+			{
+				return (def(args...) - M.def(args...));
+			});
+			for (auto i = 0; i < Dims; i++)
+			{
+				ret->size[i] = nSize[i];
+			}
+			return ret;
+		}
+		else
+		{
+			throw NotImp();
+		}
+		
 	}
 	
 	template <int Dims, typename Elem, typename Index>
@@ -429,21 +572,143 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index>
-	Matrix<1, Elem, Index>* FuncMatrix<1, Elem, Index>::mul(const double)
+	Matrix<1, Elem, Index>* FuncMatrix<1, Elem, Index>::mul(const double n)
 	{
-		throw NotImp();
+		auto ret = new FuncMatrix<1, Elem, Index>([=] (Index i)
+		{
+			return def(i)*n;
+		});
+		ret->size[0] = this->size[0];
+		return ret;
 	}
 	
 	template <typename Elem, typename Index>
-	Matrix<1, Elem, Index>* FuncMatrix<1, Elem, Index>::add(const Matrix<1, Elem, Index>&)
+	Matrix<1, Elem, Index>* FuncMatrix<1, Elem, Index>::mul(const Matrix<1, Elem, Index>& m)
 	{
-		throw NotImp();
+		if (this->size[0] == 0 || m.size[0] == 0)
+		{
+			throw MatrixInvalidSizeException();
+		}
+		
+		Index nSize = -1;
+		if (m.size[0] > 0)
+		{
+			nSize = m.size[0];
+		}
+		
+		if ((this->size[0] < nSize && this->size[0] > 0) || (nSize < 0 && this->size[0] > 0))
+		{
+			nSize = this->size[0];
+		}
+		
+		if (nSize == 0)
+		{
+			nSize = -1;
+		}
+		
+		
+		
+		if (m.imp() == "FuncMatrix")
+		{
+			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)m;
+			
+			auto ret = new FuncMatrix<1, Elem, Index>([=] (Index i)
+			{
+				return (def(i) * M.def(i));
+			});
+			ret->size[0] = nSize;
+			return ret;
+		}
+		else
+		{
+			throw NotImp();
+		}
 	}
 	
 	template <typename Elem, typename Index>
-	Matrix<1, Elem, Index>* FuncMatrix<1, Elem, Index>::sub(const Matrix<1, Elem, Index>&)
+	Matrix<1, Elem, Index>* FuncMatrix<1, Elem, Index>::add(const Matrix<1, Elem, Index>& m)
 	{
-		throw NotImp();
+		if (this->size[0] == 0 || m.size[0] == 0)
+		{
+			throw MatrixInvalidSizeException();
+		}
+		
+		Index nSize = -1;
+		if (m.size[0] > 0)
+		{
+			nSize = m.size[0];
+		}
+		
+		if ((this->size[0] < nSize && this->size[0] > 0) || (nSize < 0 && this->size[0] > 0))
+		{
+			nSize = this->size[0];
+		}
+		
+		if (nSize == 0)
+		{
+			nSize = -1;
+		}
+		
+		
+		
+		if (m.imp() == "FuncMatrix")
+		{
+			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)m;
+			
+			auto ret = new FuncMatrix<1, Elem, Index>([=] (Index i)
+			{
+				return (def(i) + M.def(i));
+			});
+			ret->size[0] = nSize;
+			return ret;
+		}
+		else
+		{
+			throw NotImp();
+		}
+	}
+	
+	template <typename Elem, typename Index>
+	Matrix<1, Elem, Index>* FuncMatrix<1, Elem, Index>::sub(const Matrix<1, Elem, Index>& m)
+	{
+		if (this->size[0] == 0 || m.size[0] == 0)
+		{
+			throw MatrixInvalidSizeException();
+		}
+		
+		Index nSize = -1;
+		if (m.size[0] > 0)
+		{
+			nSize = m.size[0];
+		}
+		
+		if ((this->size[0] < nSize && this->size[0] > 0) || (nSize < 0 && this->size[0] > 0))
+		{
+			nSize = this->size[0];
+		}
+		
+		if (nSize == 0)
+		{
+			nSize = -1;
+		}
+		
+		
+		
+		if (m.imp() == "FuncMatrix")
+		{
+			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)m;
+			
+			auto ret = new FuncMatrix<1, Elem, Index>([=] (Index i)
+			{
+				return (def(i) - M.def(i));
+			});
+			ret->size[0] = nSize;
+			return ret;
+		}
+		else
+		{
+			throw NotImp();
+		}
 	}
 	
 	template <typename Elem, typename Index>
