@@ -12,7 +12,7 @@ WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -Wfatal-errors
 FLAGS = -I ../../../Utility/include -L../../../ -I tinyxml2 -L tinyxml2
 
 CXX = g++
-CXXFLAGS = -std=c++11 -MMD -fpic -I . $(PREPROC_FLAGS) -Wall $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS)
+CXXFLAGS = -std=c++11 -MMD -fpic -I . $(PREPROC_FLAGS) -Wall $(FLAGS) -O3 -Wno-sign-compare $(WARNINGS_ERRORS)
 deps = $(objects:.o=.d)
 name = SongPrediction
 target = $(name).out
