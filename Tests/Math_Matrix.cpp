@@ -6,7 +6,7 @@
 using namespace Util;
 using namespace Math;
 
-
+bool Test_Arithmetic();
 
 bool Math_Matrix()
 {
@@ -197,5 +197,154 @@ bool Math_Matrix()
 	};
 	testC_1_1(5);
 	
+	return Test_Arithmetic();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+bool Test_Arithmetic()
+{
+	dout << "\n\nTesting matrix arithmetic..." << endl;
+	
+	matrix_t<1, double> m1([] (auto i) { return 4 - i; });
+	matrix_t<1, double> m2([] (auto i) { return i; });
+	auto m3 = m1 + m2;
+	m3.size()[0] = 5;
+	for (int i = 0; i < 5; i++)
+	{
+		assert_ex(m3[i] == 4);
+	}
+	
+	m3 = m1 - m2;
+	m3.size()[0] = 5;
+	for (int i = 0; i < 5; i++)
+	{
+		assert_ex(m3[i] == (4 - 2*i));
+	}
+	
+	
+	
+	
+	
+	
+	
+	m1.size()[0] = 6;
+	m3 = m1 + m2;
+	assert_ex(m3.size()[0] == 6);
+	for (int i = 0; i < 6; i++)
+	{
+		assert_ex(m3[i] == 4);
+	}
+	
+	
+	
+	
+	
+	m1.size()[0] = -1;
+	auto m4 = m1*m2;
+	m4.size()[0] = 5;
+	for (int i = 0; i < 5; i++)
+	{
+		assert_ex(m4[i] == ((4-i)*i));
+	}
+	
+	m4 = m1*10;
+	m4.size()[0] = 5;
+	for (int i = 0; i < 5; i++)
+	{
+		assert_ex(m4[i] == ((4-i)*10));
+	}
+	
+	
+	
+	
+	
+	
+	
+	matrix_t<2, double> m21([] (auto i, auto j) { return (4 - i)*(j+1); });
+	matrix_t<2, double> m22([] (auto i, auto j) { return i+j; });
+	
+	auto m23 = m21 + m22;
+	m23.size()[0] = 5;
+	m23.size()[1] = 5;
+	for (int i = 0; i < 5; i++) {
+	for (int j = 0; j < 5; j++)
+	{
+		assert_ex(m23[i][j] == ((4 - i)*(j+1) + (i+j)));
+	}
+	}
+	
+	m23 = m21 - m22;
+	m23.size()[0] = 5;
+	m23.size()[1] = 5;
+	for (int i = 0; i < 5; i++) {
+	for (int j = 0; j < 5; j++)
+	{
+		assert_ex(m23[i][j] == ((4 - i)*(j+1) - (i+j)));
+	}
+	}
+	
+	
+	
+	
+	
+	
+	
+	m21.size()[0] = 6;
+	m21.size()[1] = 7;
+	m23 = m21 + m22;
+	assert_ex(m23.size()[0] == 6);
+	assert_ex(m23.size()[1] == 7);
+	for (int i = 0; i < 6; i++) {
+	for (int j = 0; j < 7; j++)
+	{
+		assert_ex(m23[i][j] == ((4 - i)*(j+1) + (i+j)));
+	}
+	}
+	
+	
+	
+	
+	
+	m21.size()[0] = -1;
+	m21.size()[1] = -1;
+	auto m24 = m21*m22;
+	m24.size()[0] = 5;
+	m24.size()[1] = 5;
+	for (int i = 0; i < 5; i++) {
+	for (int j = 0; j < 5; j++)
+	{
+		assert_ex(m24[i][j] == ((4 - i)*(j+1)*(i+j)));
+	}
+	}
+	
+	
+	m24 = m21*10;
+	m24.size()[0] = 5;
+	m24.size()[1] = 5;
+	for (int i = 0; i < 5; i++) {
+	for (int j = 0; j < 5; j++)
+	{
+		assert_ex(m24[i][j] == ((4 - i)*(j+1)*10));
+	}
+	}
+	
+	
+	
+	
+	
+	
+	dout << "Passed." << std::endl;
 	return true;
 }
