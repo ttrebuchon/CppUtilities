@@ -1,38 +1,61 @@
 #pragma once
 
-#include <functional>
 #include "Matrix.h"
-#include "FuncArgHelper.h"
+#include "FuncMatrix.h"
 
+#include <vector>
 
 namespace Util
 {
 namespace Math
 {
+	namespace _Helpers
+	{
+		template <int n, typename T, template <typename...> typename Container>
+		struct RecursiveDataMatrix
+		{
+			typedef Container<typename RecursiveDataMatrix<n-1, T, Container>::type> type;
+		};
+		
+		template <typename T, template <typename...> typename Container>
+		struct RecursiveDataMatrix<0, T, Container>
+		{
+			typedef T type;
+		};
+	}
 	
 	
 	
-	template <int Dims, typename Elem, typename Index = int>
-	class FuncMatrix : public Matrix<Dims, Elem, Index>
+	
+	
+	
+	
+	template <typename Container>
+	int _getSize(Container&);
+	
+	
+	
+	template <int Dims, typename Elem, typename Index = int, template <typename...> typename Container = std::vector>
+	class DataMatrix : public Matrix<Dims, Elem, Index>
 	{
 		private:
 		
-		//std::function<Elem(Index...)>
-		//where there are "Dims" number
-		//of Index arguments
-		typedef typename _Helpers::FuncArgHelper<Dims, Index, Elem>::type Func; 
-		
-		Func def;
-		
 		protected:
 		
+		typedef typename _Helpers::RecursiveDataMatrix<Dims, Elem, Container>::type Data;
 		
+		typedef Matrix<Dims-1, Elem, Index> Subset;
+		
+		Container<Subset*> data;
+		
+		DataMatrix(Index);
 		
 		public:
+		template <typename DataSet>
+		DataMatrix(DataSet);
+		DataMatrix(Data);
 		
-		FuncMatrix(Func f);
-		
-		virtual std::string imp() const override { return "FuncMatrix"; }
+		virtual std::string imp() const override { return "DataMatrix"; }
 		
 		Matrix<Dims-1, Elem, Index>* operator[](Index i) const override;
 		
@@ -44,7 +67,6 @@ namespace Math
 		virtual Matrix<Dims, Elem, Index>* clone() const override;
 		virtual Matrix<Dims, Elem, Index>* T() const override;
 		virtual Matrix<Dims, Elem, Index>* submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const override;
-		//virtual Elem minor(typename _Helpers::TupleBuilder<Dims, Index>::value) const override;
 		
 	};
 	
@@ -54,21 +76,27 @@ namespace Math
 	
 	
 	
-	template <typename Elem, typename Index>
-	class FuncMatrix<1, Elem, Index> : public Matrix<1, Elem, Index>
+	
+	
+	
+	
+	
+	
+	
+	template <typename Elem, typename Index, template <typename...> typename Container>
+	class DataMatrix<1, Elem, Index, Container> : public Matrix<1, Elem, Index>
 	{
 		private:
 		
-		std::function<Elem(Index)> def;
-		
 		protected:
+		typedef typename _Helpers::RecursiveDataMatrix<1, Elem, Container>::type Data;
 		
-		
+		Data data;
 		
 		public:
+		DataMatrix(Data);
 		
-		FuncMatrix(std::function<Elem(Index)> f);
-		virtual std::string imp() const override { return "FuncMatrix"; }
+		virtual std::string imp() const override { return "DataMatrix"; }
 		
 		Elem operator[](Index i) const override;
 		
@@ -81,11 +109,8 @@ namespace Math
 		
 		virtual Matrix<2, Elem, Index>* T() const override;
 		virtual Matrix<1, Elem, Index>* submatrix(std::tuple<Index>) const override;
-		
 	};
-	
-	
 }
 }
 
-#include "FuncMatrix.hpp"
+#include "DataMatrix.hpp"

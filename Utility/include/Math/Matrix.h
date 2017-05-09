@@ -188,5 +188,6 @@ namespace Math
 }
 #include "Matrix.hpp"
 #include "FuncMatrix.h"
+#include "DataMatrix.h"
 
 #include "matrix_t.h"
