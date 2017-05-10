@@ -6,25 +6,32 @@ namespace Util
 {
 namespace NeuralNet
 {
+	template <typename T>
 	class Neuron;
 	
-	
+	template <typename T>
 	class Synapse
 	{
 		private:
 		
 		protected:
-		Neuron* in;
-		Neuron* out;
+		Neuron<T>* in;
+		Neuron<T>* out;
 		long double wgt;
 		
 		public:
-		Synapse(Neuron* up, Neuron* down, long double wgt);
-		Synapse(Neuron* up, Neuron* down);
+		Synapse(Neuron<T>* up, Neuron<T>* down, long double wgt);
+		Synapse(Neuron<T>* up, Neuron<T>* down);
 		
-		Neuron* get_out() const;
+		Neuron<T>* get_out() const;
+		Neuron<T>* get_in() const;
+		
+		void remove();
+		void propagate(T value) const;
+		void backPropagate(T delta_sum);
 		
 	};
 	
 }
 }
+#include "Synapse.hpp"
