@@ -2,6 +2,7 @@
 
 #include <LazyLoad/LazyLoad.h>
 #include <string>
+#include <cstring>
 
 struct TStruct
 {

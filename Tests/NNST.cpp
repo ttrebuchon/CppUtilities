@@ -1,6 +1,7 @@
 #include "../Tests.h"
 #include "NearestNeighborTree/NearestNeighborTree.h"
 #include <cmath>
+#include <climits>
 
 template <typename ...T>
 using NNT = Utils::NearestNeighbor<T...>;

@@ -148,7 +148,7 @@ namespace Math
 		
 		template <int Dims2>
 		Matrix<Dims+Dims2-2, Elem, Index>* contract(Matrix<Dims2, Elem, Index>*);
-		
+		#undef minor
 		virtual Elem minor(typename _Helpers::TupleBuilder<Dims, Index>::value) const;
 		
 		virtual Elem det() const override;
