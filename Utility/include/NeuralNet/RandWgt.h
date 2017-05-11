@@ -13,7 +13,7 @@ namespace Internal
 		
 		public:
 		
-		static long double Get();
+		static double Get();
 	};
 }
 }

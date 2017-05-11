@@ -5,6 +5,7 @@
 #include <vector>
 #include <functional>
 #include <cmath>
+#include <iostream>
 
 namespace Util
 {
@@ -14,6 +15,7 @@ namespace NeuralNet
 	class Net
 	{
 		private:
+		typedef std::function<T(T)> Activation_t;
 		
 		typedef Math::matrix_t<1, T> InOut;
 		int inSize;
@@ -26,8 +28,8 @@ namespace NeuralNet
 		std::vector<InputNeuron<T>*> input_n;
 		std::vector<OutputNeuron<T>*> output_n;
 		
-		std::function<T(T)> activation;
-		std::function<T(T)> activation_D;
+		Activation_t activation;
+		Activation_t activation_D;
 		
 		virtual void reset(T init);
 		virtual void reset() { reset(0); }
@@ -35,15 +37,13 @@ namespace NeuralNet
 		
 		public:
 		Net(int inputSize, int outputSize, 
-		std::function<T(T)> actFunc = [](T x)
+		std::function<T(T)> actFunc = [](T x) -> T
 		{
-			/*return ((x < 0) ? (x*x*-1) : (x * x));*/
-			return ((T)1)/(1 + exp(x*-1));
+			return ((T)1)/(1 + exp(x*(T)-1));
 		},
-		std::function<T(T)> actDerivFunc = [](T x)
+		std::function<T(T)> actDerivFunc = [](T x) -> T
 		{
-			/*return ((x < 0) ? (x*-2) : (x*2));*/
-			return ((T)1)/(1 + exp(x*-1))*(1 - ((T)1)/(1 + exp(x*-1)));
+			return ((T)1)/(1 + exp(x*(T)-1))*(1 - ((T)1)/(1 + exp(x*(T)-1)));
 		});
 		
 		virtual ~Net();

@@ -25,7 +25,7 @@ namespace Internal
 	
 	
 	
-	long double RandWgt::Get()
+	double RandWgt::Get()
 	{
 		return _GenRandWgt::dist(_GenRandWgt::gen);
 	}

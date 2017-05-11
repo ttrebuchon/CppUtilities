@@ -22,7 +22,7 @@ namespace NeuralNet
 	}
 	
 	template <typename T>
-	void Neuron<T>::addDown(Neuron<T>* n, long double wgt)
+	void Neuron<T>::addDown(Neuron<T>* n, T wgt)
 	{
 		auto syn = new Synapse<T>(this, n, wgt);
 		this->out.push_back(syn);
@@ -125,7 +125,7 @@ namespace NeuralNet
 	template <typename T>
 	void Neuron<T>::backPropagate(T delta_out_sum)
 	{
-		auto delta_sum = this->act_D(this->hidden)*delta_out_sum;
+		T delta_sum = this->act_D(this->hidden)*delta_out_sum;
 		for (auto syn : this->in)
 		{
 			syn->backPropagate(delta_sum);
