@@ -36,16 +36,16 @@ bool Testing::Neural()
 	nn.addData({1, 0}, {1});
 	nn.addData({1, 1}, {0});
 	
-	const int layers = 1;
-	const int multiplier = 2;
-	int cycles = 100000;
+	const int layers = 3;
+	const double multiplier = 2;
+	int cycles = 10;
 	
 	int progressInterval = 10000;
 	
 	nn.grow(layers, multiplier);
-	for (int i = 0; i < cycles/progressInterval; i++)
+	for (int i = 0; i < cycles; i++)
 	{
-		dout << "Training " << i*progressInterval << "\t/" << cycles << std::endl;
+		dout << "Training " << i*progressInterval << "\t/" << cycles*progressInterval << std::endl;
 		nn.train(progressInterval);
 	}
 	
@@ -61,7 +61,7 @@ bool Testing::Neural()
 	auto result4 = nn.go({1, 1});
 	dout << "Result for {1, 1}: " << result4.toString() << std::endl;
 	
-	//typedef number<cpp_dec_float<0>> Precise;
+	//typedef number<cpp_dec_float<10>> Precise;
 	typedef double Precise;
 	Precise x = 1;
 	x *= 4;
@@ -73,14 +73,13 @@ bool Testing::Neural()
 	nn2.addData({1, 1}, {2});
 	nn2.addData({2, 1}, {3});
 	nn2.addData({1, 2}, {3});
-	nn2.grow(layers+1, 1);
-	
-	progressInterval = 1000;
-	cycles = 10;
+	nn2.grow(layers, multiplier);
+
+	nn2.bounds.min = 0;
 	
 	for (int i = 0; i < cycles; i++)
 	{
-		dout << "Training " << i*progressInterval << "\t/" << cycles << std::endl;
+		dout << "Training " << i*progressInterval << "\t/" << cycles*progressInterval << std::endl;
 		nn2.train(progressInterval);
 	}
 	
