@@ -21,8 +21,12 @@ namespace Util
 namespace NeuralNet
 {
 	template <typename T>
-	Net<T>::Net(int inputSize, int outputSize, Activation_t actFunc, Activation_t actDerivFunc) : inSize(inputSize), outSize(outputSize), training(), input_n(inputSize), output_n(outputSize), activation(actFunc), activation_D(actDerivFunc)
+	Net<T>::Net(int inputSize, int outputSize, Activation_t actFunc, Activation_t actDerivFunc, T lowBound, T highBound) : inSize(inputSize), outSize(outputSize), training(), input_n(inputSize), output_n(outputSize), activation(actFunc), activation_D(actDerivFunc), bounds()
 	{
+		this->bounds.min = lowBound;
+		this->bounds.max = highBound;
+
+
 		for (auto i = 0; i < inSize; i++)
 		{
 			input_n[i] = new InputNeuron<T>(activation, activation_D);
@@ -30,8 +34,24 @@ namespace NeuralNet
 		
 		for (auto i = 0; i < outSize; i++)
 		{
-			output_n[i] = new OutputNeuron<T>([] (T x) -> T { return x; }, [] (T x) -> T { return 1; });
+			output_n[i] = new OutputNeuron<T>([&] (T x) -> T {
+				if (x < bounds.min)
+				{
+					return bounds.min;
+				}
+				if ( x > bounds.max)
+				{
+					return bounds.max;
+				}
+				return x;
+			}, 
+			[] (T x) -> T {
+				return 1;
+			});
 		}
+
+		
+
 	}
 	
 	template <typename T>
@@ -76,7 +96,7 @@ namespace NeuralNet
 	
 	
 	template <typename T>
-	void Net<T>::grow(int layers, int multiplier)
+	void Net<T>::grow(int layers, double multiplier)
 	{
 		std::vector<Neuron<T>*> currentLayer;
 		for (auto outN : output_n)

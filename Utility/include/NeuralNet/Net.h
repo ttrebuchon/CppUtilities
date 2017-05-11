@@ -5,12 +5,19 @@
 #include <vector>
 #include <functional>
 #include <cmath>
-#include <iostream>
+#include <limits>
 
 namespace Util
 {
 namespace NeuralNet
 {
+	template <typename T>
+	struct Bounds
+	{
+		T min;
+		T max;
+	};
+
 	template <typename T>
 	class Net
 	{
@@ -36,6 +43,9 @@ namespace NeuralNet
 		
 		
 		public:
+
+		Bounds<T> bounds;
+
 		Net(int inputSize, int outputSize, 
 		std::function<T(T)> actFunc = [](T x) -> T
 		{
@@ -44,12 +54,14 @@ namespace NeuralNet
 		std::function<T(T)> actDerivFunc = [](T x) -> T
 		{
 			return ((T)1)/(1 + exp(x*(T)-1))*(1 - ((T)1)/(1 + exp(x*(T)-1)));
-		});
+		},
+		T lowBound = (std::numeric_limits<T>()).lowest(),
+		T upBound = (std::numeric_limits<T>()).max());
 		
 		virtual ~Net();
 		
 		
-		void grow(int newLayers, int multiplier = 1);
+		void grow(int newLayers, double multiplier = 1);
 		
 		template <typename List = std::vector<T>>
 		void addData(List input, List output);
