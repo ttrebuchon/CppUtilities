@@ -3,7 +3,7 @@
 
 #include "Neuron.h"
 #include <Exception/NotImplemented.h>
-#include <iostream>
+#include <algorithm>
 namespace Util
 {
 namespace NeuralNet

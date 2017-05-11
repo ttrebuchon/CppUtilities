@@ -30,7 +30,7 @@ namespace Util
 		
 		bool isNull()
 		{
-			return (ptr == NULL);
+			return (ptr == nullptr);
 		}
 		
 	};

@@ -3,6 +3,7 @@
 
 #include "Net.h"
 #include <Exception/NotImplemented.h>
+#include <algorithm>
 
 #ifdef DEBUG
 

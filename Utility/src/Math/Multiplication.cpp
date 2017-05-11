@@ -5,6 +5,7 @@
 #include <Math/Division.h>
 
 #include <iostream>
+#include <algorithm>
 
 namespace Util
 {

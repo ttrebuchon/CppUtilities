@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <cstring>
 
 
 #ifdef __NS__

@@ -519,8 +519,6 @@ namespace Math
 				auto m2_tmp = am->at(i);
 				
 				auto m2_args_tup = _Helpers::TuplePost<Dims2-1>::Get(std::make_tuple(args...));
-				//auto m2_args = _Helpers::ConcatArgs<Matrix<Dims2-1, Elem, Index>*>::Get(m2_tmp, m2_args_tup);
-				auto m2_args = std::tuple_cat(std::make_tuple(m2_tmp), m2_args_tup);
 				Elem m_2_val = _Helpers::Caller<Dims2, Elem, Index>::PostfixCaller_T(m2_tmp, m2_args_tup);
 				
 				_Helpers::try_delete(m2_tmp);
