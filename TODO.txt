@@ -1,6 +1,6 @@
 1) Finish matrix(s) implementations
 
-2) Write tuple extension feature
+2) Write tuple extension module
 
 3) Implement alternate methods of training neural nets
 
@@ -8,4 +8,6 @@
 
 5) Clean up commented out/unused code
 
-6) 
+6) Update/Clean up Func module
+    6.1) Pseudo-Bind() functionality
+    6.2) Tuple as args functionality
