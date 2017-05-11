@@ -1,0 +1,11 @@
+1) Finish matrix(s) implementations
+
+2) Write tuple extension feature
+
+3) Implement alternate methods of training neural nets
+
+4) Write test to compare k-dimension tree performance and accuracy with neural net results
+
+5) Clean up commented out/unused code
+
+6) 
