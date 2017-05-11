@@ -23,7 +23,7 @@ class StringException : public std::exception
 	}
 };
 
-#define assert_ex(x) ( x ) ? NULL : throw StringException(((std::stringstream&)(std::stringstream() << __FILE__ << ":L" << __LINE__ << "::Assertion Failed: " << #x)).str())
+#define assert_ex(x) ( x ) ? NULL : throw StringException(((std::stringstream)(std::stringstream() << __FILE__ << ":L" << __LINE__ << "::Assertion Failed: " << #x)).str())
 
 
 

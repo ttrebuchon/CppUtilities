@@ -17,7 +17,7 @@ namespace Math
 	
 	String Num::toString() const
 	{
-		return ((std::stringstream&)(std::stringstream() << std::setprecision(9) << n)).str();
+		return ((std::stringstream)(std::stringstream() << std::setprecision(9) << n)).str();
 		//return std::to_string(n);
 	}
 	
