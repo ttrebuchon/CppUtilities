@@ -31,3 +31,6 @@
 
 # Output
 *Seeds.txt
+
+#Environment files
+.vscode*
