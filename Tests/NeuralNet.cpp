@@ -13,17 +13,16 @@ bool Testing::Neural()
 	
 	/* Example Activation Functions */
 	
-	auto bin_A = [] (auto x) {
-		if (x >= 1)
-			return 1;
-		return 0;
-	};
+	// auto bin_A = [] (auto x) {
+	// 	if (x >= 1)
+	// 		return 1;
+	// 	return 0;
+	// };
 	
-	auto bin_D = [] (auto x) {
-		return 0;
-	};
-	
-#pragma GCC diagnostic pop
+	// auto bin_D = [] (auto x) {
+	// 	return 0;
+	// };
+
 	
 	
 	
