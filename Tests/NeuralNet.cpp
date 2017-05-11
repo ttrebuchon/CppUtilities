@@ -1,42 +1,49 @@
 #include "../Tests.h"
 
 #include <NeuralNet/NeuralNet.h>
-//#include <gmpxx.h>
-//#include <mpfr.h>
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
 using Utils::NeuralNet::Net;
-//using boost::multiprecision::mpf_float;
 using boost::multiprecision::cpp_dec_float;
 using boost::multiprecision::number;
 
-/*boost::multiprecision::mpfr_float exp(mpz_class n)
-{
-	boost::multiprecision::mpfr_float res;
-	//return mpfr_exp(res, n);
-	return res;
-}*/
-
 bool Testing::Neural()
 {
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+	
+	/* Example Activation Functions */
+	
+	auto bin_A = [] (auto x) {
+		if (x >= 1)
+			return 1;
+		return 0;
+	};
+	
+	auto bin_D = [] (auto x) {
+		return 0;
+	};
+	
+#pragma GCC diagnostic pop
+	
+	
+	
+	
 	Net<long double> nn(2, 1);
-	nn.bounds.min = 0;
-	nn.bounds.max = 1;
 	nn.addData({0, 0}, {0});
 	nn.addData({0, 1}, {1});
 	nn.addData({1, 0}, {1});
 	nn.addData({1, 1}, {0});
 	
-	const int layers = 3;
-	const double multiplier = 2;
-	int cycles = 10;
+	const int layers = 1;
+	const int multiplier = 2;
+	int cycles = 100000;
 	
 	int progressInterval = 10000;
 	
 	nn.grow(layers, multiplier);
-	for (int i = 0; i < cycles; i++)
+	for (int i = 0; i < cycles/progressInterval; i++)
 	{
-		dout << "Training " << i*progressInterval << "\t/" << cycles*progressInterval << std::endl;
+		dout << "Training " << i*progressInterval << "\t/" << cycles << std::endl;
 		nn.train(progressInterval);
 	}
 	
@@ -52,7 +59,7 @@ bool Testing::Neural()
 	auto result4 = nn.go({1, 1});
 	dout << "Result for {1, 1}: " << result4.toString() << std::endl;
 	
-	//typedef number<cpp_dec_float<10>> Precise;
+	//typedef number<cpp_dec_float<0>> Precise;
 	typedef double Precise;
 	Precise x = 1;
 	x *= 4;
@@ -64,13 +71,14 @@ bool Testing::Neural()
 	nn2.addData({1, 1}, {2});
 	nn2.addData({2, 1}, {3});
 	nn2.addData({1, 2}, {3});
-	nn2.grow(layers, multiplier);
-
-	nn2.bounds.min = 0;
+	nn2.grow(layers+1, 1);
+	
+	progressInterval = 1000;
+	cycles = 10;
 	
 	for (int i = 0; i < cycles; i++)
 	{
-		dout << "Training " << i*progressInterval << "\t/" << cycles*progressInterval << std::endl;
+		dout << "Training " << i*progressInterval << "\t/" << cycles << std::endl;
 		nn2.train(progressInterval);
 	}
 	
