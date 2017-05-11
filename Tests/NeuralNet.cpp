@@ -36,11 +36,11 @@ bool Testing::Neural()
 	nn.addData({1, 0}, {1});
 	nn.addData({1, 1}, {0});
 	
-	const int layers = 3;
+	const int layers = 2;
 	const double multiplier = 2;
 	int cycles = 10;
 	
-	int progressInterval = 10000;
+	int progressInterval = 1000;
 	
 	nn.grow(layers, multiplier);
 	for (int i = 0; i < cycles; i++)
