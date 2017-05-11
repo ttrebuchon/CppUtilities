@@ -29,6 +29,8 @@ bool Testing::Neural()
 	
 	
 	Net<long double> nn(2, 1);
+	nn.bounds.min = 0;
+	nn.bounds.max = 1;
 	nn.addData({0, 0}, {0});
 	nn.addData({0, 1}, {1});
 	nn.addData({1, 0}, {1});
