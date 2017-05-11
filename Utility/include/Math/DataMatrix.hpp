@@ -3,6 +3,17 @@
 #include "DataMatrix.h"
 #include <Exception/NotImplemented.h>
 
+#ifdef DEBUG
+
+#include <assert.h>
+#define sanity_d(x) assert(x)
+
+#else
+
+#define sanity_d(x)
+
+#endif
+
 namespace Util
 {
 namespace Math
@@ -353,6 +364,12 @@ namespace Math
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
 	Matrix<1, Elem, Index>* DataMatrix<1, Elem, Index, Container>::submatrix(std::tuple<Index>) const
+	{
+		throw NotImp();
+	}
+	
+	template <typename Elem, typename Index, template <typename...> typename Container>
+	void DataMatrix<1, Elem, Index, Container>::append(Elem value)
 	{
 		throw NotImp();
 	}

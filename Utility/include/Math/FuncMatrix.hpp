@@ -729,6 +729,12 @@ namespace Math
 		throw MatrixInvalidSizeException();
 	}
 	
+	template <typename Elem, typename Index>
+	void FuncMatrix<1, Elem, Index>::append(Elem t)
+	{
+		throw NotImp();
+	}
+	
 	
 	
 	

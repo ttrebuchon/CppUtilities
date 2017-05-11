@@ -81,6 +81,7 @@ namespace Math
 		
 		virtual Matrix<2, Elem, Index>* T() const override;
 		virtual Matrix<1, Elem, Index>* submatrix(std::tuple<Index>) const override;
+		virtual void append(Elem value) override;
 		
 	};
 	

@@ -148,6 +148,17 @@ namespace Math
 			return matrix_t<Dims+Dims2-2, Elem, Index>(this->ptr->contract(m.ptr));
 		}
 		
+		Elem set(Elem value, auto ...index)
+		{
+			return this->ptr->set(value, index...);
+		}
+		
+		template <int Dims2>
+		void append(matrix_t<Dims2, Elem, Index> m)
+		{
+			this->ptr->append(m.ptr);
+		}
+		
 		template <int D2, typename E2, typename I2> 
 		friend class matrix_t;
 		
@@ -178,6 +189,16 @@ namespace Math
 		Elem operator[](Index i)
 		{
 			return (*this->ptr)[i];
+		}
+		
+		Elem set(Elem value, Index index)
+		{
+			return this->ptr->set(value, index);
+		}
+		
+		void append(Elem value)
+		{
+			this->ptr->append(value);
 		}
 		
 		template <int D2, typename E2, typename I2> 

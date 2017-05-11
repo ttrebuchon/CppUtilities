@@ -153,6 +153,9 @@ namespace Math
 		
 		virtual Elem det() const override;
 		
+		template <int Dims2>
+		void append(Matrix<Dims2, Elem, Index>*);
+		
 	};
 	
 	template <typename Elem, typename Index>
@@ -179,6 +182,8 @@ namespace Math
 		virtual Matrix<1, Elem, Index>* submatrix(std::tuple<Index>) const = 0;
 		
 		virtual Elem det() const override;
+		
+		virtual void append(Elem value) = 0;
 		
 	};
 	
