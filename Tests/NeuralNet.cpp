@@ -20,6 +20,8 @@ using boost::multiprecision::number;
 bool Testing::Neural()
 {
 	Net<long double> nn(2, 1);
+	nn.bounds.min = 0;
+	nn.bounds.max = 1;
 	nn.addData({0, 0}, {0});
 	nn.addData({0, 1}, {1});
 	nn.addData({1, 0}, {1});
@@ -62,14 +64,17 @@ bool Testing::Neural()
 	nn2.addData({1, 1}, {2});
 	nn2.addData({2, 1}, {3});
 	nn2.addData({1, 2}, {3});
-	nn2.grow(layers+1, 1);
+	nn2.grow(layers+2, 1.3);
+
+	//nn2.bounds.min = 0;
+	//nn2.bounds.max = 3;
 	
-	progressInterval = 1000;
+	progressInterval = 100000;
 	cycles = 10;
 	
 	for (int i = 0; i < cycles; i++)
 	{
-		dout << "Training " << i*progressInterval << "\t/" << cycles << std::endl;
+		dout << "Training " << i*progressInterval << "\t/" << cycles*progressInterval << std::endl;
 		nn2.train(progressInterval);
 	}
 	
