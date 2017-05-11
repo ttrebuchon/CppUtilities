@@ -1,5 +1,7 @@
 #include <Math/Num.h>
 #include <iomanip>
+#include <sstream>
+#include <iostream>
 
 namespace Util
 {
@@ -17,7 +19,9 @@ namespace Math
 	
 	String Num::toString() const
 	{
-		return ((std::stringstream)(std::stringstream() << std::setprecision(9) << n)).str();
+		std::stringstream ss;
+		ss << std::setprecision(9) << n;
+		return ss.str();
 		//return std::to_string(n);
 	}
 	
