@@ -31,7 +31,7 @@ namespace NeuralNet
 		Neuron(std::function<T(T)> act, std::function<T(T)> act_D) : Neuron(0, act, act_D) {}
 		virtual ~Neuron();
 		
-		virtual void addDown(Neuron<T>*, long double wgt);
+		virtual void addDown(Neuron<T>*, T wgt);
 		virtual void addDown(Synapse<T>*);
 		virtual void addUp(Synapse<T>*);
 		

@@ -17,10 +17,10 @@ namespace NeuralNet
 		protected:
 		Neuron<T>* in;
 		Neuron<T>* out;
-		long double wgt;
+		T wgt;
 		
 		public:
-		Synapse(Neuron<T>* up, Neuron<T>* down, long double wgt);
+		Synapse(Neuron<T>* up, Neuron<T>* down, T wgt);
 		Synapse(Neuron<T>* up, Neuron<T>* down);
 		
 		Neuron<T>* get_out() const;

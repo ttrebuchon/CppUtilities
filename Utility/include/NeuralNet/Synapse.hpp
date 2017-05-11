@@ -8,13 +8,13 @@ namespace Util
 namespace NeuralNet
 {
 	template <typename T>
-	Synapse<T>::Synapse(Neuron<T>* up, Neuron<T>* down, long double wgt) : in(up), out(down), wgt(wgt)
+	Synapse<T>::Synapse(Neuron<T>* up, Neuron<T>* down, T wgt) : in(up), out(down), wgt(wgt)
 	{
 		
 	}
 	
 	template <typename T>
-	Synapse<T>::Synapse(Neuron<T>* up, Neuron<T>* down) : Synapse<T>(up, down, Internal::RandWgt::Get())
+	Synapse<T>::Synapse(Neuron<T>* up, Neuron<T>* down) : Synapse<T>(up, down, static_cast<T>(Internal::RandWgt::Get()))
 	{ }
 	
 	
@@ -49,9 +49,9 @@ namespace NeuralNet
 	template <typename T>
 	void Synapse<T>::backPropagate(T delta_sum)
 	{
-		auto delta_wgt = delta_sum*in->value;
+		T delta_wgt = delta_sum*in->value;
 		
-		auto next_delta = wgt*delta_sum;
+		T next_delta = ((T)wgt)*delta_sum;
 		wgt = wgt + delta_wgt;
 		in->backPropagate(next_delta);
 	}

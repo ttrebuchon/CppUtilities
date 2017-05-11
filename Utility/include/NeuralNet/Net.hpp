@@ -20,7 +20,7 @@ namespace Util
 namespace NeuralNet
 {
 	template <typename T>
-	Net<T>::Net(int inputSize, int outputSize, std::function<T(T)> actFunc, std::function<T(T)> actDerivFunc) : inSize(inputSize), outSize(outputSize), training(), input_n(inputSize), output_n(outputSize), activation(actFunc), activation_D(actDerivFunc)
+	Net<T>::Net(int inputSize, int outputSize, Activation_t actFunc, Activation_t actDerivFunc) : inSize(inputSize), outSize(outputSize), training(), input_n(inputSize), output_n(outputSize), activation(actFunc), activation_D(actDerivFunc)
 	{
 		for (auto i = 0; i < inSize; i++)
 		{
@@ -29,7 +29,7 @@ namespace NeuralNet
 		
 		for (auto i = 0; i < outSize; i++)
 		{
-			output_n[i] = new OutputNeuron<T>(activation, activation_D);
+			output_n[i] = new OutputNeuron<T>([] (T x) -> T { return x; }, [] (T x) -> T { return 1; });
 		}
 	}
 	
@@ -100,7 +100,7 @@ namespace NeuralNet
 		for (int L = 0; L < layers; L++)
 		{
 			std::vector<Neuron<T>*> newLayer;
-			while (newLayer.size() <= multiplier*currentLayer.size())
+			while (newLayer.size() < multiplier*currentLayer.size())
 			{
 				newLayer.push_back(new Neuron<T>(activation, activation_D));
 			}
@@ -157,7 +157,7 @@ namespace NeuralNet
 		
 		training.push_back(std::make_tuple(in, out));
 	}
-	#define p(x) std::cout << #x << ": " << x << std::endl
+	
 	template <typename T>
 	void Net<T>::train(int cycles)
 	{
