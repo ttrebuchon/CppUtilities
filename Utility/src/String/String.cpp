@@ -89,12 +89,13 @@ namespace Util
 	{
 		std::string s = str;
 		std::string first, second;
-		size_t pos;
-		while ((pos = s.find(target)) != std::string::npos)
+		size_t pos = 0;
+		while ((pos = s.find(target, pos)) != std::string::npos)
 		{
 			first = s.substr(0, pos);
 			second = s.substr(pos + target.length());
-			s = first + second;
+			s = first + replacement + second;
+			pos = first.length() + target.length() + replacement.length();
 		}
 		
 		return String(s);

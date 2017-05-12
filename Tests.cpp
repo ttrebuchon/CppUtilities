@@ -40,12 +40,14 @@ void Testing::run()
 	unsigned int seed = time(NULL);
 	srand(seed);
 	#endif
+	dout << LINE_BR << testBr << std::endl;
 	try
 	{
+	RUN(CSV_Test());
+	#ifndef SHORT_TEST
 	RUN(Matrix());
 	RUN(Math());
 	RUN(Neural());
-	#ifndef SHORT_TEST
 	RUN(Sleep());
 	RUN(Lazy());
 	RUN(Func());
@@ -72,8 +74,8 @@ void Testing::run()
 	}
 	#endif
 	
-	tout << LINE_BR << testBr << "\nTests Completed." << std::endl;
-	tout << "Failures? " << (failures ? "Yes\n\n" : "No") << std::endl;
+	tout << "\n\nTests Completed." << std::endl;
+	tout << "Failures? " << (failures ? "Yes\n\n" : "No") << LINE_BR << std::endl;
 	
 	
 	for (Test_Fail f : TEST_FAILS)

@@ -22,6 +22,7 @@ class Testing
 	static bool Lazy();
 	static bool Sleep();
 	static bool Neural();
+	static bool CSV_Test();
 };
 
 

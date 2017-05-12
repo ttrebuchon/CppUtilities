@@ -38,8 +38,12 @@ NeuralNet_cpp = $(wildcard Utility/src/NeuralNet/*.cpp)
 NeuralNet = $(NeuralNet_cpp:.cpp=.o)
 #*/
 
+CSV_cpp = $(wildcard Utility/src/CSV/*.cpp)
+CSV = $(CSV_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
