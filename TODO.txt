@@ -16,4 +16,6 @@
 
 8) Fix likely memory leaks in operations in matrix module (Read: Fix careless implementation)
 
-9) 
+9) nth Polynomial Estimation module?
+
+10) Look into algorithms for nonlinear regression
