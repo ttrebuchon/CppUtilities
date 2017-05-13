@@ -23,6 +23,7 @@ class Testing
 	static bool Sleep();
 	static bool Neural();
 	static bool nth_Poly();
+	static bool Tuple_Test();
 };
 
 

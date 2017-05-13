@@ -57,6 +57,7 @@ void Testing::run()
 	#endif
 	try
 	{
+	RUN(Tuple_Test());
 	RUN(nth_Poly());
 	#ifndef SHORT_TEST
 	RUN(Matrix());
