@@ -53,10 +53,15 @@ namespace Util
 		template <int Count>
 		auto takeFront();
 		
+		template <int Count>
+		auto takeBack();
+		
 		template <typename ...U>
 		bool operator==(Tuple<U...> u);
 		
-		
+		template <typename ...U>
+		bool operator!=(Tuple<U...> u)
+		{ return !(operator==(u)); }
 	};
 	
 	

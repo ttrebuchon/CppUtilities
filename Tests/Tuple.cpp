@@ -46,5 +46,10 @@ bool Testing::Tuple_Test()
 	
 	assert_ex(t1 == t3.takeFront<2>());
 	
+	Tuple<double, double> t5 = t4.takeBack<2>();
+	
+	assert_ex(t5.get<0>() == 1);
+	assert_ex(t5.get<1>() == 0.5);
+	
 	return true;
 }

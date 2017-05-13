@@ -41,6 +41,12 @@ namespace Util
 			return con_Helper(std::get<N>(tup)...);
 		}
 		
+		template <typename ...T, int ...N>
+		auto takeBack_Helper(const std::tuple<T...>& tup, seq<N...>)
+		{
+			return con_Helper(std::get<sizeof...(T) - sizeof...(N) + N>(tup)...);
+		}
+		
 		template <int N, int Size>
 		struct equals_Helper
 		{
@@ -111,6 +117,14 @@ namespace Util
 	{
 		typename _Helpers::seqgen<Count-1>::type seq;
 		return _Helpers::takeFront_Helper(inner, seq);
+	}
+	
+	template <typename ...T>
+	template <int Count>
+	auto Tuple<T...>::takeBack()
+	{
+		typename _Helpers::seqgen<Count-1>::type seq;
+		return _Helpers::takeBack_Helper(inner, seq);
 	}
 	
 	template <typename ...T>

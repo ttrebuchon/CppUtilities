@@ -34,3 +34,4 @@
 
 #Environment files
 .vscode*
+*.c4droid
