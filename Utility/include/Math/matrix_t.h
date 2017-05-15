@@ -33,45 +33,18 @@ namespace Math
 		
 		
 		__Base_matrix_t_& operator=(ptr_t* _ptr);
-		
-		
 		__Base_matrix_t_& operator=(const __Base_matrix_t_& m);
 		
-		std::string toString() const
-		{
-			return ptr->toString();
-		}
+		std::string toString() const { return ptr->toString(); }
 		
 		
-		matrix_t<Dims, Elem, Index> operator+(const __Base_matrix_t_<Dims, Elem, Index>& mat)
-		{
-			return make_matrix_t(ptr->add(mat.ptr));
-		}
+		matrix_t<Dims, Elem, Index> operator+(const __Base_matrix_t_<Dims, Elem, Index>& mat);
+		matrix_t<Dims, Elem, Index> operator-(const __Base_matrix_t_<Dims, Elem, Index>& mat);
+		matrix_t<Dims, Elem, Index> operator*(const __Base_matrix_t_<Dims, Elem, Index>& mat);
+		matrix_t<Dims, Elem, Index> operator*(const double n);
 		
-		matrix_t<Dims, Elem, Index> operator-(const __Base_matrix_t_<Dims, Elem, Index>& mat)
-		{
-			return make_matrix_t(ptr->sub(mat.ptr));
-		}
-		
-		matrix_t<Dims, Elem, Index> operator*(const __Base_matrix_t_<Dims, Elem, Index>& mat)
-		{
-			return make_matrix_t(ptr->mul(mat.ptr));
-		}
-		
-		matrix_t<Dims, Elem, Index> operator*(const double n)
-		{
-			return make_matrix_t(ptr->mul(n));
-		}
-		
-		Index* size() const
-		{
-			return ptr->size;
-		}
-		
-		Elem det() const
-		{
-			return ptr->det();
-		}
+		Index* size() const { return ptr->size; }
+		Elem det() const { return ptr->det(); }
 		
 		
 	};
@@ -103,39 +76,19 @@ namespace Math
 		
 		
 		
-		matrix_t<Dims-1, Elem, Index> operator[](Index i)
-		{
-			return matrix_t<Dims-1, Elem, Index>((*this->ptr)[i]);
-		}
-		
-		
-		matrix_t<Dims, Elem, Index> T() const
-		{
-			return matrix_t(this->ptr->T());
-		}
+		matrix_t<Dims-1, Elem, Index> operator[](Index i);
+		matrix_t<Dims, Elem, Index> T() const;
 		
 		template <typename ...Args>
-		matrix_t<Dims, Elem, Index> submatrix(Args... args) const
-		{
-			return matrix_t(this->ptr->submatrix(std::make_tuple(args...)));
-		}
+		matrix_t<Dims, Elem, Index> submatrix(Args... args) const;
 		
 		template <int Dims2>
-		matrix_t<Dims+Dims2-2, Elem, Index> contract(matrix_t<Dims2, Elem, Index> m)
-		{
-			return matrix_t<Dims+Dims2-2, Elem, Index>(this->ptr->contract(m.ptr));
-		}
+		matrix_t<Dims+Dims2-2, Elem, Index> contract(matrix_t<Dims2, Elem, Index> m);
 		
-		Elem set(Elem value, auto ...index)
-		{
-			return this->ptr->set(value, index...);
-		}
+		Elem set(Elem value, auto ...index);
 		
 		template <int Dims2>
-		void append(matrix_t<Dims2, Elem, Index> m)
-		{
-			this->ptr->append(m.ptr);
-		}
+		void append(matrix_t<Dims2, Elem, Index> m);
 		
 		template <int D2, typename E2, typename I2> 
 		friend class matrix_t;
@@ -164,20 +117,11 @@ namespace Math
 		
 		virtual ~matrix_t() { }
 		
-		Elem operator[](Index i)
-		{
-			return (*this->ptr)[i];
-		}
+		Elem operator[](Index i);
 		
-		Elem set(Elem value, Index index)
-		{
-			return this->ptr->set(value, index);
-		}
+		Elem set(Elem value, Index index);
 		
-		void append(Elem value)
-		{
-			this->ptr->append(value);
-		}
+		void append(Elem value);
 		
 		template <int D2, typename E2, typename I2> 
 		friend class matrix_t;
