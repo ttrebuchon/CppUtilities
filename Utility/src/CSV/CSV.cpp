@@ -113,9 +113,17 @@ namespace CSV
         rows = std::vector<CSV_Row*>();
 
         std::ifstream file(fileName, std::ifstream::in);
-        std::string tmp;
+        String tmp;
         while (std::getline(file, tmp))
         {
+            if (tmp.contains("\r"))
+            {
+                tmp = tmp.replace("\r", "");
+            }
+            if (tmp.contains("\n"))
+            {
+                tmp = tmp.replace("\n", "");
+            }
             rows.push_back(parseLine(tmp));
         }
 

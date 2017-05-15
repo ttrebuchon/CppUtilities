@@ -24,7 +24,7 @@ bool Testing::CSV_Test()
     correctStr = "\",Hello...\"\"\"\n";
     assert_ex(fileStr == correctStr);
 
-    std::vector<std::vector<std::string>> correctVals = { {"a", "b", "b", "1", "2" }, {"3", "4", "5", "", "6" }, {"", "", "", "", "", "", "", ""}, {"7", "8", "\"\"", "", ",8,", "9"} };
+    std::vector<std::vector<std::string>> correctVals = { {"a", "b", "b", "1", "2" }, {"3", "4", "5", "", "6" }, {"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""}, {"7", "8", "\"\"", "", ",8,", "9"}, {"", "", "", "", "", "", "", ""} };
 
 
     file.openFile("Test_Files/CSV_Test.csv");
