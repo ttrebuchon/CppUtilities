@@ -32,32 +32,10 @@ namespace Math
 		virtual ~__Base_matrix_t_() { delete ptr; }
 		
 		
-		__Base_matrix_t_& operator=(ptr_t* _ptr)
-		{
-			if (this->ptr != NULL)
-			{
-				delete this->ptr;
-			}
-			this->ptr = _ptr;
-			return *this;
-		}
+		__Base_matrix_t_& operator=(ptr_t* _ptr);
 		
-		__Base_matrix_t_& operator=(const __Base_matrix_t_& m)
-		{
-			if (ptr != NULL)
-			{
-				delete ptr;
-			}
-			if (m.ptr != NULL)
-			{
-				ptr = m.ptr->clone();
-			}
-			else
-			{
-				ptr = NULL;
-			}
-			return *this;
-		}
+		
+		__Base_matrix_t_& operator=(const __Base_matrix_t_& m);
 		
 		std::string toString() const
 		{
@@ -67,22 +45,22 @@ namespace Math
 		
 		matrix_t<Dims, Elem, Index> operator+(const __Base_matrix_t_<Dims, Elem, Index>& mat)
 		{
-			return /*__Base_matrix_t_*/make_matrix_t(ptr->add(mat.ptr));
+			return make_matrix_t(ptr->add(mat.ptr));
 		}
 		
 		matrix_t<Dims, Elem, Index> operator-(const __Base_matrix_t_<Dims, Elem, Index>& mat)
 		{
-			return /*__Base_matrix_t_*/make_matrix_t(ptr->sub(mat.ptr));
+			return make_matrix_t(ptr->sub(mat.ptr));
 		}
 		
 		matrix_t<Dims, Elem, Index> operator*(const __Base_matrix_t_<Dims, Elem, Index>& mat)
 		{
-			return /*__Base_matrix_t_*/make_matrix_t(ptr->mul(mat.ptr));
+			return make_matrix_t(ptr->mul(mat.ptr));
 		}
 		
 		matrix_t<Dims, Elem, Index> operator*(const double n)
 		{
-			return /*__Base_matrix_t_*/make_matrix_t(ptr->mul(n));
+			return make_matrix_t(ptr->mul(n));
 		}
 		
 		Index* size() const
@@ -215,3 +193,5 @@ namespace Math
 	
 }
 }
+
+#include "matrix_t.hpp"
