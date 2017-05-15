@@ -11,3 +11,11 @@
 6) Update/Clean up Func module
     6.1) Pseudo-Bind() functionality
     6.2) Tuple as args functionality
+
+7) CSV module
+
+8) Fix likely memory leaks in operations in matrix module (Read: Fix careless implementation)
+
+9) nth Polynomial Estimation module?
+
+10) Look into algorithms for nonlinear regression

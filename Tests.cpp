@@ -26,7 +26,22 @@ int main(int argc, char**argv)
 #define testBr "---------------------"
 #define LINE_BR "\n\n\n\n\n"
 
-#define RUN(x) try { tout << "Running " << #x << "..." << std::endl; x; tout << #x << " has completed." << std::endl; } catch (std::exception& e) { tout << "\n\nException caught in " << #x << ": \n" << e.what() << std::endl; failures = true; TEST_FAILS .emplace_back(#x, std::current_exception()); } catch (StringException* ex) { tout << "\n\nStringException* caught in " << #x << ": \n" << ex->what() << std::endl; failures = true; TEST_FAILS .emplace_back(#x, std::current_exception()); } tout << testBr << LINE_BR << testBr << std::endl;
+#define RUN(x) try { \
+	tout << "Running " << #x << "..." << std::endl; \
+	x; \
+	tout << #x << " has completed." << std::endl; \
+	} \
+catch (std::exception& e) { \
+	tout << "\n\nException caught in " << #x << ": \n" << e.what() << std::endl; \
+	failures = true; \
+	TEST_FAILS .emplace_back(#x, std::current_exception()); \
+} \
+catch (StringException* ex) { \
+	tout << "\n\nStringException* caught in " << #x << ": \n" << ex->what() << std::endl; \
+	failures = true; \
+	TEST_FAILS .emplace_back(#x, std::current_exception()); \
+} \
+tout << testBr << LINE_BR << testBr << std::endl;
 
 
 
@@ -43,7 +58,9 @@ void Testing::run()
 	dout << LINE_BR << testBr << std::endl;
 	try
 	{
-	RUN(CSV_Test());
+  RUN(CSV_Test());
+	RUN(Tuple_Test());
+	RUN(nth_Poly());
 	#ifndef SHORT_TEST
 	RUN(Matrix());
 	RUN(Math());
