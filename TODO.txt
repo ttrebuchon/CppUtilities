@@ -17,3 +17,8 @@
 9) nth Polynomial Estimation module?
 
 10) Look into algorithms for nonlinear regression
+
+11) Implement matrix equation solver method(s)
+    11.1) Useful for nth polynomial calculation
+
+12) Add operator()(Index...) methods to matrix classes that return references to values for applicable classes (So that values may be modified if possible)
