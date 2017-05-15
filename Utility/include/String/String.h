@@ -97,6 +97,7 @@ namespace Util
 		String& operator+=(char);
 		String operator+(const String) const;
 		String operator+(const std::string) const;
+		String operator+(const char*) const;
 		bool operator==(std::string) const;
 		bool operator==(const char*) const;
 		bool operator!=(std::string) const;
@@ -137,6 +138,7 @@ namespace Util
 	
 	//Non-Member Functions
 	String operator+(const char* c, String s);
+	String operator+(std::string c, String s);
 	std::ostream& operator<<(std::ostream&, String);
 	
 }

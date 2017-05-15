@@ -38,8 +38,12 @@ NeuralNet_cpp = $(wildcard Utility/src/NeuralNet/*.cpp)
 NeuralNet = $(NeuralNet_cpp:.cpp=.o)
 #*/
 
+CSV_cpp = $(wildcard Utility/src/CSV/*.cpp)
+CSV = $(CSV_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
@@ -51,7 +55,7 @@ NAMESPACE=Utils
 
 PREPROC_FLAGS = -DUtil=$(NAMESPACE) -D__NS__="$(NAMESPACE)"
 
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DSHORT_TEST
+PREPROC_FLAGS := $(PREPROC_FLAGS) #-DSHORT_TEST
 
 PREPROC_FLAGS := $(PREPROC_FLAGS) -DDEBUG
 
@@ -78,6 +82,9 @@ buildOC = gcc -std=c99 -c -pie
 
 $(target): $(stLibTarget).a $(libobjects) $(testobjects) makefile
 	$(CXX) -o $(target) $(CXXFLAGS) -std=c++11 $(testobjects) -L. -l$(name) $(PREPROC_FLAGS)
+
+clean: 
+	rm $(libobjects)
 
 
 $(stLibTarget).a: $(libobjects)
