@@ -87,16 +87,23 @@ namespace Util
 	
 	String String::replace(std::string target, std::string replacement) const
 	{
-		std::string s = str;
-		std::string first, second;
-		size_t pos = 0;
-		while ((pos = s.find(target, pos)) != std::string::npos)
+		std::string s = "";
+		String str = this->str;
+		size_t pos;
+		while (str.length() > 0)
 		{
-			first = s.substr(0, pos);
-			second = s.substr(pos + target.length());
-			s = first + replacement + second;
-			pos = first.length() + target.length() + replacement.length();
+			pos = str.find(target);
+			if (pos == std::string::npos)
+			{
+				s += str;
+				break;
+			}
+			s += str.substr(0, pos);
+			str = str.substr(pos+target.length());
+			s += replacement;
 		}
+
+
 		
 		return String(s);
 	}
@@ -437,6 +444,11 @@ namespace Util
 	{
 		return str + s;
 	}
+
+	String String::operator+(const char* s) const
+	{
+		return str + std::string(s);
+	}
 	
 	bool String::operator==(std::string s) const
 	{
@@ -525,6 +537,11 @@ namespace Util
 	String operator+(const char* c, String s)
 	{
 		return String(std::string(c) + (std::string)s);
+	}
+
+	String operator+(std::string c, String s)
+	{
+		return String(c + (std::string)s);
 	}
 	
 	std::ostream& operator<<(std::ostream& os, String s)
