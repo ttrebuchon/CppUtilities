@@ -11,12 +11,87 @@ namespace CSV
 
     CSV_Row* CSV_File::parseLine(std::string line)
     {
-        //TODO
-        throw NotImp();
+        CSV_Row* row = new CSV_Row();
+
+        String cell = "";
+        int index = 0;
+        String _line = line;
+        auto parseCell = [](String str) {
+            String S = str.substr(1, str.length()-2);
+            S = S.replace("\"\"", "\"");
+            return S;
+        };
+
+        while (_line.length() > 0)
+        {
+            if (_line[0] != '"')
+            {
+                int commaIndex = _line.find(",");
+                if (commaIndex != std::string::npos)
+                {
+                    cell = _line.substr(0, commaIndex);
+                }
+                else
+                {
+                    cell = _line;
+                }
+                
+                (*row)[index] = cell;
+                index++;
+                if (commaIndex != std::string::npos)
+                {
+                    _line = _line.substr(commaIndex+1);
+                }
+                else
+                {
+                    _line = "";
+                }
+                
+            }
+            else
+            {
+                for (int i = 1; i < _line.length(); i++)
+                {
+                    if (_line[i] == '"')
+                    {
+                        if (_line.length() - 2 == i)
+                        {
+                            cell = _line;
+                            (*row)[index] = parseCell(cell);
+                            index++;
+                            _line = "";
+                            break;
+                        }
+                        else
+                        {
+                            if (_line[i+1] != '\"')
+                            {
+                                cell = _line.substr(0, i+1);
+                                (*row)[index] = parseCell(cell);
+                                index++;
+                                if (i+2 < _line.length())
+                                {
+                                     _line = _line.substr(i+2);
+                                }
+                                else
+                                {
+                                     _line = _line.substr(i+1);
+                                }
+                               
+                                break;
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return row;
     }
 
 
-    CSV_File::CSV_File(std::string delimiter, std::string escapeSeq) : rows(), delimiter(delimiter), escapeSeq(escapeSeq)
+    CSV_File::CSV_File() : rows()
     {
         
     }
@@ -37,23 +112,14 @@ namespace CSV
         }
         rows = std::vector<CSV_Row*>();
 
-        std::ifstream file(fileName);
-
+        std::ifstream file(fileName, std::ifstream::in);
         std::string tmp;
-        String fileStr = "";
         while (std::getline(file, tmp))
         {
-            fileStr += tmp;
-            if (!fileStr.endsWith(escapeSeq))
-            {
-                rows.push_back(parseLine(fileStr));
-                fileStr = "";
-            }
+            rows.push_back(parseLine(tmp));
         }
-        if (fileStr != "")
-        {
-            rows.push_back(parseLine(fileStr));
-        }
+
+
     }
 
     void CSV_File::writeFile(std::string fileName) const
@@ -83,7 +149,7 @@ namespace CSV
         {
             while (rows.size() < newLength)
             {
-                rows.push_back(new CSV_Row(this));
+                rows.push_back(new CSV_Row());
             }
         }
     }
@@ -120,7 +186,7 @@ namespace CSV
 
 
 
-    CSV_Row::CSV_Row(CSV_File* file) : cells(), file(file)
+    CSV_Row::CSV_Row() : cells()
     {
 
     }
@@ -147,33 +213,27 @@ namespace CSV
 
     std::string CSV_Row::asString() const
     {
-
-        std::string delimiter = ",", escapeSeq = "\\";
-        if (file != NULL)
-        {
-            delimiter = file->delimiter;
-            escapeSeq = file->escapeSeq;
-        }
-
         std::stringstream line;
 
         bool first = true;
         for (String cell : cells)
         {
+            if (cell.contains("\n"))
+            {
+                throw InvalidCellContentException();
+            }
             if (!first)
             {
-                line << delimiter;
+                line << ",";
             }
-            if (!(cell.contains(delimiter) || cell.contains("\n") || cell.contains(escapeSeq)))
+            if (!(cell.contains(",") || cell.contains("\"")))
             {
                 line << cell;
             }
             else
             {
-                cell = cell.replace(escapeSeq, escapeSeq + escapeSeq);
-                cell = cell.replace("\n", escapeSeq + "\n");
-                cell = cell.replace(delimiter, escapeSeq + delimiter);
-                
+                cell = cell.replace("\"", "\"\"");
+                cell = String("\"") + cell + "\"";
                 line << cell;
             }
             first = false;

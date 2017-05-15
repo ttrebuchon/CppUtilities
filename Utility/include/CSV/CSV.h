@@ -2,11 +2,14 @@
 
 #include <fstream>
 #include <vector>
+#include <Exception/Exception.h>
 
 namespace Util
 {
 namespace CSV
 {
+
+    UTIL_CUSTOM_EXCEPTION(InvalidCellContentException, "Invalid content in CSV cell");
     class CSV_Row;
 
     class CSV_File
@@ -14,13 +17,11 @@ namespace CSV
         private:
 
         std::vector<CSV_Row*> rows;
-        std::string delimiter;
-        std::string escapeSeq;
 
         CSV_Row* parseLine(std::string line);
 
         public:
-        CSV_File(std::string delimiter = ",", std::string escapeSeq = "\\");
+        CSV_File();
         ~CSV_File();
 
         void openFile(std::string fileName);
@@ -44,9 +45,8 @@ namespace CSV
     {
         private:
         std::vector<std::string> cells;
-        CSV_File* file;
 
-        CSV_Row(CSV_File*);
+        CSV_Row();
 
         public:
         std::string& operator[](const int i);
