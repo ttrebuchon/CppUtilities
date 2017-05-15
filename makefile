@@ -55,7 +55,7 @@ NAMESPACE=Utils
 
 PREPROC_FLAGS = -DUtil=$(NAMESPACE) -D__NS__="$(NAMESPACE)"
 
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DSHORT_TEST
+PREPROC_FLAGS := $(PREPROC_FLAGS) #-DSHORT_TEST
 
 PREPROC_FLAGS := $(PREPROC_FLAGS) -DDEBUG
 
@@ -82,6 +82,9 @@ buildOC = gcc -std=c99 -c -pie
 
 $(target): $(stLibTarget).a $(libobjects) $(testobjects) makefile
 	$(CXX) -o $(target) $(CXXFLAGS) -std=c++11 $(testobjects) -L. -l$(name) $(PREPROC_FLAGS)
+
+clean: 
+	rm $(libobjects)
 
 
 $(stLibTarget).a: $(libobjects)
