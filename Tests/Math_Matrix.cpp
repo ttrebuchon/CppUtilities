@@ -7,10 +7,20 @@
 using namespace Util;
 using namespace Math;
 
+int Matrix_Counter::alive = 0;
+
+bool Math_Matrix_Go();
 bool Test_Arithmetic();
 bool Test_DataMatrix();
 
 bool Math_Matrix()
+{
+	bool result = Math_Matrix_Go();
+	dout << "Alive: " << Matrix_Counter::alive << std::endl;
+	return result;
+}
+
+bool Math_Matrix_Go()
 {
 	FuncMatrix<1, int> c1 = FuncMatrix<1, int>([](int i) -> int { return 4*i; });
 	
@@ -472,5 +482,6 @@ bool Test_DataMatrix()
 	
 	
 	dout << "Passed." << endl;
+	
 	return true;
 }

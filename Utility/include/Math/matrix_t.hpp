@@ -6,7 +6,7 @@ namespace Util
 namespace Math
 {
 	template <int Dims, typename Elem, typename Index>
-	__Base_matrix_t_<Dims, Elem, Index>& __Base_matrix_t_<Dims, Elem, Index>::operator=(ptr_t* _ptr)
+	__Base_matrix_t_<Dims, Elem, Index>& __Base_matrix_t_<Dims, Elem, Index>::operator=(mat_t* _ptr)
 	{
 		if (this->ptr != NULL)
 		{
@@ -19,13 +19,9 @@ namespace Math
 	template <int Dims, typename Elem, typename Index>
 	__Base_matrix_t_<Dims, Elem, Index>& __Base_matrix_t_<Dims, Elem, Index>::operator=(const __Base_matrix_t_& m)
 	{
-		if (ptr != NULL)
-		{
-			delete ptr;
-		}
 		if (m.ptr != NULL)
 		{
-			ptr = m.ptr->clone();
+			ptr = ptr_t(m.ptr->clone());
 		}
 		else
 		{
@@ -37,19 +33,19 @@ namespace Math
 	template <int Dims, typename Elem, typename Index>
 	matrix_t<Dims, Elem, Index> __Base_matrix_t_<Dims, Elem, Index>::operator+(const __Base_matrix_t_<Dims, Elem, Index>& mat)
 	{
-		return make_matrix_t(ptr->add(mat.ptr));
+		return make_matrix_t(ptr->add(mat.ptr.get()));
 	}
 
 	template <int Dims, typename Elem, typename Index>
 	matrix_t<Dims, Elem, Index> __Base_matrix_t_<Dims, Elem, Index>::operator-(const __Base_matrix_t_<Dims, Elem, Index>& mat)
 	{
-		return make_matrix_t(ptr->sub(mat.ptr));
+		return make_matrix_t(ptr->sub(mat.ptr.get()));
 	}
 	
 	template <int Dims, typename Elem, typename Index>
 	matrix_t<Dims, Elem, Index> __Base_matrix_t_<Dims, Elem, Index>::operator*(const __Base_matrix_t_<Dims, Elem, Index>& mat)
 	{
-		return make_matrix_t(ptr->mul(mat.ptr));
+		return make_matrix_t(ptr->mul(mat.ptr.get()));
 	}
 	
 	template <int Dims, typename Elem, typename Index>
@@ -95,7 +91,7 @@ namespace Math
 	template <int Dims2>
 	matrix_t<Dims+Dims2-2, Elem, Index> matrix_t<Dims, Elem, Index>::contract(matrix_t<Dims2, Elem, Index> m)
 	{
-		return matrix_t<Dims+Dims2-2, Elem, Index>(this->ptr->contract(m.ptr));
+		return matrix_t<Dims+Dims2-2, Elem, Index>(this->ptr->contract(m.ptr.get()));
 	}
 
 	template <int Dims, typename Elem, typename Index>

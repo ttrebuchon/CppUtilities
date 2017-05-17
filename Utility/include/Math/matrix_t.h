@@ -3,6 +3,7 @@
 #include "Matrix.h"
 #include <iostream>
 #include "FuncArgHelper.h"
+#include <memory>
 
 namespace Util
 {
@@ -22,17 +23,18 @@ namespace Math
 		
 		protected:
 		
-		typedef Matrix<Dims, Elem, Index> ptr_t;
+		typedef Matrix<Dims, Elem, Index> mat_t;
+		typedef std::unique_ptr<mat_t> ptr_t;
 		
-		Matrix<Dims, Elem, Index>* ptr = NULL;
+		ptr_t ptr = NULL;
 		
 		public:
-		explicit __Base_matrix_t_(Matrix<Dims, Elem, Index>* ptr) : ptr(ptr) { }
+		explicit __Base_matrix_t_(mat_t* ptr) : ptr(ptr) { }
 		__Base_matrix_t_(const __Base_matrix_t_& m) : ptr(m.ptr->clone()) { }
-		virtual ~__Base_matrix_t_() { delete ptr; }
+		virtual ~__Base_matrix_t_() { }
 		
 		
-		__Base_matrix_t_& operator=(ptr_t* _ptr);
+		__Base_matrix_t_& operator=(mat_t* _ptr);
 		__Base_matrix_t_& operator=(const __Base_matrix_t_& m);
 		
 		std::string toString() const { return ptr->toString(); }
@@ -63,7 +65,7 @@ namespace Math
 		
 		
 		public:
-		matrix_t(typename matrix_t::ptr_t * ptr) : __Base_matrix_t_<Dims, Elem, Index>(ptr) { }
+		matrix_t(typename matrix_t::mat_t * ptr) : __Base_matrix_t_<Dims, Elem, Index>(ptr) { }
 		
 		
 		matrix_t(
@@ -107,7 +109,7 @@ namespace Math
 		
 		public:
 		
-		matrix_t(typename matrix_t::ptr_t * ptr) : __Base_matrix_t_<1, Elem, Index>(ptr) { }
+		matrix_t(typename matrix_t::mat_t * ptr) : __Base_matrix_t_<1, Elem, Index>(ptr) { }
 		
 		matrix_t(
 		typename _Helpers::FuncArgHelper<1, Index, Elem>::type f

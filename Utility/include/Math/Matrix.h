@@ -8,6 +8,12 @@ namespace Math
 {
 	
 	UTIL_CUSTOM_EXCEPTION(MatrixInvalidSizeException, );
+
+	struct Matrix_Counter
+	{
+		static int alive;
+	};
+	
 	
 	
 	template <int Dims, typename Elem, typename Index>
@@ -32,7 +38,10 @@ namespace Math
 			{
 				size[i] = -1;
 			}
+			Matrix_Counter::alive++;
 		}
+
+		virtual ~_MatrixBase_() { Matrix_Counter::alive--; }
 		
 		virtual std::string imp() const = 0;
 		
