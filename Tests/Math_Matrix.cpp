@@ -209,6 +209,8 @@ bool Math_Matrix_Go()
 	};
 	testC_1_1(5);
 	
+	
+	
 	return Test_Arithmetic();
 }
 
@@ -429,6 +431,7 @@ bool Test_DataMatrix()
 	
 	
 	matrix_t<2, double> m21 = new DataMatrix<2, double>(vecFrom2dFunc([] (auto i, auto j) { return (4 - i)*(j+1); }, 5, 5));
+	
 	matrix_t<2, double> m22 = new DataMatrix<2, double>(vecFrom2dFunc([] (auto i, auto j) { return i+j; }, 5, 5));
 	
 	auto m23 = m21 + m22;
@@ -478,6 +481,13 @@ bool Test_DataMatrix()
 		assert_ex(m24[i][j] == ((4 - i)*(j+1)*10));
 	}
 	}
+	
+	m24(1, 1) = 4;
+	assert_ex(m24[1][1] == 4);
+	assert_ex(m24(1, 1) == 4);
+	assert_ex(m24(1)(1) == 4);
+	assert_ex(m24(1)[1] == 4);
+	assert_ex(m24[1](1) == 4);
 	
 	
 	
