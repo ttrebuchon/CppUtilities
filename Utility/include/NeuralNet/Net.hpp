@@ -168,11 +168,11 @@ namespace NeuralNet
 			out_v[i] = output[i];
 		}
 		
-		InOut in = new Math::DataMatrix<1, T>(in_v);
+		InOut in(std::make_shared<Math::DataMatrix<1, T>>(in_v));
 		sanity_d(in_v.size() == inSize);
 		sanity_d(in.size()[0] == inSize);
 		
-		InOut out = new Math::DataMatrix<1, T>(out_v);
+		InOut out(std::make_shared<Math::DataMatrix<1, T>>(out_v));
 		sanity_d(out_v.size() == outSize);
 		sanity_d(out.size()[0] == outSize);
 		
@@ -219,7 +219,7 @@ namespace NeuralNet
 		{
 			results.push_back(out->get());
 		}
-		return new Math::DataMatrix<1, T>(results);
+		return Math::matrix_t<1, T>(std::make_shared<Math::DataMatrix<1, T>>(results));
 		
 	}
 	

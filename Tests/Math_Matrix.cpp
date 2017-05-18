@@ -3,6 +3,8 @@
 
 #include <Math/Matrix.h>
 #include <vector>
+#include <string>
+#include <type_traits>
 
 using namespace Util;
 using namespace Math;
@@ -36,21 +38,22 @@ bool Math_Matrix_Go()
 	auto c1_2_1 = (*c2_1)[1];
 	assert_ex(c1_2_1 == 2);
 	
-	matrix_t<2, double> mt1(new FuncMatrix<2, double>(f2));
+	matrix_t<2, double> mt1(std::make_shared<FuncMatrix<2, double>>(f2));
 	auto ct1_2_1 = mt1[2][1];
 	assert_ex(ct1_2_1 == 2);
 	auto ct2_1 = mt1[2];
 	ct1_2_1 = ct2_1[1];
 	assert_ex(ct1_2_1 == 2);
 	
-	matrix_t<2, double> matTest = new FuncMatrix<2, double>(f2);
+	matrix_t<2, double> matTest;
+	matTest = std::make_shared<FuncMatrix<2, double>>(f2);
 	auto colT1_2_1 = matTest[2][1];
 	assert_ex(colT1_2_1 == 2);
 	auto colT2_1 = matTest[2];
 	colT1_2_1 = colT2_1[1];
 	assert_ex(colT1_2_1 == 2);
 	
-	matTest = new FuncMatrix<2, double>([](int i, int j) { return i*(i-j); });
+	matTest = std::make_shared<FuncMatrix<2, double>>([](int i, int j) { return i*(i-j); });
 	
 	int matTest_n = 15;
 	int matTest_m = 10;
@@ -102,13 +105,13 @@ bool Math_Matrix_Go()
 	
 	
 	dout << "\n\nTesting 2x2 contract 2x1..." << std::endl;
-	matrix_t<2, double, int> testC_2_2 = new FuncMatrix<2, double, int>([] (int i, int j) {
+	matrix_t<2, double, int> testC_2_2(std::make_shared<FuncMatrix<2, double, int>>([] (int i, int j) {
 		    return (j+1) + 2*i;
-		});
+		}));
 	testC_2_2.size()[0] = testC_2_2.size()[1] = 2;
-	matrix_t<1, double, int> testC_1_2 = new FuncMatrix<1, double, int>([] (int i) {
+	matrix_t<1, double, int> testC_1_2(std::make_shared<FuncMatrix<1, double, int>>([] (int i) {
 		    return (i+1);
-		});
+		}));
 	testC_1_2.size()[0] = 2;
 	dout << testC_2_2.toString() << " • " << testC_1_2.toString() << std::endl;
 	auto testC_p = testC_2_2.contract(testC_1_2);
@@ -135,7 +138,7 @@ bool Math_Matrix_Go()
 		assert_ex(d3 == d1*d2);
 	};
 	
-	matrix_t<2, double> matTestD = new FuncMatrix<2, double>([](int i, int j) { return (i % j) + (j % i); });
+	matrix_t<2, double> matTestD(std::make_shared<FuncMatrix<2, double>>([](int i, int j) { return (i % j) + (j % i); }));
 	
 	
 	matTestD.size()[0] = matTestD.size()[1] = 4;
@@ -151,7 +154,7 @@ bool Math_Matrix_Go()
 		return (j + (i-1)*consec_size);
 	};
 	
-	matrix_t<consec_dims, double, int> consec_m = new FuncMatrix<consec_dims, double, int>(consecutive_func);
+	matrix_t<consec_dims, double, int> consec_m(std::make_shared<FuncMatrix<consec_dims, double, int>>(consecutive_func));
 	for (int i = 0; i < consec_dims; i++)
 	{
 		consec_m.size()[i] = consec_size;
@@ -167,16 +170,16 @@ bool Math_Matrix_Go()
 		return ((j-1)*consec_size + (i-1)*consec_size*consec_size + k);
 	};
 	
-	matrix_t<consec_dims+1, double, int> consec_m_3 = new FuncMatrix<consec_dims+1, double, int>(consecutive_func_3);
+	matrix_t<consec_dims+1, double, int> consec_m_3(std::make_shared<FuncMatrix<consec_dims+1, double, int>>(consecutive_func_3));
 	for (int i = 0; i < consec_dims+1; i++)
 	{
 		consec_m_3.size()[i] = consec_size;
 	}
 	
 	dout << consec_m_3.toString() << std::endl;
-	matrix_t<1, double, int> consec_m_1 = new FuncMatrix<1, double, int>([consec_size] (auto i){
+	matrix_t<1, double, int> consec_m_1(std::make_shared<FuncMatrix<1, double, int>> ([consec_size] (auto i){
 		return i+1;
-	});
+	}));
 	consec_m_1.size()[0] = consec_size;
 	
 	auto testC_1_1 = [] (int size) -> void
@@ -391,8 +394,8 @@ bool Test_DataMatrix()
 	
 	
 	
-	matrix_t<1, double> m1 = new DataMatrix<1, double>(vecFromFunc([] (auto i) { return 4 - i; }, 5));
-	matrix_t<1, double> m2 = new DataMatrix<1, double>(vecFromFunc([] (auto i) { return i; }, 5));
+	matrix_t<1, double> m1(std::make_shared<DataMatrix<1, double>>(vecFromFunc([] (auto i) { return 4 - i; }, 5)));
+	matrix_t<1, double> m2(std::make_shared<DataMatrix<1, double>>(vecFromFunc([] (auto i) { return i; }, 5)));
 	auto m3 = m1 + m2;
 	for (int i = 0; i < 5; i++)
 	{
@@ -430,9 +433,9 @@ bool Test_DataMatrix()
 	
 	
 	
-	matrix_t<2, double> m21 = new DataMatrix<2, double>(vecFrom2dFunc([] (auto i, auto j) { return (4 - i)*(j+1); }, 5, 5));
+	matrix_t<2, double> m21(std::make_shared<DataMatrix<2, double>>(vecFrom2dFunc([] (auto i, auto j) { return (4 - i)*(j+1); }, 5, 5)));
 	
-	matrix_t<2, double> m22 = new DataMatrix<2, double>(vecFrom2dFunc([] (auto i, auto j) { return i+j; }, 5, 5));
+	matrix_t<2, double> m22(std::make_shared<DataMatrix<2, double>>(vecFrom2dFunc([] (auto i, auto j) { return i+j; }, 5, 5)));
 	
 	auto m23 = m21 + m22;
 	assert_ex(m23.size()[0] == 5);
@@ -482,12 +485,24 @@ bool Test_DataMatrix()
 	}
 	}
 	
-	m24(1, 1) = 4;
-	assert_ex(m24[1][1] == 4);
-	assert_ex(m24(1, 1) == 4);
-	assert_ex(m24(1)(1) == 4);
-	assert_ex(m24(1)[1] == 4);
-	assert_ex(m24[1](1) == 4);
+	
+	
+	for (int i = 0; i < m24.size()[0]; i++)
+	{
+		for (int k = 0; k < m24.size()[1]; k++)
+		{
+			static_assert(std::is_same<decltype(m24(i, k)), double&>::value, "Weird error in Math_Matrix.cpp, Test_DataMatrix()");
+			static_assert(std::is_same<decltype(m24(i)[k]), double>::value, "Weird error in Math_Matrix.cpp, Test_DataMatrix()");
+			m24(i, k) = 3;
+			++m24(i, k);
+			
+			assert_ex(m24[i][k] == 4);
+			assert_ex(m24(i, k) == 4);
+			assert_ex(m24(i)(k) == 4);
+			assert_ex(m24(i)[k] == 4);
+			assert_ex(m24[i](k) == 4);
+		}
+	}
 	
 	
 	

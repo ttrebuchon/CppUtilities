@@ -84,11 +84,10 @@ namespace Math
 		struct matrix_at_tup
 		{
 			template <typename ...Args>
-			static Elem call(const Matrix<Dims, Elem, Index>* m, std::tuple<Args...> t)
+			static Elem call(const std::shared_ptr<const Matrix<Dims, Elem, Index>> m, std::tuple<Args...> t)
 			{
 				auto m2 = m->at(std::get<sizeof...(Args)-i>(t));
 				auto r = matrix_at_tup<i-1, Dims-1, Elem, Index>::call(m2, t);
-				delete m2;
 				return r;
 			}
 		};
@@ -97,7 +96,7 @@ namespace Math
 		struct matrix_at_tup<1, 1, Elem, Index>
 		{
 			template <typename ...Args>
-			static Elem call(const Matrix<1, Elem, Index>* m, std::tuple<Args...> t)
+			static Elem call(const std::shared_ptr<const Matrix<1, Elem, Index>> m, std::tuple<Args...> t)
 			{
 				auto v = m->at(std::get<sizeof...(Args)-1>(t));
 				return v;
@@ -107,7 +106,7 @@ namespace Math
 		
 		
 		template <int Dims, typename Elem, typename Index, typename ...Args>
-		Elem matrix_at(const Matrix<Dims, Elem, Index>* m, std::tuple<Args...> t)
+		Elem matrix_at(const std::shared_ptr<const Matrix<Dims, Elem, Index>> m, std::tuple<Args...> t)
 		{
 			return matrix_at_tup<Dims, Dims, Elem, Index>::call(m, t);
 		}
@@ -151,7 +150,6 @@ namespace Math
 		{
 			auto tmp = at(0);
 			auto val = tmp->det();
-			delete tmp;
 			return val;
 		}
 		
@@ -166,7 +164,7 @@ namespace Math
 		{
 			auto atArgs = _Helpers::ConcatArgs<Index>::Get(i, _Helpers::n_zeros_tup<Dims-1, Index>());
 			
-			Elem currentVal = _Helpers::matrix_at(this, atArgs);
+			Elem currentVal = _Helpers::matrix_at(this->get_ptr(), atArgs);
 			if (currentVal != 0)
 			{
 			
@@ -182,7 +180,6 @@ namespace Math
 	{
 		auto sub = submatrix(indexes);
 		Elem val = sub->det();
-		delete sub;
 		return val;
 	}
 	
@@ -199,7 +196,6 @@ namespace Math
 			}
 			auto tmp = this->at(i);
 			val << tmp->toString();
-			delete tmp;
 		}
 		val << " ]";
 		return val.str();

@@ -38,9 +38,27 @@ namespace Math
 	
 	
 	template <int Dims, typename Elem, typename Index>
-	FuncMatrix<Dims, Elem, Index>::FuncMatrix(Func f) : Matrix<Dims, Elem, Index>(), def(f)
+	FuncMatrix<Dims, Elem, Index>::FuncMatrix(Func f) : Matrix<Dims, Elem, Index>(), def(f), instantiated()
 	{
 		
+	};
+	
+	/*template <int Dims, typename Elem, typename Index>
+	FuncMatrix<Dims, Elem, Index>::FuncMatrix(FuncMatrix<Dims, Elem, Index>* m) : Matrix<Dims, Elem, Index>(), def(m->def), instantiated()
+	{
+		for (auto key : m->instanted.keys())
+		{
+			this->instantiated[key] = std::shared_ptr<Matrix<Dims-1, Elem, Index>>(m->instantiated[key]->clone());
+		}
+	}*/
+	
+	template <int Dims, typename Elem, typename Index>
+	FuncMatrix<Dims, Elem, Index>::FuncMatrix(FuncMatrix<Dims, Elem, Index>& m) : Matrix<Dims, Elem, Index>(), def(m.def), instantiated()
+	{
+		for (auto key : m.instanted.keys())
+		{
+			this->instantiated[key] = std::shared_ptr<Matrix<Dims-1, Elem, Index>>(m.instantiated[key]->clone());
+		}
 	};
 	
 	
@@ -49,9 +67,13 @@ namespace Math
 	//by plugging the "i" argument in
 	//and returning a new functional
 	template <int Dims, typename Elem, typename Index>
-	Matrix<Dims-1, Elem, Index>* FuncMatrix<Dims, Elem, Index>::operator[](Index i) const
+	std::shared_ptr<Matrix<Dims-1, Elem, Index>> FuncMatrix<Dims, Elem, Index>::operator[](Index i) const
 	{
-		auto tmp = new FuncMatrix<Dims-1, Elem, Index>(([=](auto ...args) -> Elem { return def(i, args...); }));
+		if (instantiated.count(i) > 0)
+		{
+			return ((FuncMatrix<Dims, Elem, Index>*)this)->instantiated[i]->clone();
+		}
+		auto tmp =  std::make_shared<FuncMatrix<Dims-1, Elem, Index>>(([=](auto ...args) -> Elem { return def(i, args...); }));
 		
 		for (auto i = 1; i < Dims; i++)
 		{
@@ -61,9 +83,19 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::mul(const double n)
+	Matrix<Dims-1, Elem, Index>& FuncMatrix<Dims, Elem, Index>::operator()(Index i)
 	{
-		auto ret = new FuncMatrix<Dims, Elem, Index>([=] (auto... args)
+		if (instantiated.count(i) <= 0)
+		{
+			instantiated[i] = std::shared_ptr<Matrix<Dims-1, Elem, Index>>(this->operator[](i));
+		}
+		return *instantiated[i];
+	}
+	
+	template <int Dims, typename Elem, typename Index>
+	std::shared_ptr<Matrix<Dims, Elem, Index>> FuncMatrix<Dims, Elem, Index>::mul(const double n)
+	{
+		auto ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>([=] (auto... args)
 		{
 			return def(args...)*n;
 		});
@@ -75,7 +107,7 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::mul(const Matrix<Dims, Elem, Index>& m)
+	std::shared_ptr<Matrix<Dims, Elem, Index>> FuncMatrix<Dims, Elem, Index>::mul(const Matrix<Dims, Elem, Index>& m)
 	{
 		Index nSize[Dims];
 		for (int i = 0; i < Dims; i++)
@@ -105,10 +137,10 @@ namespace Math
 		if (m.imp() == "FuncMatrix")
 		{
 			FuncMatrix<Dims, Elem, Index>& M = (FuncMatrix<Dims, Elem, Index>&)m;
-			
-			auto ret = new FuncMatrix<Dims, Elem, Index>([=] (auto... args)
+			Func mDef = M.def;
+			auto ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>([=] (auto... args)
 			{
-				return (def(args...) * M.def(args...));
+				return (def(args...) * mDef(args...));
 			});
 			for (auto i = 0; i < Dims; i++)
 			{
@@ -124,7 +156,7 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::add(const Matrix<Dims, Elem, Index>& m)
+	std::shared_ptr<Matrix<Dims, Elem, Index>> FuncMatrix<Dims, Elem, Index>::add(const Matrix<Dims, Elem, Index>& m)
 	{
 		Index nSize[Dims];
 		for (int i = 0; i < Dims; i++)
@@ -154,11 +186,11 @@ namespace Math
 		if (m.imp() == "FuncMatrix")
 		{
 			FuncMatrix<Dims, Elem, Index>& M = (FuncMatrix<Dims, Elem, Index>&)m;
-			
-			auto ret = new FuncMatrix<Dims, Elem, Index>([=] (auto... args)
+			Func mDef = M.def;
+			auto ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>(Func([=] (auto... args)
 			{
-				return (def(args...) + M.def(args...));
-			});
+				return (def(args...) + mDef(args...));
+			}));
 			for (auto i = 0; i < Dims; i++)
 			{
 				ret->size[i] = nSize[i];
@@ -173,7 +205,7 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::sub(const Matrix<Dims, Elem, Index>& m)
+	std::shared_ptr<Matrix<Dims, Elem, Index>> FuncMatrix<Dims, Elem, Index>::sub(const Matrix<Dims, Elem, Index>& m)
 	{
 		Index nSize[Dims];
 		for (int i = 0; i < Dims; i++)
@@ -203,11 +235,11 @@ namespace Math
 		if (m.imp() == "FuncMatrix")
 		{
 			FuncMatrix<Dims, Elem, Index>& M = (FuncMatrix<Dims, Elem, Index>&)m;
-			
-			auto ret = new FuncMatrix<Dims, Elem, Index>([=] (auto... args)
+			auto mDef = M.def;
+			auto ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>(Func([=] (auto... args)
 			{
-				return (def(args...) - M.def(args...));
-			});
+				return (def(args...) - mDef(args...));
+			}));
 			for (auto i = 0; i < Dims; i++)
 			{
 				ret->size[i] = nSize[i];
@@ -222,9 +254,19 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::clone() const
+	std::shared_ptr<Matrix<Dims, Elem, Index>> FuncMatrix<Dims, Elem, Index>::clone() const
 	{
-		return new FuncMatrix(*this);
+		auto nPtr = std::make_shared<FuncMatrix>(this->def);
+		for (int i = 0; i < Dims; i++)
+		{
+			nPtr->size[i] = this->size[i];
+		}
+		for (auto KV : this->instantiated)
+		{
+			nPtr->instantiated[KV.first] = std::shared_ptr<Matrix<Dims-1, Elem, Index>>(KV.second->clone());
+		}
+		return nPtr;
+		//return new FuncMatrix(*this);
 	}
 	
 	//Transpose the matrix by reversing
@@ -232,9 +274,9 @@ namespace Math
 	//arguments 
 	//Ex: f(i, j, k) => f(k, j, i)
 	template <int Dims, typename Elem, typename Index>
-	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::T() const
+	std::shared_ptr<Matrix<Dims, Elem, Index>> FuncMatrix<Dims, Elem, Index>::T() const
 	{
-		auto n = new FuncMatrix(
+		auto n = std::make_shared<FuncMatrix>(
 		[=] (auto... args)
 		{
 			auto revArgs = reverseTuple(args...);
@@ -364,13 +406,13 @@ namespace Math
 	struct Caller<2, Elem, Index>
 	{
 		template <typename ...Args>
-		static Matrix<1, Elem, Index>* PrefixCaller(Matrix<2, Elem, Index>* m, Index i, Args... args)
+		static std::shared_ptr<Matrix<1, Elem, Index>> PrefixCaller(std::shared_ptr<Matrix<2, Elem, Index>> m, Index i, Args... args)
 	{
 		auto m2 = (*m)[i];
 		return m2;
 	}
 	template <typename ...Args>
-	static Elem PostfixCaller(Matrix<1, Elem, Index>* m, Index i, Args... args)
+	static Elem PostfixCaller(std::shared_ptr<Matrix<1, Elem, Index>> m, Index i, Args... args)
 		{
 			auto m2 = (*m)[i];
 			return m2;
@@ -378,7 +420,7 @@ namespace Math
 		
 		
 	template <typename ...Args>
-		static Elem PostfixCaller_T(Matrix<1, Elem, Index>* m, std::tuple<Index, Args...> argsT)
+		static Elem PostfixCaller_T(std::shared_ptr<Matrix<1, Elem, Index>> m, std::tuple<Index, Args...> argsT)
 		{
 			auto m2 = (*m)[std::get<0>(argsT)];
 			return m2;
@@ -452,7 +494,7 @@ namespace Math
 	
 	
 	template <int Dims, typename Elem, typename Index>
-	Matrix<Dims, Elem, Index>* FuncMatrix<Dims, Elem, Index>::submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value removed) const
+	std::shared_ptr<Matrix<Dims, Elem, Index>> FuncMatrix<Dims, Elem, Index>::submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value removed) const
 	{
 		for (auto size : this->size)
 		{
@@ -462,7 +504,7 @@ namespace Math
 			}
 		}
 		auto defco = Func(def);
-		auto ret = new FuncMatrix<Dims, Elem, Index>(
+		auto ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>(
 		[=] (auto... args)
 		{
 			//Package the functional's
@@ -494,7 +536,7 @@ namespace Math
 	
 	template <int Dims, typename Elem, typename Index>
 	template <int Dims2>
-	Matrix<Dims+Dims2-2, Elem, Index>* Matrix<Dims, Elem, Index>::contract(Matrix<Dims2, Elem, Index>* m)
+	std::shared_ptr<Matrix<Dims+Dims2-2, Elem, Index>> Matrix<Dims, Elem, Index>::contract(std::shared_ptr<Matrix<Dims2, Elem, Index>> m)
 	{
 		const int nDims = Dims+Dims2-2;
 		if (this->size[Dims-1] != m->size[0] || this->size[Dims-1] <= 0)
@@ -502,13 +544,13 @@ namespace Math
 			throw MatrixInvalidSizeException();
 		}
 		
-		auto am = (m->clone());
+		auto am = m->clone();
 		
 		
 		
 		
 		auto tclone = this->clone();
-		auto res = new FuncMatrix<nDims, Elem, Index>([=] (auto... args)
+		std::shared_ptr<FuncMatrix<nDims, Elem, Index>> res = std::make_shared<FuncMatrix<nDims, Elem, Index>>([=] (auto... args)
 		{
 			
 			auto m_1 = _Helpers::Caller<Dims, Elem, Index>::PrefixCaller(tclone, args...);
@@ -525,7 +567,6 @@ namespace Math
 				val += m_1->at(i)*m_2_val;
 			}
 			return val;
-			delete m_1;
 		});
 		
 		
@@ -566,13 +607,27 @@ namespace Math
 	template <typename Elem, typename Index>
 	Elem FuncMatrix<1, Elem, Index>::operator[](Index i) const
 	{
+		if (instantiated.count(i) > 0)
+		{
+			return ((FuncMatrix<1, Elem, Index>*)this)->instantiated[i];
+		}
 		return def(i);
 	}
 	
 	template <typename Elem, typename Index>
-	Matrix<1, Elem, Index>* FuncMatrix<1, Elem, Index>::mul(const double n)
+	Elem& FuncMatrix<1, Elem, Index>::operator()(Index i)
 	{
-		auto ret = new FuncMatrix<1, Elem, Index>([=] (Index i)
+		if (instantiated.count(i) <= 0)
+		{
+			instantiated[i] = this->operator[](i);
+		}
+		return instantiated[i];
+	}
+	
+	template <typename Elem, typename Index>
+	std::shared_ptr<Matrix<1, Elem, Index>> FuncMatrix<1, Elem, Index>::mul(const double n)
+	{
+		auto ret = std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
 		{
 			return def(i)*n;
 		});
@@ -581,7 +636,7 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index>
-	Matrix<1, Elem, Index>* FuncMatrix<1, Elem, Index>::mul(const Matrix<1, Elem, Index>& m)
+	std::shared_ptr<Matrix<1, Elem, Index>> FuncMatrix<1, Elem, Index>::mul(const Matrix<1, Elem, Index>& m)
 	{
 		if (this->size[0] == 0 || m.size[0] == 0)
 		{
@@ -610,7 +665,7 @@ namespace Math
 		{
 			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)m;
 			
-			auto ret = new FuncMatrix<1, Elem, Index>([=] (Index i)
+			auto ret = std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
 			{
 				return (def(i) * M.def(i));
 			});
@@ -624,7 +679,7 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index>
-	Matrix<1, Elem, Index>* FuncMatrix<1, Elem, Index>::add(const Matrix<1, Elem, Index>& m)
+	std::shared_ptr<Matrix<1, Elem, Index>> FuncMatrix<1, Elem, Index>::add(const Matrix<1, Elem, Index>& m)
 	{
 		if (this->size[0] == 0 || m.size[0] == 0)
 		{
@@ -653,7 +708,7 @@ namespace Math
 		{
 			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)m;
 			
-			auto ret = new FuncMatrix<1, Elem, Index>([=] (Index i)
+			auto ret = std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
 			{
 				return (def(i) + M.def(i));
 			});
@@ -667,7 +722,7 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index>
-	Matrix<1, Elem, Index>* FuncMatrix<1, Elem, Index>::sub(const Matrix<1, Elem, Index>& m)
+	std::shared_ptr<Matrix<1, Elem, Index>> FuncMatrix<1, Elem, Index>::sub(const Matrix<1, Elem, Index>& m)
 	{
 		if (this->size[0] == 0 || m.size[0] == 0)
 		{
@@ -696,7 +751,7 @@ namespace Math
 		{
 			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)m;
 			
-			auto ret = new FuncMatrix<1, Elem, Index>([=] (Index i)
+			auto ret = std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
 			{
 				return (def(i) - M.def(i));
 			});
@@ -710,19 +765,19 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index>
-	Matrix<1, Elem, Index>* FuncMatrix<1, Elem, Index>::clone() const
+	std::shared_ptr<Matrix<1, Elem, Index>> FuncMatrix<1, Elem, Index>::clone() const
 	{
-		return new FuncMatrix(*this);
+		return std::make_shared<FuncMatrix>(*this);
 	}
 	
 	template <typename Elem, typename Index>
-	Matrix<2, Elem, Index>* FuncMatrix<1, Elem, Index>::T() const
+	std::shared_ptr<Matrix<2, Elem, Index>> FuncMatrix<1, Elem, Index>::T() const
 	{
 		throw NotImp();
 	}
 	
 	template <typename Elem, typename Index>
-	Matrix<1, Elem, Index>* FuncMatrix<1, Elem, Index>::submatrix(std::tuple<Index> t) const
+	std::shared_ptr<Matrix<1, Elem, Index>> FuncMatrix<1, Elem, Index>::submatrix(std::tuple<Index> t) const
 	{
 		throw MatrixInvalidSizeException();
 	}

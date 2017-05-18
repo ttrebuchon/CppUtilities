@@ -31,7 +31,15 @@ std::string __assert_ex_helper(auto file, auto line, auto msg)
 }
 
 //#define assert_ex(x) ( x ) ? NULL : throw StringException(static_cast<std::stringstream>(std::stringstream() << __FILE__ << ":L" << __LINE__ << "::Assertion Failed: " << #x).str())
-#define assert_ex(x) ( x ) ? NULL : throw StringException(__assert_ex_helper(__FILE__, __LINE__, #x))
+
+bool _stringException_caller(auto file, auto line, auto exp)
+{
+	throw StringException(__assert_ex_helper(file, line, exp));
+	return false;
+	
+}
+
+#define assert_ex(x) (( x ) ? true : _stringException_caller(__FILE__, __LINE__, #x))
 
 
 

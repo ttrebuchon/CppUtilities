@@ -58,7 +58,7 @@ void Testing::run()
 	dout << LINE_BR << testBr << std::endl;
 	try
 	{
-  RUN(CSV_Test());
+	RUN(CSV_Test());
 	RUN(Tuple_Test());
 	RUN(nth_Poly());
 	#ifndef SHORT_TEST

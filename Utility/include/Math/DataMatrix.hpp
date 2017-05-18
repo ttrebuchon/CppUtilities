@@ -72,7 +72,7 @@ namespace Math
 		auto i = 0;
 		for (auto subD : d)
 		{
-			data[i++] = new DataMatrix<Dims-1, Elem, Index, Container>(subD);
+			data[i++] = std::make_shared<DataMatrix<Dims-1, Elem, Index, Container>>(subD);
 		}
 		
 		this->size[0] = d.size();
@@ -84,22 +84,29 @@ namespace Math
 	
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<Dims-1, Elem, Index>* DataMatrix<Dims, Elem, Index, Container>::operator[](Index i) const
+	std::shared_ptr<Matrix<Dims-1, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::operator[](Index i) const
 	{
+		assert(data[i].get() != NULL);
 		return data[i]->clone();
 	}
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<Dims, Elem, Index>* DataMatrix<Dims, Elem, Index, Container>::mul(const double n)
+	Matrix<Dims-1, Elem, Index>& DataMatrix<Dims, Elem, Index, Container>::operator()(Index i)
 	{
-		auto nc = Container<Matrix<Dims-1, Elem, Index>*>(this->size[0]);
+		return *data[i];
+	}
+	
+	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
+	std::shared_ptr<Matrix<Dims, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::mul(const double n)
+	{
+		auto nc = Container<std::shared_ptr<Subset>>(this->size[0]);
 		
 		for (Index i = 0; i < this->size[0]; i++)
 		{
-			nc[i] = this->at(i)->mul(n);
+			nc[i] = std::shared_ptr<Subset>(this->at(i)->mul(n));
 		}
 		
-		auto ret = new DataMatrix<Dims, Elem, Index, Container>(this->size[0]);
+		auto ret = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index>(this->size[0]));
 		
 		for (auto i = 0; i < Dims; i++)
 		{
@@ -116,7 +123,7 @@ namespace Math
 	
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<Dims, Elem, Index>* DataMatrix<Dims, Elem, Index, Container>::mul(const Matrix<Dims, Elem, Index>& m)
+	std::shared_ptr<Matrix<Dims, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::mul(const Matrix<Dims, Elem, Index>& m)
 	{
 		for (auto i = 0; i < Dims; i++)
 		{
@@ -127,14 +134,14 @@ namespace Math
 		}
 		
 		
-		auto nc = Container<Matrix<Dims-1, Elem, Index>*>(this->size[0]);
+		auto nc = Container<std::shared_ptr<Subset>>(this->size[0]);
 		
 		for (Index i = 0; i < this->size[0]; i++)
 		{
-			nc[i] = this->at(i)->mul(m[i]);
+			nc[i] = std::shared_ptr<Subset>(this->at(i)->mul(m[i]));
 		}
 		
-		auto ret = new DataMatrix<Dims, Elem, Index, Container>(this->size[0]);
+		auto ret = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index>(this->size[0]));
 		
 		for (auto i = 0; i < Dims; i++)
 		{
@@ -151,7 +158,7 @@ namespace Math
 	
 		
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<Dims, Elem, Index>* DataMatrix<Dims, Elem, Index, Container>::add(const Matrix<Dims, Elem, Index>& m)
+	std::shared_ptr<Matrix<Dims, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::add(const Matrix<Dims, Elem, Index>& m)
 	{
 		for (auto i = 0; i < Dims; i++)
 		{
@@ -162,14 +169,14 @@ namespace Math
 		}
 		
 		
-		auto nc = Container<Matrix<Dims-1, Elem, Index>*>(this->size[0]);
+		auto nc = Container<std::shared_ptr<Subset>>(this->size[0]);
 		
 		for (Index i = 0; i < this->size[0]; i++)
 		{
-			nc[i] = this->at(i)->add(m[i]);
+			nc[i] = std::shared_ptr<Subset>(this->at(i)->add(m[i]));
 		}
 		
-		auto ret = new DataMatrix<Dims, Elem, Index, Container>(this->size[0]);
+		auto ret = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index>(this->size[0]));
 		
 		for (auto i = 0; i < Dims; i++)
 		{
@@ -186,7 +193,7 @@ namespace Math
 		
 		
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<Dims, Elem, Index>* DataMatrix<Dims, Elem, Index, Container>::sub(const Matrix<Dims, Elem, Index>& m)
+	std::shared_ptr<Matrix<Dims, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::sub(const Matrix<Dims, Elem, Index>& m)
 	{
 		for (auto i = 0; i < Dims; i++)
 		{
@@ -197,14 +204,14 @@ namespace Math
 		}
 		
 		
-		auto nc = Container<Matrix<Dims-1, Elem, Index>*>(this->size[0]);
+		auto nc = Container<std::shared_ptr<Subset>>(this->size[0]);
 		
 		for (Index i = 0; i < this->size[0]; i++)
 		{
-			nc[i] = this->at(i)->sub(m[i]);
+			nc[i] = std::shared_ptr<Subset>(this->at(i)->sub(m[i]));
 		}
 		
-		auto ret = new DataMatrix<Dims, Elem, Index, Container>(this->size[0]);
+		auto ret = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index>(this->size[0]));
 		
 		for (auto i = 0; i < Dims; i++)
 		{
@@ -220,9 +227,9 @@ namespace Math
 	}
 		
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<Dims, Elem, Index>* DataMatrix<Dims, Elem, Index, Container>::clone() const
+	std::shared_ptr<Matrix<Dims, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::clone() const
 	{
-		auto cl = new DataMatrix<Dims, Elem, Index, Container>((Index)data.size());
+		auto cl = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index, Container>((Index)data.size()));
 		for (int i = 0; i < Dims; i++)
 		{
 			cl->size[i] = this->size[i];
@@ -230,19 +237,19 @@ namespace Math
 		
 		for (auto i = 0; i < this->size[0]; i++)
 		{
-			cl->data[i] = (Subset*)data[i]->clone();
+			cl->data[i] = std::shared_ptr<Subset>(data[i]->clone());
 		}
 		return cl;
 	}
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<Dims, Elem, Index>* DataMatrix<Dims, Elem, Index, Container>::T() const
+	std::shared_ptr<Matrix<Dims, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::T() const
 	{
 		throw NotImp();
 	}
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<Dims, Elem, Index>* DataMatrix<Dims, Elem, Index, Container>::submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const
+	std::shared_ptr<Matrix<Dims, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const
 	{
 		throw NotImp();
 	}
@@ -278,7 +285,13 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<1, Elem, Index>* DataMatrix<1, Elem, Index, Container>::mul(const double n)
+	Elem& DataMatrix<1, Elem, Index, Container>::operator()(Index i)
+	{
+		return data[i];
+	}
+	
+	template <typename Elem, typename Index, template <typename...> typename Container>
+	std::shared_ptr<Matrix<1, Elem, Index>> DataMatrix<1, Elem, Index, Container>::mul(const double n)
 	{
 		auto nc = Data(this->size[0]);
 		
@@ -287,12 +300,12 @@ namespace Math
 			nc[i] = this->at(i) * n;
 		}
 		
-		return new DataMatrix<1, Elem, Index, Container>(nc);
+		return std::make_shared<DataMatrix<1, Elem, Index, Container>>(nc);
 	}
 	
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<1, Elem, Index>* DataMatrix<1, Elem, Index, Container>::mul(const Matrix<1, Elem, Index>& m)
+	std::shared_ptr<Matrix<1, Elem, Index>> DataMatrix<1, Elem, Index, Container>::mul(const Matrix<1, Elem, Index>& m)
 	{
 		if (this->size[0] != m.size[0])
 		{
@@ -307,12 +320,12 @@ namespace Math
 			nc[i] = this->at(i) * m[i];
 		}
 		
-		return new DataMatrix<1, Elem, Index, Container>(nc);
+		return std::make_shared<DataMatrix<1, Elem, Index, Container>>(nc);
 	}
 	
 		
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<1, Elem, Index>* DataMatrix<1, Elem, Index, Container>::add(const Matrix<1, Elem, Index>& m)
+	std::shared_ptr<Matrix<1, Elem, Index>> DataMatrix<1, Elem, Index, Container>::add(const Matrix<1, Elem, Index>& m)
 	{
 		if (this->size[0] != m.size[0])
 		{
@@ -327,12 +340,12 @@ namespace Math
 			nc[i] = this->at(i) + m[i];
 		}
 		
-		return new DataMatrix<1, Elem, Index, Container>(nc);
+		return std::make_shared<DataMatrix<1, Elem, Index, Container>>(nc);
 	}
 		
 		
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<1, Elem, Index>* DataMatrix<1, Elem, Index, Container>::sub(const Matrix<1, Elem, Index>& m)
+	std::shared_ptr<Matrix<1, Elem, Index>> DataMatrix<1, Elem, Index, Container>::sub(const Matrix<1, Elem, Index>& m)
 	{
 		if (this->size[0] != m.size[0])
 		{
@@ -347,23 +360,23 @@ namespace Math
 			nc[i] = this->at(i) - m[i];
 		}
 		
-		return new DataMatrix<1, Elem, Index, Container>(nc);
+		return std::make_shared<DataMatrix<1, Elem, Index, Container>>(nc);
 	}
 		
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<1, Elem, Index>* DataMatrix<1, Elem, Index, Container>::clone() const
+	std::shared_ptr<Matrix<1, Elem, Index>> DataMatrix<1, Elem, Index, Container>::clone() const
 	{
-		return new DataMatrix<1, Elem, Index, Container>(data);
+		return std::make_shared<DataMatrix<1, Elem, Index, Container>>(data);
 	}
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<2, Elem, Index>* DataMatrix<1, Elem, Index, Container>::T() const
+	std::shared_ptr<Matrix<2, Elem, Index>> DataMatrix<1, Elem, Index, Container>::T() const
 	{
 		throw NotImp();
 	}
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<1, Elem, Index>* DataMatrix<1, Elem, Index, Container>::submatrix(std::tuple<Index>) const
+	std::shared_ptr<Matrix<1, Elem, Index>> DataMatrix<1, Elem, Index, Container>::submatrix(std::tuple<Index>) const
 	{
 		throw NotImp();
 	}

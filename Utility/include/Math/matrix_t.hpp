@@ -1,17 +1,14 @@
 #pragma once
 
+#include <type_traits>
 
 namespace Util
 {
 namespace Math
 {
 	template <int Dims, typename Elem, typename Index>
-	__Base_matrix_t_<Dims, Elem, Index>& __Base_matrix_t_<Dims, Elem, Index>::operator=(mat_t* _ptr)
+	__Base_matrix_t_<Dims, Elem, Index>& __Base_matrix_t_<Dims, Elem, Index>::operator=(ptr_t _ptr)
 	{
-		if (this->ptr != NULL)
-		{
-			delete this->ptr;
-		}
 		this->ptr = _ptr;
 		return *this;
 	}
@@ -33,19 +30,19 @@ namespace Math
 	template <int Dims, typename Elem, typename Index>
 	matrix_t<Dims, Elem, Index> __Base_matrix_t_<Dims, Elem, Index>::operator+(const __Base_matrix_t_<Dims, Elem, Index>& mat)
 	{
-		return make_matrix_t(ptr->add(mat.ptr.get()));
+		return make_matrix_t(ptr->add(mat.ptr));
 	}
 
 	template <int Dims, typename Elem, typename Index>
 	matrix_t<Dims, Elem, Index> __Base_matrix_t_<Dims, Elem, Index>::operator-(const __Base_matrix_t_<Dims, Elem, Index>& mat)
 	{
-		return make_matrix_t(ptr->sub(mat.ptr.get()));
+		return make_matrix_t(ptr->sub(mat.ptr));
 	}
 	
 	template <int Dims, typename Elem, typename Index>
 	matrix_t<Dims, Elem, Index> __Base_matrix_t_<Dims, Elem, Index>::operator*(const __Base_matrix_t_<Dims, Elem, Index>& mat)
 	{
-		return make_matrix_t(ptr->mul(mat.ptr.get()));
+		return make_matrix_t(ptr->mul(mat.ptr));
 	}
 	
 	template <int Dims, typename Elem, typename Index>
@@ -75,6 +72,15 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
+	template <typename ...Args>
+	typename _Helpers::t_RefReturnHelper<matrix_t, Dims, Elem, Index, sizeof...(Args)+1>::type matrix_t<Dims, Elem, Index>::operator()(Index arg1, Args... args)
+	{
+		static_assert(std::is_same<decltype(this->ptr->operator()(arg1, args...)), typename _Helpers::t_RefReturnHelper<Matrix, Dims, Elem, Index, sizeof...(Args)+1>::type&>::value, "Matrix_t.hpp: operator() inconsistency");
+		static_assert(std::is_same<decltype(make_matrix_t(this->ptr->operator()(arg1, args...))), typename _Helpers::t_RefReturnHelper<matrix_t, Dims, Elem, Index, sizeof...(Args)+1>::type>::value, "Matrix_t.hpp: operator() inconsistency");
+		return make_matrix_t(this->ptr->operator()(arg1, args...));
+	}
+	
+	template <int Dims, typename Elem, typename Index>
 	matrix_t<Dims, Elem, Index> matrix_t<Dims, Elem, Index>::T() const
 	{
 		return matrix_t(this->ptr->T());
@@ -91,7 +97,7 @@ namespace Math
 	template <int Dims2>
 	matrix_t<Dims+Dims2-2, Elem, Index> matrix_t<Dims, Elem, Index>::contract(matrix_t<Dims2, Elem, Index> m)
 	{
-		return matrix_t<Dims+Dims2-2, Elem, Index>(this->ptr->contract(m.ptr.get()));
+		return matrix_t<Dims+Dims2-2, Elem, Index>(this->ptr->contract(m.ptr));
 	}
 
 	template <int Dims, typename Elem, typename Index>
@@ -130,6 +136,13 @@ namespace Math
 	Elem matrix_t<1, Elem, Index>::operator[](Index i)
 	{
 		return (*this->ptr)[i];
+	}
+	
+	template <typename Elem, typename Index>
+	typename _Helpers::t_RefReturnHelper<matrix_t, 1, Elem, Index, 1>::type matrix_t<1, Elem, Index>::operator()(Index i)
+	{
+		static_assert(std::is_same<decltype((*this->ptr)(i)), typename _Helpers::t_RefReturnHelper<matrix_t, 1, Elem, Index, 1>::type>::value);
+		return (*this->ptr)(i);
 	}
 	
 	template <typename Elem, typename Index>
