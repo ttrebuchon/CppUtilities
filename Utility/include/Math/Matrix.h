@@ -2,7 +2,8 @@
 
 #include <Exception/Exception.h>
 #include <memory>
-#include <iostream>
+#include <assert.h>
+#include <cstring>
 
 namespace Util
 {
@@ -60,10 +61,16 @@ namespace Math
 			{
 				size[i] = -1;
 			}
-			Matrix_Counter::alive++;
+			assert(Matrix_Counter::alive++ >= 0);
 		}
 
-		virtual ~_MatrixBase_() { Matrix_Counter::alive--; }
+		_MatrixBase_(const _MatrixBase_& m) : size()
+		{
+			std::memcpy(this->size, m.size, sizeof(decltype(size[0]))*Dims);
+			assert(Matrix_Counter::alive++ >= 0);
+		}
+
+		virtual ~_MatrixBase_() { assert(Matrix_Counter::alive-- >= 0); }
 		
 		virtual std::string imp() const = 0;
 		
@@ -217,7 +224,7 @@ namespace Math
 		protected:
 		
 		public:
-		Matrix() : _MatrixBase_<1, Elem, Index>() {}
+		Matrix() : _MatrixBase_<1, Elem, Index>(), std::enable_shared_from_this<Matrix<1, Elem, Index>>() { }
 		virtual ~Matrix() { }
 		
 		std::shared_ptr<Matrix<1, Elem, Index>> get_ptr()

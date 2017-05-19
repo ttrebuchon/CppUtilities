@@ -34,7 +34,7 @@ namespace Math
 		public:
 		
 		FuncMatrix(Func f);
-		explicit FuncMatrix(FuncMatrix&);
+		FuncMatrix(const FuncMatrix&);
 		
 		virtual std::string imp() const override { return "FuncMatrix"; }
 		
@@ -64,7 +64,9 @@ namespace Math
 	{
 		private:
 		
-		std::function<Elem(Index)> def;
+		typedef std::function<Elem(Index)> Func; 
+
+		Func def;
 		std::map<Index, Elem> instantiated;
 		
 		protected:
@@ -73,8 +75,10 @@ namespace Math
 		
 		public:
 		
-		FuncMatrix(std::function<Elem(Index)> f);
-		FuncMatrix(std::shared_ptr<FuncMatrix>);
+		FuncMatrix(Func f);
+		FuncMatrix(const FuncMatrix&);
+		//FuncMatrix(std::shared_ptr<FuncMatrix>);
+		
 		virtual std::string imp() const override { return "FuncMatrix"; }
 		
 		Elem operator[](Index i) const override;

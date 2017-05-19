@@ -41,25 +41,16 @@ namespace Math
 	FuncMatrix<Dims, Elem, Index>::FuncMatrix(Func f) : Matrix<Dims, Elem, Index>(), def(f), instantiated()
 	{
 		
-	};
-	
-	/*template <int Dims, typename Elem, typename Index>
-	FuncMatrix<Dims, Elem, Index>::FuncMatrix(FuncMatrix<Dims, Elem, Index>* m) : Matrix<Dims, Elem, Index>(), def(m->def), instantiated()
-	{
-		for (auto key : m->instanted.keys())
-		{
-			this->instantiated[key] = std::shared_ptr<Matrix<Dims-1, Elem, Index>>(m->instantiated[key]->clone());
-		}
-	}*/
+	}
 	
 	template <int Dims, typename Elem, typename Index>
-	FuncMatrix<Dims, Elem, Index>::FuncMatrix(FuncMatrix<Dims, Elem, Index>& m) : Matrix<Dims, Elem, Index>(), def(m.def), instantiated()
+	FuncMatrix<Dims, Elem, Index>::FuncMatrix(const FuncMatrix<Dims, Elem, Index>& m) : Matrix<Dims, Elem, Index>(m), def(m.def), instantiated()
 	{
-		for (auto key : m.instanted.keys())
+		for (auto pair : m.instantiated)
 		{
-			this->instantiated[key] = std::shared_ptr<Matrix<Dims-1, Elem, Index>>(m.instantiated[key]->clone());
+			this->instantiated[pair.first] = std::shared_ptr<Matrix<Dims-1, Elem, Index>>(pair.second->clone());
 		}
-	};
+	}
 	
 	
 	//Create a new matrix of one less
@@ -603,6 +594,15 @@ namespace Math
 	FuncMatrix<1, Elem, Index>::FuncMatrix(std::function<Elem(Index)> f) : Matrix<1, Elem, Index>(), def(f)
 	{
 		
+	}
+
+	template <typename Elem, typename Index>
+	FuncMatrix<1, Elem, Index>::FuncMatrix(const FuncMatrix<1, Elem, Index>& m) : Matrix<1, Elem, Index>(m), def(m.def)
+	{
+		for (auto pair : m.instantiated)
+		{
+			this->instantiated[pair.first] = pair.second;
+		}
 	}
 	
 	template <typename Elem, typename Index>

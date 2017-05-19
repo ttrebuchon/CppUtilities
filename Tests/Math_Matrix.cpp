@@ -25,6 +25,7 @@ bool Math_Matrix()
 bool Math_Matrix_Go()
 {
 	FuncMatrix<1, int> c1 = FuncMatrix<1, int>([](int i) -> int { return 4*i; });
+	FuncMatrix<2, int> __c1 = FuncMatrix<2, int>([](int i, int j) -> int { return 4*i; });
 	
 	auto s1 = c1[3];
 	assert_ex(s1 == 12);
@@ -363,7 +364,7 @@ bool Test_Arithmetic()
 	
 	
 	dout << "Passed." << std::endl;
-	return true;//Test_DataMatrix();
+	return Test_DataMatrix();
 }
 
 bool Test_DataMatrix()
@@ -435,12 +436,7 @@ bool Test_DataMatrix()
 	
 	matrix_t<2, double> m21(std::make_shared<DataMatrix<2, double>>(vecFrom2dFunc([] (auto i, auto j) { return (4 - i)*(j+1); }, 5, 5)));
 	
-	//matrix_t<2, double> m22(std::make_shared<DataMatrix<2, double>>(vecFrom2dFunc([] (auto i, auto j) { return i+j; }, 5, 5)));
-	dout << "Arriving..." << std::endl;
-	matrix_t<2, double> m22;
-	dout << "Initted as Null" << std::endl;
-	m22 = new DataMatrix<2, double>(vecFrom2dFunc([] (auto i, auto j) { return i+j; }, 5, 5));
-	dout << "Assigned..." << std::endl;
+	matrix_t<2, double> m22 = new DataMatrix<2, double>(vecFrom2dFunc([] (auto i, auto j) { return i+j; }, 5, 5));
 	
 	auto m23 = m21 + m22;
 	assert_ex(m23.size()[0] == 5);
