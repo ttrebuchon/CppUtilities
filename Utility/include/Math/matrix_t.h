@@ -92,20 +92,29 @@ namespace Math
 		
 		//typedef typename _Helpers::FuncArgHelper<Dims, Index, Elem>::type Func;
 		
+		using __Base_matrix_t_<Dims, Elem, Index>::mat_t;
+		using __Base_matrix_t_<Dims, Elem, Index>::ptr_t;
+		
 		
 		public:
 		matrix_t() : __Base_matrix_t_<Dims, Elem, Index>(nullptr) {}
 		
 		matrix_t(typename matrix_t::ptr_t ptr) : __Base_matrix_t_<Dims, Elem, Index>(ptr) { }
 		
-		
 		matrix_t(
 		typename _Helpers::FuncArgHelper<Dims, Index, Elem>::type f
 		) : __Base_matrix_t_<Dims, Elem, Index>(std::make_shared<FuncMatrix<Dims, Elem, Index>>(f)) {}
 		
-		
 		matrix_t(const matrix_t& m) : __Base_matrix_t_<Dims, Elem, Index>(m) { }
+		
+		matrix_t(Matrix<Dims, Elem, Index>* ptr) : matrix_t()
+		{
+			this->operator=(ptr);
+		}
 		virtual ~matrix_t() { }
+		
+		
+		
 		
 		//using __Base_matrix_t_<Dims, Elem, Index>::operator=;
 		
