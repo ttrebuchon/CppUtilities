@@ -4,6 +4,8 @@
 #include "FuncArgHelper.h"
 #include <memory>
 #include <type_traits>
+#include <assert.h>
+#include <iostream>
 
 namespace Util
 {
@@ -92,7 +94,7 @@ namespace Math
 		
 		
 		public:
-		matrix_t() : __Base_matrix_t_<Dims, Elem, Index>(NULL) {}
+		matrix_t() : __Base_matrix_t_<Dims, Elem, Index>(nullptr) {}
 		
 		matrix_t(typename matrix_t::ptr_t ptr) : __Base_matrix_t_<Dims, Elem, Index>(ptr) { }
 		
@@ -107,7 +109,9 @@ namespace Math
 		
 		//using __Base_matrix_t_<Dims, Elem, Index>::operator=;
 		
-		matrix_t<Dims, Elem, Index>& operator= (std::shared_ptr<Matrix<Dims, Elem, Index>> ptr)
+		matrix_t<Dims, Elem, Index>& operator=(Matrix<Dims, Elem, Index>*);
+		
+		matrix_t<Dims, Elem, Index>& operator=(std::shared_ptr<Matrix<Dims, Elem, Index>> ptr)
 		{
 			this->ptr = ptr;
 			return *this;
@@ -156,6 +160,10 @@ namespace Math
 		matrix_t(const matrix_t& m) : __Base_matrix_t_<1, Elem, Index>(m) { }
 		
 		virtual ~matrix_t() { }
+		
+		
+		
+		matrix_t<1, Elem, Index>& operator=(Matrix<1, Elem, Index>*);
 		
 		Elem operator[](Index i);
 		typename _Helpers::t_RefReturnHelper<matrix_t, 1, Elem, Index, 1>::type operator()(Index i);

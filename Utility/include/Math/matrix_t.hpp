@@ -50,21 +50,35 @@ namespace Math
 	{
 		return make_matrix_t(ptr->mul(n));
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	template <int Dims, typename Elem, typename Index>
+	matrix_t<Dims, Elem, Index>& matrix_t<Dims, Elem, Index>::operator=(Matrix<Dims, Elem, Index>* ptr)
+	{
+		assert(ptr != NULL);
+		try
+		{
+			this->ptr = ptr->get_ptr();
+		}
+		catch (std::bad_weak_ptr)
+		{
+			this->ptr = std::shared_ptr<Matrix<Dims, Elem, Index>>(ptr);
+		}
+		return *this;
+	}
+	
+	
+	
 	template <int Dims, typename Elem, typename Index>
 	matrix_t<Dims-1, Elem, Index> matrix_t<Dims, Elem, Index>::operator[](Index i)
 	{
@@ -112,26 +126,49 @@ namespace Math
 	{
 		this->ptr->append(m.ptr);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	template <typename Elem, typename Index>
+	matrix_t<1, Elem, Index>& matrix_t<1, Elem, Index>::operator=(Matrix<1, Elem, Index>* ptr)
+	{
+		assert(ptr != NULL);
+		try
+		{
+			this->ptr = ptr->get_ptr();
+		}
+		catch (std::bad_weak_ptr)
+		{
+			this->ptr = std::shared_ptr<Matrix<1, Elem, Index>>(ptr);
+		}
+		return *this;
+	}
+	
 	template <typename Elem, typename Index>
 	Elem matrix_t<1, Elem, Index>::operator[](Index i)
 	{

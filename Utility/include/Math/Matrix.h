@@ -2,6 +2,7 @@
 
 #include <Exception/Exception.h>
 #include <memory>
+#include <iostream>
 
 namespace Util
 {
@@ -154,14 +155,15 @@ namespace Math
 	
 	
 	template <int Dims, typename Elem, typename Index = int>
-	class Matrix : public _MatrixBase_<Dims, Elem, Index>, public std::enable_shared_from_this<Matrix<Dims, Elem, Index>>
+	class Matrix : public _MatrixBase_<Dims, Elem, Index>, 
+	public std::enable_shared_from_this<Matrix<Dims, Elem, Index>>
 	{
 		private:
 		
 		protected:
 		
 		public:
-		Matrix() : _MatrixBase_<Dims, Elem, Index>() { }
+		Matrix() : _MatrixBase_<Dims, Elem, Index>(), std::enable_shared_from_this<Matrix<Dims, Elem, Index>>() { }
 		virtual ~Matrix() { }
 		
 		std::shared_ptr<Matrix<Dims, Elem, Index>> get_ptr()
