@@ -183,7 +183,7 @@ namespace Math
 		template <typename ...Args>
 		typename _Helpers::RefReturnHelper<Matrix, Dims, Elem, Index, sizeof...(Args)+1>::type& operator()(Index i, Args... args)
 		{
-			static_assert(sizeof...(Args) > 0);
+			static_assert(sizeof...(Args) > 0, "Error with Args in RefReturnHelper usage");
 			return this->operator()(i).operator()(args...);
 		}
 		

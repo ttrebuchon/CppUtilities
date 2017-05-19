@@ -178,7 +178,7 @@ namespace Math
 	template <typename Elem, typename Index>
 	typename _Helpers::t_RefReturnHelper<matrix_t, 1, Elem, Index, 1>::type matrix_t<1, Elem, Index>::operator()(Index i)
 	{
-		static_assert(std::is_same<decltype((*this->ptr)(i)), typename _Helpers::t_RefReturnHelper<matrix_t, 1, Elem, Index, 1>::type>::value);
+		static_assert(std::is_same<decltype((*this->ptr)(i)), typename _Helpers::t_RefReturnHelper<matrix_t, 1, Elem, Index, 1>::type>::value, "Type error!");
 		return (*this->ptr)(i);
 	}
 	
