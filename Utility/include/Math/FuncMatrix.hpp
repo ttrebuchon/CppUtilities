@@ -87,7 +87,8 @@ namespace Math
 	{
 		if (instantiated.count(i) <= 0)
 		{
-			instantiated[i] = std::shared_ptr<Matrix<Dims-1, Elem, Index>>(this->operator[](i));
+			auto nPtr = this->operator[](i);
+			instantiated[i] = nPtr;
 		}
 		return *instantiated[i];
 	}
