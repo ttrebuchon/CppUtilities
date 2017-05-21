@@ -19,8 +19,8 @@ bool Testing::nth_Poly()
 	
 	
 	
-	matrix_t<1, N> realCoeffs;
-	realCoeffs = new DataMatrix<1, N>({2, 3, 10/2});
+	tensor_t<1, N> realCoeffs;
+	realCoeffs = (new DataMatrix<1, N>({2, 3, 10/2}))->get_ptr();
 	dout << realCoeffs[0] << std::endl;
 	auto realFunc = [=](auto in) -> decltype(in) {
 		auto c1 = realCoeffs[0];
@@ -44,7 +44,7 @@ bool Testing::nth_Poly()
 	auto n = in.size();
 	assert_ex(in.size() == out.size());
 	
-	Math::matrix_t<2, N> M([=] (int i, int j)
+	Math::tensor_t<2, N> M([=] (int i, int j)
 	{
 		
 		auto ret = in[0];
@@ -61,7 +61,7 @@ bool Testing::nth_Poly()
 		return ret;
 	});
 	
-	auto solSize = realCoeffs.size()[0];
+	auto solSize = realCoeffs.size(0);
 	
 	
 	M.setSize(1, solSize);
@@ -80,7 +80,7 @@ bool Testing::nth_Poly()
 	
 	
 	
-	Math::matrix_t<1, N> V([=] (int i)
+	Math::tensor_t<1, N> V([=] (int i)
 	{
 		auto ret = in[0];
 		ret = 0;
@@ -119,35 +119,35 @@ void Test_Multiple_Reg()
 	dout << "\n\nTesting Multiple Regression..." << std::endl;
 	typedef double N;
 	
-	matrix_t<1, N> coef;
-	coef = new DataMatrix<1, N>({1, 2, 3});
+	tensor_t<1, N> coef;
+	coef = std::make_shared<DataMatrix<1, N>>({1, 2, 3});
 	
 	auto realFunc = [=] (auto x, auto y) -> decltype(x) {
 		return coef[0] + coef[1]*x + coef[2]*y;
 	};
 	
-	matrix_t<2, N> in;
-	in = new DataMatrix<2, N>({{0, 0}, {1, 0}, {0, 1}});
+	tensor_t<2, N> in;
+	in = std::make_shared<DataMatrix<2, N>>({{0, 0}, {1, 0}, {0, 1}});
 	
-	assert_ex(in.size()[1]+1 == coef.size()[0]);
+	assert_ex(in.size()[1]+1 == coef.size(0));
 	
-	matrix_t<1, N> out;
-	out = new DataMatrix<1, N>();
-	out.setSize(0, in.size()[0]);
-	for (auto i = 0; i < in.size()[0]; i++)
+	tensor_t<1, N> out;
+	out = std::make_shared<DataMatrix<1, N>>();
+	out.setSize(0, in.size(0));
+	for (auto i = 0; i < in.size(0); i++)
 	{
 		out(i) = realFunc(in[i][0], in[i][1]);
 	}
 	
-	matrix_t<2, N> M([=] (auto i, auto j) -> N
+	tensor_t<2, N> M([=] (auto i, auto j) -> N
 	{
 		if (j == 0)
 		{
 			return 1;
 		}
 		return in[i][j-1];
-	}, in.size()[0], in.size()[1]+1);
-	assert_ex(M.size()[0] == in.size()[0]);
+	}, in.size(0), in.size()[1]+1);
+	assert_ex(M.size(0) == in.size(0));
 	assert_ex(M.size()[1] == in.size()[1] + 1);
 	
 	assert_ex(M.contract(coef) == out);
@@ -155,7 +155,6 @@ void Test_Multiple_Reg()
 	
 	dout << "Before: " << M(0).toString() << " and " << M(1).toString() << std::endl;
 	M(0) = M(0) + M(1);
-	M.set(0, M(0) + M(1));
 	dout << "After: " << M(0).toString() << std::endl;
 	//assert_ex(M(0) == M(1));
 	

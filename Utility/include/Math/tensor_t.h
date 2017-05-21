@@ -38,12 +38,15 @@ namespace Math
 		public:
 		tensor_t() : Shared() {}
 		tensor_t(const Shared ptr) : Shared(ptr) {}
-		tensor_t(const Shared&& ptr) : Shared(ptr) {}
+		/*tensor_t(const Shared&& ptr) : Shared(ptr) {}*/
+		template <template <int, typename...> typename T>
+		tensor_t(const std::shared_ptr<T<Dims, Elem, Index>> ptr) : Shared(ptr) {}
 		virtual ~tensor_t();
 		
 		//Assignment Operators
 		tensor_t& operator=(const Elem);
-		
+		tensor_t& operator=(const Shared ptr);
+		//tensor_t& operator=(const Shared&& ptr);
 		
 		//Arithmetic Operators
 		tensor_t operator+(const tensor_t) const;
@@ -66,6 +69,7 @@ namespace Math
 		//Member Functions
 		Index size(const int dim) const;
 		std::string toString() const;
+		std::string imp() const;
 		
 		
 		//Accessors

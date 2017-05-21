@@ -97,6 +97,9 @@ namespace Math
 		
 		
 		public:
+		static matrix_t<2, Elem, Index> identity();
+		
+		
 		matrix_t() : __Base_matrix_t_<Dims, Elem, Index>(nullptr) {}
 		
 		matrix_t(typename matrix_t::ptr_t ptr) : __Base_matrix_t_<Dims, Elem, Index>(ptr) { }
@@ -104,6 +107,15 @@ namespace Math
 		matrix_t(
 		typename _Helpers::FuncArgHelper<Dims, Index, Elem>::type f
 		) : __Base_matrix_t_<Dims, Elem, Index>(std::make_shared<FuncMatrix<Dims, Elem, Index>>(f)) {}
+		
+		matrix_t(
+		typename _Helpers::FuncArgHelper<Dims, Index, Elem>::type f, Index sizeAll
+		) : __Base_matrix_t_<Dims, Elem, Index>(std::make_shared<FuncMatrix<Dims, Elem, Index>>(f, sizeAll)) {}
+		
+		template <typename... Size>
+		matrix_t(
+		typename _Helpers::FuncArgHelper<Dims, Index, Elem>::type f, Size... sizes
+		) : __Base_matrix_t_<Dims, Elem, Index>(std::make_shared<FuncMatrix<Dims, Elem, Index>>(f, sizes...)) {}
 		
 		matrix_t(const matrix_t& m) : __Base_matrix_t_<Dims, Elem, Index>(m) { }
 		
@@ -138,14 +150,15 @@ namespace Math
 		template <int Dims2>
 		matrix_t<Dims+Dims2-2, Elem, Index> contract(matrix_t<Dims2, Elem, Index> m);
 		
-		Elem set(Elem value, auto ...index);
-		
 		template <int Dims2>
 		void append(matrix_t<Dims2, Elem, Index> m);
 		matrix_t& setSize(const Index dim, const Index size);
 		
 		template <typename Elem2, typename Index2>
 		bool operator==(const matrix_t<Dims, Elem2, Index2>) const;
+		
+		void set(const Index i, const matrix_t<Dims-1, Elem, Index>);
+		void set(const Index i, const std::shared_ptr<Matrix<Dims-1, Elem, Index>>);
 		
 		template <int D2, typename E2, typename I2> 
 		friend class matrix_t;
@@ -163,6 +176,8 @@ namespace Math
 		
 		
 		public:
+		static matrix_t<2, Elem, Index> identity();
+		
 		matrix_t() : __Base_matrix_t_<1, Elem, Index>(nullptr) {}
 		
 		matrix_t(typename matrix_t::ptr_t ptr) : __Base_matrix_t_<1, Elem, Index>(ptr) { }
@@ -184,14 +199,14 @@ namespace Math
 		
 		static_assert(std::is_same<typename _Helpers::RefReturnHelper<matrix_t, 1, Elem, Index, 1>::type &, Elem&>::value, "Something wrong with RefReturnHelper!");
 		
-		Elem set(Elem value, Index index);
-		
 		void append(Elem value);
 		matrix_t& setSize(const Index dim, const Index size);
 		matrix_t& setSize(const Index s) { return setSize(0, s); }
 		
 		template <typename Elem2, typename Index2>
 		bool operator==(const matrix_t<1, Elem2, Index2>) const;
+		
+		void set(const Index i, const Elem);
 		
 		template <int D2, typename E2, typename I2> 
 		friend class matrix_t;

@@ -5,6 +5,8 @@
 #include <assert.h>
 #include <cstring>
 
+#include "tensor_t.h"
+
 namespace Util
 {
 namespace Math
@@ -49,6 +51,8 @@ namespace Math
 		
 		protected:
 		
+		typedef tensor_t<Dims, Elem, Index> tens_t;
+		
 		
 		public:
 		Index size[Dims];
@@ -74,17 +78,17 @@ namespace Math
 		
 		
 		template <typename Num>
-		std::shared_ptr<Matrix<Dims, Elem, Index>> operator*(const Num n)
+		tens_t operator*(const Num n)
 		{
 			return mul(n);
 		}
 		
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> operator+(const Matrix<Dims, Elem, Index>& mat)
+		virtual tens_t operator+(const tensor_t<Dims, Elem, Index> mat)
 		{
 			return add(mat);
 		}
 		
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> operator-(const Matrix<Dims, Elem, Index>& mat)
+		virtual tens_t operator-(const tensor_t<Dims, Elem, Index> mat)
 		{
 			return sub(mat);
 		}
@@ -97,32 +101,32 @@ namespace Math
 		
 		virtual std::string toString() const = 0;
 		
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> mul(const double) = 0;
+		virtual tens_t mul(const double) = 0;
 		
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> mul(const Matrix<Dims, Elem, Index>&) = 0;
+		virtual tens_t mul(const tensor_t<Dims, Elem, Index>) = 0;
 		
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> mul(const std::shared_ptr<Matrix<Dims, Elem, Index>> m)
+		/*virtual tens_t mul(const tens_t m)
 		{
 			return mul(*m);
-		}
+		}*/
 		
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> add(const Matrix<Dims, Elem, Index>&) = 0;
+		virtual tens_t add(const tensor_t<Dims, Elem, Index>) = 0;
 		
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> add(const std::shared_ptr<Matrix<Dims, Elem, Index>> m)
+		/*virtual tens_t add(const tens_t m)
 		{
 			return add(*m);
-		}
+		}*/
 		
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> sub(const Matrix<Dims, Elem, Index>&) = 0;
+		virtual tens_t sub(const tensor_t<Dims, Elem, Index>) = 0;
 		
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> sub(const std::shared_ptr<Matrix<Dims, Elem, Index>> m)
+		/*virtual tens_t sub(const tens_t m)
 		{
 			return sub(*m);
-		}
+		}*/
 		
 		virtual Elem det() const = 0;
 		
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> clone() const = 0;
+		virtual tens_t clone() const = 0;
 		
 		
 		
@@ -182,7 +186,7 @@ namespace Math
 		
 		virtual std::string toString() const override;
 		
-		virtual std::shared_ptr<Matrix<Dims-1, Elem, Index>> operator[](Index i) const = 0;
+		virtual tensor_t<Dims-1, Elem, Index> operator[](Index i) const = 0;
 		
 		template <typename ...Args>
 		typename _Helpers::RefReturnHelper<Matrix, Dims, Elem, Index, sizeof...(Args)+1>::type& operator()(Index i, Args... args)
@@ -191,25 +195,27 @@ namespace Math
 			return this->operator()(i).operator()(args...);
 		}
 		
-		virtual Matrix<Dims-1, Elem, Index>& operator()(Index i) = 0;
+		virtual tensor_t<Dims-1, Elem, Index>& operator()(Index i) = 0;
 		
-		virtual std::shared_ptr<Matrix<Dims-1, Elem, Index>> at(Index i) const
+		virtual tensor_t<Dims-1, Elem, Index> at(Index i) const
 		{
 			return (*this)[i];
 		}
 		
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> T() const = 0;
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const = 0;
+		virtual tensor_t<Dims, Elem, Index> T() const = 0;
+		virtual tensor_t<Dims, Elem, Index> submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const = 0;
 		
 		template <int Dims2>
-		std::shared_ptr<Matrix<Dims+Dims2-2, Elem, Index>> contract(std::shared_ptr<Matrix<Dims2, Elem, Index>>);
+		tensor_t<Dims+Dims2-2, Elem, Index> contract(tensor_t<Dims2, Elem, Index>);
 		#undef minor
 		virtual Elem minor(typename _Helpers::TupleBuilder<Dims, Index>::value) const;
 		
 		virtual Elem det() const override;
 		
 		template <int Dims2>
-		void append(std::shared_ptr<Matrix<Dims2, Elem, Index>>);
+		void append(tensor_t<Dims2, Elem, Index>);
+		
+		void set(const Index i, const tensor_t<Dims-1, Elem, Index> ptr);
 		
 	};
 	
@@ -246,8 +252,8 @@ namespace Math
 			return (*this)[i];
 		}
 		
-		virtual std::shared_ptr<Matrix<2, Elem, Index>> T() const = 0;
-		virtual std::shared_ptr<Matrix<1, Elem, Index>> submatrix(std::tuple<Index>) const = 0;
+		virtual tensor_t<2, Elem, Index> T() const = 0;
+		virtual tensor_t<1, Elem, Index> submatrix(std::tuple<Index>) const = 0;
 		
 		virtual Elem det() const override;
 		
@@ -256,11 +262,11 @@ namespace Math
 	};
 	
 	template <int Dims1, int Dims2, typename Elem, typename Index, template <int, typename, typename> typename T, template <int, typename, typename> typename H>
-	std::shared_ptr<Matrix<Dims1+Dims2-2, Elem, Index>> MatrixContract(std::shared_ptr<T<Dims1, Elem, Index>>, std::shared_ptr<H<Dims2, Elem, Index>>);
+	tensor_t<Dims1+Dims2-2, Elem, Index> MatrixContract(std::shared_ptr<T<Dims1, Elem, Index>>, std::shared_ptr<H<Dims2, Elem, Index>>);
 }
 }
 #include "Matrix.hpp"
 #include "FuncMatrix.h"
 #include "DataMatrix.h"
 
-#include "matrix_t.h"
+#include "tensor_t.h"

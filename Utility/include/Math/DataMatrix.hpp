@@ -140,7 +140,7 @@ namespace Math
 	
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	std::shared_ptr<Matrix<Dims-1, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::operator[](Index i) const
+	tensor_t<Dims-1, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::operator[](Index i) const
 	{
 		if (i >= this->size[0] && this->size[0] >= 0)
 		{
@@ -155,7 +155,7 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	Matrix<Dims-1, Elem, Index>& DataMatrix<Dims, Elem, Index, Container>::operator()(Index i)
+	tensor_t<Dims-1, Elem, Index>& DataMatrix<Dims, Elem, Index, Container>::operator()(Index i)
 	{
 		if (i >= this->size[0] && this->size[0] >= 0)
 		{
@@ -166,24 +166,24 @@ namespace Math
 			this->resize(i+1);
 		}
 		assert(data[i] != NULL);
-		return *data[i];
+		return data[i];
 	}
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	std::shared_ptr<Matrix<Dims, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::mul(const double n)
+	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::mul(const double n)
 	{
-		auto nc = Container<std::shared_ptr<Subset>>(this->size[0]);
+		auto nc = Container<Subset>(this->size[0]);
 		
 		for (Index i = 0; i < this->size[0]; i++)
 		{
-			nc[i] = std::shared_ptr<Subset>(this->at(i)->mul(n));
+			nc[i] = Subset(this->at(i)->mul(n));
 		}
 		
 		auto ret = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index>(this->size[0]));
 		
 		for (auto i = 0; i < Dims; i++)
 		{
-			ret->size[i] = this->size[i];
+			ret->setSize(i, this->size[i]);
 		}
 		
 		for (auto i = 0; i < this->size[0]; i++)
@@ -191,27 +191,27 @@ namespace Math
 			ret->data[i] = nc[i];
 		}
 		
-		return ret;
+		return tensor_t<Dims, Elem, Index>(ret);
 	}
 	
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	std::shared_ptr<Matrix<Dims, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::mul(const Matrix<Dims, Elem, Index>& m)
+	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::mul(const tensor_t<Dims, Elem, Index> m)
 	{
 		for (auto i = 0; i < Dims; i++)
 		{
-		if (this->size[i] != m.size[i])
+		if (this->size[i] != m.size(i))
 		{
 			throw MatrixInvalidSizeException();
 		}
 		}
 		
 		
-		auto nc = Container<std::shared_ptr<Subset>>(this->size[0]);
+		auto nc = Container<Subset>(this->size[0]);
 		
 		for (Index i = 0; i < this->size[0]; i++)
 		{
-			nc[i] = std::shared_ptr<Subset>(this->at(i)->mul(m[i]));
+			nc[i] = this->at(i)->mul(m[i]);
 		}
 		
 		auto ret = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index>(this->size[0]));
@@ -226,27 +226,27 @@ namespace Math
 			ret->data[i] = nc[i];
 		}
 		
-		return ret;
+		return tensor_t<Dims, Elem, Index>(ret);
 	}
 	
 		
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	std::shared_ptr<Matrix<Dims, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::add(const Matrix<Dims, Elem, Index>& m)
+	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::add(const tensor_t<Dims, Elem, Index> m)
 	{
 		for (auto i = 0; i < Dims; i++)
 		{
-		if (this->size[i] != m.size[i])
+		if (this->size[i] != m.size(i))
 		{
 			throw MatrixInvalidSizeException();
 		}
 		}
 		
 		
-		auto nc = Container<std::shared_ptr<Subset>>(this->size[0]);
+		auto nc = Container<Subset>(this->size[0]);
 		
 		for (Index i = 0; i < this->size[0]; i++)
 		{
-			nc[i] = std::shared_ptr<Subset>(this->at(i)->add(m[i]));
+			nc[i] = this->at(i)->add(m[i]);
 		}
 		
 		auto ret = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index>(this->size[0]));
@@ -261,27 +261,27 @@ namespace Math
 			ret->data[i] = nc[i];
 		}
 		
-		return ret;
+		return tensor_t<Dims, Elem, Index>(ret);
 	}
 		
 		
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	std::shared_ptr<Matrix<Dims, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::sub(const Matrix<Dims, Elem, Index>& m)
+	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::sub(const tensor_t<Dims, Elem, Index> m)
 	{
 		for (auto i = 0; i < Dims; i++)
 		{
-		if (this->size[i] != m.size[i])
+		if (this->size[i] != m.size(i))
 		{
 			throw MatrixInvalidSizeException();
 		}
 		}
 		
 		
-		auto nc = Container<std::shared_ptr<Subset>>(this->size[0]);
+		auto nc = Container<Subset>(this->size[0]);
 		
 		for (Index i = 0; i < this->size[0]; i++)
 		{
-			nc[i] = std::shared_ptr<Subset>(this->at(i)->sub(m[i]));
+			nc[i] = this->at(i)->sub(m[i]);
 		}
 		
 		auto ret = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index>(this->size[0]));
@@ -296,11 +296,11 @@ namespace Math
 			ret->data[i] = nc[i];
 		}
 		
-		return ret;
+		return tensor_t<Dims, Elem, Index>(ret);
 	}
 		
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	std::shared_ptr<Matrix<Dims, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::clone() const
+	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::clone() const
 	{
 		auto cl = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index, Container>((Index)data.size()));
 		for (int i = 0; i < Dims; i++)
@@ -310,19 +310,19 @@ namespace Math
 		
 		for (auto i = 0; i < this->size[0]; i++)
 		{
-			cl->data[i] = std::shared_ptr<Subset>(data[i]->clone());
+			cl->data[i] = data[i]->clone();
 		}
-		return cl;
+		return tensor_t<Dims, Elem, Index>(cl);
 	}
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	std::shared_ptr<Matrix<Dims, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::T() const
+	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::T() const
 	{
 		throw NotImp();
 	}
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	std::shared_ptr<Matrix<Dims, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const
+	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const
 	{
 		throw NotImp();
 	}
@@ -406,7 +406,7 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	std::shared_ptr<Matrix<1, Elem, Index>> DataMatrix<1, Elem, Index, Container>::mul(const double n)
+	tensor_t<1, Elem, Index> DataMatrix<1, Elem, Index, Container>::mul(const double n)
 	{
 		auto nc = Data(this->size[0]);
 		
@@ -415,14 +415,14 @@ namespace Math
 			nc[i] = this->at(i) * n;
 		}
 		
-		return std::make_shared<DataMatrix<1, Elem, Index, Container>>(nc);
+		return tensor_t<1, Elem, Index>(std::make_shared<DataMatrix<1, Elem, Index, Container>>(nc));
 	}
 	
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	std::shared_ptr<Matrix<1, Elem, Index>> DataMatrix<1, Elem, Index, Container>::mul(const Matrix<1, Elem, Index>& m)
+	tensor_t<1, Elem, Index> DataMatrix<1, Elem, Index, Container>::mul(const tensor_t<1, Elem, Index> m)
 	{
-		if (this->size[0] != m.size[0])
+		if (this->size[0] != m.size(0))
 		{
 			throw MatrixInvalidSizeException();
 		}
@@ -435,14 +435,14 @@ namespace Math
 			nc[i] = this->at(i) * m[i];
 		}
 		
-		return std::make_shared<DataMatrix<1, Elem, Index, Container>>(nc);
+		return tensor_t<1, Elem, Index>(std::make_shared<DataMatrix<1, Elem, Index, Container>>(nc));
 	}
 	
 		
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	std::shared_ptr<Matrix<1, Elem, Index>> DataMatrix<1, Elem, Index, Container>::add(const Matrix<1, Elem, Index>& m)
+	tensor_t<1, Elem, Index> DataMatrix<1, Elem, Index, Container>::add(const tensor_t<1, Elem, Index> m)
 	{
-		if (this->size[0] != m.size[0])
+		if (this->size[0] != m.size(0))
 		{
 			throw MatrixInvalidSizeException();
 		}
@@ -455,14 +455,14 @@ namespace Math
 			nc[i] = this->at(i) + m[i];
 		}
 		
-		return std::make_shared<DataMatrix<1, Elem, Index, Container>>(nc);
+		return tensor_t<1, Elem, Index>(std::make_shared<DataMatrix<1, Elem, Index, Container>>(nc));
 	}
 		
 		
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	std::shared_ptr<Matrix<1, Elem, Index>> DataMatrix<1, Elem, Index, Container>::sub(const Matrix<1, Elem, Index>& m)
+	tensor_t<1, Elem, Index> DataMatrix<1, Elem, Index, Container>::sub(const tensor_t<1, Elem, Index> m)
 	{
-		if (this->size[0] != m.size[0])
+		if (this->size[0] != m.size(0))
 		{
 			throw MatrixInvalidSizeException();
 		}
@@ -475,23 +475,23 @@ namespace Math
 			nc[i] = this->at(i) - m[i];
 		}
 		
-		return std::make_shared<DataMatrix<1, Elem, Index, Container>>(nc);
+		return tensor_t<1, Elem, Index>(std::make_shared<DataMatrix<1, Elem, Index, Container>>(nc));
 	}
 		
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	std::shared_ptr<Matrix<1, Elem, Index>> DataMatrix<1, Elem, Index, Container>::clone() const
+	tensor_t<1, Elem, Index> DataMatrix<1, Elem, Index, Container>::clone() const
 	{
-		return std::make_shared<DataMatrix<1, Elem, Index, Container>>(data);
+		return tensor_t<1, Elem, Index>(std::make_shared<DataMatrix<1, Elem, Index, Container>>(data));
 	}
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	std::shared_ptr<Matrix<2, Elem, Index>> DataMatrix<1, Elem, Index, Container>::T() const
+	tensor_t<2, Elem, Index> DataMatrix<1, Elem, Index, Container>::T() const
 	{
 		throw NotImp();
 	}
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	std::shared_ptr<Matrix<1, Elem, Index>> DataMatrix<1, Elem, Index, Container>::submatrix(std::tuple<Index>) const
+	tensor_t<1, Elem, Index> DataMatrix<1, Elem, Index, Container>::submatrix(std::tuple<Index>) const
 	{
 		throw NotImp();
 	}

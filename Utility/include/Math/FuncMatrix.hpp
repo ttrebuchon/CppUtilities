@@ -49,7 +49,7 @@ namespace Math
 	{
 		for (auto pair : m.instantiated)
 		{
-			this->instantiated[pair.first] = std::shared_ptr<Matrix<Dims-1, Elem, Index>>(pair.second->clone());
+			this->instantiated[pair.first] = tensor_t<Dims-1, Elem, Index>(pair.second->clone());
 		}
 	}
 	
@@ -105,7 +105,7 @@ namespace Math
 	//by plugging the "i" argument in
 	//and returning a new functional
 	template <int Dims, typename Elem, typename Index>
-	std::shared_ptr<Matrix<Dims-1, Elem, Index>> FuncMatrix<Dims, Elem, Index>::operator[](Index i) const
+	tensor_t<Dims-1, Elem, Index> FuncMatrix<Dims, Elem, Index>::operator[](Index i) const
 	{
 		if (i >= this->size[0] && this->size[0] >= 0)
 		{
@@ -115,7 +115,7 @@ namespace Math
 		{
 			return ((FuncMatrix<Dims, Elem, Index>*)this)->instantiated[i]->clone();
 		}
-		auto tmp =  std::make_shared<FuncMatrix<Dims-1, Elem, Index>>(([=](auto ...args) -> Elem { return def(i, args...); }));
+		tensor_t<Dims-1, Elem, Index> tmp =  std::make_shared<FuncMatrix<Dims-1, Elem, Index>>(([=](auto ...args) -> Elem { return def(i, args...); }));
 		
 		for (auto i = 1; i < Dims; i++)
 		{
@@ -125,20 +125,22 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	Matrix<Dims-1, Elem, Index>& FuncMatrix<Dims, Elem, Index>::operator()(Index i)
+	tensor_t<Dims-1, Elem, Index>& FuncMatrix<Dims, Elem, Index>::operator()(Index i)
 	{
 		if (instantiated.count(i) <= 0)
 		{
 			auto nPtr = this->operator[](i);
 			instantiated[i] = nPtr;
 		}
-		return *instantiated[i];
+		static_assert(!std::is_same<decltype(instantiated[i]), tensor_t<Dims-1, Elem, Index>&>::value, "static_assert type failure");
+		static_assert(std::is_same<decltype(instantiated[i]), tensor_t<Dims-1, Elem, Index>&>::value, "static_assert type failure");
+		return (tensor_t<Dims-1, Elem, Index>&)instantiated[i];
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	std::shared_ptr<Matrix<Dims, Elem, Index>> FuncMatrix<Dims, Elem, Index>::mul(const double n)
+	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::mul(const double n)
 	{
-		auto ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>([=] (auto... args)
+		tensor_t<Dims, Elem, Index> ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>([=] (auto... args)
 		{
 			return def(args...)*n;
 		});
@@ -150,7 +152,7 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	std::shared_ptr<Matrix<Dims, Elem, Index>> FuncMatrix<Dims, Elem, Index>::mul(const Matrix<Dims, Elem, Index>& m)
+	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::mul(const tensor_t<Dims, Elem, Index> m)
 	{
 		Index nSize[Dims];
 		for (int i = 0; i < Dims; i++)
@@ -181,7 +183,7 @@ namespace Math
 		{
 			FuncMatrix<Dims, Elem, Index>& M = (FuncMatrix<Dims, Elem, Index>&)m;
 			Func mDef = M.def;
-			auto ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>([=] (auto... args)
+			tensor_t<Dims, Elem, Index> ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>([=] (auto... args)
 			{
 				return (def(args...) * mDef(args...));
 			});
@@ -199,20 +201,20 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	std::shared_ptr<Matrix<Dims, Elem, Index>> FuncMatrix<Dims, Elem, Index>::add(const Matrix<Dims, Elem, Index>& m)
+	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::add(const tensor_t<Dims, Elem, Index> m)
 	{
 		Index nSize[Dims];
 		for (int i = 0; i < Dims; i++)
 		{
 			nSize[i] = -1;
-			if (this->size[i] == 0 || m.size[i] == 0)
+			if (this->size[i] == 0 || m.size(i) == 0)
 			{
 				throw MatrixInvalidSizeException();
 			}
 			
 			if (m.size[i] > 0)
 			{
-				nSize[i] = m.size[i];
+				nSize[i] = m.size(i);
 			}
 			
 			if ((this->size[i] < nSize[i] && this->size[i] > 0) || (nSize[i] < 0 && this->size[i] > 0))
@@ -230,7 +232,7 @@ namespace Math
 		{
 			FuncMatrix<Dims, Elem, Index>& M = (FuncMatrix<Dims, Elem, Index>&)m;
 			Func mDef = M.def;
-			auto ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>(Func([=] (auto... args)
+			tensor_t<Dims, Elem, Index> ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>(Func([=] (auto... args)
 			{
 				return (def(args...) + mDef(args...));
 			}));
@@ -248,20 +250,20 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	std::shared_ptr<Matrix<Dims, Elem, Index>> FuncMatrix<Dims, Elem, Index>::sub(const Matrix<Dims, Elem, Index>& m)
+	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::sub(const tensor_t<Dims, Elem, Index> m)
 	{
 		Index nSize[Dims];
 		for (int i = 0; i < Dims; i++)
 		{
 			nSize[i] = -1;
-			if (this->size[i] == 0 || m.size[i] == 0)
+			if (this->size[i] == 0 || m.size(i) == 0)
 			{
 				throw MatrixInvalidSizeException();
 			}
 			
-			if (m.size[i] > 0)
+			if (m.size(i) > 0)
 			{
-				nSize[i] = m.size[i];
+				nSize[i] = m.size(i);
 			}
 			
 			if ((this->size[i] < nSize[i] && this->size[i] > 0) || (nSize[i] < 0 && this->size[i] > 0))
@@ -279,7 +281,7 @@ namespace Math
 		{
 			FuncMatrix<Dims, Elem, Index>& M = (FuncMatrix<Dims, Elem, Index>&)m;
 			auto mDef = M.def;
-			auto ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>(Func([=] (auto... args)
+			tensor_t<Dims, Elem, Index> ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>(Func([=] (auto... args)
 			{
 				return (def(args...) - mDef(args...));
 			}));
@@ -297,7 +299,7 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	std::shared_ptr<Matrix<Dims, Elem, Index>> FuncMatrix<Dims, Elem, Index>::clone() const
+	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::clone() const
 	{
 		auto nPtr = std::make_shared<FuncMatrix>(this->def);
 		for (int i = 0; i < Dims; i++)
@@ -306,10 +308,9 @@ namespace Math
 		}
 		for (auto KV : this->instantiated)
 		{
-			nPtr->instantiated[KV.first] = std::shared_ptr<Matrix<Dims-1, Elem, Index>>(KV.second->clone());
+			nPtr->instantiated[KV.first] = tensor_t<Dims-1, Elem, Index>(KV.second->clone());
 		}
-		return nPtr;
-		//return new FuncMatrix(*this);
+		return tensor_t<Dims, Elem, Index>(nPtr);
 	}
 	
 	//Transpose the matrix by reversing
@@ -317,9 +318,9 @@ namespace Math
 	//arguments 
 	//Ex: f(i, j, k) => f(k, j, i)
 	template <int Dims, typename Elem, typename Index>
-	std::shared_ptr<Matrix<Dims, Elem, Index>> FuncMatrix<Dims, Elem, Index>::T() const
+	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::T() const
 	{
-		auto n = std::make_shared<FuncMatrix>(
+		tensor_t<Dims, Elem, Index> n = std::make_shared<FuncMatrix>(
 		[=] (auto... args)
 		{
 			auto revArgs = reverseTuple(args...);
@@ -327,7 +328,7 @@ namespace Math
 		});
 		for (int i = 0; i < Dims; i++)
 		{
-			n->size[i] = this->size[Dims-1-i];
+			n->setSize(i, this->size[Dims-1-i]);
 		}
 		return n;
 	}
@@ -537,7 +538,7 @@ namespace Math
 	
 	
 	template <int Dims, typename Elem, typename Index>
-	std::shared_ptr<Matrix<Dims, Elem, Index>> FuncMatrix<Dims, Elem, Index>::submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value removed) const
+	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value removed) const
 	{
 		for (auto size : this->size)
 		{
@@ -547,7 +548,7 @@ namespace Math
 			}
 		}
 		auto defco = Func(def);
-		auto ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>(
+		tensor_t<Dims, Elem, Index> ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>(
 		[=] (auto... args)
 		{
 			//Package the functional's
@@ -568,7 +569,7 @@ namespace Math
 		});
 		for (auto i = 0; i < Dims; i++)
 		{
-			ret->size[i] = this->size[i] - 1;
+			ret->setSize(i, this->size[i] - 1);
 		}
 		
 		return ret;
@@ -579,10 +580,10 @@ namespace Math
 	
 	template <int Dims, typename Elem, typename Index>
 	template <int Dims2>
-	std::shared_ptr<Matrix<Dims+Dims2-2, Elem, Index>> Matrix<Dims, Elem, Index>::contract(std::shared_ptr<Matrix<Dims2, Elem, Index>> m)
+	tensor_t<Dims+Dims2-2, Elem, Index> Matrix<Dims, Elem, Index>::contract(tensor_t<Dims2, Elem, Index> m)
 	{
 		const int nDims = Dims+Dims2-2;
-		if (this->size[Dims-1] != m->size[0] || this->size[Dims-1] <= 0)
+		if (this->size[Dims-1] != m->size(0) || this->size[Dims-1] <= 0)
 		{
 			throw MatrixInvalidSizeException();
 		}
@@ -598,7 +599,7 @@ namespace Math
 			
 			auto m_1 = _Helpers::Caller<Dims, Elem, Index>::PrefixCaller(tclone, args...);
 			Elem val = 0;
-			for (Index i = 0; i < am->size[0]; i++)
+			for (Index i = 0; i < am->size(0); i++)
 			{
 				
 				auto m2_tmp = am->at(i);
@@ -618,11 +619,11 @@ namespace Math
 		
 		for (int i = 0; i < Dims-1; i++)
 		{
-			res->size[i] = this->size[i];
+			res->size(i, this->size[i]);
 		}
 		for (int i = 1; i < Dims2; i++)
 		{
-			res->size[i+Dims-2] = m->size[i];
+			res->size(i+Dims-2, m->size(i));
 		}
 		return res;
 	}
@@ -732,28 +733,28 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index>
-	std::shared_ptr<Matrix<1, Elem, Index>> FuncMatrix<1, Elem, Index>::mul(const double n)
+	tensor_t<1, Elem, Index> FuncMatrix<1, Elem, Index>::mul(const double n)
 	{
-		auto ret = std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
+		tensor_t<1, Elem, Index> ret = tensor_t<1, Elem, Index>(std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
 		{
 			return def(i)*n;
-		});
-		ret->size[0] = this->size[0];
+		}));
+		ret->setSize(0, this->size[0]);
 		return ret;
 	}
 	
 	template <typename Elem, typename Index>
-	std::shared_ptr<Matrix<1, Elem, Index>> FuncMatrix<1, Elem, Index>::mul(const Matrix<1, Elem, Index>& m)
+	tensor_t<1, Elem, Index> FuncMatrix<1, Elem, Index>::mul(const tensor_t<1, Elem, Index> m)
 	{
-		if (this->size[0] == 0 || m.size[0] == 0)
+		if (this->size[0] == 0 || m.size(0) == 0)
 		{
 			throw MatrixInvalidSizeException();
 		}
 		
 		Index nSize = -1;
-		if (m.size[0] > 0)
+		if (m.size(0) > 0)
 		{
-			nSize = m.size[0];
+			nSize = m.size(0);
 		}
 		
 		if ((this->size[0] < nSize && this->size[0] > 0) || (nSize < 0 && this->size[0] > 0))
@@ -770,13 +771,13 @@ namespace Math
 		
 		if (m.imp() == "FuncMatrix")
 		{
-			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)m;
+			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)*(std::shared_ptr<Matrix<1, Elem, Index>>)m;
 			
-			auto ret = std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
+			auto ret = tensor_t<1, Elem, Index>(std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
 			{
 				return (def(i) * M.def(i));
-			});
-			ret->size[0] = nSize;
+			}));
+			ret->setSize(0, nSize);
 			return ret;
 		}
 		else
@@ -786,17 +787,17 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index>
-	std::shared_ptr<Matrix<1, Elem, Index>> FuncMatrix<1, Elem, Index>::add(const Matrix<1, Elem, Index>& m)
+	tensor_t<1, Elem, Index> FuncMatrix<1, Elem, Index>::add(const tensor_t<1, Elem, Index> m)
 	{
-		if (this->size[0] == 0 || m.size[0] == 0)
+		if (this->size[0] == 0 || m.size(0) == 0)
 		{
 			throw MatrixInvalidSizeException();
 		}
 		
 		Index nSize = -1;
-		if (m.size[0] > 0)
+		if (m.size(0) > 0)
 		{
-			nSize = m.size[0];
+			nSize = m.size(0);
 		}
 		
 		if ((this->size[0] < nSize && this->size[0] > 0) || (nSize < 0 && this->size[0] > 0))
@@ -813,13 +814,13 @@ namespace Math
 		
 		if (m.imp() == "FuncMatrix")
 		{
-			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)m;
+			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)*(std::shared_ptr<Matrix<1, Elem, Index>>)m;
 			
-			auto ret = std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
+			auto ret = tensor_t<1, Elem, Index>(std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
 			{
 				return (def(i) + M.def(i));
-			});
-			ret->size[0] = nSize;
+			}));
+			ret->setSize(0, nSize);
 			return ret;
 		}
 		else
@@ -829,17 +830,17 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index>
-	std::shared_ptr<Matrix<1, Elem, Index>> FuncMatrix<1, Elem, Index>::sub(const Matrix<1, Elem, Index>& m)
+	tensor_t<1, Elem, Index> FuncMatrix<1, Elem, Index>::sub(const tensor_t<1, Elem, Index> m)
 	{
-		if (this->size[0] == 0 || m.size[0] == 0)
+		if (this->size[0] == 0 || m.size(0) == 0)
 		{
 			throw MatrixInvalidSizeException();
 		}
 		
 		Index nSize = -1;
-		if (m.size[0] > 0)
+		if (m.size(0) > 0)
 		{
-			nSize = m.size[0];
+			nSize = m.size(0);
 		}
 		
 		if ((this->size[0] < nSize && this->size[0] > 0) || (nSize < 0 && this->size[0] > 0))
@@ -856,13 +857,13 @@ namespace Math
 		
 		if (m.imp() == "FuncMatrix")
 		{
-			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)m;
+			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)*(std::shared_ptr<Matrix<1, Elem, Index>>)m;
 			
-			auto ret = std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
+			auto ret = tensor_t<1, Elem, Index>(std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
 			{
 				return (def(i) - M.def(i));
-			});
-			ret->size[0] = nSize;
+			}));
+			ret->setSize(0, nSize);
 			return ret;
 		}
 		else
@@ -872,19 +873,19 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index>
-	std::shared_ptr<Matrix<1, Elem, Index>> FuncMatrix<1, Elem, Index>::clone() const
+	tensor_t<1, Elem, Index> FuncMatrix<1, Elem, Index>::clone() const
 	{
-		return std::make_shared<FuncMatrix>(*this);
+		return tensor_t<1, Elem, Index>(std::make_shared<FuncMatrix>(*this));
 	}
 	
 	template <typename Elem, typename Index>
-	std::shared_ptr<Matrix<2, Elem, Index>> FuncMatrix<1, Elem, Index>::T() const
+	tensor_t<2, Elem, Index> FuncMatrix<1, Elem, Index>::T() const
 	{
 		throw NotImp();
 	}
 	
 	template <typename Elem, typename Index>
-	std::shared_ptr<Matrix<1, Elem, Index>> FuncMatrix<1, Elem, Index>::submatrix(std::tuple<Index> t) const
+	tensor_t<1, Elem, Index> FuncMatrix<1, Elem, Index>::submatrix(std::tuple<Index> t) const
 	{
 		throw MatrixInvalidSizeException();
 	}

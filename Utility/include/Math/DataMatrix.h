@@ -44,9 +44,9 @@ namespace Math
 		
 		typedef typename _Helpers::RecursiveDataMatrix<Dims, Elem, Container>::type Data;
 		
-		typedef Matrix<Dims-1, Elem, Index> Subset;
+		typedef tensor_t<Dims-1, Elem, Index> Subset;
 		
-		Container<std::shared_ptr<Subset>> data;
+		Container<Subset> data;
 		
 		DataMatrix(Index);
 		
@@ -63,17 +63,17 @@ namespace Math
 		
 		virtual void setSize(const Index dim, const Index s) override;
 		
-		std::shared_ptr<Matrix<Dims-1, Elem, Index>> operator[](Index i) const override;
-		Matrix<Dims-1, Elem, Index>& operator()(Index i) override;
+		tensor_t<Dims-1, Elem, Index> operator[](Index i) const override;
+		tensor_t<Dims-1, Elem, Index>& operator()(Index i) override;
 		
 		
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> mul(const double) override;
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> mul(const Matrix<Dims, Elem, Index>&) override;
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> add(const Matrix<Dims, Elem, Index>&) override;
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> sub(const Matrix<Dims, Elem, Index>&) override;
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> clone() const override;
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> T() const override;
-		virtual std::shared_ptr<Matrix<Dims, Elem, Index>> submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const override;
+		virtual tensor_t<Dims, Elem, Index> mul(const double) override;
+		virtual tensor_t<Dims, Elem, Index> mul(const tensor_t<Dims, Elem, Index>) override;
+		virtual tensor_t<Dims, Elem, Index> add(const tensor_t<Dims, Elem, Index>) override;
+		virtual tensor_t<Dims, Elem, Index> sub(const tensor_t<Dims, Elem, Index>) override;
+		virtual tensor_t<Dims, Elem, Index> clone() const override;
+		virtual tensor_t<Dims, Elem, Index> T() const override;
+		virtual tensor_t<Dims, Elem, Index> submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const override;
 		
 	};
 	
@@ -114,14 +114,14 @@ namespace Math
 		Elem& operator()(Index i) override;
 		
 		
-		virtual std::shared_ptr<Matrix<1, Elem, Index>> mul(const double) override;
-		virtual std::shared_ptr<Matrix<1, Elem, Index>> mul(const Matrix<1, Elem, Index>&) override;
-		virtual std::shared_ptr<Matrix<1, Elem, Index>> add(const Matrix<1, Elem, Index>&) override;
-		virtual std::shared_ptr<Matrix<1, Elem, Index>> sub(const Matrix<1, Elem, Index>&) override;
-		virtual std::shared_ptr<Matrix<1, Elem, Index>> clone() const override;
+		virtual tensor_t<1, Elem, Index> mul(const double) override;
+		virtual tensor_t<1, Elem, Index> mul(const tensor_t<1, Elem, Index>) override;
+		virtual tensor_t<1, Elem, Index> add(const tensor_t<1, Elem, Index>) override;
+		virtual tensor_t<1, Elem, Index> sub(const tensor_t<1, Elem, Index>) override;
+		virtual tensor_t<1, Elem, Index> clone() const override;
 		
-		virtual std::shared_ptr<Matrix<2, Elem, Index>> T() const override;
-		virtual std::shared_ptr<Matrix<1, Elem, Index>> submatrix(std::tuple<Index>) const override;
+		virtual tensor_t<2, Elem, Index> T() const override;
+		virtual tensor_t<1, Elem, Index> submatrix(std::tuple<Index>) const override;
 		virtual void append(Elem value) override;
 		
 	};

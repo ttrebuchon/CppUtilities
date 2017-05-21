@@ -1,5 +1,8 @@
 #pragma once
 
+#include <functional>
+#include <vector>
+
 namespace Util
 {
 namespace Math
@@ -46,6 +49,35 @@ namespace _Helpers
 		static std::tuple<Args..., TArgs...> Get(Args... args, std::tuple<TArgs...> t)
 		{
 			return std::tuple_cat(std::make_tuple(args...), t);
+		}
+	};
+	
+	template <typename T>
+	struct ArgsToVec
+	{
+		template <typename...Args>
+		static std::vector<T> call(Args... args)
+		{
+			std::vector<T> vec;
+			_call(vec, args...);
+			return vec;
+		}
+		
+		private:
+		
+		template <typename Arg1, typename...Args>
+		static std::vector<T>& _call(std::vector<T>& vec, Arg1 arg1, Args... args)
+		{
+			vec.push_back(arg1);
+			_call(vec, args...);
+			return vec;
+		}
+		
+		template <typename Arg1>
+		static std::vector<T>& _call(std::vector<T>& vec, Arg1 arg1)
+		{
+			vec.push_back(arg1);
+			return vec;
 		}
 	};
 	

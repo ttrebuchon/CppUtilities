@@ -201,6 +201,12 @@ namespace Math
 		return val.str();
 	}
 	
+	template <int Dims, typename Elem, typename Index>
+	void Matrix<Dims, Elem, Index>::set(const Index i, const tensor_t<Dims-1, Elem, Index> ptr)
+	{
+		(*this)(i) = *ptr;
+	}
+	
 	
 	
 	

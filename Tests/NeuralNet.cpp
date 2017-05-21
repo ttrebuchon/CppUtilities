@@ -7,6 +7,37 @@ using Utils::NeuralNet::Net;
 using boost::multiprecision::cpp_dec_float;
 using boost::multiprecision::number;
 
+template <typename T>
+T recipricoal(T t)
+{
+	T t1 = 1;
+	return t1/t;
+}
+template <typename T>
+T invSigmoid(T x)
+{
+	return -1*log(recipricoal<T>(x) - 1);
+}
+
+template <typename T>
+T invSigmoid_D(T x)
+{
+	return recipricoal<T>(x - x*x);
+}
+
+
+auto outF(auto f, auto str)
+{
+	return [=] (auto x)
+	{
+		dout << str << ": " << x << "\t";
+		auto res = f(x);
+		dout << res << std::endl;
+		return res;
+	};
+}
+
+
 bool Testing::Neural()
 {
 	
@@ -21,6 +52,14 @@ bool Testing::Neural()
 	// auto bin_D = [] (auto x) {
 	// 	return 0;
 	// };
+	
+	auto invSig_A= [] (auto x) {
+		return invSigmoid<decltype(x)>(x);
+	};
+	
+	auto invSig_D = [] (auto x) {
+		return invSigmoid_D<decltype(x)>(x);
+	};
 
 	
 	
@@ -63,15 +102,18 @@ bool Testing::Neural()
 	typedef double Precise;
 	Precise x = 1;
 	x *= 4;
+	x = invSig_A(x);
+	x = invSig_D(x);
 	
 	Net<Precise> nn2(2, 1);
+	//nn2.setOutputActivation(invSig_A, invSig_D);
 	nn2.addData({0, 0}, {0});
 	nn2.addData({0, 1}, {1});
 	nn2.addData({1, 0}, {1});
 	nn2.addData({1, 1}, {2});
 	nn2.addData({2, 1}, {3});
 	nn2.addData({1, 2}, {3});
-	nn2.grow(layers, multiplier);
+	nn2.grow(3*layers, multiplier/2);
 
 	nn2.bounds.min = 0;
 	

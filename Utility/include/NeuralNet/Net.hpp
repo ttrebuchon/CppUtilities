@@ -170,11 +170,11 @@ namespace NeuralNet
 		
 		InOut in(std::make_shared<Math::DataMatrix<1, T>>(in_v));
 		sanity_d(in_v.size() == inSize);
-		sanity_d(in.size()[0] == inSize);
+		sanity_d(in.size(0) == inSize);
 		
 		InOut out(std::make_shared<Math::DataMatrix<1, T>>(out_v));
 		sanity_d(out_v.size() == outSize);
-		sanity_d(out.size()[0] == outSize);
+		sanity_d(out.size(0) == outSize);
 		
 		training.push_back(std::make_tuple(in, out));
 	}
@@ -201,7 +201,7 @@ namespace NeuralNet
 	
 	template <typename T>
 	template <typename List>
-	Math::matrix_t<1, T> Net<T>::go(List input)
+	Math::tensor_t<1, T> Net<T>::go(List input)
 	{
 		reset();
 		for (int i = 0; i < inSize; i++)
@@ -219,8 +219,18 @@ namespace NeuralNet
 		{
 			results.push_back(out->get());
 		}
-		return Math::matrix_t<1, T>(std::make_shared<Math::DataMatrix<1, T>>(results));
+		return Math::tensor_t<1, T>(std::make_shared<Math::DataMatrix<1, T>>(results));
 		
+	}
+	
+	
+	template <typename T>
+	void Net<T>::setOutputActivation(Activation_t act, Activation_t deriv)
+	{
+		for (auto neuron : output_n)
+		{
+			neuron->setFuncs(act, deriv);
+		}
 	}
 	
 	

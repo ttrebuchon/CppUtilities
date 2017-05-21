@@ -24,7 +24,7 @@ namespace NeuralNet
 		private:
 		typedef std::function<T(T)> Activation_t;
 		
-		typedef Math::matrix_t<1, T> InOut;
+		typedef Math::tensor_t<1, T> InOut;
 		int inSize;
 		int outSize;
 		
@@ -43,7 +43,7 @@ namespace NeuralNet
 		
 		
 		public:
-
+		
 		Bounds<T> bounds;
 
 		Net(int inputSize, int outputSize, 
@@ -68,7 +68,9 @@ namespace NeuralNet
 		void train(int cycles = 100);
 		
 		template <typename List = std::vector<T>>
-		Math::matrix_t<1, T> go(List input);
+		Math::tensor_t<1, T> go(List input);
+		
+		void setOutputActivation(Activation_t act, Activation_t deriv);
 	};
 	
 }

@@ -63,6 +63,21 @@ namespace Math
 	
 	
 	template <int Dims, typename Elem, typename Index>
+	matrix_t<2, Elem, Index> matrix_t<Dims, Elem, Index>::identity()
+	{
+		return matrix_t<2, Elem, Index>([](Index i, Index j) -> Elem {
+			if (i == j)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		});
+	}
+	
+	template <int Dims, typename Elem, typename Index>
 	matrix_t<Dims, Elem, Index>& matrix_t<Dims, Elem, Index>::operator=(Matrix<Dims, Elem, Index>* ptr)
 	{
 		assert(ptr != NULL);
@@ -91,6 +106,7 @@ namespace Math
 	{
 		static_assert(std::is_same<decltype(this->ptr->operator()(arg1, args...)), typename _Helpers::t_RefReturnHelper<Matrix, Dims, Elem, Index, sizeof...(Args)+1>::type&>::value, "Matrix_t.hpp: operator() inconsistency");
 		static_assert(std::is_same<decltype(make_matrix_t(this->ptr->operator()(arg1, args...))), typename _Helpers::t_RefReturnHelper<matrix_t, Dims, Elem, Index, sizeof...(Args)+1>::type>::value, "Matrix_t.hpp: operator() inconsistency");
+		
 		return make_matrix_t(this->ptr->operator()(arg1, args...));
 	}
 	
@@ -112,12 +128,6 @@ namespace Math
 	matrix_t<Dims+Dims2-2, Elem, Index> matrix_t<Dims, Elem, Index>::contract(matrix_t<Dims2, Elem, Index> m)
 	{
 		return matrix_t<Dims+Dims2-2, Elem, Index>(this->ptr->contract(m.ptr));
-	}
-
-	template <int Dims, typename Elem, typename Index>
-	Elem matrix_t<Dims, Elem, Index>::set(Elem value, auto ...index)
-	{
-		return this->ptr->set(value, index...);
 	}
 	
 	template <int Dims, typename Elem, typename Index>	
@@ -151,6 +161,17 @@ namespace Math
 		return same;
 	}
 	
+	template <int Dims, typename Elem, typename Index>
+	void matrix_t<Dims, Elem, Index>::set(const Index i, const matrix_t<Dims-1, Elem, Index> m)
+	{
+		this->ptr->set(i, m.ptr);
+	}
+	
+	template <int Dims, typename Elem, typename Index>
+	void matrix_t<Dims, Elem, Index>::set(const Index i, const std::shared_ptr<Matrix<Dims-1, Elem, Index>> m)
+	{
+		this->ptr->set(i, m);
+	}
 	
 	
 	
@@ -177,6 +198,25 @@ namespace Math
 	
 	
 	
+	
+	
+	template <typename Elem, typename Index>
+	matrix_t<2, Elem, Index> matrix_t<1, Elem, Index>::identity()
+	{
+		auto i = matrix_t<2, Elem, Index>([](Index i, Index j) -> Elem {
+			if (i == j)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		});
+		i.setSize(0, -1);
+		i.setSize(1, -1);
+		return i;
+	}
 	
 	template <typename Elem, typename Index>
 	matrix_t<1, Elem, Index>& matrix_t<1, Elem, Index>::operator=(Matrix<1, Elem, Index>* ptr)
@@ -207,12 +247,6 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index>
-	Elem matrix_t<1, Elem, Index>::set(Elem value, Index index)
-	{
-		return this->ptr->set(value, index);
-	}
-	
-	template <typename Elem, typename Index>
 	void matrix_t<1, Elem, Index>::append(Elem value)
 	{
 		this->ptr->append(value);
@@ -236,6 +270,12 @@ namespace Math
 			same = ((*this)[(Index)i] == m[(Index2)i]);
 		}
 		return same;
+	}
+	
+	template <typename Elem, typename Index>
+	void matrix_t<1, Elem, Index>::set(const Index i, const Elem e)
+	{
+		(*this->ptr)(i) = e;
 	}
 	
 }

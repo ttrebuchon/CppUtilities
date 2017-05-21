@@ -1,6 +1,6 @@
 #include "../Tests_Helpers.h"
 
-
+/*
 #include <Math/Matrix.h>
 #include <vector>
 #include <string>
@@ -36,7 +36,7 @@ bool Math_Matrix_Go()
 	
 	FuncMatrix<2, double> m1(f2);
 	auto c2_1 = m1[2];
-	auto c1_2_1 = (*c2_1)[1];
+	auto c1_2_1 = c2_1[1];
 	assert_ex(c1_2_1 == 2);
 	
 	matrix_t<2, double> mt1(std::make_shared<FuncMatrix<2, double>>(f2));
@@ -540,9 +540,15 @@ bool Test_DataMatrix()
 		}
 	}
 	
+	auto id = matrix_t<2, double>::identity();
+	id.setSize(0, m24.size()[0]);
+	id.setSize(1, m24.size()[0]);
+	assert_ex(m24.contract(id) == m24);
+	assert_ex(id.contract(m24) == m24);
+	
 	
 	
 	dout << "Passed." << endl;
 	
 	return true;
-}
+}*/
