@@ -12,8 +12,6 @@
     6.1) Pseudo-Bind() functionality
     6.2) Tuple as args functionality
 
-8) Fix likely memory leaks in operations in matrix module (Read: Fix careless implementation)
-
 9) nth Polynomial Estimation module?
 
 10) Look into algorithms for nonlinear regression
@@ -21,4 +19,8 @@
 11) Implement matrix equation solver method(s)
     11.1) Useful for nth polynomial calculation
 
-12) Add operator()(Index...) methods to matrix classes that return references to values for applicable classes (So that values may be modified if possible)
+13) Rewrite matrix module to:
+    13.1) Rename matrix_t to tensor_t
+    13.2) Change tensor_t to inherit from std::shared_ptr<Matrix<...>>
+    13.3) Use tensor_t as internal ptr representation
+    13.4) Integrate tensor_t<Dims,...> and tensor_t<1,...> into one class
