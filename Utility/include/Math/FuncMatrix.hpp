@@ -628,6 +628,27 @@ namespace Math
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	template <typename Elem, typename Index>
 	FuncMatrix<1, Elem, Index>::FuncMatrix(std::function<Elem(Index)> f) : Matrix<1, Elem, Index>(), def(f)
 	{
@@ -685,7 +706,8 @@ namespace Math
 	{
 		if (instantiated.count(i) <= 0)
 		{
-			instantiated[i] = this->operator[](i);
+			auto nElem = this->operator[](i);
+			instantiated[i] = nElem;
 		}
 		return instantiated[i];
 	}
