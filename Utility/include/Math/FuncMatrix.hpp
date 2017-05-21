@@ -54,6 +54,19 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
+	template <typename... Size>
+	FuncMatrix<Dims, Elem, Index>::FuncMatrix(Func f, Index s1, Size... sizes) : Matrix<Dims, Elem, Index>(), def(f), instantiated()
+	{
+		static_assert(sizeof...(Size) > 0, "Wrong method being called!");
+		auto sizeVec = _Helpers::ArgsToVec<Index>::call(sizes...);
+		this->setSize(0, s1);
+		for (auto i = 0; i < Dims-1 && i < sizeVec.size(); i++)
+		{
+			this->setSize(i+1, sizeVec[i]);
+		}
+	}
+	
+	template <int Dims, typename Elem, typename Index>
 	void FuncMatrix<Dims, Elem, Index>::setSize(const Index dim, const Index s)
 	{
 		if (dim >= Dims || dim < 0)
@@ -662,6 +675,12 @@ namespace Math
 		{
 			this->instantiated[pair.first] = pair.second;
 		}
+	}
+	
+	template <typename Elem, typename Index>
+	FuncMatrix<1, Elem, Index>::FuncMatrix(std::function<Elem(Index)> f, Index size) : Matrix<1, Elem, Index>(), def(f)
+	{
+		this->setSize(0, size);
 	}
 	
 	template <typename Elem, typename Index>

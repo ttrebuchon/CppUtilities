@@ -35,6 +35,8 @@ namespace Math
 		
 		FuncMatrix(Func f);
 		FuncMatrix(const FuncMatrix&);
+		template <typename... Size>
+		FuncMatrix(Func f, Index s1, Size...);
 		
 		virtual std::string imp() const override { return "FuncMatrix"; }
 		
@@ -97,6 +99,7 @@ namespace Math
 		
 		FuncMatrix(Func f);
 		FuncMatrix(const FuncMatrix&);
+		FuncMatrix(Func f, Index size);
 		//FuncMatrix(std::shared_ptr<FuncMatrix>);
 		
 		virtual std::string imp() const override { return "FuncMatrix"; }
