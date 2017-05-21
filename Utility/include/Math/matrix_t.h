@@ -144,6 +144,9 @@ namespace Math
 		void append(matrix_t<Dims2, Elem, Index> m);
 		matrix_t& setSize(const Index dim, const Index size);
 		
+		template <typename Elem2, typename Index2>
+		bool operator==(const matrix_t<Dims, Elem2, Index2>) const;
+		
 		template <int D2, typename E2, typename I2> 
 		friend class matrix_t;
 		
@@ -186,6 +189,9 @@ namespace Math
 		void append(Elem value);
 		matrix_t& setSize(const Index dim, const Index size);
 		matrix_t& setSize(const Index s) { return setSize(0, s); }
+		
+		template <typename Elem2, typename Index2>
+		bool operator==(const matrix_t<1, Elem2, Index2>) const;
 		
 		template <int D2, typename E2, typename I2> 
 		friend class matrix_t;

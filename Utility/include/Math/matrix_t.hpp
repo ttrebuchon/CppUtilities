@@ -134,6 +134,23 @@ namespace Math
 		return *this;
 	}
 	
+	template <int Dims, typename Elem, typename Index>
+	template <typename Elem2, typename Index2>
+	bool matrix_t<Dims, Elem, Index>::operator==(const matrix_t<Dims, Elem2, Index2> m) const
+	{
+		if (this->size()[0] != m.size()[0])
+		{
+			return false;
+		}
+		
+		bool same = true;
+		for (auto i = 0; i < this->size()[0] && same; i++)
+		{
+			same = ((*this)[(Index)i] == m[(Index)i]);
+		}
+		return same;
+	}
+	
 	
 	
 	
@@ -206,6 +223,19 @@ namespace Math
 	{
 		this->ptr->setSize(dim, size);
 		return *this;
+	}
+	
+	template <typename Elem, typename Index>
+	template <typename Elem2, typename Index2>
+	bool matrix_t<1, Elem, Index>::operator==(const matrix_t<1, Elem2, Index2> m) const
+	{
+		
+		bool same = true;
+		for (auto i = 0; i < this->size()[0] && same; i++)
+		{
+			same = ((*this)[(Index)i] == m[(Index2)i]);
+		}
+		return same;
 	}
 	
 }
