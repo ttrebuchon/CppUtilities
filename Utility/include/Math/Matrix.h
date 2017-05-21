@@ -4,14 +4,20 @@
 #include <memory>
 #include <assert.h>
 #include <cstring>
+#include <iostream>
 
-#include "tensor_t.h"
+
 
 namespace Util
 {
 namespace Math
 {
-	
+	template <int Dims, typename Elem, typename Index>
+	class tensor_t;
+
+
+
+
 	namespace _Helpers
 	{
 		template <template <int, typename...> typename Obj, int Dims, typename Elem, typename Index, int argCount>
@@ -33,11 +39,6 @@ namespace Math
 		};
 	}
 	UTIL_CUSTOM_EXCEPTION(MatrixInvalidSizeException, );
-
-	struct Matrix_Counter
-	{
-		static int alive;
-	};
 	
 	
 	
@@ -63,16 +64,14 @@ namespace Math
 			{
 				size[i] = -1;
 			}
-			assert(Matrix_Counter::alive++ >= 0);
 		}
 
 		_MatrixBase_(const _MatrixBase_& m) : size()
 		{
 			std::memcpy(this->size, m.size, sizeof(decltype(size[0]))*Dims);
-			assert(Matrix_Counter::alive++ >= 0);
 		}
 
-		virtual ~_MatrixBase_() { assert(Matrix_Counter::alive-- >= 0); }
+		virtual ~_MatrixBase_() {  }
 		
 		virtual std::string imp() const = 0;
 		
@@ -176,12 +175,27 @@ namespace Math
 		
 		std::shared_ptr<Matrix<Dims, Elem, Index>> get_ptr()
 		{
-			return this->shared_from_this();
+			try
+			{
+				return this->shared_from_this();
+			}
+			catch (std::bad_weak_ptr)
+			{
+				return std::shared_ptr<Matrix<Dims, Elem, Index>>(this);
+			}
 		}
 		
 		std::shared_ptr<const Matrix<Dims, Elem, Index>> get_ptr() const
 		{
-			return this->shared_from_this();
+			try
+			{
+				return this->shared_from_this();
+			}
+			catch (std::bad_weak_ptr&)
+			{
+				return std::shared_ptr<const Matrix<Dims, Elem, Index>>(this);
+			}
+			
 		}
 		
 		virtual std::string toString() const override;
@@ -232,12 +246,26 @@ namespace Math
 		
 		std::shared_ptr<Matrix<1, Elem, Index>> get_ptr()
 		{
-			return this->shared_from_this();
+			try
+			{
+				return this->shared_from_this();
+			}
+			catch (std::bad_weak_ptr)
+			{
+				return std::shared_ptr<Matrix<1, Elem, Index>>(this);
+			}
 		}
 		
 		std::shared_ptr<const Matrix<1, Elem, Index>> get_ptr() const
 		{
-			return this->shared_from_this();
+			try
+			{
+				return this->shared_from_this();
+			}
+			catch (std::bad_weak_ptr)
+			{
+				return std::shared_ptr<const Matrix<1, Elem, Index>>(this);
+			}
 		}
 		
 		/*virtual void setSize(const Index s) { _MatrixBase_<1, Elem, Index>::setSize((const Index)0, s); }*/

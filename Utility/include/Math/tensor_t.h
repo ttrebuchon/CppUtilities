@@ -38,15 +38,28 @@ namespace Math
 		public:
 		tensor_t() : Shared() {}
 		tensor_t(const Shared ptr) : Shared(ptr) {}
-		/*tensor_t(const Shared&& ptr) : Shared(ptr) {}*/
+		tensor_t(Matrix<Dims, Elem, Index>* ptr) : Shared(ptr->get_ptr()) {}
+
 		template <template <int, typename...> typename T>
 		tensor_t(const std::shared_ptr<T<Dims, Elem, Index>> ptr) : Shared(ptr) {}
+
+		tensor_t(
+		typename _Helpers::FuncArgHelper<Dims, Index, Elem>::type f
+		);
+		
+		template <typename... Size>
+		tensor_t(
+		typename _Helpers::FuncArgHelper<Dims, Index, Elem>::type f, Size... sizes
+		);
+
 		virtual ~tensor_t();
+
+
+
 		
 		//Assignment Operators
 		tensor_t& operator=(const Elem);
 		tensor_t& operator=(const Shared ptr);
-		//tensor_t& operator=(const Shared&& ptr);
 		
 		//Arithmetic Operators
 		tensor_t operator+(const tensor_t) const;
@@ -64,12 +77,26 @@ namespace Math
 		tensor_t& operator/=(const tensor_t);
 		tensor_t& operator*=(const Elem);
 		tensor_t& operator/=(const Elem);
+
+
+		//Comparison Operators
+		template <typename Elem2>
+		bool operator==(const tensor_t<Dims, Elem2, Index>) const;
 		
 		
 		//Member Functions
 		Index size(const int dim) const;
+		void setSize(const int dim, const Index size);
+		void setSize(const Index size) { setSize(0, size); }
 		std::string toString() const;
 		std::string imp() const;
+
+		template <int Dims2>
+		tensor_t<Dims+Dims2-2, Elem, Index> contract(const tensor_t<Dims2, Elem, Index>);
+
+		template <typename... Args>
+		tensor_t submatrix(Args... args) const;
+		tensor_t<_Helpers::_tensor_t::transposeDims(Dims), Elem, Index> T() const;
 		
 		
 		//Accessors

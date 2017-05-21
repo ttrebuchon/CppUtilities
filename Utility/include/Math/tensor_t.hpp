@@ -1,6 +1,7 @@
 #pragma once
 #include "tensor_t.h"
 #include "Matrix.h"
+#include "FuncMatrix.h"
 
 #include <Exception/NotImplemented.h>
 #include <Exception/NullPointer.h>
@@ -62,6 +63,25 @@ namespace Math
 	{
 		
 	}
+
+	template <int Dims, typename Elem, typename Index>
+	tensor_t<Dims, Elem, Index>::tensor_t(
+		typename _Helpers::FuncArgHelper<Dims, Index, Elem>::type f)
+		: tensor_t<Dims, Elem, Index>::Shared(std::make_shared<FuncMatrix<Dims, Elem, Index>>(f))
+	{
+
+	}
+
+	template <int Dims, typename Elem, typename Index>
+	template <typename... Size>
+	tensor_t<Dims, Elem, Index>::tensor_t(
+		typename _Helpers::FuncArgHelper<Dims, Index, Elem>::type f, Size... sizes)
+		: tensor_t<Dims, Elem, Index>::Shared(std::make_shared<FuncMatrix<Dims, Elem, Index>>(
+			f, sizes...
+		))
+	{
+		
+	}
 	
 	
 	
@@ -77,6 +97,15 @@ namespace Math
 			ptr()(i) = e;
 		}
 		return ptr();
+	}
+
+	template <int Dims, typename Elem, typename Index>
+	tensor_t<Dims, Elem, Index>& tensor_t<Dims, Elem, Index>::operator=(
+		const typename tensor_t<Dims, Elem, Index>::Shared ptr
+	)
+	{
+		(Shared&)(*this) = ptr;
+		return (*this);
 	}
 	
 	
@@ -168,6 +197,28 @@ namespace Math
 		ptr() = ptr() / e;
 		return ptr();
 	}
+
+
+
+
+
+
+	template <int Dims, typename Elem, typename Index>
+	template <typename Elem2>
+	bool tensor_t<Dims, Elem, Index>::operator==(const tensor_t<Dims, Elem2, Index> t) const
+	{
+		if (this->size(0) != t.size(0))
+		{
+			return false;
+		}
+		
+		bool same = true;
+		for (auto i = 0; i < this->size(0) && same; i++)
+		{
+			same = (obj()[(Index)i] == t[(Index)i]);
+		}
+		return same;
+	}
 	
 	
 	
@@ -180,11 +231,32 @@ namespace Math
 	{
 		return ptr()->size[dim];
 	}
+
+	template <int Dims, typename Elem, typename Index>
+	void tensor_t<Dims, Elem, Index>::setSize(const int dim, const Index size)
+	{
+		ptr()->setSize(dim, size);
+	}
 	
 	template <int Dims, typename Elem, typename Index>
 	std::string tensor_t<Dims, Elem, Index>::toString() const
 	{
 		return ptr()->toString();
+	}
+
+	template <int Dims, typename Elem, typename Index>
+	std::string tensor_t<Dims, Elem, Index>::imp() const
+	{
+		return ptr()->imp();
+	}
+
+	template <int Dims, typename Elem, typename Index>
+	template <int Dims2>
+	tensor_t<Dims+Dims2-2, Elem, Index> tensor_t<Dims, Elem, Index>::contract(
+					const tensor_t<Dims2, Elem, Index> t
+	)
+	{
+		return ptr()->contract(t);
 	}
 	
 	

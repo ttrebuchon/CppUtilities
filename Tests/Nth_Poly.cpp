@@ -19,8 +19,7 @@ bool Testing::nth_Poly()
 	
 	
 	
-	tensor_t<1, N> realCoeffs;
-	realCoeffs = (new DataMatrix<1, N>({2, 3, 10/2}))->get_ptr();
+	tensor_t<1, N> realCoeffs = new DataMatrix<1, N>({2, 3, 10/2});
 	dout << realCoeffs[0] << std::endl;
 	auto realFunc = [=](auto in) -> decltype(in) {
 		auto c1 = realCoeffs[0];
@@ -119,20 +118,17 @@ void Test_Multiple_Reg()
 	dout << "\n\nTesting Multiple Regression..." << std::endl;
 	typedef double N;
 	
-	tensor_t<1, N> coef;
-	coef = std::make_shared<DataMatrix<1, N>>({1, 2, 3});
+	tensor_t<1, N> coef = new DataMatrix<1, N>({1, 2, 3});
 	
 	auto realFunc = [=] (auto x, auto y) -> decltype(x) {
 		return coef[0] + coef[1]*x + coef[2]*y;
 	};
 	
-	tensor_t<2, N> in;
-	in = std::make_shared<DataMatrix<2, N>>({{0, 0}, {1, 0}, {0, 1}});
+	tensor_t<2, N> in = new DataMatrix<2, N>({{0, 0}, {1, 0}, {0, 1}});
 	
-	assert_ex(in.size()[1]+1 == coef.size(0));
+	assert_ex(in.size(1)+1 == coef.size(0));
 	
-	tensor_t<1, N> out;
-	out = std::make_shared<DataMatrix<1, N>>();
+	tensor_t<1, N> out = new DataMatrix<1, N>();
 	out.setSize(0, in.size(0));
 	for (auto i = 0; i < in.size(0); i++)
 	{
@@ -146,15 +142,16 @@ void Test_Multiple_Reg()
 			return 1;
 		}
 		return in[i][j-1];
-	}, in.size(0), in.size()[1]+1);
+	}, in.size(0), in.size(1)+1);
+	dout << M.toString() << std::endl;
 	assert_ex(M.size(0) == in.size(0));
-	assert_ex(M.size()[1] == in.size()[1] + 1);
+	assert_ex(M.size(1) == in.size(1) + 1);
 	
 	assert_ex(M.contract(coef) == out);
 	//coef = M.T().contract(M).inv().contract(M).contract(out)
 	
 	dout << "Before: " << M(0).toString() << " and " << M(1).toString() << std::endl;
-	M(0) = M(0) + M(1);
+	M(0) += M(1);
 	dout << "After: " << M(0).toString() << std::endl;
 	//assert_ex(M(0) == M(1));
 	

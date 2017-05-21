@@ -132,7 +132,6 @@ namespace Math
 			auto nPtr = this->operator[](i);
 			instantiated[i] = nPtr;
 		}
-		static_assert(!std::is_same<decltype(instantiated[i]), tensor_t<Dims-1, Elem, Index>&>::value, "static_assert type failure");
 		static_assert(std::is_same<decltype(instantiated[i]), tensor_t<Dims-1, Elem, Index>&>::value, "static_assert type failure");
 		return (tensor_t<Dims-1, Elem, Index>&)instantiated[i];
 	}
@@ -158,14 +157,14 @@ namespace Math
 		for (int i = 0; i < Dims; i++)
 		{
 			nSize[i] = -1;
-			if (this->size[i] == 0 || m.size[i] == 0)
+			if (this->size[i] == 0 || m.size(i) == 0)
 			{
 				throw MatrixInvalidSizeException();
 			}
 			
-			if (m.size[i] > 0)
+			if (m.size(i) > 0)
 			{
-				nSize[i] = m.size[i];
+				nSize[i] = m.size(i);
 			}
 			
 			if ((this->size[i] < nSize[i] && this->size[i] > 0) || (nSize[i] < 0 && this->size[i] > 0))
@@ -212,7 +211,7 @@ namespace Math
 				throw MatrixInvalidSizeException();
 			}
 			
-			if (m.size[i] > 0)
+			if (m.size(i) > 0)
 			{
 				nSize[i] = m.size(i);
 			}
@@ -583,7 +582,7 @@ namespace Math
 	tensor_t<Dims+Dims2-2, Elem, Index> Matrix<Dims, Elem, Index>::contract(tensor_t<Dims2, Elem, Index> m)
 	{
 		const int nDims = Dims+Dims2-2;
-		if (this->size[Dims-1] != m->size(0) || this->size[Dims-1] <= 0)
+		if (this->size[Dims-1] != m.size(0) || this->size[Dims-1] <= 0)
 		{
 			throw MatrixInvalidSizeException();
 		}
@@ -594,12 +593,12 @@ namespace Math
 		
 		
 		auto tclone = this->clone();
-		std::shared_ptr<FuncMatrix<nDims, Elem, Index>> res = std::make_shared<FuncMatrix<nDims, Elem, Index>>([=] (auto... args)
+		tensor_t<nDims, Elem, Index> res = std::make_shared<FuncMatrix<nDims, Elem, Index>>([=] (auto... args)
 		{
 			
 			auto m_1 = _Helpers::Caller<Dims, Elem, Index>::PrefixCaller(tclone, args...);
 			Elem val = 0;
-			for (Index i = 0; i < am->size(0); i++)
+			for (Index i = 0; i < am.size(0); i++)
 			{
 				
 				auto m2_tmp = am->at(i);
@@ -619,11 +618,11 @@ namespace Math
 		
 		for (int i = 0; i < Dims-1; i++)
 		{
-			res->size(i, this->size[i]);
+			res.setSize(i, this->size[i]);
 		}
 		for (int i = 1; i < Dims2; i++)
 		{
-			res->size(i+Dims-2, m->size(i));
+			res.setSize(i+Dims-2, m.size(i));
 		}
 		return res;
 	}

@@ -26,6 +26,21 @@ namespace _tensor_t
 	{
 		typedef Elem type;
 	};
+
+
+
+
+
+
+
+
+
+
+
+	constexpr int transposeDims(int dims)
+	{
+		return (dims == 1) ? 2 : dims;
+	}
 }
 }
 }
