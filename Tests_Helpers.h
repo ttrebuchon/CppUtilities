@@ -41,6 +41,8 @@ bool _stringException_caller(auto file, auto line, auto exp)
 
 #define assert_ex(x) (( x ) ? true : _stringException_caller(__FILE__, __LINE__, #x))
 
+#define assert_not_reached() _stringException_caller(__FILE__, __LINE__, "Not a valid test path!")
+
 
 
 class DebugOut
