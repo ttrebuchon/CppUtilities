@@ -50,8 +50,6 @@ namespace Math
 		protected:
 		
 		
-		
-		
 		public:
 		Index size[Dims];
 		
@@ -91,10 +89,9 @@ namespace Math
 			return sub(mat);
 		}
 		
-		virtual int rank() const
-		{
-			return Dims;
-		}
+		virtual void resize(const Index s) = 0;
+		
+		virtual void setSize(const Index dim, const Index s) = 0;
 		
 		
 		
@@ -236,6 +233,8 @@ namespace Math
 		{
 			return this->shared_from_this();
 		}
+		
+		/*virtual void setSize(const Index s) { _MatrixBase_<1, Elem, Index>::setSize((const Index)0, s); }*/
 		
 		virtual std::string toString() const override;
 		

@@ -215,6 +215,41 @@ bool Math_Matrix_Go()
 	
 	
 	
+	matrix_t<2, int> testSizeControl;
+	testSizeControl = new FuncMatrix<2, int>([](int i, int j) -> int { return 4*i + j; });
+	
+	auto testSizeC_s = testSizeControl.size();
+	testSizeC_s[0] = 1;
+	testSizeC_s[1] = 1;
+	
+	try
+	{
+		auto testSizeC_1 = testSizeControl[2][2];
+		assert_not_reached();
+	}
+	catch (std::out_of_range& ex)
+	{
+		
+	}
+	
+	try
+	{
+		auto testSizeC_2 = testSizeControl[0][2];
+		assert_not_reached();
+	}
+	catch (std::out_of_range& ex)
+	{
+		
+	}
+	
+	testSizeC_s[0] = -1;
+	testSizeC_s[1] = -1;
+	
+	auto testSizeC_1_2 = testSizeControl[2][2];
+	auto testSizeC_2_2 = testSizeControl[0][2];
+	
+	
+	
 	return Test_Arithmetic();
 }
 

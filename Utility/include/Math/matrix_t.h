@@ -127,7 +127,7 @@ namespace Math
 		}
 		
 		
-		matrix_t<Dims-1, Elem, Index> operator[](Index i);
+		matrix_t<Dims-1, Elem, Index> operator[](Index i) const;
 		template <typename ...Args>
 		typename _Helpers::t_RefReturnHelper<matrix_t, Dims, Elem, Index, sizeof...(Args)+1>::type  operator()(Index arg1, Args... args);
 		matrix_t<Dims, Elem, Index> T() const;
@@ -142,6 +142,7 @@ namespace Math
 		
 		template <int Dims2>
 		void append(matrix_t<Dims2, Elem, Index> m);
+		matrix_t& setSize(const Index dim, const Index size);
 		
 		template <int D2, typename E2, typename I2> 
 		friend class matrix_t;
@@ -159,6 +160,7 @@ namespace Math
 		
 		
 		public:
+		matrix_t() : __Base_matrix_t_<1, Elem, Index>(nullptr) {}
 		
 		matrix_t(typename matrix_t::ptr_t ptr) : __Base_matrix_t_<1, Elem, Index>(ptr) { }
 		
@@ -174,7 +176,7 @@ namespace Math
 		
 		matrix_t<1, Elem, Index>& operator=(Matrix<1, Elem, Index>*);
 		
-		Elem operator[](Index i);
+		Elem operator[](Index i) const;
 		typename _Helpers::t_RefReturnHelper<matrix_t, 1, Elem, Index, 1>::type operator()(Index i);
 		
 		static_assert(std::is_same<typename _Helpers::RefReturnHelper<matrix_t, 1, Elem, Index, 1>::type &, Elem&>::value, "Something wrong with RefReturnHelper!");
@@ -182,6 +184,8 @@ namespace Math
 		Elem set(Elem value, Index index);
 		
 		void append(Elem value);
+		matrix_t& setSize(const Index dim, const Index size);
+		matrix_t& setSize(const Index s) { return setSize(0, s); }
 		
 		template <int D2, typename E2, typename I2> 
 		friend class matrix_t;

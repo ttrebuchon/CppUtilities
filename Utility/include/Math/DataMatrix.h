@@ -54,9 +54,14 @@ namespace Math
 		template <typename DataSet>
 		DataMatrix(DataSet);
 		DataMatrix(Data);
+		DataMatrix();
 		virtual ~DataMatrix() { }
 		
 		virtual std::string imp() const override { return "DataMatrix"; }
+		
+		virtual void resize(const Index s) override;
+		
+		virtual void setSize(const Index dim, const Index s) override;
 		
 		std::shared_ptr<Matrix<Dims-1, Elem, Index>> operator[](Index i) const override;
 		Matrix<Dims-1, Elem, Index>& operator()(Index i) override;
@@ -97,8 +102,13 @@ namespace Math
 		
 		public:
 		DataMatrix(Data);
+		DataMatrix();
 		
 		virtual std::string imp() const override { return "DataMatrix"; }
+		
+		virtual void resize(const Index s) override;
+		
+		virtual void setSize(const Index dim, const Index s) override;
 		
 		Elem operator[](Index i) const override;
 		Elem& operator()(Index i) override;

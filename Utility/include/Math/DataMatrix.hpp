@@ -82,17 +82,90 @@ namespace Math
 		}
 	}
 	
+	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
+	DataMatrix<Dims, Elem, Index, Container>::DataMatrix() : Matrix<Dims, Elem, Index>(), data()
+	{
+		for (int i = 0; i < Dims; i++)
+		{
+			this->size[i] = 0;
+		}
+	}
+	
+	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
+	void DataMatrix<Dims, Elem, Index, Container>::resize(const Index s)
+	{
+		if (s == data.size())
+		{
+			
+		}
+		else if (s < data.size())
+		{
+			data.resize(s);
+		}
+		else
+		{
+			auto prevS = data.size();
+			data.resize(s);
+			for (int i = prevS; i < data.size(); i++)
+			{
+				data[i] = std::make_shared<DataMatrix<Dims-1, Elem, Index, Container>>();
+				for (int j = 1; j < Dims; j++)
+				{
+					data[i]->setSize(j-1, this->size[j]);
+				}
+			}
+		}
+	}
+	
+	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
+	void DataMatrix<Dims, Elem, Index, Container>::setSize(const Index dim, const Index s)
+	{
+		if (dim >= Dims || dim < 0)
+		{
+			throw std::out_of_range("FuncMatrix::set_size_check");
+		}
+		this->size[dim] = s;
+		if (dim > 0)
+		{
+			for (auto ptr : data)
+			{
+				ptr->setSize((const Index)(dim-1), (const Index)s);
+			}
+		}
+		else
+		{
+			this->resize(s);
+		}
+	}
+	
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
 	std::shared_ptr<Matrix<Dims-1, Elem, Index>> DataMatrix<Dims, Elem, Index, Container>::operator[](Index i) const
 	{
-		assert(data[i].get() != NULL);
+		if (i >= this->size[0] && this->size[0] >= 0)
+		{
+			throw std::out_of_range("DataMatrix::size_check");
+		}
+		if (data.size() != this->size[0])
+		{
+			throw std::range_error("DataMatrix::inconsistent_internal_sizes");
+		}
+		assert(data[i] != NULL);
 		return data[i]->clone();
 	}
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
 	Matrix<Dims-1, Elem, Index>& DataMatrix<Dims, Elem, Index, Container>::operator()(Index i)
 	{
+		if (i >= this->size[0] && this->size[0] >= 0)
+		{
+			throw std::out_of_range("DataMatrix::size_check");
+		}
+		if (data.size() <= i)
+		{
+			this->resize(i+1);
+		}
+		assert(data[i] != NULL);
 		return *data[i];
 	}
 	
@@ -277,16 +350,58 @@ namespace Math
 		this->size[0] = _getSize(d);
 	}
 	
+	template <typename Elem, typename Index, template <typename...> typename Container>
+	DataMatrix<1, Elem, Index, Container>::DataMatrix() : Matrix<1, Elem, Index>(), data()
+	{
+		this->size[0] = 0;
+	}
+	
+	template <typename Elem, typename Index, template <typename...> typename Container>
+	void DataMatrix<1, Elem, Index, Container>::resize(const Index s)
+	{
+		if (s != data.size())
+		{
+			data.resize(s);
+		}
+	}
+	
+	template <typename Elem, typename Index, template <typename...> typename Container>
+	void DataMatrix<1, Elem, Index, Container>::setSize(const Index dim, const Index s)
+	{
+		if (dim >= 1 || dim < 0)
+		{
+			throw std::out_of_range("FuncMatrix::set_size_check");
+		}
+		this->size[dim] = s;
+		this->resize(s);
+	}
+	
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
 	Elem DataMatrix<1, Elem, Index, Container>::operator[](Index i) const
 	{
+		if (i >= this->size[0] && this->size[0] >= 0)
+		{
+			throw std::out_of_range("DataMatrix::size_check");
+		}
+		if (data.size() != this->size[0])
+		{
+			throw std::range_error("DataMatrix::inconsistent_internal_sizes");
+		}
 		return data[i];
 	}
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
 	Elem& DataMatrix<1, Elem, Index, Container>::operator()(Index i)
 	{
+		if (i >= this->size[0] && this->size[0] >= 0)
+		{
+			throw std::out_of_range("DataMatrix::size_check");
+		}
+		if (i >= data.size())
+		{
+			this->resize(i+1);
+		}
 		return data[i];
 	}
 	

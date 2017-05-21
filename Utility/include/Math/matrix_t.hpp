@@ -80,7 +80,7 @@ namespace Math
 	
 	
 	template <int Dims, typename Elem, typename Index>
-	matrix_t<Dims-1, Elem, Index> matrix_t<Dims, Elem, Index>::operator[](Index i)
+	matrix_t<Dims-1, Elem, Index> matrix_t<Dims, Elem, Index>::operator[](Index i) const
 	{
 		return matrix_t<Dims-1, Elem, Index>((*this->ptr)[i]);
 	}
@@ -127,6 +127,13 @@ namespace Math
 		this->ptr->append(m.ptr);
 	}
 	
+	template <int Dims, typename Elem, typename Index>
+	matrix_t<Dims, Elem, Index>& matrix_t<Dims, Elem, Index>::setSize(const Index dim, const Index size)
+	{
+		this->ptr->setSize(dim, size);
+		return *this;
+	}
+	
 	
 	
 	
@@ -170,7 +177,7 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index>
-	Elem matrix_t<1, Elem, Index>::operator[](Index i)
+	Elem matrix_t<1, Elem, Index>::operator[](Index i) const
 	{
 		return (*this->ptr)[i];
 	}
@@ -192,6 +199,13 @@ namespace Math
 	void matrix_t<1, Elem, Index>::append(Elem value)
 	{
 		this->ptr->append(value);
+	}
+	
+	template <typename Elem, typename Index>
+	matrix_t<1, Elem, Index>& matrix_t<1, Elem, Index>::setSize(const Index dim, const Index size)
+	{
+		this->ptr->setSize(dim, size);
+		return *this;
 	}
 	
 }

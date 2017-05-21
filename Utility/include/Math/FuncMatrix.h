@@ -38,6 +38,10 @@ namespace Math
 		
 		virtual std::string imp() const override { return "FuncMatrix"; }
 		
+		virtual void resize(const Index s) override {};
+		
+		virtual void setSize(const Index dim, const Index s) override;
+		
 		std::shared_ptr<Matrix<Dims-1, Elem, Index>> operator[](Index i) const override;
 		Matrix<Dims-1, Elem, Index>& operator()(Index i) override;
 		
@@ -52,6 +56,22 @@ namespace Math
 		//virtual Elem minor(typename _Helpers::TupleBuilder<Dims, Index>::value) const override;
 		
 	};
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -80,6 +100,11 @@ namespace Math
 		//FuncMatrix(std::shared_ptr<FuncMatrix>);
 		
 		virtual std::string imp() const override { return "FuncMatrix"; }
+		
+		virtual void resize(const Index s) override {};
+		
+		virtual void setSize(const Index dim, const Index s) override;
+		
 		
 		Elem operator[](Index i) const override;
 		Elem& operator()(Index i) override;

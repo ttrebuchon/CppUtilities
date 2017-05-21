@@ -4,6 +4,7 @@
 #include <tuple>
 #include <Func/TupleArgs.h>
 #include <Exception/NotImplemented.h>
+#include <vector>
 
 namespace Util
 {
@@ -52,6 +53,39 @@ namespace Math
 		}
 	}
 	
+	template <int Dims, typename Elem, typename Index>
+	void FuncMatrix<Dims, Elem, Index>::setSize(const Index dim, const Index s)
+	{
+		if (dim >= Dims || dim < 0)
+		{
+			throw std::out_of_range("FuncMatrix::set_size_check");
+		}
+		this->size[dim] = s;
+		if (dim > 0)
+		{
+			for (auto pair : this->instantiated)
+			{
+				pair.second->setSize((const Index)(dim-1), (const Index)s);
+			}
+		}
+		else
+		{
+			this->size[0] = s;
+			std::vector<Index> toRemove;
+			for (auto pair : this->instantiated)
+			{
+				if (pair.first >= s)
+				{
+				toRemove.push_back(pair.first);
+				}
+			}
+			for (auto key : toRemove)
+			{
+				this->instantiated.erase(key);
+			}
+		}
+	}
+	
 	
 	//Create a new matrix of one less
 	//dimension (The value at this[i])
@@ -60,6 +94,10 @@ namespace Math
 	template <int Dims, typename Elem, typename Index>
 	std::shared_ptr<Matrix<Dims-1, Elem, Index>> FuncMatrix<Dims, Elem, Index>::operator[](Index i) const
 	{
+		if (i >= this->size[0] && this->size[0] >= 0)
+		{
+			throw std::out_of_range("FuncMatrix::size_check");
+		}
 		if (instantiated.count(i) > 0)
 		{
 			return ((FuncMatrix<Dims, Elem, Index>*)this)->instantiated[i]->clone();
@@ -606,8 +644,35 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index>
+	void FuncMatrix<1, Elem, Index>::setSize(const Index dim, const Index s)
+	{
+		if (dim > 0 || dim < 0)
+		{
+			throw std::out_of_range("FuncMatrix::set_size_check");
+		}
+		
+		this->size[0] = s;
+		std::vector<Index> toRemove;
+		for (auto pair : this->instantiated)
+		{
+			if (pair.first >= s)
+			{
+			toRemove.push_back(pair.first);
+			}
+		}
+		for (auto key : toRemove)
+		{
+			this->instantiated.erase(key);
+		}
+	}
+	
+	template <typename Elem, typename Index>
 	Elem FuncMatrix<1, Elem, Index>::operator[](Index i) const
 	{
+		if (i >= this->size[0] && this->size[0] >= 0)
+		{
+			throw std::out_of_range("FuncMatrix::size_check");
+		}
 		if (instantiated.count(i) > 0)
 		{
 			return ((FuncMatrix<1, Elem, Index>*)this)->instantiated[i];
