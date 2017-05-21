@@ -25,6 +25,7 @@ class Testing
   	static bool CSV_Test();
   	static bool nth_Poly();
 	static bool Tuple_Test();
+	static bool Tensor_T();
 };
 
 

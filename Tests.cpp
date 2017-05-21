@@ -26,6 +26,9 @@ int main(int argc, char**argv)
 #define testBr "---------------------"
 #define LINE_BR "\n\n\n\n\n"
 
+
+
+
 #define RUN(x) try { \
 	tout << "Running " << #x << "..." << std::endl; \
 	x; \
@@ -61,6 +64,7 @@ void Testing::run()
 	RUN(CSV_Test());
 	RUN(Tuple_Test());
 	RUN(nth_Poly());
+	RUN(Tensor_T());
 	#ifndef SHORT_TEST
 	RUN(Matrix());
 	RUN(Math());
