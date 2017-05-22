@@ -92,6 +92,7 @@ namespace Math
 		void setSize(const Index size) { setSize(0, size); }
 		std::string toString() const;
 		std::string imp() const;
+		int order() const { return Dims; }
 		Elem det() const;
 
 		template <int Dims2>
@@ -118,11 +119,6 @@ namespace Math
 		const RetType<sizeof...(Args)>& operator()(const Args... args) const;
 		  
 		type operator[](const Index) const;
-		
-		
-		
-		
-		std::function<int()> s = [&]() { return this->use_count(); };
 		
 		
 	};
