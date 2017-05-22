@@ -55,9 +55,67 @@ namespace Math
 	
 	
 	
+	template <int Dims, typename Elem, typename Index>
+	struct CheckSizes {
+	static bool checkSizes(std::initializer_list<tensor_t<Dims-1, Elem, Index>> list)
+	{
+		auto s = (*list.begin()).size(0);
+		for (auto item : list)
+		{
+			s = item.size(0);
+			if (s != -1)
+			{
+				break;
+			}
+		}
+		if (s == -1)
+		{
+			return true;
+		}
+		for (auto item : list)
+		{
+			if (item.size(0) != s)
+			{
+				if (item.size(0) == -1)
+				{
+					item.setSize(0, s);
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	};
 	
+	template <typename Elem, typename Index>
+	struct CheckSizes<1, Elem, Index> {
+	static bool checkSizes(std::initializer_list<Elem> list)
+	{
+		return true;
+	}
+	};
 	
 	//Constructors and Destructors
+	
+	template <int Dims, typename Elem, typename Index>
+	tensor_t<Dims, Elem, Index>::tensor_t(std::initializer_list<typename tensor_t<Dims, Elem, Index>::type> list) : tensor_t<Dims, Elem, Index>::Shared(std::make_shared<DataMatrix<Dims, Elem, Index>>())
+	{
+		setSize(0, list.size());
+		if (!CheckSizes<Dims, Elem, Index>::checkSizes(list))
+		{
+			throw MatrixInvalidSizeException();
+		}
+		
+		Index i = 0;
+		for (auto item : list)
+		{
+			obj()(i++) = item;
+		}
+	}
+	
 	template <int Dims, typename Elem, typename Index>
 	tensor_t<Dims, Elem, Index>::~tensor_t()
 	{

@@ -4,6 +4,7 @@
 #include <memory>
 #include <type_traits>
 #include <assert.h>
+#include <initializer_list>
 
 namespace Util
 {
@@ -39,6 +40,7 @@ namespace Math
 		tensor_t() : Shared() {}
 		tensor_t(const Shared ptr) : Shared(ptr) {}
 		tensor_t(Matrix<Dims, Elem, Index>* ptr) : Shared(ptr->get_ptr()) {}
+		tensor_t(std::initializer_list<type>);
 
 		template <template <int, typename...> typename T>
 		tensor_t(const std::shared_ptr<T<Dims, Elem, Index>> ptr) : Shared(ptr) {}
