@@ -92,6 +92,7 @@ namespace Math
 		void setSize(const Index size) { setSize(0, size); }
 		std::string toString() const;
 		std::string imp() const;
+		Elem det() const;
 
 		template <int Dims2>
 		tensor_t<Dims+Dims2-2, Elem, Index> contract(const tensor_t<Dims2, Elem, Index>);

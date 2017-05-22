@@ -127,6 +127,7 @@ namespace Math
 		
 		virtual tens_t clone() const = 0;
 		
+		virtual Index Size(const int dim) const = 0;
 		
 		
 		template <int otherDims, typename otherElem, typename otherIndex>
@@ -232,6 +233,19 @@ namespace Math
 		
 		void set(const Index i, const tensor_t<Dims-1, Elem, Index> ptr);
 		
+		virtual Index Size(const int dim) const override
+		{
+			if (dim == 0)
+			{
+				return this->size[0];
+			}
+			if (this->size[0] == 0)
+			{
+				return 0;
+			}
+			return this->operator[](0).size(dim-1);
+		}
+		
 	};
 	
 	template <typename Elem, typename Index>
@@ -289,6 +303,16 @@ namespace Math
 		virtual Elem det() const override;
 		
 		virtual void append(Elem value) = 0;
+		
+		virtual Index Size(const int dim) const override
+		{
+			if (dim > 0)
+			{
+				throw MatrixInvalidSizeException();
+			}
+			
+			return this->size[0];
+		}
 		
 	};
 	

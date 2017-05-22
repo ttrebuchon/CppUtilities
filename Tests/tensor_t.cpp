@@ -28,6 +28,15 @@ bool Testing::Tensor_T()
 	t2 = { tensor_t<1, double>([](int i) -> double { return i; }), {2, 3}};
 	dout << t2.toString() << std::endl;
 	
+	for (int i = 0; i < 2; i++)
+	{
+		dout << t2.size(i) << ", ";
+	}
+	dout << std::endl;
+	
+	
+	dout << t2.det() << std::endl;
+	
 	//auto f = new FuncMatrix<1, double>([](int i) { return 0; });
 	//tensor_t<1, double> t3 = std::make_shared<FuncMatrix<1, double>>([](int i) { return 0; });
 	return true;

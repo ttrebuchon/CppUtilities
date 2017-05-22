@@ -138,10 +138,10 @@ namespace Math
 	template <int Dims, typename Elem, typename Index>
 	Elem Matrix<Dims, Elem, Index>::det() const
 	{
-		Index size = this->size[0];
+		Index size = this->Size(0);
 		for (auto i = 1; i < Dims; i++)
 		{
-			if (this->size[i] != size)
+			if (this->Size(i) != size)
 			{
 				throw MatrixInvalidSizeException();
 			}

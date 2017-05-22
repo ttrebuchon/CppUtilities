@@ -301,7 +301,7 @@ namespace Math
 	template <int Dims, typename Elem, typename Index>
 	Index tensor_t<Dims, Elem, Index>::size(const int dim) const
 	{
-		return ptr()->size[dim];
+		return ptr()->Size(dim);
 	}
 
 	template <int Dims, typename Elem, typename Index>
@@ -320,6 +320,12 @@ namespace Math
 	std::string tensor_t<Dims, Elem, Index>::imp() const
 	{
 		return ptr()->imp();
+	}
+	
+	template <int Dims, typename Elem, typename Index>
+	Elem tensor_t<Dims, Elem, Index>::det() const
+	{
+		return ptr()->det();
 	}
 
 	template <int Dims, typename Elem, typename Index>
