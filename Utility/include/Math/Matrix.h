@@ -187,14 +187,15 @@ namespace Math
 		
 		std::shared_ptr<const Matrix<Dims, Elem, Index>> get_ptr() const
 		{
-			try
+			return ((Matrix<Dims, Elem, Index>*)this)->get_ptr();
+			/*try
 			{
 				return this->shared_from_this();
 			}
-			catch (std::bad_weak_ptr&)
+			catch (std::bad_weak_ptr)
 			{
 				return std::shared_ptr<const Matrix<Dims, Elem, Index>>(this);
-			}
+			}*/
 			
 		}
 		
@@ -258,14 +259,16 @@ namespace Math
 		
 		std::shared_ptr<const Matrix<1, Elem, Index>> get_ptr() const
 		{
-			try
+			return ((Matrix<1, Elem, Index>*)this)->get_ptr();
+			/*try
 			{
 				return this->shared_from_this();
 			}
 			catch (std::bad_weak_ptr)
 			{
-				return std::shared_ptr<const Matrix<1, Elem, Index>>(this);
-			}
+				return std::shared_ptr<const Matrix<Dims, Elem, Index>>(this);
+			}*/
+			
 		}
 		
 		/*virtual void setSize(const Index s) { _MatrixBase_<1, Elem, Index>::setSize((const Index)0, s); }*/

@@ -92,11 +92,25 @@ namespace Math
 	template <int Dims, typename Elem, typename Index>
 	tensor_t<Dims, Elem, Index>& tensor_t<Dims, Elem, Index>::operator=(const Elem e)
 	{
-		for (Index i = 0; i < this->size(0); i++)
+		auto tmp = std::make_shared<FuncMatrix<Dims, Elem, Index>>([=] (auto...) { return e; });
+		for (auto i = 0; i < Dims; i++)
+		{
+			if (*this == NULL)
+			{
+				tmp->setSize(i, -1);
+			}
+			else
+			{
+				tmp->setSize(i, this->size(i));
+			}
+		}
+		(typename tensor_t<Dims, Elem, Index>::Shared&)*this = tmp;
+		return *this;
+		/*for (Index i = 0; i < this->size(0); i++)
 		{
 			ptr()(i) = e;
 		}
-		return ptr();
+		return ptr();*/
 	}
 
 	template <int Dims, typename Elem, typename Index>
