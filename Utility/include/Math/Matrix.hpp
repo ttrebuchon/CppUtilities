@@ -139,9 +139,18 @@ namespace Math
 	Elem Matrix<Dims, Elem, Index>::det() const
 	{
 		Index size = this->Size(0);
+		for (auto i = 0; i < Dims; i++)
+		{
+			if (size != -1)
+			{
+				break;
+			}
+			size = this->Size(i);
+		}
+		
 		for (auto i = 1; i < Dims; i++)
 		{
-			if (this->Size(i) != size)
+			if (this->Size(i) != size && this->Size(i) != -1)
 			{
 				throw MatrixInvalidSizeException();
 			}
@@ -167,8 +176,7 @@ namespace Math
 			Elem currentVal = _Helpers::matrix_at(this->get_ptr(), atArgs);
 			if (currentVal != 0)
 			{
-			
-			total += cof(i)*minor(_Helpers::ConcatArgs<Index>::Get(i, _Helpers::n_zeros_tup<Dims-1, Index>()))*currentVal;
+				total += cof(i)*minor(_Helpers::ConcatArgs<Index>::Get(i, _Helpers::n_zeros_tup<Dims-1, Index>()))*currentVal;
 			}
 		}
 		

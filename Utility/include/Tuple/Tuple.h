@@ -62,6 +62,10 @@ namespace Util
 		template <typename ...U>
 		bool operator!=(Tuple<U...> u)
 		{ return !(operator==(u)); }
+		
+		//Heh heh heh
+		std::tuple<T...> getStd() const
+		{ return inner; }
 	};
 	
 	

@@ -2,6 +2,8 @@
 
 #include "DataMatrix.h"
 #include <Exception/NotImplemented.h>
+#include <Tuple/Tuple.h>
+#include <iostream>
 
 #ifdef DEBUG
 
@@ -321,10 +323,53 @@ namespace Math
 		throw NotImp();
 	}
 	
-	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const
+	namespace _Helpers
 	{
-		throw NotImp();
+		template <template <typename...> typename Obj, int Count, typename T, typename... Args>
+		struct RepObjectBuilder
+		{
+			typedef typename RepObjectBuilder<Obj, Count-1, T, T, Args...>::type type;
+		};
+		
+		template <template <typename...> typename Obj, typename T, typename... Args>
+		struct RepObjectBuilder<Obj, 0, T, Args...>
+		{
+			typedef Obj<Args...> type;
+		};
+	}
+	
+	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
+	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value args) const
+	{
+		for (int i = 0; i < Dims; i++)
+		{
+			auto s = this->Size(i);
+			if (s == 1 || s == 0)
+			{
+				throw MatrixInvalidSizeException();
+			}
+		}
+		
+		tensor_t<Dims, Elem, Index> m = new DataMatrix<Dims, Elem, Index>();
+		m.setSize(0, this->Size(0)-1);
+		Index index = std::get<0>(args);
+		
+		
+		auto nTup = typename _Helpers::RepObjectBuilder<Tuple, Dims, Index>::type(args);
+		auto back = nTup.template takeBack<Dims-1>();
+		
+		auto count = this->Size(0);
+		auto size2 = this->Size(1);
+		Index i = 0;
+		for (Index n = 0; n < count; n++)
+		{
+			if (n != index)
+			{
+				m(i) = ((*this)[n]).submatrix(back.getStd());
+				m(i++).setSize(0, size2-1);
+			}
+		}
+		return m;
 	}
 	
 	
@@ -491,9 +536,29 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	tensor_t<1, Elem, Index> DataMatrix<1, Elem, Index, Container>::submatrix(std::tuple<Index>) const
+	tensor_t<1, Elem, Index> DataMatrix<1, Elem, Index, Container>::submatrix(std::tuple<Index> args) const
 	{
-		throw NotImp();
+		auto s = this->Size(0);
+		if (s == 1 || s == 0)
+		{
+			throw MatrixInvalidSizeException();
+		}
+		
+		
+		
+		tensor_t<1, Elem, Index> m = new DataMatrix<1, Elem, Index>();
+		m.setSize(0, this->Size(0)-1);
+		Index index = std::get<0>(args);
+		
+		Index i = 0;
+		for (Index n = 0; n < s; n++)
+		{
+			if (n != index)
+			{
+				m(i++) = (*this)[n];
+			}
+		}
+		return m;
 	}
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>

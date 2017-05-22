@@ -337,6 +337,22 @@ namespace Math
 		return ptr()->contract(t);
 	}
 	
+	template <int Dims, typename Elem, typename Index>
+	template <typename... Args>
+	tensor_t<Dims, Elem, Index> tensor_t<Dims, Elem, Index>::submatrix(Args... args) const
+	{
+		return submatrix(std::make_tuple(args...));
+	}
+	
+	template <int Dims, typename Elem, typename Index>
+	template <typename... Args>
+	tensor_t<Dims, Elem, Index> tensor_t<Dims, Elem, Index>::submatrix(std::tuple<Args...> args) const
+	{
+		static_assert(sizeof...(Args) == Dims, "Incorrect number of arguments to submatrix()");
+		
+		return ptr()->submatrix(args);
+	}
+	
 	
 	
 	

@@ -99,6 +99,10 @@ namespace Math
 
 		template <typename... Args>
 		tensor_t submatrix(Args... args) const;
+		
+		template <typename... Args>
+		tensor_t submatrix(std::tuple<Args...> args) const;
+		
 		tensor_t<_Helpers::_tensor_t::transposeDims(Dims), Elem, Index> T() const;
 		
 		

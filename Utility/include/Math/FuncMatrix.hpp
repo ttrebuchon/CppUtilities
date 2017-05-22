@@ -886,7 +886,23 @@ namespace Math
 	template <typename Elem, typename Index>
 	tensor_t<1, Elem, Index> FuncMatrix<1, Elem, Index>::submatrix(std::tuple<Index> t) const
 	{
-		throw MatrixInvalidSizeException();
+		auto count = this->Size(0);
+		if (count == 1 || count == 0)
+		{
+			throw MatrixInvalidSizeException();
+		}
+		auto f = this->def;
+		Index index = std::get<0>(t);
+		return tensor_t<1, Elem, Index>([f, index] (Index i) -> Elem {
+			if (i < index)
+			{
+				return f(i);
+			}
+			else
+			{
+				return f(i+1);
+			}
+		}, this->Size(0)-1);
 	}
 	
 	template <typename Elem, typename Index>
