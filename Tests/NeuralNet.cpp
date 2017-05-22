@@ -113,7 +113,7 @@ bool Testing::Neural()
 	nn2.addData({1, 1}, {2});
 	nn2.addData({2, 1}, {3});
 	nn2.addData({1, 2}, {3});
-	nn2.grow(3*layers, multiplier/2);
+	nn2.grow(layers, multiplier);
 
 	nn2.bounds.min = 0;
 	
