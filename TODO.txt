@@ -1,7 +1,5 @@
 1) Finish matrix(s) implementations
 
-2) Write tuple extension module
-
 3) Implement alternate methods of training neural nets
 
 4) Write test to compare k-dimension tree performance and accuracy with neural net results
@@ -19,8 +17,24 @@
 11) Implement matrix equation solver method(s)
     11.1) Useful for nth polynomial calculation
 
-13) Rewrite matrix module to:
-    13.1) Rename matrix_t to tensor_t
-    13.2) Change tensor_t to inherit from std::shared_ptr<Matrix<...>>
-    13.3) Use tensor_t as internal ptr representation
-    13.4) Integrate tensor_t<Dims,...> and tensor_t<1,...> into one class
+14) Simple Wolfram Language quantity/array/set parser
+	14.1) Ex: Quantity[2.123, "Pounds"]
+	14.2) Look into WL C api/lib
+
+15) Convert Math_Matrix.cpp tests to use tensor_t and the correct style
+
+16) Explore Property<T> concept a bit more for a new module
+	16.1) Property<T, bool settable> class with default state Property<T, false>
+	16.2) Property<T, true> inherits from Property<T, false> and adds settable functionality
+	16.3) Uses std::function<T()> and std::function<void(T)> to set/get 
+		16.3.1) overload operator=() and operator T() to call functions
+
+17) Explore dynamic object concept for framework/sandbox module
+	17.1) Use std::function members as methods to dynamically configure and create objects with pseudo-inheritance
+
+18) SQL/SQLite module with integration with CSV and Neural Net modules?
+
+19) Entity serialization module?
+
+20) 
+	
