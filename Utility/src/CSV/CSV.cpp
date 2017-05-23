@@ -3,7 +3,6 @@
 #include <Exception/NotImplemented.h>
 #include <sstream>
 #include <String/String.h>
-
 namespace Util
 {
 namespace CSV
@@ -16,77 +15,82 @@ namespace CSV
         String cell = "";
         int index = 0;
         String _line = line;
-        auto parseCell = [](String str) {
-            String S = str.substr(1, str.length()-2);
-            S = S.replace("\"\"", "\"");
-            return S;
+        
+        auto parseQuoted = [] (String& str) -> String {
+        	int i = 0;
+        	String quote = "";
+        	str = str.substr(1);
+        	if (str[0] == '"')
+        	{
+        		str = str.substr(1);
+        		return "\"";
+        	}
+        	while (str.length() - i > 0)
+        	{
+        		if (str[i] != '"')
+        		{
+        			quote += str[i];
+        			i++;
+        		}
+        		else
+        		{
+        			str = str.substr(i);
+        			i = 0;
+        			if (str.length() == 1)
+        			{
+        				str = str.substr(1);
+        				break;
+        			}
+        			else
+        			{
+        				if (str[1] == '"')
+        				{
+        					quote += '"';
+        					str = str.substr(2);
+        				}
+        				else
+        				{
+        					str = str.substr(1);
+        					break;
+        				}
+        			}
+        		}
+        	}
+        	str = str.substr(i);
+        	i = 0;
+        	return quote;
         };
-
-        while (_line.length() > 0)
+        int i = 0;
+        while (_line.length() - i > 0)
         {
-            if (_line[0] != '"')
-            {
-                int commaIndex = _line.find(",");
-                if (commaIndex != std::string::npos)
-                {
-                    cell = _line.substr(0, commaIndex);
-                }
-                else
-                {
-                    cell = _line;
-                }
-                
-                (*row)[index] = cell;
-                index++;
-                if (commaIndex != std::string::npos)
-                {
-                    _line = _line.substr(commaIndex+1);
-                }
-                else
-                {
-                    _line = "";
-                }
-                
-            }
-            else
-            {
-                for (int i = 1; i < _line.length(); i++)
-                {
-                    if (_line[i] == '"')
-                    {
-                        if (_line.length() - 2 == i)
-                        {
-                            cell = _line;
-                            (*row)[index] = parseCell(cell);
-                            index++;
-                            _line = "";
-                            break;
-                        }
-                        else
-                        {
-                            if (_line[i+1] != '\"')
-                            {
-                                cell = _line.substr(0, i+1);
-                                (*row)[index] = parseCell(cell);
-                                index++;
-                                if (i+2 < _line.length())
-                                {
-                                     _line = _line.substr(i+2);
-                                }
-                                else
-                                {
-                                     _line = _line.substr(i+1);
-                                }
-                               
-                                break;
-                            }
-                        }
-                    }
-
-                }
-            }
+        	if (_line[i] != ',' && _line[i] != '"')
+        	{
+        		cell += _line[i];
+        		//_line = _line.substr(1);
+        		i++;
+        	}
+        	else if (_line[i] == ',')
+        	{
+        		_line = _line.substr(i);
+        		i = 0;
+        		(*row)[index++] = cell;
+        		cell = "";
+        		_line = _line.substr(1);
+        	}
+        	else
+        	{
+        		_line = _line.substr(i);
+        		i = 0;
+        		cell += parseQuoted(_line);
+        	}
         }
-
+        _line = _line.substr(i);
+        i = 0;
+        
+        if (cell != "")
+        {
+        	(*row)[index] = cell;
+        }
         return row;
     }
 
@@ -111,8 +115,13 @@ namespace CSV
             delete row;
         }
         rows = std::vector<CSV_Row*>();
+        
 
         std::ifstream file(fileName, std::ifstream::in);
+        if (file.fail())
+        {
+        	throw FileNotFoundException();
+        }
         String tmp;
         while (std::getline(file, tmp))
         {
@@ -126,14 +135,17 @@ namespace CSV
             }
             rows.push_back(parseLine(tmp));
         }
-
-
+        file.close();
     }
 
     void CSV_File::writeFile(std::string fileName) const
     {
         std::string str = this->asString();
         std::ofstream file(fileName);
+        if (file.fail())
+        {
+        	throw FileNotFoundException();
+        }
         file << str << std::flush;
         file.close();
     }

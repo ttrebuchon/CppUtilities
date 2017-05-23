@@ -10,6 +10,7 @@ namespace CSV
 {
 
     UTIL_CUSTOM_EXCEPTION(InvalidCellContentException, "Invalid content in CSV cell");
+    UTIL_CUSTOM_EXCEPTION(FileNotFoundException, "Could not open file");
     class CSV_Row;
 
     class CSV_File
