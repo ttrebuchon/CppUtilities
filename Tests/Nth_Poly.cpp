@@ -148,9 +148,7 @@ void Test_Multiple_Reg()
 	assert_ex(M.size(1) == in.size(1) + 1);
 	
 	assert_ex(M.contract(coef) == out);
-	//coef = M.T().contract(M).inv().contract(M).contract(out)
-	dout << "Before: " << M(0).toString() << " and " << M(1).toString() << std::endl;
-	M(0) += M(1);
-	dout << "After: " << M(0).toString() << std::endl;
+	//coef = M.T().contract(M).inv().contract(M.T()).contract(out)
+	assert_ex(coef == M.inv().contract(out));
 	
 }
