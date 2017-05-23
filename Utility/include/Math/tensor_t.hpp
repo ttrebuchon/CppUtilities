@@ -327,6 +327,13 @@ namespace Math
 	{
 		return ptr()->det();
 	}
+	
+	template <int Dims, typename Elem, typename Index>
+	tensor_t<2, Elem, Index> tensor_t<Dims, Elem, Index>::inv() const
+	{
+		static_assert(Dims == 2, "Can only find inverses of matrices");
+		return ptr()->inv();
+	}
 
 	template <int Dims, typename Elem, typename Index>
 	template <int Dims2>
@@ -351,6 +358,11 @@ namespace Math
 		static_assert(sizeof...(Args) == Dims, "Incorrect number of arguments to submatrix()");
 		
 		return ptr()->submatrix(args);
+	}
+	
+	template <int Dims, typename Elem, typename Index> tensor_t<_Helpers::_tensor_t::transposeDims(Dims), Elem, Index> tensor_t<Dims, Elem, Index>::T() const
+	{
+		return ptr()->T();
 	}
 	
 	

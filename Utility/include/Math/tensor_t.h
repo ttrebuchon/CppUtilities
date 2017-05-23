@@ -94,6 +94,7 @@ namespace Math
 		std::string imp() const;
 		int order() const { return Dims; }
 		Elem det() const;
+		tensor_t<2, Elem, Index> inv() const;
 
 		template <int Dims2>
 		tensor_t<Dims+Dims2-2, Elem, Index> contract(const tensor_t<Dims2, Elem, Index>);

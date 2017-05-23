@@ -246,6 +246,8 @@ namespace Math
 			return this->operator[](0).size(dim-1);
 		}
 		
+		virtual tensor_t<2, Elem, Index> inv() const = 0;
+		
 	};
 	
 	template <typename Elem, typename Index>

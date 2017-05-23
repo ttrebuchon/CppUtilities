@@ -56,6 +56,7 @@ namespace Math
 		virtual tensor_t<Dims, Elem, Index> T() const override;
 		virtual tensor_t<Dims, Elem, Index> submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const override;
 		//virtual Elem minor(typename _Helpers::TupleBuilder<Dims, Index>::value) const override;
+		virtual tensor_t<2, Elem, Index> inv() const override;
 		
 	};
 	

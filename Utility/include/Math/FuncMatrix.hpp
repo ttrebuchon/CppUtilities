@@ -627,6 +627,21 @@ namespace Math
 		return res;
 	}
 	
+	template <int Dims, typename Elem, typename Index>
+	tensor_t<2, Elem, Index> FuncMatrix<Dims, Elem, Index>::inv() const
+	{
+		static_assert(Dims == 2, "Can only find the inverse of matrices");
+		auto size1 = this->Size(0);
+		auto size2 = this->Size(1);
+		if (size1 > 0 && size2 > 0 && size1 != size2)
+		{
+			auto transpose = T();
+			tensor_t<Dims, Elem, Index> tensor_this = tensor_t<Dims, Elem, Index>(((FuncMatrix<Dims, Elem, Index>*)this)->get_ptr());
+			return transpose.contract(tensor_this).inv().contract(transpose);
+		}
+		throw NotImp();
+	}
+	
 	
 	
 	

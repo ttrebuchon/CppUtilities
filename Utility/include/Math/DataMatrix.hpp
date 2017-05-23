@@ -372,6 +372,13 @@ namespace Math
 		return m;
 	}
 	
+	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
+	tensor_t<2, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::inv() const
+	{
+		static_assert(Dims == 2, "Can only find the inverse of natrices");
+		throw NotImp();
+	}
+	
 	
 	
 	
