@@ -3,7 +3,7 @@
 #include "DataMatrix.h"
 #include <Exception/NotImplemented.h>
 #include <Tuple/Tuple.h>
-#include <iostream>
+#include <assert.h>
 
 #ifdef DEBUG
 
@@ -122,6 +122,7 @@ namespace Math
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
 	void DataMatrix<Dims, Elem, Index, Container>::setSize(const Index dim, const Index s)
 	{
+		assert(s >= 0);
 		if (dim >= Dims || dim < 0)
 		{
 			throw std::out_of_range("FuncMatrix::set_size_check");
@@ -144,6 +145,7 @@ namespace Math
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
 	tensor_t<Dims-1, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::operator[](Index i) const
 	{
+		assert(i >= 0);
 		if (i >= this->size[0] && this->size[0] >= 0)
 		{
 			throw std::out_of_range("DataMatrix::size_check");
@@ -152,13 +154,14 @@ namespace Math
 		{
 			throw std::range_error("DataMatrix::inconsistent_internal_sizes");
 		}
-		assert(data[i] != NULL);
-		return data[i]->clone();
+		assert(data.at(i) != NULL);
+		return data.at(i)->clone();
 	}
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
 	tensor_t<Dims-1, Elem, Index>& DataMatrix<Dims, Elem, Index, Container>::operator()(Index i)
 	{
+		assert(i >= 0);
 		if (i >= this->size[0] && this->size[0] >= 0)
 		{
 			throw std::out_of_range("DataMatrix::size_check");
@@ -167,8 +170,8 @@ namespace Math
 		{
 			this->resize(i+1);
 		}
-		assert(data[i] != NULL);
-		return data[i];
+		assert(data.at(i) != NULL);
+		return data.at(i);
 	}
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
@@ -390,7 +393,19 @@ namespace Math
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
 	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::block(typename _Helpers::TupleBuilder<2*Dims, Index>::value tup) const
 	{
-		throw NotImp();
+		Index start = std::get<0>(tup);
+		Index end = std::get<1>(tup);
+		assert(end >= start);
+		Index size = end - start;
+		tensor_t<Dims, Elem, Index> m = new DataMatrix<Dims, Elem, Index, Container>();
+		m.setSize(0, size);
+		auto nTup = Make_Tuple(tup).template takeBack<2*Dims - 2>().getStd();
+		for (Index i = start; i < end; i++)
+		{
+			m(i-start) = ((DataMatrix<Dims, Elem, Index, Container>*)this)->operator()(i).block(nTup);
+			//m(i-start) = this->operator[](i).block(nTup);
+		}
+		return m;
 	}
 	
 	
@@ -446,6 +461,7 @@ namespace Math
 	template <typename Elem, typename Index, template <typename...> typename Container>
 	Elem DataMatrix<1, Elem, Index, Container>::operator[](Index i) const
 	{
+		assert(i >= 0);
 		if (i >= this->size[0] && this->size[0] >= 0)
 		{
 			throw std::out_of_range("DataMatrix::size_check");
@@ -454,12 +470,13 @@ namespace Math
 		{
 			throw std::range_error("DataMatrix::inconsistent_internal_sizes");
 		}
-		return data[i];
+		return data.at(i);
 	}
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
 	Elem& DataMatrix<1, Elem, Index, Container>::operator()(Index i)
 	{
+		assert(i >= 0);
 		if (i >= this->size[0] && this->size[0] >= 0)
 		{
 			throw std::out_of_range("DataMatrix::size_check");
@@ -468,7 +485,7 @@ namespace Math
 		{
 			this->resize(i+1);
 		}
-		return data[i];
+		return data.at(i);
 	}
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
@@ -600,16 +617,18 @@ namespace Math
 	tensor_t<1, Elem, Index> DataMatrix<1, Elem, Index, Container>::block(typename _Helpers::TupleBuilder<2, Index>::value tup) const
 	{
 		tensor_t<1, Elem, Index> m = new DataMatrix<1, Elem, Index, Container>();
+		
 		Index start = std::get<0>(tup);
 		Index end = std::get<1>(tup);
+		assert(end >= start);
 		
-		m->setSize(0, start-end);
+		m->setSize(0, end-start);
 		Index mIndex = 0;
 		for (Index i = start; i < end; i++)
 		{
 			m(mIndex++) = (*this)[i];
 		}
-		
+		std::cout << "Returning..." << std::endl;
 		return m;
 	}
 	

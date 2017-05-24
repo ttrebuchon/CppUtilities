@@ -365,6 +365,13 @@ namespace Math
 		return ptr()->T();
 	}
 	
+	template <int Dims, typename Elem, typename Index>
+	template <typename... Args>
+	tensor_t<Dims, Elem, Index> tensor_t<Dims, Elem, Index>::block(Args... args) const
+	{
+		return ptr()->block(args...);
+	}
+	
 	
 	
 	

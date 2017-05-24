@@ -107,6 +107,9 @@ namespace Math
 		
 		tensor_t<_Helpers::_tensor_t::transposeDims(Dims), Elem, Index> T() const;
 		
+		template <typename... Args>
+		tensor_t<Dims, Elem, Index> block(Args...) const;
+		
 		
 		//Accessors
 		type& operator()(const Index);
