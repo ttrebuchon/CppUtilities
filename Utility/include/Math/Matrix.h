@@ -129,6 +129,8 @@ namespace Math
 		
 		virtual Index Size(const int dim) const = 0;
 		
+		virtual tensor_t<2, Elem, Index> inv() const = 0;
+		
 		
 		template <int otherDims, typename otherElem, typename otherIndex>
 		friend class _MatrixBase_;
@@ -248,6 +250,16 @@ namespace Math
 		
 		virtual tensor_t<2, Elem, Index> inv() const = 0;
 		
+		template <typename... Args>
+		tensor_t<Dims, Elem, Index> block(Args... args) const
+		{
+			static_assert(sizeof...(Args) == 2*Dims, "Incorrect number of arguments to block()");
+			return this->block(std::make_tuple(args...));
+		}
+		
+		
+		virtual tensor_t<Dims, Elem, Index> block(typename _Helpers::TupleBuilder<2*Dims, Index>::value) const = 0;
+		
 	};
 	
 	template <typename Elem, typename Index>
@@ -302,6 +314,9 @@ namespace Math
 		virtual tensor_t<2, Elem, Index> T() const = 0;
 		virtual tensor_t<1, Elem, Index> submatrix(std::tuple<Index>) const = 0;
 		
+		template <int Dims2>
+		tensor_t<Dims2-1, Elem, Index> contract(tensor_t<Dims2, Elem, Index>);
+		
 		virtual Elem det() const override;
 		
 		virtual void append(Elem value) = 0;
@@ -315,6 +330,18 @@ namespace Math
 			
 			return this->size[0];
 		}
+		
+		virtual tensor_t<2, Elem, Index> inv() const = 0;
+		
+		template <typename... Args>
+		tensor_t<1, Elem, Index> block(Args... args) const
+		{
+			static_assert(sizeof...(Args) == 2, "Incorrect number of arguments to block()");
+			return this->block(std::make_tuple(args...));
+		}
+		
+		
+		virtual tensor_t<1, Elem, Index> block(typename _Helpers::TupleBuilder<2, Index>::value) const = 0;
 		
 	};
 	

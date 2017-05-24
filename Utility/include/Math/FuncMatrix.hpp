@@ -5,6 +5,7 @@
 #include <Func/TupleArgs.h>
 #include <Exception/NotImplemented.h>
 #include <vector>
+#include <Tuple/Tuple.h>
 
 namespace Util
 {
@@ -515,6 +516,95 @@ namespace Math
 	}
 	
 	
+	template <int index, int size>
+	struct _TupleEveryOther
+	{
+		template <typename... Args>
+		static auto call(std::tuple<Args...> tup)
+		{
+			static_assert(sizeof...(Args) == size, "");
+			auto n = _TupleEveryOther<index+2, size>::call(tup);
+			auto val = std::get<index>(tup);
+			
+			auto N = Util::Make_Tuple(n);
+			return N.prepend(val).getStd();
+		}
+	};
+	
+	template <int size>
+	struct _TupleEveryOther<size, size>
+	{
+		template <typename... Args>
+		static auto call(std::tuple<Args...> tup)
+		{
+			return std::make_tuple();
+			//auto val = std::get<index>(tup);
+			//return make_tuple(val);
+		}
+	};
+	
+	template <typename... Args>
+	auto TupleEveryOther(std::tuple<Args...> tup)
+	{
+		return _TupleEveryOther<0, sizeof...(Args)>::call(tup);
+	}
+	
+	
+	
+	template <int Dims, typename Elem, typename Index>
+	struct BlockHelper
+	{
+		template <int... Nums, typename... Args>
+		static std::tuple<Args...> combine(seq<Nums...>, std::tuple<Args...> tup1, std::tuple<Args...> tup2)
+		{
+			static_assert(sizeof...(Args) == sizeof...(Nums), "BlockHelper::combine() arguments error");
+			return std::make_tuple((std::get<Nums>(tup1) + std::get<Nums>(tup2))...);
+		}
+		
+		
+		
+		
+		template <typename... Args>
+		static tensor_t<Dims, Elem, Index> call(std::tuple<Args...> tup, auto func)
+		{
+			static_assert(2*Dims == sizeof...(Args), "");
+			//...
+			auto everyOther = TupleEveryOther(tup);
+			
+			
+			
+			auto nFunc = [=](auto... args) -> Elem
+			{
+				auto combined = BlockHelper<Dims, Elem, Index>::combine(typename seqgen<0, sizeof...(Args)/2-1>::value(), std::make_tuple(args...), (std::tuple<decltype(args)...>)everyOther);
+				return call_tuple_args(func, combined);
+			};
+			tensor_t<Dims, Elem, Index> tensor = new FuncMatrix<Dims, Elem, Index>(nFunc);
+			setSizes(tensor, tup);
+			return tensor;
+			
+		}
+		
+		template <typename... Args>
+		static void setSizes(tensor_t<Dims, Elem, Index> tensor, std::tuple<Args...> tup)
+		{
+			int sizeInd = Dims - sizeof...(Args) / 2;
+			auto valueIndex = std::get<1>(tup) - std::get<0>(tup);
+			tensor.setSize(sizeInd, valueIndex);
+			auto nTup = Make_Tuple(tup);
+			setSizes(tensor, nTup.template takeBack<sizeof...(Args) - 2>().getStd());
+		}
+		
+		static void setSizes(tensor_t<Dims, Elem, Index> tensor, std::tuple<Index, Index> tup)
+		{
+			int sizeInd = Dims - 1;
+			auto valueIndex = std::get<1>(tup) - std::get<0>(tup);
+			tensor.setSize(sizeInd, valueIndex);
+		}
+		
+		
+		
+	};
+	
 	
 	
 	
@@ -524,6 +614,20 @@ namespace Math
 	
 	
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -630,7 +734,7 @@ namespace Math
 	template <int Dims, typename Elem, typename Index>
 	tensor_t<2, Elem, Index> FuncMatrix<Dims, Elem, Index>::inv() const
 	{
-		static_assert(Dims == 2, "Can only find the inverse of matrices");
+		static_assert(Dims == 2, "Can only find the inverse of matrices and vectors");
 		auto size1 = this->Size(0);
 		auto size2 = this->Size(1);
 		if (size1 > 0 && size2 > 0 && size1 != size2)
@@ -640,6 +744,14 @@ namespace Math
 			return transpose.contract(tensor_this).inv().contract(transpose);
 		}
 		throw NotImp();
+	}
+	
+	template <int Dims, typename Elem, typename Index>
+	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::block(typename _Helpers::TupleBuilder<2*Dims, Index>::value tup) const
+	{
+		auto tensor = _Helpers::BlockHelper<Dims, Elem, Index>::call(tup, this->def);
+		return tensor;
+		//throw NotImp();
 	}
 	
 	
@@ -924,6 +1036,28 @@ namespace Math
 	void FuncMatrix<1, Elem, Index>::append(Elem t)
 	{
 		throw NotImp();
+	}
+	
+	template <typename Elem, typename Index>
+	tensor_t<2, Elem, Index> FuncMatrix<1, Elem, Index>::inv() const
+	{
+		auto transpose = T();
+		tensor_t<1, Elem, Index> tensor_this = tensor_t<1, Elem, Index>(((FuncMatrix<1, Elem, Index>*)this)->get_ptr());
+		return transpose.contract(tensor_this).inv().contract(transpose);
+	}
+	
+	template <typename Elem, typename Index>
+	tensor_t<1, Elem, Index> FuncMatrix<1, Elem, Index>::block(typename _Helpers::TupleBuilder<2, Index>::value tup) const
+	{
+		Index start = std::get<0>(tup);
+		Index end = std::get<1>(tup);
+		
+		auto func = this->def;
+		tensor_t<1, Elem, Index> m = new FuncMatrix<1, Elem, Index>([=](Index i) -> Elem {
+			return func(i + start);
+		}, end - start);
+		
+		return m;
 	}
 	
 	

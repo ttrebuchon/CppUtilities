@@ -375,7 +375,21 @@ namespace Math
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
 	tensor_t<2, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::inv() const
 	{
-		static_assert(Dims == 2, "Can only find the inverse of natrices");
+		static_assert(Dims == 2, "Can only find the inverse of matrices and vectors");
+		auto size1 = this->Size(0);
+		auto size2 = this->Size(1);
+		if (size1 > 0 && size2 > 0 && size1 != size2)
+		{
+			auto transpose = T();
+			tensor_t<Dims, Elem, Index> tensor_this = tensor_t<Dims, Elem, Index>(((DataMatrix<Dims, Elem, Index, Container>*)this)->get_ptr());
+			return transpose.contract(tensor_this).inv().contract(transpose);
+		}
+		throw NotImp();
+	}
+	
+	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
+	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::block(typename _Helpers::TupleBuilder<2*Dims, Index>::value tup) const
+	{
 		throw NotImp();
 	}
 	
@@ -572,6 +586,31 @@ namespace Math
 	void DataMatrix<1, Elem, Index, Container>::append(Elem value)
 	{
 		throw NotImp();
+	}
+	
+	template <typename Elem, typename Index, template <typename...> typename Container>
+	tensor_t<2, Elem, Index> DataMatrix<1, Elem, Index, Container>::inv() const
+	{
+		auto transpose = T();
+		tensor_t<1, Elem, Index> tensor_this = tensor_t<1, Elem, Index>(((DataMatrix<1, Elem, Index, Container>*)this)->get_ptr());
+		return transpose.contract(tensor_this).inv().contract(transpose);
+	}
+	
+	template <typename Elem, typename Index, template <typename...> typename Container>
+	tensor_t<1, Elem, Index> DataMatrix<1, Elem, Index, Container>::block(typename _Helpers::TupleBuilder<2, Index>::value tup) const
+	{
+		tensor_t<1, Elem, Index> m = new DataMatrix<1, Elem, Index, Container>();
+		Index start = std::get<0>(tup);
+		Index end = std::get<1>(tup);
+		
+		m->setSize(0, start-end);
+		Index mIndex = 0;
+		for (Index i = start; i < end; i++)
+		{
+			m(mIndex++) = (*this)[i];
+		}
+		
+		return m;
 	}
 	
 	

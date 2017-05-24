@@ -75,6 +75,7 @@ namespace Math
 		virtual tensor_t<Dims, Elem, Index> T() const override;
 		virtual tensor_t<Dims, Elem, Index> submatrix(typename _Helpers::TupleBuilder<Dims, Index>::value) const override;
 		virtual tensor_t<2, Elem, Index> inv() const override;
+		virtual tensor_t<Dims, Elem, Index> block(typename _Helpers::TupleBuilder<2*Dims, Index>::value) const override;
 		
 	};
 	
@@ -124,6 +125,8 @@ namespace Math
 		virtual tensor_t<2, Elem, Index> T() const override;
 		virtual tensor_t<1, Elem, Index> submatrix(std::tuple<Index>) const override;
 		virtual void append(Elem value) override;
+		virtual tensor_t<2, Elem, Index> inv() const override;
+		virtual tensor_t<1, Elem, Index> block(typename _Helpers::TupleBuilder<2, Index>::value) const override;
 		
 	};
 }
