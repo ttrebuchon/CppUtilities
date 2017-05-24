@@ -5,7 +5,7 @@
 
 namespace Util
 {
-	namespace _Helpers
+	namespace Tuple_Helpers
 	{
 		template <int ...Nums>
 		struct seq {};
@@ -13,6 +13,7 @@ namespace Util
 		template <int N, int ...Nums>
 		struct seqgen
 		{
+			static_assert(N > 0, "Invalid argument to seqgen");
 			typedef typename seqgen<N-1, N, Nums...>::type type;
 		};
 		
@@ -108,23 +109,24 @@ namespace Util
 	template <typename Y>
 	auto Tuple<T...>::useAsArgs(Y y)
 	{
-		return _Helpers::useAsArgs_Helper(y, inner, typename _Helpers::seqgen<sizeof...(T)-1>::type());
+		return Tuple_Helpers::useAsArgs_Helper(y, inner, typename Tuple_Helpers::seqgen<sizeof...(T)-1>::type());
 	}
 	
 	template <typename ...T>
 	template <int Count>
 	auto Tuple<T...>::takeFront()
 	{
-		typename _Helpers::seqgen<Count-1>::type seq;
-		return _Helpers::takeFront_Helper(inner, seq);
+		typename Tuple_Helpers::seqgen<Count-1>::type seq;
+		return Tuple_Helpers::takeFront_Helper(inner, seq);
 	}
 	
 	template <typename ...T>
 	template <int Count>
 	auto Tuple<T...>::takeBack()
 	{
-		typename _Helpers::seqgen<Count-1>::type seq;
-		return _Helpers::takeBack_Helper(inner, seq);
+		typename Tuple_Helpers::seqgen<Count-1>::type seq;
+		
+		return Tuple_Helpers::takeBack_Helper(inner, seq);
 	}
 	
 	template <typename ...T>
@@ -136,11 +138,28 @@ namespace Util
 			return false;
 		}
 		
-		return _Helpers::equals_Helper<0, sizeof...(T)>::call(*this, u);
+		return Tuple_Helpers::equals_Helper<0, sizeof...(T)>::call(*this, u);
 		
+	}
+	
+	template <typename... T>
+	Tuple<T...> Tuple<T...>::make(T... args)
+	{
+		return Tuple<T...>(args...);
+	}
+	
+	template <typename... T>
+	Tuple<T...> Tuple<T...>::make(std::tuple<T...> tup)
+	{
+		return Tuple<T...>(tup);
+	}
+	
+	template <typename... T>
+	Tuple<T...> Make_Tuple(std::tuple<T...> tup)
+	{
+		return Tuple<T...>(tup);
 	}
 	
 	
 	
 }
-

@@ -26,8 +26,8 @@ namespace Util
 		{ }
 		Tuple(T... args) : inner(std::make_tuple(args...))
 		{ }
-		Tuple() : inner()
-		{ }
+		/*Tuple() : inner()
+		{ }*/
 		
 		template <int index>
 		auto& get();
@@ -66,7 +66,13 @@ namespace Util
 		//Heh heh heh
 		std::tuple<T...> getStd() const
 		{ return inner; }
+		
+		static Tuple<T...> make(T...);
+		static Tuple<T...> make(std::tuple<T...>);
 	};
+	
+	template <typename...T>
+	Tuple<T...> Make_Tuple(std::tuple<T...>);
 	
 	
 	
