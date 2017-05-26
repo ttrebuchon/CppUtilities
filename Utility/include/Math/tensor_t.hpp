@@ -157,9 +157,13 @@ namespace Math
 			{
 				tmp->setSize(i, -1);
 			}
-			else
+			else if (this->size(i) != 0)
 			{
 				tmp->setSize(i, this->size(i));
+			}
+			else
+			{
+				tmp->setSize(i, 1);
 			}
 		}
 		(typename tensor_t<Dims, Elem, Index>::Shared&)*this = tmp;
@@ -370,6 +374,12 @@ namespace Math
 	tensor_t<Dims, Elem, Index> tensor_t<Dims, Elem, Index>::block(Args... args) const
 	{
 		return ptr()->block(args...);
+	}
+	
+	template <int Dims, typename Elem, typename Index>
+	tensor_t<Dims, Elem, Index> tensor_t<Dims, Elem, Index>::toDataTensor() const
+	{
+		return ptr()->toDataTensor();
 	}
 	
 	

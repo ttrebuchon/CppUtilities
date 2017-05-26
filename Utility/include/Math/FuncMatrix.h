@@ -46,6 +46,7 @@ namespace Math
 		
 		tensor_t<Dims-1, Elem, Index> operator[](Index i) const override;
 		tensor_t<Dims-1, Elem, Index>& operator()(Index i) override;
+		const tensor_t<Dims-1, Elem, Index>& operator()(Index i) const override;
 		
 		
 		virtual tensor_t<Dims, Elem, Index> mul(const double) override;
@@ -58,6 +59,7 @@ namespace Math
 		//virtual Elem minor(typename _Helpers::TupleBuilder<Dims, Index>::value) const override;
 		virtual tensor_t<2, Elem, Index> inv() const override;
 		virtual tensor_t<Dims, Elem, Index> block(typename _Helpers::TupleBuilder<2*Dims, Index>::value) const override;
+		virtual tensor_t<Dims, Elem, Index> toDataTensor() const override;
 		
 	};
 	
@@ -113,6 +115,7 @@ namespace Math
 		
 		Elem operator[](Index i) const override;
 		Elem& operator()(Index i) override;
+		const Elem& operator()(Index i) const override;
 		
 		
 		virtual tensor_t<1, Elem, Index> mul(const double) override;
@@ -126,6 +129,7 @@ namespace Math
 		virtual void append(Elem value) override;
 		virtual tensor_t<2, Elem, Index> inv() const override;
 		virtual tensor_t<1, Elem, Index> block(typename _Helpers::TupleBuilder<2, Index>::value) const override;
+		virtual tensor_t<1, Elem, Index> toDataTensor() const override;
 		
 	};
 	

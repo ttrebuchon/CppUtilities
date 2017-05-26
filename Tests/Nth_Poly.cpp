@@ -15,6 +15,23 @@ void Test_Multiple_Reg();
 
 bool Testing::nth_Poly()
 {
+	tensor_t<2, double> fT = new FuncMatrix<2, double>([](int i, int j) {
+		return i*2 + (j+1);
+	}, 2, 2);
+	
+	tensor_t<1, double> dT = new DataMatrix<1, double>();
+	dT.setSize(0, 2);
+	dT(0) = 0;
+	dT(1) = 1;
+	
+	dout << "L: " << fT.toString() << std::endl;
+	dout << "R: " << dT.toString() << std::endl;
+	auto dfT = fT.contract(dT);
+	std::cout << "Result: " << dfT.toString() << std::endl;
+	
+	
+	
+	
 	typedef double N;
 	
 	
@@ -149,6 +166,13 @@ void Test_Multiple_Reg()
 	
 	assert_ex(M.contract(coef) == out);
 	//coef = M.T().contract(M).inv().contract(M.T()).contract(out)
-	assert_ex(coef == M.inv().contract(out));
+	auto Mi = M.inv();
+	auto Mi_out = Mi.contract(out);
+	
+	dout << "M inv: " << Mi.toString() << std::endl;
+	dout << "out: " << out.toString() << std::endl;
+	dout << "M^-1.out: " << Mi_out.toString() << std::endl;
+	dout << "Coef: " << coef.toString() << std::endl;
+	assert_ex(coef == Mi_out);
 	
 }

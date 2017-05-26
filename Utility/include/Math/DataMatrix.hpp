@@ -62,7 +62,10 @@ namespace Math
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
 	DataMatrix<Dims, Elem, Index, Container>::DataMatrix(Index size) : Matrix<Dims, Elem, Index>(), data(size)
 	{
-		
+		for (int i = 0; i < size; i++)
+		{
+			data[i] = std::make_shared<DataMatrix<Dims-1, Elem, Index, Container>>();
+		}
 	}
 	
 	
@@ -77,15 +80,15 @@ namespace Math
 			data[i++] = std::make_shared<DataMatrix<Dims-1, Elem, Index, Container>>(subD);
 		}
 		
-		this->size[0] = d.size();
+		this->setSize(0, d.size());
 		for (int n = 1; n < Dims; n++)
 		{
-			this->size[n] = data[0]->size[n-1];
+			this->setSize(n, data[0]->Size(n-1));
 		}
 	}
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	DataMatrix<Dims, Elem, Index, Container>::DataMatrix() : Matrix<Dims, Elem, Index>(), data()
+	DataMatrix<Dims, Elem, Index, Container>::DataMatrix() : Matrix<Dims, Elem, Index>(), data(0)
 	{
 		for (int i = 0; i < Dims; i++)
 		{
@@ -96,6 +99,8 @@ namespace Math
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
 	void DataMatrix<Dims, Elem, Index, Container>::resize(const Index s)
 	{
+		/*std::cout << "DataMatrix<" << Dims << ">::resize(" << s << ")" << std::endl;
+		std::cout << "prev size: " << data.size() << std::endl;*/
 		if (s == data.size())
 		{
 			
@@ -110,28 +115,48 @@ namespace Math
 			data.resize(s);
 			for (int i = prevS; i < data.size(); i++)
 			{
+				assert(data[i] == NULL);
 				data[i] = std::make_shared<DataMatrix<Dims-1, Elem, Index, Container>>();
+				/*std::cout << "Created " << data[i].get() << " at data[" << i << "]" << std::endl;*/
 				for (int j = 1; j < Dims; j++)
 				{
-					data[i]->setSize(j-1, this->size[j]);
+					data[i]->setSize(j-1, this->Size(j));
 				}
+				assert(data[i] != NULL);
+			}
+			for (int i = 0; i < data.size(); i++)
+			{
+				assert(data[i] != NULL);
 			}
 		}
+		/*std::cout << "DataMatrix<" << Dims << ">::resize(" << s << ") Returning." << std::endl;*/
 	}
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
 	void DataMatrix<Dims, Elem, Index, Container>::setSize(const Index dim, const Index s)
 	{
+		/*std::cout << "DataMatrix<" << Dims << ">::setSize(" << dim << ", " << s << ")" << std::endl;*/
 		assert(s >= 0);
 		if (dim >= Dims || dim < 0)
 		{
-			throw std::out_of_range("FuncMatrix::set_size_check");
+			throw std::out_of_range("DataMatrix::set_size_check");
 		}
 		this->size[dim] = s;
+		/*std::cout << "this->size[dim=" << dim << "] set to " << s << std::endl;*/
 		if (dim > 0)
 		{
+			/*std::cout << "data.size(): " << data.size() << std::endl;*/
+			if (data.size() > 0)
+			{
+				//std::cout << data[0].get() << std::endl;
+			}
+			for (int i = 0; i < data.size(); i++)
+			{
+				assert(data[i] != NULL);
+			}
 			for (auto ptr : data)
 			{
+				assert(ptr != NULL);
 				ptr->setSize((const Index)(dim-1), (const Index)s);
 			}
 		}
@@ -139,6 +164,7 @@ namespace Math
 		{
 			this->resize(s);
 		}
+		//std::cout << "setSize Returning." << std::endl;
 	}
 	
 	
@@ -146,11 +172,11 @@ namespace Math
 	tensor_t<Dims-1, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::operator[](Index i) const
 	{
 		assert(i >= 0);
-		if (i >= this->size[0] && this->size[0] >= 0)
+		if (i >= this->Size(0) && this->Size(0) >= 0)
 		{
 			throw std::out_of_range("DataMatrix::size_check");
 		}
-		if (data.size() != this->size[0])
+		if (data.size() != this->Size(0))
 		{
 			throw std::range_error("DataMatrix::inconsistent_internal_sizes");
 		}
@@ -162,7 +188,7 @@ namespace Math
 	tensor_t<Dims-1, Elem, Index>& DataMatrix<Dims, Elem, Index, Container>::operator()(Index i)
 	{
 		assert(i >= 0);
-		if (i >= this->size[0] && this->size[0] >= 0)
+		if (i >= this->Size(0) && this->Size(0) >= 0)
 		{
 			throw std::out_of_range("DataMatrix::size_check");
 		}
@@ -175,16 +201,32 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
+	const tensor_t<Dims-1, Elem, Index>& DataMatrix<Dims, Elem, Index, Container>::operator()(Index i) const
+	{
+		assert(i >= 0);
+		if (i >= this->Size(0) && this->Size(0) >= 0)
+		{
+			throw std::out_of_range("DataMatrix::size_check");
+		}
+		if (data.size() <= i)
+		{
+			((DataMatrix<Dims, Elem, Index, Container>*)this)->resize(i+1);
+		}
+		assert(data.at(i) != NULL);
+		return data.at(i);
+	}
+	
+	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
 	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::mul(const double n)
 	{
-		auto nc = Container<Subset>(this->size[0]);
+		auto nc = Container<Subset>(this->Size(0));
 		
-		for (Index i = 0; i < this->size[0]; i++)
+		for (Index i = 0; i < this->Size(0); i++)
 		{
 			nc[i] = Subset(this->at(i)->mul(n));
 		}
 		
-		auto ret = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index>(this->size[0]));
+		auto ret = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index>(this->Size(0)));
 		
 		for (auto i = 0; i < Dims; i++)
 		{
@@ -223,7 +265,7 @@ namespace Math
 		
 		for (auto i = 0; i < Dims; i++)
 		{
-			ret->size[i] = this->size[i];
+			ret->setSize(i, this->Size(i));
 		}
 		
 		for (auto i = 0; i < this->size[0]; i++)
@@ -240,7 +282,7 @@ namespace Math
 	{
 		for (auto i = 0; i < Dims; i++)
 		{
-		if (this->size[i] != m.size(i))
+		if (this->Size(i) != m.size(i))
 		{
 			throw MatrixInvalidSizeException();
 		}
@@ -258,7 +300,7 @@ namespace Math
 		
 		for (auto i = 0; i < Dims; i++)
 		{
-			ret->size[i] = this->size[i];
+			ret->setSize(i, this->Size(i));
 		}
 		
 		for (auto i = 0; i < this->size[0]; i++)
@@ -275,7 +317,7 @@ namespace Math
 	{
 		for (auto i = 0; i < Dims; i++)
 		{
-		if (this->size[i] != m.size(i))
+		if (this->Size(i) != m.size(i))
 		{
 			throw MatrixInvalidSizeException();
 		}
@@ -293,7 +335,7 @@ namespace Math
 		
 		for (auto i = 0; i < Dims; i++)
 		{
-			ret->size[i] = this->size[i];
+			ret->setSize(i, this->Size(i));
 		}
 		
 		for (auto i = 0; i < this->size[0]; i++)
@@ -307,14 +349,21 @@ namespace Math
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
 	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::clone() const
 	{
+		//std::cout << "DataMatrix<" << Dims << ">::clone()" << std::endl;
+		//std::cout << "data.size(): " << data.size() << std::endl;
 		auto cl = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index, Container>((Index)data.size()));
+		//std::cout << "cl created" << std::endl;
 		for (int i = 0; i < Dims; i++)
 		{
-			cl->size[i] = this->size[i];
+			//std::cout << "Setting Size for Dim " << i << "/" << (Dims-1) << " (" << std::flush << this->Size(i) << ")" << std::endl;
+			cl->setSize(i, this->Size(i));
 		}
+		//std::cout << "Sizes set." << std::endl;
+		
 		
 		for (auto i = 0; i < this->size[0]; i++)
 		{
+			assert(data[i] != NULL);
 			cl->data[i] = data[i]->clone();
 		}
 		return tensor_t<Dims, Elem, Index>(cl);
@@ -381,13 +430,97 @@ namespace Math
 		static_assert(Dims == 2, "Can only find the inverse of matrices and vectors");
 		auto size1 = this->Size(0);
 		auto size2 = this->Size(1);
+		assert(size1 != 0);
+		assert(size2 != 0);
 		if (size1 > 0 && size2 > 0 && size1 != size2)
 		{
 			auto transpose = T();
 			tensor_t<Dims, Elem, Index> tensor_this = tensor_t<Dims, Elem, Index>(((DataMatrix<Dims, Elem, Index, Container>*)this)->get_ptr());
 			return transpose.contract(tensor_this).inv().contract(transpose);
 		}
-		throw NotImp();
+		if (size1 == 1 && size2 == 1)
+		{
+			tensor_t<2, Elem, Index> oneRet = new DataMatrix<2, Elem, Index>();
+			oneRet.setSize(0, 1);
+			oneRet(0) = tensor_t<1, Elem, Index>({static_cast<Elem>(static_cast<Elem>(1)/(data[0][0]))});
+			return oneRet;
+			
+		}
+		
+		Index iSize;
+		if (size1 < size2)
+		{
+			iSize = size1;
+			
+		}
+		else
+		{
+			iSize = size2;
+		}
+		
+		Index ASize = iSize/2;
+		Index DSize = ASize;
+		if (iSize % 2 != 0)
+		{
+			DSize++;
+		}
+		assert(ASize + DSize == iSize);
+		
+		auto A = this->block(std::make_tuple(0, ASize, 0, ASize));
+		auto B = this->block(std::make_tuple(0, ASize, ASize, size2));
+		auto C = this->block(std::make_tuple(ASize, size1, 0, size2 - DSize));
+		auto D = this->block(std::make_tuple(ASize, size1, size2-DSize, size2));
+		
+		
+		
+		tensor_t<2, Elem, Index> aInv = A.inv();
+		auto AB = aInv.contract(B);
+		auto DCABi = (D - C.contract(AB)).inv();
+		auto CAi = C.contract(aInv);
+		auto newA = aInv + AB.contract(DCABi).contract(CAi);
+		auto newB = AB.contract(DCABi)*-1;
+		assert(newB.size(0) == B.size(0));
+		assert(newB(0).size(0) == B(0).size(0));
+		auto newC = DCABi.contract(CAi)*-1;
+		auto newD = DCABi;
+		auto getAt = [=](Index i, Index j) -> Elem {
+			if (i >= newA.size(0))
+			{
+				if (j >= newA.size(1))
+				{
+					return newD[i - newA.size(0)][j - newA.size(1)];
+				}
+				else
+				{
+					return newC(i - newA.size(0), j);
+				}
+			}
+			else
+			{
+				if (j >= newA.size(1))
+				{
+					return newB[i][j - newA.size(1)];
+				}
+				else
+				{
+					return newA[i][j];
+				}
+			}
+		};
+		tensor_t<2, Elem, Index> solution = new DataMatrix<2, Elem, Index>();
+		solution.setSize(0, this->Size(0));
+		solution.setSize(1, this->Size(1));
+		for (Index i = 0; i < this->Size(0); i++)
+		{
+			for (Index j = 0; j < (*this)(i).size(0); j++)
+			{
+				solution(i, j) = getAt(i, j);
+			}
+		}
+		
+		assert(solution.size(0) == solution->Size(0));
+		assert(solution.size(1) == solution->Size(1));
+		return solution;
 	}
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
@@ -449,12 +582,15 @@ namespace Math
 	template <typename Elem, typename Index, template <typename...> typename Container>
 	void DataMatrix<1, Elem, Index, Container>::setSize(const Index dim, const Index s)
 	{
+		//std::cout << "DataMatrix<" << 1 << ">::setSize(" << dim << ", " << s << ")" << std::endl;
+		assert(s >= 0);
 		if (dim >= 1 || dim < 0)
 		{
-			throw std::out_of_range("FuncMatrix::set_size_check");
+			throw std::out_of_range("DataMatrix::set_size_check");
 		}
 		this->size[dim] = s;
 		this->resize(s);
+		//std::cout << "DataMatrix<1>::setSize() Returning..." << std::endl;
 	}
 	
 	
@@ -484,6 +620,21 @@ namespace Math
 		if (i >= data.size())
 		{
 			this->resize(i+1);
+		}
+		return data.at(i);
+	}
+	
+	template <typename Elem, typename Index, template <typename...> typename Container>
+	const Elem& DataMatrix<1, Elem, Index, Container>::operator()(Index i) const
+	{
+		assert(i >= 0);
+		if (i >= this->size[0] && this->size[0] >= 0)
+		{
+			throw std::out_of_range("DataMatrix::size_check");
+		}
+		if (i >= data.size())
+		{
+			((DataMatrix<1, Elem, Index, Container>*)this)->resize(i+1);
 		}
 		return data.at(i);
 	}
@@ -628,7 +779,6 @@ namespace Math
 		{
 			m(mIndex++) = (*this)[i];
 		}
-		std::cout << "Returning..." << std::endl;
 		return m;
 	}
 	

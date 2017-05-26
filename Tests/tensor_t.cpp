@@ -29,5 +29,15 @@ bool Testing::Tensor_T()
 	
 	t2 = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
 	assert_ex(t2.det() == 0);
+	
+	
+	tensor_t<2, double> invTest = new FuncMatrix<2, double>([](int i, int j) {
+		return 2*i + (j+1);
+	}, 2, 2);
+	dout << "invTest: " << invTest.toString() << std::endl;
+	auto invTesti = invTest.inv();
+	dout << "invTesti: " << invTesti.toString() << std::endl;
+	dout << "invTest.invTesti: " << invTest.contract(invTesti).toString() << std::endl;
+	
 	return true;
 }

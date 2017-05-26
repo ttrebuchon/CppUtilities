@@ -110,6 +110,8 @@ namespace Math
 		template <typename... Args>
 		tensor_t<Dims, Elem, Index> block(Args...) const;
 		
+		tensor_t<Dims, Elem, Index> toDataTensor() const;
+		
 		
 		//Accessors
 		type& operator()(const Index);

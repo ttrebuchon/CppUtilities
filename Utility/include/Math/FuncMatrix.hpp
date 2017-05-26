@@ -6,6 +6,8 @@
 #include <Exception/NotImplemented.h>
 #include <vector>
 #include <Tuple/Tuple.h>
+#include <iostream>
+#include "DataMatrix.h"
 
 namespace Util
 {
@@ -138,15 +140,28 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
+	const tensor_t<Dims-1, Elem, Index>& FuncMatrix<Dims, Elem, Index>::operator()(Index i) const
+	{
+		if (instantiated.count(i) <= 0)
+		{
+			auto nPtr = this->operator[](i);
+			((FuncMatrix<Dims, Elem, Index>*)this)->instantiated[i] = nPtr;
+		}
+		static_assert(std::is_same<decltype(instantiated.at(i)), const tensor_t<Dims-1, Elem, Index>&>::value, "static_assert type failure");
+		return (const tensor_t<Dims-1, Elem, Index>&)instantiated.at(i);
+	}
+	
+	template <int Dims, typename Elem, typename Index>
 	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::mul(const double n)
 	{
+		auto Def = this->def;
 		tensor_t<Dims, Elem, Index> ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>([=] (auto... args)
 		{
-			return def(args...)*n;
+			return Def(args...)*n;
 		});
 		for (auto i = 0; i < Dims; i++)
 		{
-			ret->size[i] = this->size[i];
+			ret->setSize(i, this->Size(i));
 		}
 		return ret;
 	}
@@ -181,11 +196,12 @@ namespace Math
 		
 		if (m.imp() == "FuncMatrix")
 		{
+			auto Def = this->def;
 			FuncMatrix<Dims, Elem, Index>& M = (FuncMatrix<Dims, Elem, Index>&)m;
 			Func mDef = M.def;
 			tensor_t<Dims, Elem, Index> ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>([=] (auto... args)
 			{
-				return (def(args...) * mDef(args...));
+				return (Def(args...) * mDef(args...));
 			});
 			for (auto i = 0; i < Dims; i++)
 			{
@@ -230,11 +246,12 @@ namespace Math
 		
 		if (m.imp() == "FuncMatrix")
 		{
-			FuncMatrix<Dims, Elem, Index>& M = (FuncMatrix<Dims, Elem, Index>&)m;
+			auto Def = this->def;
+			auto& M = (FuncMatrix<Dims, Elem, Index>&)*(std::shared_ptr<Matrix<Dims, Elem, Index>>)m;
 			Func mDef = M.def;
 			tensor_t<Dims, Elem, Index> ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>(Func([=] (auto... args)
 			{
-				return (def(args...) + mDef(args...));
+				return (Def(args...) + mDef(args...));
 			}));
 			for (auto i = 0; i < Dims; i++)
 			{
@@ -252,11 +269,13 @@ namespace Math
 	template <int Dims, typename Elem, typename Index>
 	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::sub(const tensor_t<Dims, Elem, Index> m)
 	{
+		assert(this != NULL);
+		assert(m != NULL);
 		Index nSize[Dims];
 		for (int i = 0; i < Dims; i++)
 		{
 			nSize[i] = -1;
-			if (this->size[i] == 0 || m.size(i) == 0)
+			if (this->Size(i) == 0 || m.size(i) == 0)
 			{
 				throw MatrixInvalidSizeException();
 			}
@@ -266,9 +285,9 @@ namespace Math
 				nSize[i] = m.size(i);
 			}
 			
-			if ((this->size[i] < nSize[i] && this->size[i] > 0) || (nSize[i] < 0 && this->size[i] > 0))
+			if ((this->Size(i) < nSize[i] && this->Size(i) > 0) || (nSize[i] < 0 && this->Size(i) > 0))
 			{
-				nSize[i] = this->size[i];
+				nSize[i] = this->Size(i);
 			}
 			
 			if (nSize[i] == 0)
@@ -279,21 +298,28 @@ namespace Math
 		
 		if (m.imp() == "FuncMatrix")
 		{
-			FuncMatrix<Dims, Elem, Index>& M = (FuncMatrix<Dims, Elem, Index>&)m;
+			auto& M = (FuncMatrix<Dims, Elem, Index>&)*(std::shared_ptr<Matrix<Dims, Elem, Index>>)m;
 			auto mDef = M.def;
+			auto thisDef = this->def;
 			tensor_t<Dims, Elem, Index> ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>(Func([=] (auto... args)
 			{
-				return (def(args...) - mDef(args...));
+				return (thisDef(args...) - mDef(args...));
 			}));
 			for (auto i = 0; i < Dims; i++)
 			{
-				ret->size[i] = nSize[i];
+				ret->setSize(i, nSize[i]);
 			}
 			return ret;
 		}
 		else
 		{
-			throw NotImp();
+			tensor_t<Dims, Elem, Index> ret = new DataMatrix<Dims, Elem, Index>();
+			ret.setSize(0, this->Size(0));
+			for (Index i = 0; i < this->Size(0); i++)
+			{
+				ret(i) = (*this)(i) - m(i);
+			}
+			return ret;
 		}
 		
 	}
@@ -320,11 +346,12 @@ namespace Math
 	template <int Dims, typename Elem, typename Index>
 	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::T() const
 	{
+		auto func = this->def;
 		tensor_t<Dims, Elem, Index> n = std::make_shared<FuncMatrix>(
 		[=] (auto... args)
 		{
 			auto revArgs = reverseTuple(args...);
-			return call_tuple_args(def, revArgs);
+			return call_tuple_args(func, revArgs);
 		});
 		for (int i = 0; i < Dims; i++)
 		{
@@ -685,18 +712,25 @@ namespace Math
 	template <int Dims2>
 	tensor_t<Dims+Dims2-2, Elem, Index> Matrix<Dims, Elem, Index>::contract(tensor_t<Dims2, Elem, Index> m)
 	{
+		//std::cout << "Contracting (" << std::flush << this->toString() << ")(" << std::flush << m.toString() << ")" << std::endl;
+		assert(this != NULL);
+		assert(m != NULL);
 		const int nDims = Dims+Dims2-2;
-		if (this->size[Dims-1] != m.size(0) || this->size[Dims-1] <= 0)
+		//std::cout << "this->Size: " << std::flush << this->Size(Dims-1) << std::endl;
+		//std::cout << "m->Size: " << std::flush << m.size(0) << std::endl;
+		if (this->Size(Dims-1) != m.size(0) || this->Size(Dims-1) <= 0)
 		{
 			throw MatrixInvalidSizeException();
 		}
 		
+		//std::cout << "Cloning m [Imp: " << std::flush << m.imp() << "]" << std::endl;
 		auto am = m->clone();
 		
 		
 		
-		
+		//std::cout << "Cloning this" << std::endl;
 		auto tclone = this->clone();
+		//std::cout << "Making res" << std::endl;
 		tensor_t<nDims, Elem, Index> res = std::make_shared<FuncMatrix<nDims, Elem, Index>>([=] (auto... args)
 		{
 			
@@ -715,20 +749,22 @@ namespace Math
 			}
 			return val;
 		});
-		
+		//std::cout << "FuncMatrix defined" << std::endl;
 		
 		
 		
 		
 		for (int i = 0; i < Dims-1; i++)
 		{
-			res.setSize(i, this->size[i]);
+			res.setSize(i, this->Size(i));
 		}
+		//std::cout << "Size 1 set" << std::endl;
 		for (int i = 1; i < Dims2; i++)
 		{
 			res.setSize(i+Dims-2, m.size(i));
 		}
-		return res;
+		//std::cout << "Size 2 set" << std::endl;
+		return res.toDataTensor();
 	}
 	
 	template <int Dims, typename Elem, typename Index>
@@ -737,13 +773,97 @@ namespace Math
 		static_assert(Dims == 2, "Can only find the inverse of matrices and vectors");
 		auto size1 = this->Size(0);
 		auto size2 = this->Size(1);
+		assert(size1 != 0);
+		assert(size2 != 0);
 		if (size1 > 0 && size2 > 0 && size1 != size2)
 		{
 			auto transpose = T();
 			tensor_t<Dims, Elem, Index> tensor_this = tensor_t<Dims, Elem, Index>(((FuncMatrix<Dims, Elem, Index>*)this)->get_ptr());
 			return transpose.contract(tensor_this).inv().contract(transpose);
 		}
-		throw NotImp();
+		if (size1 == 1 && size2 == 1)
+		{
+			tensor_t<2, Elem, Index> oneRet = new DataMatrix<2, Elem, Index>();
+			oneRet.setSize(0, 1);
+			oneRet(0) = tensor_t<1, Elem, Index>({static_cast<Elem>(static_cast<Elem>(1)/this->def(0, 0))});
+			return oneRet;
+			
+		}
+		
+		Index iSize;
+		if (size1 < size2)
+		{
+			iSize = size1;
+			
+		}
+		else
+		{
+			iSize = size2;
+		}
+		
+		Index ASize = iSize/2;
+		Index DSize = ASize;
+		if (iSize % 2 != 0)
+		{
+			DSize++;
+		}
+		assert(ASize + DSize == iSize);
+		
+		auto A = this->block(std::make_tuple(0, ASize, 0, ASize)).toDataTensor();
+		auto B = this->block(std::make_tuple(0, ASize, ASize, size2)).toDataTensor();
+		auto C = this->block(std::make_tuple(ASize, size1, 0, size2 - DSize)).toDataTensor();
+		auto D = this->block(std::make_tuple(ASize, size1, size2-DSize, size2)).toDataTensor();
+		
+		
+		
+		tensor_t<2, Elem, Index> aInv = A.inv();
+		auto AB = aInv.contract(B);
+		auto DCABi = (D - C.contract(AB)).inv();
+		auto CAi = C.contract(aInv);
+		auto newA = aInv + AB.contract(DCABi).contract(CAi);
+		auto newB = AB.contract(DCABi)*-1;
+		assert(newB.size(0) == B.size(0));
+		assert(newB(0).size(0) == B(0).size(0));
+		auto newC = DCABi.contract(CAi)*-1;
+		auto newD = DCABi;
+		auto getAt = [=](Index i, Index j) -> Elem {
+			if (i >= newA.size(0))
+			{
+				if (j >= newA.size(1))
+				{
+					return newD[i - newA.size(0)][j - newA.size(1)];
+				}
+				else
+				{
+					return newC(i - newA.size(0), j);
+				}
+			}
+			else
+			{
+				if (j >= newA.size(1))
+				{
+					return newB[i][j - newA.size(1)];
+				}
+				else
+				{
+					return newA[i][j];
+				}
+			}
+		};
+		tensor_t<2, Elem, Index> solution = new DataMatrix<2, Elem, Index>();
+		solution.setSize(0, this->Size(0));
+		solution.setSize(1, this->Size(1));
+		for (Index i = 0; i < this->Size(0); i++)
+		{
+			for (Index j = 0; j < (*this)(i).size(0); j++)
+			{
+				solution(i, j) = getAt(i, j);
+			}
+		}
+		
+		assert(solution.size(0) == solution->Size(0));
+		assert(solution.size(1) == solution->Size(1));
+		return solution;
 	}
 	
 	template <int Dims, typename Elem, typename Index>
@@ -751,7 +871,21 @@ namespace Math
 	{
 		auto tensor = _Helpers::BlockHelper<Dims, Elem, Index>::call(tup, this->def);
 		return tensor;
-		//throw NotImp();
+	}
+	
+	template <int Dims, typename Elem, typename Index>
+	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::toDataTensor() const
+	{
+		assert(this->Size(0) >= 0);
+		
+		tensor_t<Dims, Elem, Index> dat = new DataMatrix<Dims, Elem, Index>();
+		dat.setSize(0, this->Size(0));
+		for (Index i = 0; i < this->Size(0); i++)
+		{
+			dat(i) = (*this)(i).toDataTensor();
+		}
+		return dat;
+		
 	}
 	
 	
@@ -836,7 +970,7 @@ namespace Math
 	template <typename Elem, typename Index>
 	Elem FuncMatrix<1, Elem, Index>::operator[](Index i) const
 	{
-		if (i >= this->size[0] && this->size[0] >= 0)
+		if (i >= this->Size(0) && this->Size(0) >= 0)
 		{
 			throw std::out_of_range("FuncMatrix::size_check");
 		}
@@ -859,11 +993,23 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index>
+	const Elem& FuncMatrix<1, Elem, Index>::operator()(Index i) const
+	{
+		if (instantiated.count(i) <= 0)
+		{
+			auto nElem = this->operator[](i);
+			((FuncMatrix<1, Elem, Index>*)this)->instantiated[i] = nElem;
+		}
+		return instantiated.at(i);
+	}
+	
+	template <typename Elem, typename Index>
 	tensor_t<1, Elem, Index> FuncMatrix<1, Elem, Index>::mul(const double n)
 	{
+		auto Def = this->def;
 		tensor_t<1, Elem, Index> ret = tensor_t<1, Elem, Index>(std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
 		{
-			return def(i)*n;
+			return Def(i)*n;
 		}));
 		ret->setSize(0, this->size[0]);
 		return ret;
@@ -897,11 +1043,13 @@ namespace Math
 		
 		if (m.imp() == "FuncMatrix")
 		{
+			auto Def = this->def;
 			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)*(std::shared_ptr<Matrix<1, Elem, Index>>)m;
+			auto mDef = M.def;
 			
 			auto ret = tensor_t<1, Elem, Index>(std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
 			{
-				return (def(i) * M.def(i));
+				return (Def(i) * mDef(i));
 			}));
 			ret->setSize(0, nSize);
 			return ret;
@@ -940,11 +1088,12 @@ namespace Math
 		
 		if (m.imp() == "FuncMatrix")
 		{
+			auto Def = this->def;
 			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)*(std::shared_ptr<Matrix<1, Elem, Index>>)m;
-			
+			auto mDef = M.def;
 			auto ret = tensor_t<1, Elem, Index>(std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
 			{
-				return (def(i) + M.def(i));
+				return (Def(i) + mDef(i));
 			}));
 			ret->setSize(0, nSize);
 			return ret;
@@ -983,11 +1132,13 @@ namespace Math
 		
 		if (m.imp() == "FuncMatrix")
 		{
+			auto Def = this->def;
 			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)*(std::shared_ptr<Matrix<1, Elem, Index>>)m;
+			auto mDef = M.def;
 			
 			auto ret = tensor_t<1, Elem, Index>(std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
 			{
-				return (def(i) - M.def(i));
+				return (Def(i) - mDef(i));
 			}));
 			ret->setSize(0, nSize);
 			return ret;
@@ -1058,6 +1209,21 @@ namespace Math
 		}, end - start);
 		
 		return m;
+	}
+	
+	template <typename Elem, typename Index>
+	tensor_t<1, Elem, Index> FuncMatrix<1, Elem, Index>::toDataTensor() const
+	{
+		assert(this->Size(0) >= 0);
+		
+		tensor_t<1, Elem, Index> dat = new DataMatrix<1, Elem, Index>();
+		dat.setSize(0, this->Size(0));
+		for (Index i = 0; i < this->Size(0); i++)
+		{
+			dat(i) = (*this)[i];
+		}
+		return dat;
+		
 	}
 	
 	

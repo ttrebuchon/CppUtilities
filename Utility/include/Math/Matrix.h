@@ -131,6 +131,8 @@ namespace Math
 		
 		virtual tensor_t<2, Elem, Index> inv() const = 0;
 		
+		virtual tensor_t<Dims, Elem, Index> toDataTensor() const = 0;
+		
 		
 		template <int otherDims, typename otherElem, typename otherIndex>
 		friend class _MatrixBase_;
@@ -213,7 +215,16 @@ namespace Math
 			return this->operator()(i).operator()(args...);
 		}
 		
+		template <typename ...Args>
+		const typename _Helpers::RefReturnHelper<Matrix, Dims, Elem, Index, sizeof...(Args)+1>::type& operator()(Index i, Args... args) const 
+		{
+			static_assert(sizeof...(Args) > 0, "Error with Args in RefReturnHelper usage");
+			return this->operator()(i).operator()(args...);
+		}
+		
 		virtual tensor_t<Dims-1, Elem, Index>& operator()(Index i) = 0;
+		
+		virtual const tensor_t<Dims-1, Elem, Index>& operator()(Index i) const = 0;
 		
 		virtual tensor_t<Dims-1, Elem, Index> at(Index i) const
 		{
@@ -305,6 +316,7 @@ namespace Math
 		
 		virtual Elem operator[](Index i) const = 0;
 		virtual Elem& operator()(Index i) = 0;
+		virtual const Elem& operator()(Index i) const = 0;
 		
 		virtual Elem at(Index i) const
 		{
