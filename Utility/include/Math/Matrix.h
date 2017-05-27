@@ -133,6 +133,9 @@ namespace Math
 		
 		virtual tensor_t<Dims, Elem, Index> toDataTensor() const = 0;
 		
+		template <int newDims>
+		tensor_t<newDims, Elem, Index> expand() const;
+		
 		
 		template <int otherDims, typename otherElem, typename otherIndex>
 		friend class _MatrixBase_;

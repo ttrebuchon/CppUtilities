@@ -211,7 +211,17 @@ namespace Math
 		}
 		else
 		{
-			throw NotImp();
+			tensor_t<Dims, Elem, Index> ret = new DataMatrix<Dims, Elem, Index, std::vector>();
+			for (int i = 0; i < Dims; i++)
+			{
+				ret->setSize(i, nSize[i]);
+			}
+			
+			for (int i = 0; i < nSize[0]; i++)
+			{
+				ret(i) = (*this)(i) * m(i);
+			}
+			return ret;
 		}
 		
 	}
@@ -261,7 +271,17 @@ namespace Math
 		}
 		else
 		{
-			throw NotImp();
+			tensor_t<Dims, Elem, Index> ret = new DataMatrix<Dims, Elem, Index, std::vector>();
+			for (int i = 0; i < Dims; i++)
+			{
+				ret->setSize(i, nSize[i]);
+			}
+			
+			for (int i = 0; i < nSize[0]; i++)
+			{
+				ret(i) = (*this)(i) + m(i);
+			}
+			return ret;
 		}
 		
 	}
@@ -712,12 +732,44 @@ namespace Math
 	template <int Dims2>
 	tensor_t<Dims+Dims2-2, Elem, Index> Matrix<Dims, Elem, Index>::contract(tensor_t<Dims2, Elem, Index> m)
 	{
-		//std::cout << "Contracting (" << std::flush << this->toString() << ")(" << std::flush << m.toString() << ")" << std::endl;
 		assert(this != NULL);
 		assert(m != NULL);
 		const int nDims = Dims+Dims2-2;
-		//std::cout << "this->Size: " << std::flush << this->Size(Dims-1) << std::endl;
-		//std::cout << "m->Size: " << std::flush << m.size(0) << std::endl;
+		
+		
+		bool thisAll1 = true;
+		bool mAll1 = true;
+		for (int i = 0; i < Dims && (thisAll1 || mAll1); i++)
+		{
+			if (thisAll1)
+			{
+				thisAll1 = (this->Size(i) == 1);
+			}
+			if (mAll1)
+			{
+				mAll1 = (m.size(i) == 1);
+			}
+		}
+		
+		/*if (mAll1)
+		{
+			if (Dims2 == 2)
+			{
+				return (tensor_t<Dims+Dims2-2, Elem, Index>)(this->operator*(m(0, 0)));
+			}
+		}
+		if (thisAll1)
+		{
+			if (Dims == 2)
+			{
+				return (tensor_t<Dims+Dims2-2, Elem, Index>)(m*((*this)(0, 0)));
+			}
+		}*/
+		
+		
+		
+		
+		
 		if (this->Size(Dims-1) != m.size(0) || this->Size(Dims-1) <= 0)
 		{
 			throw MatrixInvalidSizeException();
@@ -1056,7 +1108,13 @@ namespace Math
 		}
 		else
 		{
-			throw NotImp();
+			auto ret = tensor_t<1, Elem, Index>(new DataMatrix<1, Elem, Index, std::vector>());
+			ret->setSize(0, nSize);
+			for (int i = 0; i < nSize; i++)
+			{
+				ret(i) = (*this)(i) * m(i);
+			}
+			return ret;
 		}
 	}
 	
@@ -1100,7 +1158,13 @@ namespace Math
 		}
 		else
 		{
-			throw NotImp();
+			auto ret = tensor_t<1, Elem, Index>(new DataMatrix<1, Elem, Index, std::vector>());
+			ret->setSize(0, nSize);
+			for (int i = 0; i < nSize; i++)
+			{
+				ret(i) = (*this)(i) + m(i);
+			}
+			return ret;
 		}
 	}
 	
@@ -1145,7 +1209,13 @@ namespace Math
 		}
 		else
 		{
-			throw NotImp();
+			auto ret = tensor_t<1, Elem, Index>(new DataMatrix<1, Elem, Index, std::vector>());
+			ret->setSize(0, nSize);
+			for (int i = 0; i < nSize; i++)
+			{
+				ret(i) = (*this)(i) - m(i);
+			}
+			return ret;
 		}
 	}
 	
@@ -1159,6 +1229,17 @@ namespace Math
 	tensor_t<2, Elem, Index> FuncMatrix<1, Elem, Index>::T() const
 	{
 		throw NotImp();
+		auto this_size = this->Size(0);
+		auto Def = this->def;
+		auto overrides = this->instantiated;
+		return tensor_t<2, Elem, Index>(new FuncMatrix<2, Elem, Index>([overrides, Def] (Index i, Index j) {
+			if (overrides.count(j) > 0)
+			{
+				return overrides.at(j);
+			}
+			
+			return Def(j);
+		}, 1, this_size));
 	}
 	
 	template <typename Elem, typename Index>
@@ -1186,7 +1267,9 @@ namespace Math
 	template <typename Elem, typename Index>
 	void FuncMatrix<1, Elem, Index>::append(Elem t)
 	{
-		throw NotImp();
+		Index nSize = this->Size(0)+1;
+		this->setSize(0, nSize);
+		(*this)(nSize-1) = t;
 	}
 	
 	template <typename Elem, typename Index>
@@ -1194,7 +1277,15 @@ namespace Math
 	{
 		auto transpose = T();
 		tensor_t<1, Elem, Index> tensor_this = tensor_t<1, Elem, Index>(((FuncMatrix<1, Elem, Index>*)this)->get_ptr());
-		return transpose.contract(tensor_this).inv().contract(transpose);
+		auto inner = transpose.contract(tensor_this).inv();
+		if (inner.size(0) == 1 && inner.size(1) == 1)
+		{
+			return transpose*inner(0, 0);
+		}
+		else
+		{
+			return inner.contract(transpose);
+		}
 	}
 	
 	template <typename Elem, typename Index>

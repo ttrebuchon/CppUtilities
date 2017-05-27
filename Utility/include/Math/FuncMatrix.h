@@ -61,6 +61,8 @@ namespace Math
 		virtual tensor_t<Dims, Elem, Index> block(typename _Helpers::TupleBuilder<2*Dims, Index>::value) const override;
 		virtual tensor_t<Dims, Elem, Index> toDataTensor() const override;
 		
+		void flattenOverrides();
+		
 	};
 	
 	
@@ -131,6 +133,7 @@ namespace Math
 		virtual tensor_t<1, Elem, Index> block(typename _Helpers::TupleBuilder<2, Index>::value) const override;
 		virtual tensor_t<1, Elem, Index> toDataTensor() const override;
 		
+		void flattenOverrides();
 	};
 	
 	

@@ -121,6 +121,40 @@ namespace Math
 	
 	
 	
+	/*template <int Dims, typename Elem, typename Index>
+	template <int newDims>
+	tensor_t<newDims, Elem, Index> _MatrixBase_<Dims, Elem, Index>::expand() const
+	{
+		static_assert(newDims >= Dims, "Can't expand to make smaller!");
+		
+		if (newDims == Dims)
+		{
+			return this->clone();
+		}
+		
+		tensor_t<newDims, Elem, Index> newT = new DataMatrix<newDims, Elem, Index>();
+		
+		for (int i = 0; i < Dims; i++)
+		{
+			newT.setSize(i, this->Size(i));
+		}
+		for (int i = Dims; i < newDims; i++)
+		{
+			newT.setSize(i, 1);
+		}
+		
+		
+		
+	}*/
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

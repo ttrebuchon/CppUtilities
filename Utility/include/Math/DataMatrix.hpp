@@ -761,7 +761,15 @@ namespace Math
 	{
 		auto transpose = T();
 		tensor_t<1, Elem, Index> tensor_this = tensor_t<1, Elem, Index>(((DataMatrix<1, Elem, Index, Container>*)this)->get_ptr());
-		return transpose.contract(tensor_this).inv().contract(transpose);
+		auto inner = transpose.contract(tensor_this).inv();
+		if (inner.size(0) == 1 && inner.size(1) == 1)
+		{
+			return transpose*inner(0, 0);
+		}
+		else
+		{
+			return inner.contract(transpose);
+		}
 	}
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
