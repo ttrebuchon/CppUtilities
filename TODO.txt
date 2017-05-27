@@ -36,5 +36,6 @@
 
 19) Entity serialization module?
 
-20) 
+20) Implement FuncMatrix::flattenOverrides()
+    20.1) To integrate FuncMatrix::instantiated overrides into the FuncMatrix::def functional
 	
