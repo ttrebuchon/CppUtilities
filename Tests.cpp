@@ -61,11 +61,12 @@ void Testing::run()
 	dout << LINE_BR << testBr << std::endl;
 	try
 	{
-	RUN(CSV_Test());
-	RUN(Tuple_Test());
 	RUN(nth_Poly());
 	RUN(Tensor_T());
+	RUN(Matrix_Algs());
 	#ifndef SHORT_TEST
+	RUN(Tuple_Test());
+	RUN(CSV_Test());
 	RUN(Matrix());
 	RUN(Math());
 	RUN(Neural());

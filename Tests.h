@@ -26,6 +26,7 @@ class Testing
   	static bool nth_Poly();
 	static bool Tuple_Test();
 	static bool Tensor_T();
+	static bool Matrix_Algs();
 };
 
 
