@@ -5,6 +5,8 @@
 #include <Func/TupleArgs.h>
 #include "FuncArgHelper.h"
 #include <sstream>
+#include "Matrix_Algs.h"
+#include "DataMatrix.h"
 
 namespace Util
 {
@@ -160,13 +162,71 @@ namespace Math
 	
 	
 	
+	template <typename Elem, typename Index>
+	tensor_t<2, Elem, Index> LUP_Make(const tensor_t<2, Elem, Index> M)
+	{
+		Index N = M.size(0);
+		Algorithms::LUP<tensor_t<2, Elem, Index>, tensor_t<1, Elem, Index>, Elem, Index> LUP;
+		LUP.getM = [](tensor_t<2, Elem, Index> m, Index i) -> tensor_t<1, Elem, Index>&
+		{
+			return m(i);
+		};
+
+		LUP.getV = [](tensor_t<1, Elem, Index> v, Index i) -> Elem&
+		{
+			return v(i);
+		};
+
+		tensor_t<2, Elem, Index> R = new DataMatrix<2, Elem, Index>();
+		R.setSize(0, N);
+		R.setSize(1, N);
+
+		tensor_t<1, Elem, Index> P = new DataMatrix<1, Elem, Index>();
+		P.setSize(0, N+1);
+
+		if (!LUP.Decompose(M, R, P, N, 0.1))
+		{
+			std::cout << R.toString() << std::endl;
+			//TODO: throw ...
+		}
+
+		return R;
+	}
 	
 	
 	
 	
 	
-	
-	
+	template <typename Elem, typename Index>
+	Elem LUP_Det(const tensor_t<2, Elem, Index> M)
+	{
+		Index N = M.size(0);
+		Algorithms::LUP<tensor_t<2, Elem, Index>, tensor_t<1, Elem, Index>, Elem, Index> LUP;
+		LUP.getM = [](tensor_t<2, Elem, Index> m, Index i) -> tensor_t<1, Elem, Index>&
+		{
+			return m(i);
+		};
+
+		LUP.getV = [](tensor_t<1, Elem, Index> v, Index i) -> Elem&
+		{
+			return v(i);
+		};
+
+		tensor_t<2, Elem, Index> R = new DataMatrix<2, Elem, Index>();
+		R.setSize(0, N);
+		R.setSize(1, N);
+
+		tensor_t<1, Elem, Index> P = new DataMatrix<1, Elem, Index>();
+		P.setSize(0, N+1);
+
+		if (!LUP.Decompose(M, R, P, N, 0.1))
+		{
+			std::cout << R.toString() << std::endl;
+			//TODO: throw ...
+		}
+		
+		return LUP.Determinant(R, P, N);
+	}
 	
 	
 	template <int Dims, typename Elem, typename Index>
@@ -195,6 +255,11 @@ namespace Math
 			auto val = tmp->det();
 			return val;
 		}
+		if (Dims == 2)
+		{
+			return LUP_Det((const tensor_t<2, Elem, Index>)this->get_ptr());
+		}
+
 		
 		auto cof = [](auto i)
 		{

@@ -20,6 +20,7 @@ namespace Math
 	{
 		private:
 		typedef std::shared_ptr<Matrix<Dims, Elem, Index>> Shared;
+		typedef std::shared_ptr<const Matrix<Dims, Elem, Index>> Shared_c;
 		
 		typedef
 		    typename std::conditional<Dims==1, Elem, tensor_t<Dims-1, Elem, Index>>::type
@@ -38,7 +39,9 @@ namespace Math
 		
 		public:
 		tensor_t() : Shared() {}
-		tensor_t(const Shared ptr) : Shared(ptr) {}
+		tensor_t(const Shared_c ptr) : Shared(
+			(ptr != NULL) ? ((Matrix<Dims, Elem, Index>*)ptr.get())->get_ptr() : NULL
+		) {}
 		tensor_t(Matrix<Dims, Elem, Index>* ptr) : Shared(ptr->get_ptr()) {}
 		tensor_t(std::initializer_list<type>);
 

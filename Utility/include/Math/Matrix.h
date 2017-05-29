@@ -364,8 +364,9 @@ namespace Math
 	tensor_t<Dims1+Dims2-2, Elem, Index> MatrixContract(std::shared_ptr<T<Dims1, Elem, Index>>, std::shared_ptr<H<Dims2, Elem, Index>>);
 }
 }
-#include "Matrix.hpp"
+
 #include "FuncMatrix.h"
 #include "DataMatrix.h"
 
 #include "tensor_t.h"
+#include "Matrix.hpp"
