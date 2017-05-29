@@ -163,7 +163,7 @@ namespace Math
 	
 	
 	template <typename Elem, typename Index>
-	tensor_t<2, Elem, Index> LUP_Make(const tensor_t<2, Elem, Index> M)
+	tensor_t<2, Elem, Index> LUP_Make(const tensor_t<2, Elem, Index> M, tensor_t<1, Elem, Index>* P = NULL)
 	{
 		Index N = M.size(0);
 		Algorithms::LUP<tensor_t<2, Elem, Index>, tensor_t<1, Elem, Index>, Elem, Index> LUP;
@@ -181,12 +181,15 @@ namespace Math
 		R.setSize(0, N);
 		R.setSize(1, N);
 
-		tensor_t<1, Elem, Index> P = new DataMatrix<1, Elem, Index>();
-		P.setSize(0, N+1);
-
-		if (!LUP.Decompose(M, R, P, N, 0.1))
+		if (P == NULL)
 		{
-			std::cout << R.toString() << std::endl;
+			P = new tensor_t<1, Elem, Index>();
+		}
+		*P = new DataMatrix<1, Elem, Index>();
+		(*P).setSize(0, N+1);
+
+		if (!LUP.Decompose(M, R, *P, N, 0.1))
+		{
 			//TODO: throw ...
 		}
 
@@ -212,18 +215,8 @@ namespace Math
 			return v(i);
 		};
 
-		tensor_t<2, Elem, Index> R = new DataMatrix<2, Elem, Index>();
-		R.setSize(0, N);
-		R.setSize(1, N);
-
-		tensor_t<1, Elem, Index> P = new DataMatrix<1, Elem, Index>();
-		P.setSize(0, N+1);
-
-		if (!LUP.Decompose(M, R, P, N, 0.1))
-		{
-			std::cout << R.toString() << std::endl;
-			//TODO: throw ...
-		}
+		tensor_t<1, Elem, Index> P;
+		tensor_t<2, Elem, Index> R = LUP_Make(M, &P);
 		
 		return LUP.Determinant(R, P, N);
 	}

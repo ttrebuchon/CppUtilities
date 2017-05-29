@@ -36,11 +36,15 @@ bool Testing::Tensor_T()
 	
 	assert_ex(t2.det() == -2);
 
-	auto t2_lu = LUP_Make(t2);
-
-	dout << "t2_lu: \n" << t2_lu.toString() << std::endl;
+	
 	
 	t2 = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+
+	tensor_t<1, long double> t2_P;
+	auto t2_lu = LUP_Make(t2, &t2_P);
+	dout << "\n\nt2_lu: \n" << t2_lu.toString() << "\n" << std::endl;
+	dout <<  "t2_P: \n" << t2_P.toString() << "\n\n" << std::endl;
+
 	dout << "t2.det() -> " << t2.det() << std::endl;
 	assert_ex(t2.det() == 0);
 	
