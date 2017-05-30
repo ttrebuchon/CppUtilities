@@ -210,7 +210,8 @@ namespace Algorithms
 				det *= getE(A, i, i);
 			}
 			
-			if (((Index)(getV(P, N) - N)) % 2 == 0)
+			Elem gPN = getV(P, N) - N;
+			if (static_cast<Index>(gPN) % 2 == 0)
 			{
 				return det;
 			}
