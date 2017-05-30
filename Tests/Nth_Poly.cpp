@@ -11,6 +11,23 @@ using namespace Utils;
 using namespace Math;
 #endif
 
+tensor_t<1, double> EstimateFunc(std::function<double(double)>, int n, int extras);
+
+std::function<double(double)> Polynomial(tensor_t<1, double> coefficients)
+{
+	std::function<double(double)> func = [] (double) { return 0; };
+	
+	for (int i = 0; i < coefficients.size(0); i++)
+	{
+		double c = coefficients(i);
+		func = [c, i, func] (double x)
+		{
+			return func(x) + c*pow(x, i);
+		};
+	}
+	return func;
+}
+
 void Test_Multiple_Reg();
 
 bool Testing::nth_Poly()
@@ -175,4 +192,99 @@ void Test_Multiple_Reg()
 	dout << "Coef: " << coef.toString() << std::endl;
 	assert_ex(coef == Mi_out);
 	
+	
+	
+	dout << "Estimate for 4x^4 + 9x^2 + x + 16: " << EstimateFunc([](double x) { return 4*pow(x, 4) + 9*pow(x, 2) + x + 16; }, 5, 90).toString() << "\n" << std::endl;
+	
+	dout << "\n\nEstimate for 4x + 16: " << EstimateFunc([](double x) { return 4*x + 16; }, 10, 90).toString() << "\n\n\n" << std::endl;
+	
+	
+	auto pseudoPopGrowth = [](int iterations) -> tensor_t<1, double> {
+		
+		tensor_t<1, double> data = new DataMatrix<1, double>();
+		data.setSize(0, iterations);
+		
+		
+		
+		int pop[4] = {2, 4, 0, 0};
+		
+		
+		for (int i = 0; i < iterations; i++)
+		{
+			data(i) = 0;
+			for (int n = 0; n < 4; n++)
+			{
+				data(i) += pop[n];
+			}
+			
+			int newGen = 0;
+			for (int n = 1; n < 4; n++)
+			{
+				newGen += pop[n]/2;
+			}
+			
+			for (int n = 3; n > 0; n--)
+			{
+				pop[n] = pop[n-1];
+			}
+			
+			pop[0] = newGen;
+		}
+		
+		assert_ex(data.size(0) != 0);
+		return data;
+		
+	};
+	
+	auto popY = pseudoPopGrowth(50);
+	dout << "popY calculated..." << std::endl;
+	assert_ex(popY.size(0) != 0);
+	tensor_t<2, double> popA = new DataMatrix<2, double>();
+	popA.setSize(0, popY.size(0));
+	popA.setSize(1, 10);
+	assert_ex(popY.size(0) != 0);
+	assert_ex(popA.size(0) != 0);
+	assert_ex(popA.size(1) != 0);
+	dout << "Filling popA..." << std::endl;
+	for (int i = 0; i < popA.size(0); i++)
+	{
+		for (int n = 0; n < popA.size(1); n++)
+		{
+			popA(i, n) = pow(i, n);
+		}
+	}
+	dout << "Calculating pop est..." << std::endl;
+	auto popX = popA.inv().contract(popY);
+	dout << popX.toString() << std::endl;
+	auto popEst = Polynomial(popX);
+	double err = 0;
+	for (int i = 0; i < popY.size(0); i++)
+	{
+		err += pow((popY(i) - popEst(i)), 2);
+	}
+	dout << "R²: " << err << std::endl;
+}
+
+
+
+tensor_t<1, double> EstimateFunc(std::function<double(double)> func, int n, int extras)
+{
+	tensor_t<2, double> A = new DataMatrix<2, double>();
+	
+	A.setSize(0, n+1+extras);
+	A.setSize(1, n+1);
+	
+	tensor_t<1, double> Y = new DataMatrix<1, double>();
+	Y.setSize(0, n+1+extras);
+	
+	for (int i = 0; i < n+1+extras; i++)
+	{
+		for (int j = 0; j < n+1; j++)
+		{
+			A(i, j) = pow(i, j);
+		}
+		Y(i) = func(i);
+	}
+	auto X = A.inv().contract(Y);
+	return X;
 }

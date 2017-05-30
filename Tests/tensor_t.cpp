@@ -23,6 +23,8 @@ typedef float Num;
 
 Num invStdDev(std::function<Num(int, int)>, int h, int w);
 
+void testDataMatrix_T();
+
 bool Testing::Tensor_T()
 {
 	tensor_t<1, Num> t;
@@ -51,7 +53,7 @@ bool Testing::Tensor_T()
 	t2 = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
 
 	tensor_t<1, Num> t2_P;
-	auto t2_lu = LUP_Make(t2, &t2_P);
+	auto t2_lu = LUP_Container<2, Num, int>::LUP_Make(t2, &t2_P);
 	dout << "\n\nt2_lu: \n" << t2_lu.toString() << "\n" << std::endl;
 	dout <<  "t2_P: \n" << t2_P.toString() << "\n\n" << std::endl;
 
@@ -105,6 +107,8 @@ bool Testing::Tensor_T()
 	
 	checkStdDev(stdDev5, invStdDev([] (int i, int j) -> Num { return sin(i+1)*cos(2*j + i); }, 2, 2));
 	
+	testDataMatrix_T();
+	
 	return true;
 }
 
@@ -133,4 +137,89 @@ Num invStdDev(std::function<Num(int, int)> f, int h, int w)
 	stdDev = sqrt(stdDev);
 	return stdDev;
 	
+}
+
+void testDataMatrix_T()
+{
+	dout << "Checking rank 2 tensor..." << std::endl;
+	int h = 10;
+	int w = 9;
+	int z = 10;
+	
+	tensor_t<2, double> fMat = new FuncMatrix<2, double>([=] (int i, int j)
+	{
+		return static_cast<double>(i*w + (j+1));
+	}, h, w);
+	
+	
+	tensor_t<2, double> dMat = new DataMatrix<2, double>();
+	
+	dMat.setSize(0, h);
+	dMat.setSize(1, w);
+	
+	for (int i = 0; i < h; i++)
+	{
+		for (int j = 0; j < w; j++)
+		{
+			dMat(i, j) = static_cast<double>(i*w + j + 1);
+		}
+	}
+	
+	
+	auto fMat_T = fMat.T();
+	auto dMat_T = dMat.T();
+	
+	for (int i = 0; i < w; i++)
+	{
+		for (int j = 0; j < h; j++)
+		{
+			assert_ex(fMat_T(i, j) == dMat_T(i, j));
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	dout << "Checking rank 3 tensor..." << std::endl;
+	
+	tensor_t<3, double> fMat_3 = new FuncMatrix<3, double>([=] (int i, int j, int k)
+	{
+		return static_cast<double>(i*w + (j+1) + k*h*w);
+	}, h, w, z);
+	
+	
+	tensor_t<3, double> dMat_3 = new DataMatrix<3, double>();
+	
+	dMat_3.setSize(0, h);
+	dMat_3.setSize(1, w);
+	dMat_3.setSize(2, z);
+	
+	for (int i = 0; i < h; i++)
+	{
+		for (int j = 0; j < w; j++)
+		{
+			for (int k = 0; k < z; k++)
+			{
+				dMat_3(i, j, k) = static_cast<double>(i*w + j + 1 + k*w*h);
+			}
+		}
+	}
+	
+	
+	auto fMat_3_T = fMat_3.T();
+	auto dMat_3_T = dMat_3.T();
+	
+	for (int i = 0; i < z; i++)
+	{
+		for (int j = 0; j < w; j++)
+		{
+			for (int k = 0; k < h; k++)
+			{
+				assert_ex(fMat_3_T(i, j, k) == dMat_3_T(i, j, k));
+			}
+		}
+	}
 }
