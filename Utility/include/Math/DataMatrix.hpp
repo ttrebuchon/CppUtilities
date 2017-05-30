@@ -217,7 +217,7 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
-	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::mul(const double n)
+	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::mul(const Elem n)
 	{
 		auto nc = Container<Subset>(this->Size(0));
 		
@@ -259,6 +259,66 @@ namespace Math
 		for (Index i = 0; i < this->size[0]; i++)
 		{
 			nc[i] = this->at(i)->mul(m[i]);
+		}
+		
+		auto ret = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index>(this->size[0]));
+		
+		for (auto i = 0; i < Dims; i++)
+		{
+			ret->setSize(i, this->Size(i));
+		}
+		
+		for (auto i = 0; i < this->size[0]; i++)
+		{
+			ret->data[i] = nc[i];
+		}
+		
+		return tensor_t<Dims, Elem, Index>(ret);
+	}
+	
+	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
+	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::div(const Elem n)
+	{
+		auto nc = Container<Subset>(this->Size(0));
+		
+		for (Index i = 0; i < this->Size(0); i++)
+		{
+			nc[i] = Subset(this->at(i)->div(n));
+		}
+		
+		auto ret = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index>(this->Size(0)));
+		
+		for (auto i = 0; i < Dims; i++)
+		{
+			ret->setSize(i, this->size[i]);
+		}
+		
+		for (auto i = 0; i < this->size[0]; i++)
+		{
+			ret->data[i] = nc[i];
+		}
+		
+		return tensor_t<Dims, Elem, Index>(ret);
+	}
+	
+	
+	template <int Dims, typename Elem, typename Index, template <typename...> typename Container>
+	tensor_t<Dims, Elem, Index> DataMatrix<Dims, Elem, Index, Container>::div(const tensor_t<Dims, Elem, Index> m)
+	{
+		for (auto i = 0; i < Dims; i++)
+		{
+		if (this->size[i] != m.size(i))
+		{
+			throw MatrixInvalidSizeException();
+		}
+		}
+		
+		
+		auto nc = Container<Subset>(this->size[0]);
+		
+		for (Index i = 0; i < this->size[0]; i++)
+		{
+			nc[i] = this->at(i)->div(m[i]);
 		}
 		
 		auto ret = std::shared_ptr<DataMatrix<Dims, Elem, Index, Container>>(new DataMatrix<Dims, Elem, Index>(this->size[0]));
@@ -640,7 +700,7 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index, template <typename...> typename Container>
-	tensor_t<1, Elem, Index> DataMatrix<1, Elem, Index, Container>::mul(const double n)
+	tensor_t<1, Elem, Index> DataMatrix<1, Elem, Index, Container>::mul(const Elem n)
 	{
 		auto nc = Data(this->size[0]);
 		
@@ -667,6 +727,39 @@ namespace Math
 		for (Index i = 0; i < this->size[0]; i++)
 		{
 			nc[i] = this->at(i) * m[i];
+		}
+		
+		return tensor_t<1, Elem, Index>(std::make_shared<DataMatrix<1, Elem, Index, Container>>(nc));
+	}
+	
+	template <typename Elem, typename Index, template <typename...> typename Container>
+	tensor_t<1, Elem, Index> DataMatrix<1, Elem, Index, Container>::div(const Elem n)
+	{
+		auto nc = Data(this->size[0]);
+		
+		for (Index i = 0; i < this->size[0]; i++)
+		{
+			nc[i] = this->at(i) / n;
+		}
+		
+		return tensor_t<1, Elem, Index>(std::make_shared<DataMatrix<1, Elem, Index, Container>>(nc));
+	}
+	
+	
+	template <typename Elem, typename Index, template <typename...> typename Container>
+	tensor_t<1, Elem, Index> DataMatrix<1, Elem, Index, Container>::div(const tensor_t<1, Elem, Index> m)
+	{
+		if (this->size[0] != m.size(0))
+		{
+			throw MatrixInvalidSizeException();
+		}
+		
+		
+		auto nc = Data(this->size[0]);
+		
+		for (Index i = 0; i < this->size[0]; i++)
+		{
+			nc[i] = this->at(i) / m[i];
 		}
 		
 		return tensor_t<1, Elem, Index>(std::make_shared<DataMatrix<1, Elem, Index, Container>>(nc));

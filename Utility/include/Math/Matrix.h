@@ -100,9 +100,15 @@ namespace Math
 		
 		virtual std::string toString() const = 0;
 		
-		virtual tens_t mul(const double) = 0;
+		virtual tens_t mul(const Elem) = 0;
+		virtual tens_t div(const Elem) = 0;
 		
 		virtual tens_t mul(const tensor_t<Dims, Elem, Index>) = 0;
+		
+		virtual tens_t div(const tensor_t<Dims, Elem, Index>) = 0;
+		
+		
+		
 		
 		/*virtual tens_t mul(const tens_t m)
 		{
@@ -160,6 +166,22 @@ namespace Math
 	};
 	
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -275,6 +297,21 @@ namespace Math
 		virtual tensor_t<Dims, Elem, Index> block(typename _Helpers::TupleBuilder<2*Dims, Index>::value) const = 0;
 		
 	};
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	template <typename Elem, typename Index>
 	class Matrix<1, Elem, Index> : public _MatrixBase_<1, Elem, Index>, public std::enable_shared_from_this<Matrix<1, Elem, Index>>

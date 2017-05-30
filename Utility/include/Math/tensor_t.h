@@ -43,7 +43,7 @@ namespace Math
 			(ptr != NULL) ? ((Matrix<Dims, Elem, Index>*)ptr.get())->get_ptr() : NULL
 		) {}
 		tensor_t(Matrix<Dims, Elem, Index>* ptr) : Shared(ptr->get_ptr()) {}
-		tensor_t(std::initializer_list<type>);
+		tensor_t(const std::initializer_list<type>);
 
 		template <template <int, typename...> typename T>
 		tensor_t(const std::shared_ptr<T<Dims, Elem, Index>> ptr) : Shared(ptr) {}

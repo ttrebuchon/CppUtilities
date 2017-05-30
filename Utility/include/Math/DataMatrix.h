@@ -68,8 +68,10 @@ namespace Math
 		const tensor_t<Dims-1, Elem, Index>& operator()(Index i) const override;
 		
 		
-		virtual tensor_t<Dims, Elem, Index> mul(const double) override;
+		virtual tensor_t<Dims, Elem, Index> mul(const Elem) override;
 		virtual tensor_t<Dims, Elem, Index> mul(const tensor_t<Dims, Elem, Index>) override;
+		virtual tensor_t<Dims, Elem, Index> div(const Elem) override;
+		virtual tensor_t<Dims, Elem, Index> div(const tensor_t<Dims, Elem, Index>) override;
 		virtual tensor_t<Dims, Elem, Index> add(const tensor_t<Dims, Elem, Index>) override;
 		virtual tensor_t<Dims, Elem, Index> sub(const tensor_t<Dims, Elem, Index>) override;
 		virtual tensor_t<Dims, Elem, Index> clone() const override;
@@ -119,8 +121,10 @@ namespace Math
 		const Elem& operator()(Index i) const override;
 		
 		
-		virtual tensor_t<1, Elem, Index> mul(const double) override;
+		virtual tensor_t<1, Elem, Index> mul(const Elem) override;
 		virtual tensor_t<1, Elem, Index> mul(const tensor_t<1, Elem, Index>) override;
+		virtual tensor_t<1, Elem, Index> div(const Elem) override;
+		virtual tensor_t<1, Elem, Index> div(const tensor_t<1, Elem, Index>) override;
 		virtual tensor_t<1, Elem, Index> add(const tensor_t<1, Elem, Index>) override;
 		virtual tensor_t<1, Elem, Index> sub(const tensor_t<1, Elem, Index>) override;
 		virtual tensor_t<1, Elem, Index> clone() const override;

@@ -152,7 +152,7 @@ namespace Math
 	}
 	
 	template <int Dims, typename Elem, typename Index>
-	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::mul(const double n)
+	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::mul(const Elem n)
 	{
 		auto Def = this->def;
 		tensor_t<Dims, Elem, Index> ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>([=] (auto... args)
@@ -220,6 +220,81 @@ namespace Math
 			for (int i = 0; i < nSize[0]; i++)
 			{
 				ret(i) = (*this)(i) * m(i);
+			}
+			return ret;
+		}
+		
+	}
+	
+	template <int Dims, typename Elem, typename Index>
+	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::div(const Elem n)
+	{
+		auto Def = this->def;
+		tensor_t<Dims, Elem, Index> ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>([=] (auto... args)
+		{
+			return Def(args...)/n;
+		});
+		for (auto i = 0; i < Dims; i++)
+		{
+			ret->setSize(i, this->Size(i));
+		}
+		return ret;
+	}
+	
+	template <int Dims, typename Elem, typename Index>
+	tensor_t<Dims, Elem, Index> FuncMatrix<Dims, Elem, Index>::div(const tensor_t<Dims, Elem, Index> m)
+	{
+		Index nSize[Dims];
+		for (int i = 0; i < Dims; i++)
+		{
+			nSize[i] = -1;
+			if (this->size[i] == 0 || m.size(i) == 0)
+			{
+				throw MatrixInvalidSizeException();
+			}
+			
+			if (m.size(i) > 0)
+			{
+				nSize[i] = m.size(i);
+			}
+			
+			if ((this->size[i] < nSize[i] && this->size[i] > 0) || (nSize[i] < 0 && this->size[i] > 0))
+			{
+				nSize[i] = this->size[i];
+			}
+			
+			if (nSize[i] == 0)
+			{
+				nSize[i] = -1;
+			}
+		}
+		
+		if (m.imp() == "FuncMatrix")
+		{
+			auto Def = this->def;
+			FuncMatrix<Dims, Elem, Index>& M = (FuncMatrix<Dims, Elem, Index>&)m;
+			Func mDef = M.def;
+			tensor_t<Dims, Elem, Index> ret = std::make_shared<FuncMatrix<Dims, Elem, Index>>([=] (auto... args)
+			{
+				return (Def(args...) / mDef(args...));
+			});
+			for (auto i = 0; i < Dims; i++)
+			{
+				ret->size[i] = nSize[i];
+			}
+			return ret;
+		}
+		else
+		{
+			tensor_t<Dims, Elem, Index> ret = new DataMatrix<Dims, Elem, Index, std::vector>();
+			for (int i = 0; i < Dims; i++)
+			{
+				ret->setSize(i, nSize[i]);
+			}
+			
+			for (int i = 0; i < nSize[0]; i++)
+			{
+				ret(i) = (*this)(i) / m(i);
 			}
 			return ret;
 		}
@@ -1056,7 +1131,7 @@ namespace Math
 	}
 	
 	template <typename Elem, typename Index>
-	tensor_t<1, Elem, Index> FuncMatrix<1, Elem, Index>::mul(const double n)
+	tensor_t<1, Elem, Index> FuncMatrix<1, Elem, Index>::mul(const Elem n)
 	{
 		auto Def = this->def;
 		tensor_t<1, Elem, Index> ret = tensor_t<1, Elem, Index>(std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
@@ -1113,6 +1188,69 @@ namespace Math
 			for (int i = 0; i < nSize; i++)
 			{
 				ret(i) = (*this)(i) * m(i);
+			}
+			return ret;
+		}
+	}
+	
+	template <typename Elem, typename Index>
+	tensor_t<1, Elem, Index> FuncMatrix<1, Elem, Index>::div(const Elem n)
+	{
+		auto Def = this->def;
+		tensor_t<1, Elem, Index> ret = tensor_t<1, Elem, Index>(std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
+		{
+			return Def(i)/n;
+		}));
+		ret->setSize(0, this->size[0]);
+		return ret;
+	}
+	
+	template <typename Elem, typename Index>
+	tensor_t<1, Elem, Index> FuncMatrix<1, Elem, Index>::div(const tensor_t<1, Elem, Index> m)
+	{
+		if (this->size[0] == 0 || m.size(0) == 0)
+		{
+			throw MatrixInvalidSizeException();
+		}
+		
+		Index nSize = -1;
+		if (m.size(0) > 0)
+		{
+			nSize = m.size(0);
+		}
+		
+		if ((this->size[0] < nSize && this->size[0] > 0) || (nSize < 0 && this->size[0] > 0))
+		{
+			nSize = this->size[0];
+		}
+		
+		if (nSize == 0)
+		{
+			nSize = -1;
+		}
+		
+		
+		
+		if (m.imp() == "FuncMatrix")
+		{
+			auto Def = this->def;
+			FuncMatrix<1, Elem, Index>& M = (FuncMatrix<1, Elem, Index>&)*(std::shared_ptr<Matrix<1, Elem, Index>>)m;
+			auto mDef = M.def;
+			
+			auto ret = tensor_t<1, Elem, Index>(std::make_shared<FuncMatrix<1, Elem, Index>>([=] (Index i)
+			{
+				return (Def(i) / mDef(i));
+			}));
+			ret->setSize(0, nSize);
+			return ret;
+		}
+		else
+		{
+			auto ret = tensor_t<1, Elem, Index>(new DataMatrix<1, Elem, Index, std::vector>());
+			ret->setSize(0, nSize);
+			for (int i = 0; i < nSize; i++)
+			{
+				ret(i) = (*this)(i) / m(i);
 			}
 			return ret;
 		}
