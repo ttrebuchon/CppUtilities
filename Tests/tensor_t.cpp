@@ -2,6 +2,11 @@
 #include <Math/tensor_t.h>
 #include <initializer_list>
 #include <cmath>
+#include <boost/multiprecision/cpp_dec_float.hpp>
+
+using boost::multiprecision::cpp_dec_float;
+using boost::multiprecision::number;
+
 
 using namespace Utils;
 using namespace Math;
@@ -12,6 +17,8 @@ using namespace Math;
 assert_ex(x < TOL && x > -1*TOL); \
 dout << #x << ": " << x << std::endl
 
+//typedef number<cpp_dec_float<14368>> Num;
+//typedef number<cpp_dec_float<0>> Num;
 typedef float Num;
 
 Num invStdDev(std::function<Num(int, int)>, int h, int w);
@@ -23,10 +30,11 @@ bool Testing::Tensor_T()
 	
 	tensor_t<2, Num> t2 = new DataMatrix<2, Num>( {{1, 1}, {1, 1}});
 	assert_ex(t == NULL);
+	t2 = t2 / 4;
 	t = 4;
 	t2(1, 1) = 4;
 	dout << t2.toString() << std::endl;
-	t2(1) = {4, 5};
+	t2(1) = tensor_t<1, Num>({4, 5});
 	dout << t2.toString() << std::endl;
 	t2 = {{1, 2}, {3, 4}};
 	dout << t2.toString() << std::endl;

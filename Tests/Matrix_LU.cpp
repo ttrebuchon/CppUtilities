@@ -4,10 +4,16 @@
 
 #include <Stopwatch/Stopwatch.h>
 
+#include <boost/multiprecision/cpp_dec_float.hpp>
+
+using boost::multiprecision::cpp_dec_float;
+using boost::multiprecision::number;
+
 using namespace Utils;
 using namespace Math;
 
-void printM(double** M, int N)
+template <typename T>
+void printM(T** M, int N)
 {
 	for (int k = 0; k < N; k++)
 	{
@@ -49,8 +55,13 @@ T** allocArr(int N, T init = 0)
 
 bool Testing::Matrix_Algs()
 {
+	typedef double Num;
+	//typedef number<cpp_dec_float<14368>> Num;
+	
+	
+	
 	int N = 3;
-	double** M = allocArr<double>(N);
+	Num** M = allocArr<Num>(N);
 	
 	M[0][0] = 1;
 	M[0][1] = 2;
@@ -66,27 +77,27 @@ bool Testing::Matrix_Algs()
 	
 	printM(M, N);
 	
-	std::function<double*&(double**, int)> getM = [](double** m, int i) ->double*&
+	std::function<Num*&(Num**, int)> getM = [](Num** m, int i) ->Num*&
 	{
 		return m[i];
 	};
 	
-	std::function<double&(double*, int)> getV = [](double* v, int i) ->double&
+	std::function<Num&(Num*, int)> getV = [](Num* v, int i) ->Num&
 	{
 		return v[i];
 	};
 	
-	double* P = new double[N+1];
+	Num* P = new Num[N+1];
 	
 	
-	double** R = new double*[N];
+	Num** R = new Num*[N];
 	
 	for (int i = 0; i < N; i++)
 	{
-		R[i] = new double[N];
+		R[i] = new Num[N];
 	}
 	
-	Utils::Math::Algorithms::LUP<double**, double*, double, int> LUP;
+	Utils::Math::Algorithms::LUP<Num**, Num*, Num, int> LUP;
 	LUP.getM = getM;
 	LUP.getV = getV;
 	LUP.Decompose(M, R, P, N, 0.1);
@@ -95,11 +106,11 @@ bool Testing::Matrix_Algs()
 	
 	
 	
-	double** I = new double*[N];
+	Num** I = new Num*[N];
 	
 	for (int i = 0; i < N; i++)
 	{
-		I[i] = new double[N];
+		I[i] = new Num[N];
 	}
 	
 	LUP.Invert(R, P, N, I);
@@ -125,13 +136,13 @@ bool Testing::Matrix_Algs()
 	
 	
 	
-	tensor_t<2, double> M2 = {{1, 2, 3}, {0, 1, 4}, {5, 6, 0}};
+	tensor_t<2, Num> M2 = {{1, 2, 3}, {0, 1, 4}, {5, 6, 0}};
 	
 	
 	
 	dout << M2.toString() << "\n" << std::endl;
 	
-	tensor_t<1, double> P2 = new DataMatrix<1, double>();
+	tensor_t<1, Num> P2 = new DataMatrix<1, Num>();
 	P2.setSize(0, N+1);
 	
 	
@@ -139,25 +150,25 @@ bool Testing::Matrix_Algs()
 	
 	
 	
-	tensor_t<2, double> R2 = new DataMatrix<2, double>();
+	tensor_t<2, Num> R2 = new DataMatrix<2, Num>();
 	R2.setSize(0, N);
 	R2.setSize(1, N);
 	
 	
 	
-	std::function<tensor_t<1, double>&(tensor_t<2, double>, int)> getM2 = [](tensor_t<2, double> m, int i) -> tensor_t<1, double>&
+	std::function<tensor_t<1, Num>&(tensor_t<2, Num>, int)> getM2 = [](tensor_t<2, Num> m, int i) -> tensor_t<1, Num>&
 	{
 		return m(i);
 	};
 	
-	std::function<double&(tensor_t<1, double>, int)> getV2 = [](tensor_t<1, double> v, int i) -> double&
+	std::function<Num&(tensor_t<1, Num>, int)> getV2 = [](tensor_t<1, Num> v, int i) -> Num&
 	{
 		return v(i);
 	};
 	
 	
 	
-	Algorithms::LUP<tensor_t<2, double>, tensor_t<1, double>, double, int> LUP2;
+	Algorithms::LUP<tensor_t<2, Num>, tensor_t<1, Num>, Num, int> LUP2;
 	LUP2.getM = getM2;
 	LUP2.getV = getV2;
 	LUP2.Decompose(M2, R2, P2, N, 0.1);
@@ -177,7 +188,7 @@ bool Testing::Matrix_Algs()
 	}
 	assert_ex(P[N] == P2[N]);
 	
-	tensor_t<2, double> I2 = new DataMatrix<2, double>();
+	tensor_t<2, Num> I2 = new DataMatrix<2, Num>();
 	I2.setSize(0, N);
 	I2.setSize(1, N);
 	
@@ -189,12 +200,12 @@ bool Testing::Matrix_Algs()
 	
 	
 	
-	int N2 = 4;
+	int N2 = 100;
 	
 	
 	
 	Utils::Stopwatch sw;
-	tensor_t<2, double> largeMat = new FuncMatrix<2, double>([](int i, int j) {return (i*2) + j + 1;});
+	tensor_t<2, Num> largeMat = new FuncMatrix<2, Num>([](int i, int j) {return (i*2) + j + 1;});
 	largeMat.setSize(0, N2);
 	largeMat.setSize(1, 2);
 	
@@ -204,13 +215,13 @@ bool Testing::Matrix_Algs()
 	
 	
 	sw.start();
-	Algorithms::LUP<tensor_t<2, double>, tensor_t<1, double>, double, int> LUP2_1;
+	Algorithms::LUP<tensor_t<2, Num>, tensor_t<1, Num>, Num, int> LUP2_1;
 	LUP2_1.getM = getM2;
 	LUP2_1.getV = getV2;
-	tensor_t<2, double> largeMatR = new DataMatrix<2, double>();
+	tensor_t<2, Num> largeMatR = new DataMatrix<2, Num>();
 	largeMatR.setSize(0, N2);
 	largeMatR.setSize(1, N2);
-	tensor_t<1, double> largeP = new DataMatrix<1, double>();
+	tensor_t<1, Num> largeP = new DataMatrix<1, Num>();
 	largeP.setSize(0, N2+1);
 	LUP2_1.Decompose(largeMat, largeMatR, largeP, N2, 0.1);
 	auto timedDet = LUP2_1.Determinant(largeMatR, largeP, N2);
