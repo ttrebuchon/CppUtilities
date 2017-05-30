@@ -894,25 +894,37 @@ namespace Math
 		return res.toDataTensor();
 	}
 	
-	template <int Dims, typename Elem, typename Index>
-	tensor_t<2, Elem, Index> FuncMatrix<Dims, Elem, Index>::inv() const
+	namespace _Helpers
 	{
-		static_assert(Dims == 2, "Can only find the inverse of matrices and vectors");
-		auto size1 = this->Size(0);
-		auto size2 = this->Size(1);
+	template <int Dims, typename Elem, typename Index>
+	struct FuncMatrix_Inv_Dims_Filter
+	{
+	static tensor_t<2, Elem, Index> call(const tensor_t<Dims, Elem, Index>&)
+	{
+		throw MatrixInvalidSizeException();
+	}
+	};
+	
+	template <typename Elem, typename Index>
+	struct FuncMatrix_Inv_Dims_Filter<2, Elem, Index>
+	{
+	static tensor_t<2, Elem, Index> call(const tensor_t<2, Elem, Index>& m)
+	{
+		auto size1 = m.size(0);
+		auto size2 = m.size(1);
 		assert(size1 != 0);
 		assert(size2 != 0);
 		if (size1 > 0 && size2 > 0 && size1 != size2)
 		{
-			auto transpose = T();
-			tensor_t<Dims, Elem, Index> tensor_this = tensor_t<Dims, Elem, Index>(((FuncMatrix<Dims, Elem, Index>*)this)->get_ptr());
+			auto transpose = m.T();
+			tensor_t<2, Elem, Index> tensor_this = tensor_t<2, Elem, Index>(((FuncMatrix<2, Elem, Index>*)m.get())->get_ptr());
 			return transpose.contract(tensor_this).inv().contract(transpose);
 		}
 		if (size1 == 1 && size2 == 1)
 		{
 			tensor_t<2, Elem, Index> oneRet = new DataMatrix<2, Elem, Index>();
 			oneRet.setSize(0, 1);
-			oneRet(0) = tensor_t<1, Elem, Index>({static_cast<Elem>(static_cast<Elem>(1)/this->def(0, 0))});
+			oneRet(0) = tensor_t<1, Elem, Index>({static_cast<Elem>(static_cast<Elem>(1)/m(0, 0))});
 			return oneRet;
 			
 		}
@@ -936,10 +948,10 @@ namespace Math
 		}
 		assert(ASize + DSize == iSize);
 		
-		auto A = this->block(std::make_tuple(0, ASize, 0, ASize)).toDataTensor();
-		auto B = this->block(std::make_tuple(0, ASize, ASize, size2)).toDataTensor();
-		auto C = this->block(std::make_tuple(ASize, size1, 0, size2 - DSize)).toDataTensor();
-		auto D = this->block(std::make_tuple(ASize, size1, size2-DSize, size2)).toDataTensor();
+		auto A = m->block(std::make_tuple(0, ASize, 0, ASize)).toDataTensor();
+		auto B = m->block(std::make_tuple(0, ASize, ASize, size2)).toDataTensor();
+		auto C = m->block(std::make_tuple(ASize, size1, 0, size2 - DSize)).toDataTensor();
+		auto D = m->block(std::make_tuple(ASize, size1, size2-DSize, size2)).toDataTensor();
 		
 		
 		
@@ -978,11 +990,11 @@ namespace Math
 			}
 		};
 		tensor_t<2, Elem, Index> solution = new DataMatrix<2, Elem, Index>();
-		solution.setSize(0, this->Size(0));
-		solution.setSize(1, this->Size(1));
-		for (Index i = 0; i < this->Size(0); i++)
+		solution.setSize(0, m.size(0));
+		solution.setSize(1, m.size(1));
+		for (Index i = 0; i < m.size(0); i++)
 		{
-			for (Index j = 0; j < (*this)(i).size(0); j++)
+			for (Index j = 0; j < m(i).size(0); j++)
 			{
 				solution(i, j) = getAt(i, j);
 			}
@@ -991,6 +1003,22 @@ namespace Math
 		assert(solution.size(0) == solution->Size(0));
 		assert(solution.size(1) == solution->Size(1));
 		return solution;
+	}
+	};
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	template <int Dims, typename Elem, typename Index>
+	tensor_t<2, Elem, Index> FuncMatrix<Dims, Elem, Index>::inv() const
+	{
+		assert(Dims == 2);
+		return _Helpers::FuncMatrix_Inv_Dims_Filter<Dims, Elem, Index>::call(this->get_ptr());
 	}
 	
 	template <int Dims, typename Elem, typename Index>

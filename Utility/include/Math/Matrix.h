@@ -404,6 +404,7 @@ namespace Math
 
 #include "FuncMatrix.h"
 #include "DataMatrix.h"
+#include "DataMatrix.hpp"
 
 #include "tensor_t.h"
 #include "Matrix.hpp"

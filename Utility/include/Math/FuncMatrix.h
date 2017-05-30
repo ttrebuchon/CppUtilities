@@ -143,5 +143,3 @@ namespace Math
 	
 }
 }
-
-#include "FuncMatrix.hpp"

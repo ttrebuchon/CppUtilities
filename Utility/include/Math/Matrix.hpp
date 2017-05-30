@@ -160,10 +160,20 @@ namespace Math
 	
 	
 	
+	template <int Dims, typename Elem, typename Index>
+	struct LUP_Container
+	{
+		static Elem LUP_Det(const tensor_t<Dims, Elem, Index>)
+		{
+			return 0;
+		}
+	};
 	
 	
 	template <typename Elem, typename Index>
-	tensor_t<2, Elem, Index> LUP_Make(const tensor_t<2, Elem, Index> M, tensor_t<1, Elem, Index>* P = NULL)
+	struct LUP_Container<2, Elem, Index>
+	{
+		static tensor_t<2, Elem, Index> LUP_Make(const tensor_t<2, Elem, Index> M, tensor_t<1, Elem, Index>* P = NULL)
 	{
 		Index N = M.size(0);
 		Algorithms::LUP<tensor_t<2, Elem, Index>, tensor_t<1, Elem, Index>, Elem, Index> LUP;
@@ -197,11 +207,7 @@ namespace Math
 	}
 	
 	
-	
-	
-	
-	template <typename Elem, typename Index>
-	Elem LUP_Det(const tensor_t<2, Elem, Index> M)
+	static Elem LUP_Det(const tensor_t<2, Elem, Index> M)
 	{
 		Index N = M.size(0);
 		Algorithms::LUP<tensor_t<2, Elem, Index>, tensor_t<1, Elem, Index>, Elem, Index> LUP;
@@ -220,6 +226,7 @@ namespace Math
 		
 		return LUP.Determinant(R, P, N);
 	}
+	};
 	
 	
 	template <int Dims, typename Elem, typename Index>
@@ -250,7 +257,7 @@ namespace Math
 		}
 		if (Dims == 2)
 		{
-			return LUP_Det((const tensor_t<2, Elem, Index>)this->get_ptr());
+			return LUP_Container<Dims, Elem, Index>::LUP_Det((const tensor_t<Dims, Elem, Index>)this->get_ptr());
 		}
 
 		
