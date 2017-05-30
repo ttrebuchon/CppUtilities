@@ -38,4 +38,7 @@
 
 20) Implement FuncMatrix::flattenOverrides()
     20.1) To integrate FuncMatrix::instantiated overrides into the FuncMatrix::def functional
+
+21) Look into inference/rule engines
+    
 	
