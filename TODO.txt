@@ -40,5 +40,22 @@
     20.1) To integrate FuncMatrix::instantiated overrides into the FuncMatrix::def functional
 
 21) Look into inference/rule engines
-    
+	21.1) Castor?
+
+22) Image+Video+Audio processing/importing
+    22.1) For ML training/research
+    22.2) As a lib module
+
+23) Re-write old Raytracer
+	23.1) For research in:
+		23.1.1) Motion tracking
+		23.1.2) Image recognition
+
+24) Symbolic List
+	24.1) Ex: Representing a path in a NN, allowing for list insert operations that are mapped to inserting neurons in the network
+
+25) NeuralNet::package() function
+	25.1) Serializes the network to a static, self-contained lambda function once trained
+
+26) 
 	
