@@ -1,4 +1,4 @@
-#include "../Tests.h"
+#include "../Tests_Helpers.h"
 
 #include <NeuralNet/NeuralNet.h>
 #include <boost/multiprecision/cpp_dec_float.hpp>
@@ -38,7 +38,7 @@ auto outF(auto f, auto str)
 }
 
 
-bool Testing::Neural()
+bool Neural_Run()
 {
 	
 	/* Example Activation Functions */

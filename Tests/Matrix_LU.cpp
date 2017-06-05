@@ -1,4 +1,4 @@
-#include "../Tests.h"
+#include "../Tests_Helpers.h"
 #include <Math/Matrix.h>
 #include <Math/Matrix_Algs.h>
 
@@ -53,7 +53,7 @@ T** allocArr(int N, T init = 0)
 }
 
 
-bool Testing::Matrix_Algs()
+bool Matrix_LU_Run()
 {
 	typedef double Num;
 	//typedef number<cpp_dec_float<14368>> Num;

@@ -1,4 +1,4 @@
-#include "../Tests.h"
+#include "../Tests_Helpers.h"
 #include <Math/tensor_t.h>
 #include <initializer_list>
 #include <cmath>
@@ -25,7 +25,7 @@ Num invStdDev(std::function<Num(int, int)>, int h, int w);
 
 void testDataMatrix_T();
 
-bool Testing::Tensor_T()
+bool tensor_t_run()
 {
 	tensor_t<1, Num> t;
 	

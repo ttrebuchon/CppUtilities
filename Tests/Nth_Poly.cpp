@@ -1,4 +1,4 @@
-#include "../Tests.h"
+#include "../Tests_Helpers.h"
 #include <vector>
 #include <cmath>
 
@@ -30,7 +30,7 @@ std::function<double(double)> Polynomial(tensor_t<1, double> coefficients)
 
 void Test_Multiple_Reg();
 
-bool Testing::nth_Poly()
+bool nth_poly_run()
 {
 	tensor_t<2, double> fT = new FuncMatrix<2, double>([](int i, int j) {
 		return i*2 + (j+1);
