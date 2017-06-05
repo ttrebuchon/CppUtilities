@@ -55,7 +55,7 @@ NAMESPACE=Utils
 
 PREPROC_FLAGS = -DUtil=$(NAMESPACE) -D__NS__="$(NAMESPACE)"
 
-PREPROC_FLAGS := $(PREPROC_FLAGS) #-DSHORT_TEST
+PREPROC_FLAGS := $(PREPROC_FLAGS) -DSHORT_TEST
 
 PREPROC_FLAGS := $(PREPROC_FLAGS) -DDEBUG
 
@@ -65,12 +65,14 @@ PREPROC_FLAGS := $(PREPROC_FLAGS) -DTEST_DEBUG
 
 
 
-WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -Wfatal-errors
+WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -Wfatal-errors #-Wno-unused-variable -Wno-unused-but-set-variable
 
 FLAGS = -I Utility/include
 
+DEPS = -I Deps/Castor -I ../
+
 CXX = g++
-CXXFLAGS = -std=c++17 -MMD -fpic -I . $(PREPROC_FLAGS) -Wall $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -O0 -I ../
+CXXFLAGS = -std=c++17 -MMD -fpic -I . $(PREPROC_FLAGS) -Wall $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -O0 $(DEPS)
 libdeps = $(libobjects:.o=.d)
 testdeps = $(testobjects:.o=.d)
 name = Utility
