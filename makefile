@@ -42,8 +42,12 @@ CSV_cpp = $(wildcard Utility/src/CSV/*.cpp)
 CSV = $(CSV_cpp:.cpp=.o)
 #*/
 
+Raytracer_cpp = $(wildcard Utility/src/Raytracer/*.cpp)
+Raytracer = $(Raytracer_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)

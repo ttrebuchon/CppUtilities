@@ -27,6 +27,7 @@ class Testing
 	static bool Tuple_Test();
 	static bool Tensor_T();
 	static bool Matrix_Algs();
+	static bool Raytrace();
 };
 
 

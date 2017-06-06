@@ -64,6 +64,7 @@ void Testing::run()
 	RUN(nth_Poly());
 	RUN(Tensor_T());
 	RUN(Matrix_Algs());
+	RUN(Raytrace());
 	#ifndef SHORT_TEST
 	RUN(Tuple_Test());
 	RUN(CSV_Test());
