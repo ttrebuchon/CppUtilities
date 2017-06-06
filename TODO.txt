@@ -10,12 +10,10 @@
     6.1) Pseudo-Bind() functionality
     6.2) Tuple as args functionality
 
-9) nth Polynomial Estimation module?
+9) nth Polynomial Estimation module
+	9.1) Package proof of concept into a module
 
 10) Look into algorithms for nonlinear regression
-
-11) Implement matrix equation solver method(s)
-    11.1) Useful for nth polynomial calculation
 
 14) Simple Wolfram Language quantity/array/set parser
 	14.1) Ex: Quantity[2.123, "Pounds"]
@@ -57,5 +55,7 @@
 25) NeuralNet::package() function
 	25.1) Serializes the network to a static, self-contained lambda function once trained
 
-26) 
+26) Add vector functions to Matrix<1,...> class
+	26.1) Unit()
+	26.2) Magnitude()
 	
