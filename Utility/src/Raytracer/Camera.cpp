@@ -21,9 +21,12 @@ namespace Raytracer
 		npix.R += 0.5;
 		npix.G += 0.5;
 		npix.B += 0.5;
+		npix = clamp(npix);
 		pixel_t scaled(npix.R, npix.G, npix.B);
 		
-		img->pix[dims[0]*y + x] = scaled;
+		int row = dims[1] - y - 1;
+		int col = x;
+		img->pix[dims[0]*row + col] = scaled;
 	}
 	
 	pixel_t Camera::getPixel(int x, int y) const
@@ -40,6 +43,7 @@ namespace Raytracer
 		v.x = ((double)x / (this->x() - 1))*viewpointDims[0];
 		v.y = ((double)y / (this->y() - 1))*viewpointDims[1];
 		v.z = 0;
+		//return (viewpoint - v).unit();
 		return (v - viewpoint).unit();
 	}
 	

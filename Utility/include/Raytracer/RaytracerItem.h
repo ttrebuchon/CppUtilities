@@ -16,7 +16,10 @@ namespace Raytracer
 		
 		std::string name() const
 		{ return _name; }
-		virtual std::string toString() const = 0;
+		virtual std::string toString() const
+		{
+			return std::string("Name: ") + _name;
+		}
 	};
 }
 }

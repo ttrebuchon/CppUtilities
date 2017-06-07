@@ -6,7 +6,7 @@ namespace Util
 {
 namespace Raytracer
 {
-	class Texture : public std::enable_shared_from_this<Texture>
+	class Texture : public std::enable_shared_from_this<Texture>, public RaytracerItem
 	{
 		private:
 		

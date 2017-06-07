@@ -9,9 +9,9 @@ namespace Raytracer
 	//TODO: Replace with actual pixel type
 	struct rgbP
 	{
-		int R;
-		int G;
-		int B;
+		char R;
+		char G;
+		char B;
 		
 		rgbP() : R(0), G(0), B(0)
 		{ }
@@ -43,12 +43,25 @@ namespace Raytracer
 	
 	dpixel_t operator+(const dpixel_t p1, const dpixel_t p2);
 	
+	dpixel_t clamp(const dpixel_t);
+	
+	std::ostream& operator<<(std::ostream&, const dpixel_t);
+	
 	//TODO: Replace with actual vector type
 	struct pseudoVec
 	{
 		double x;
 		double y;
 		double z;
+		
+		pseudoVec() : x(0), y(0), z(0)
+		{
+			
+		}
+		
+		pseudoVec(double x, double y, double z) : x(x), y(y), z(z)
+		{
+		}
 		
 		double length() const
 		{
@@ -126,6 +139,10 @@ namespace Raytracer
 		img_t(int x, int y)
 		{
 			pix = new pixel_t[x*y];
+		}
+		~img_t()
+		{
+			delete[] pix;
 		}
 	};
 	

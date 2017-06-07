@@ -54,6 +54,11 @@ namespace Raytracer
 		}
 	}
 	
+	std::shared_ptr<Camera> Model::initCamera(const double w, const double h, const vector_t viewpoint)
+	{
+		return cam = std::make_shared<Camera>(name() + "_Camera", w, h, viewpoint);
+	}
+	
 	
 	void Model::add(Object* obj)
 	{add(obj->shared_from_this());}
@@ -195,17 +200,13 @@ namespace Raytracer
 		double dist = findClosestObj(base, dir, lastHit, &closest);
 		if (closest != NULL)
 		{
-			//dist = closest->hits(base, dir);
+			dist = closest->hits(base, dir);
 			pix = closest->ambient();
 			pix = addIllumination(base, closest, pix);
 		}
-		
 		if (dist > 0)
 		{
 			totDist += dist;
-			pix.R = pix.R/totDist;
-			pix.G = pix.G/totDist;
-			pix.B = pix.B/totDist;
 			pix = pixScale(1/totDist, pix);
 			
 			vector_t lastHitpt = closest->lastHit();
@@ -220,13 +221,12 @@ namespace Raytracer
 				transBehind = pixScale(trans, transBehind);
 				
 				dpixel_t diffuse = closest->diffuse();
-				int largestComp = std::max(std::max(diffuse.R, diffuse.G), diffuse.B);
+				double largestComp = std::max(std::max(diffuse.R, diffuse.G), diffuse.B);
 				diffuse = pixScale(trans / largestComp, diffuse);
 				transBehind = transBehind*diffuse;
 				pix = pix + transBehind;
 				
 			}
-			
 			if (totDist > MAX_DIST)
 			{
 				return pix;
@@ -243,8 +243,13 @@ namespace Raytracer
 				spec_p = pixScale(specref, spec_p);
 				pix = pix + spec_p;
 			}
+			return pix;
 		}
-		return pix;
+		else
+		{
+			return dpixel_t();
+		}
+		
 		
 	}
 	
@@ -283,7 +288,7 @@ namespace Raytracer
 		dpixel_t pix = p;
 		for (auto light : lights)
 		{
-			light->illuminate(base, hitObj, pix);
+			light->illuminate(this, base, hitObj, pix);
 		}
 		return pix;
 	}

@@ -8,7 +8,7 @@ namespace Raytracer
 {
 	class Material;
 	
-	class Object : public std::enable_shared_from_this<Object>, RaytracerItem
+	class Object : public std::enable_shared_from_this<Object>, public RaytracerItem
 	{
 		protected:
 		
@@ -18,7 +18,7 @@ namespace Raytracer
 		
 		
 		public:
-		Object();
+		Object(std::string name, std::shared_ptr<Material> mat);
 		
 		virtual ~Object();
 		
@@ -33,7 +33,7 @@ namespace Raytracer
 		
 		virtual vector_t lastNormal() const { return _lastNorm; }
 		
-		virtual std::string toString() const = 0;
+		virtual std::string toString() const override;
 	};
 }
 }

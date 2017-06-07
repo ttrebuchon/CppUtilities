@@ -7,7 +7,7 @@ namespace Util
 namespace Raytracer
 {
 	
-	class Camera : public std::enable_shared_from_this<Camera>, RaytracerItem
+	class Camera : public std::enable_shared_from_this<Camera>, public RaytracerItem
 	{
 		private:
 		int dims[2];
