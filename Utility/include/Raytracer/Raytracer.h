@@ -9,3 +9,4 @@
 #include "Texture.h"
 #include "Light.h"
 #include "Plane.h"
+#include "Sphere.h"

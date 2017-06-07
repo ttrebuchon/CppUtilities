@@ -18,6 +18,7 @@ namespace Raytracer
 	{
 		private:
 		double MAX_DIST;
+		unsigned int AA_SAMPLES;
 		std::shared_ptr<Camera> cam;
 		std::vector<std::shared_ptr<Object>> objs;
 		std::vector<std::shared_ptr<Material>> mats;
@@ -27,12 +28,12 @@ namespace Raytracer
 		
 		
 		public:
-		Model(std::string name, double maxDist);
+		Model(std::string name, double maxDist, unsigned int AAsamples);
 		Model(std::string name);
 		virtual ~Model();
 		
-		image_t* go(int x, int y);
-		virtual void go(image_t* const, const int x, const int y);
+		image_t go(int x, int y);
+		virtual void go(image_t const, const int x, const int y);
 		
 		std::shared_ptr<Camera> initCamera(const double w, const double h, const vector_t viewpoint);
 		

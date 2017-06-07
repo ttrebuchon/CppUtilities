@@ -17,12 +17,12 @@ namespace Raytracer
 	
 	UTIL_CUSTOM_EXCEPTION(CameraNotSetException, Camera needs to be set before raytracing);
 	
-	Model::Model(std::string name, double maxDist) : RaytracerItem(name), MAX_DIST(maxDist), cam(NULL)
+	Model::Model(std::string name, double maxDist, unsigned int aaSamples) : RaytracerItem(name), MAX_DIST(maxDist), AA_SAMPLES(aaSamples), cam(NULL)
 	{
 		
 	}
 	
-	Model::Model(std::string name) : Model(name, 32)
+	Model::Model(std::string name) : Model(name, 32, 3)
 	{
 		
 	}
@@ -32,14 +32,14 @@ namespace Raytracer
 		
 	}
 	
-	image_t* Model::go(int x, int y)
+	image_t Model::go(int x, int y)
 	{
-		image_t* img = new image_t(x, y);
+		image_t img = new pixel_t[x*y];
 		this->go(img, x, y);
 		return img;
 	}
 	
-	void Model::go(image_t* const img, const int x, const int y)
+	void Model::go(image_t const img, const int x, const int y)
 	{
 		if (cam == NULL)
 		{
@@ -182,8 +182,23 @@ namespace Raytracer
 	void Model::runPixel(const int x, const int y)
 	{
 		vector_t viewPt = cam->view();
-		vector_t dir = cam->dir(x, y);
-		dpixel_t pix = trace(viewPt, dir, 0, NULL);
+		vector_t dir;
+		
+		dpixel_t pix;
+		if (AA_SAMPLES > 1)
+		{
+		for (auto i = 0; i < AA_SAMPLES; i++)
+		{
+			dir = cam->dir(x, y, true);
+			pix += trace(viewPt, dir, 0, NULL);
+		}
+		pix = pixScale(static_cast<double>(1)/AA_SAMPLES, pix);
+		}
+		else
+		{
+			dir = cam->dir(x, y, false);
+			pix = trace(viewPt, dir, 0, NULL);
+		}
 		
 		cam->setPixel(x, y, pix);
 	}

@@ -20,6 +20,22 @@ namespace Raytracer
 		return dpixel_t(p1.R+p2.R, p1.G+p2.G, p1.B+p2.B);
 	}
 	
+	dpixel_t& operator*=(dpixel_t& p1, const dpixel_t p2)
+	{
+		p1.R *= p2.R;
+		p1.G *= p2.G;
+		p1.B *= p2.B;
+		return p1;
+	}
+	
+	dpixel_t& operator+=(dpixel_t& p1, const dpixel_t p2)
+	{
+		p1.R += p2.R;
+		p1.G += p2.G;
+		p1.B += p2.B;
+		return p1;
+	}
+	
 	dpixel_t clamp(const dpixel_t p)
 	{
 		//return p;
@@ -80,6 +96,21 @@ namespace Raytracer
 	std::ostream& operator<<(std::ostream& os, const dpixel_t p)
 	{
 		return os << "{" << p.R << ", " << p.G << ", " << p.B << "}";
+	}
+	
+	
+	
+	
+	
+	
+	pixel_t* img_t::operator()(const unsigned int x, const unsigned int y) const
+	{
+		if (x > w || y > h)
+		{
+			throw std::out_of_range("Pixel index argument out of range!");
+		}
+		
+		return (&arr[w*y + x]);
 	}
 	
 	

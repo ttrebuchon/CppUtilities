@@ -26,24 +26,42 @@ namespace Raytracer
 		
 		int row = dims[1] - y - 1;
 		int col = x;
-		img->pix[dims[0]*row + col] = scaled;
+		img[dims[0]*row + col] = scaled;
 	}
 	
 	pixel_t Camera::getPixel(int x, int y) const
 	{
-		return img->pix[dims[0]*y + x];
+		int row = dims[1] - y - 1;
+		int col = x;
+		return img[dims[0]*row + col];
 	}
 	
 	
-	
-	
-	vector_t Camera::dir(int x, int y) const
+	void jitter(double& in)
 	{
+		double r = random();
+		r /= 0x7fffffff;
+		r -= 0.5;
+		in += r;
+	}
+	
+	vector_t Camera::dir(int x, int y, bool AA) const
+	{
+		double dx = x;
+		double dy = y;
+		
+		
+		if (AA)
+		{
+			jitter(dx);
+			jitter(dy);
+		}
+		
+		
 		vector_t v;
-		v.x = ((double)x / (this->x() - 1))*viewpointDims[0];
-		v.y = ((double)y / (this->y() - 1))*viewpointDims[1];
+		v.x = (dx / (this->x() - 1))*viewpointDims[0];
+		v.y = (dy / (this->y() - 1))*viewpointDims[1];
 		v.z = 0;
-		//return (viewpoint - v).unit();
 		return (v - viewpoint).unit();
 	}
 	
@@ -53,7 +71,7 @@ namespace Raytracer
 		dims[1] = y;
 	}
 	
-	void Camera::setImg(image_t* img)
+	void Camera::setImg(image_t img)
 	{
 		this->img = img;
 	}

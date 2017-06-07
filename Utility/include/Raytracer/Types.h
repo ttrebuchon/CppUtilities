@@ -9,15 +9,42 @@ namespace Raytracer
 	//TODO: Replace with actual pixel type
 	struct rgbP
 	{
-		char R;
-		char G;
-		char B;
+		unsigned char R;
+		unsigned char G;
+		unsigned char B;
 		
 		rgbP() : R(0), G(0), B(0)
 		{ }
 		
 		rgbP(int r, int g, int b) : R(r), G(g), B(b)
 		{ }
+		
+		rgbP operator+(const rgbP p) const
+		{
+			rgbP n;
+			n.R = R + p.R;
+			n.G = G + p.G;
+			n.B = B + p.B;
+			return n;
+		}
+		
+		rgbP operator-(const rgbP p) const
+		{
+			rgbP n;
+			n.R = R - p.R;
+			n.G = G - p.G;
+			n.B = B - p.B;
+			return n;
+		}
+		
+		rgbP operator*(const double n) const
+		{
+			rgbP p;
+			p.R = R*n;
+			p.G = G*n;
+			p.B = B*n;
+			return p;
+		}
 		
 	};
 	typedef rgbP pixel_t;
@@ -42,6 +69,10 @@ namespace Raytracer
 	dpixel_t operator*(const dpixel_t p1, const dpixel_t p2);
 	
 	dpixel_t operator+(const dpixel_t p1, const dpixel_t p2);
+	
+	dpixel_t& operator*=(dpixel_t& p1, const dpixel_t p2);
+	
+	dpixel_t& operator+=(dpixel_t& p1, const dpixel_t p2);
 	
 	dpixel_t clamp(const dpixel_t);
 	
@@ -133,19 +164,47 @@ namespace Raytracer
 	
 	
 	
-	struct img_t
+	class img_t
 	{
-		pixel_t* pix;
-		img_t(int x, int y)
+		private:
+		
+		protected:
+		uint w;
+		uint h;
+		
+		public:
+		pixel_t* arr;
+		
+		img_t(unsigned int w, unsigned int h) : w(w), h(h), arr(new pixel_t[w*h])
 		{
-			pix = new pixel_t[x*y];
+			
 		}
-		~img_t()
+		
+		img_t(const img_t& img) : w(img.w), h(img.h), arr(img.arr)
+		{}
+		
+		~img_t() {}
+		
+		pixel_t* operator()(const unsigned int x, const unsigned int y) const;
+		
+		img_t* duplicate() const
 		{
-			delete[] pix;
+			img_t* img = new img_t(w, h);
+			for (auto i = 0; i < w*h; i++)
+			{
+				img->arr[i] = arr[i];
+			}
+			return img;
 		}
+		
+		void clear()
+		{
+			delete[] arr;
+			arr = NULL;
+		}
+		
 	};
-	
-	typedef img_t image_t;
+	//typedef img_t image_t;
+	typedef pixel_t* image_t;
 }
 }
