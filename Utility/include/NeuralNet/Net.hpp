@@ -156,25 +156,21 @@ namespace NeuralNet
 	template <typename List>
 	void Net<T>::addData(List input, List output)
 	{
-		std::vector<T> in_v(inSize);
-		std::vector<T> out_v(outSize);
+		std::vector<T> in(inSize);
+		std::vector<T> out(outSize);
 		
 		for (auto i = 0; i < inSize; i++)
 		{
-			in_v[i] = input[i];
+			in[i] = input[i];
 		}
 		for (auto i = 0; i < outSize; i++)
 		{
-			out_v[i] = output[i];
+			out[i] = output[i];
 		}
 		
-		InOut in(std::make_shared<Math::DataMatrix<1, T>>(in_v));
-		sanity_d(in_v.size() == inSize);
-		sanity_d(in.size(0) == inSize);
+		sanity_d(in.size() == inSize);
 		
-		InOut out(std::make_shared<Math::DataMatrix<1, T>>(out_v));
-		sanity_d(out_v.size() == outSize);
-		sanity_d(out.size(0) == outSize);
+		sanity_d(out.size() == outSize);
 		
 		training.push_back(std::make_tuple(in, out));
 	}
@@ -189,7 +185,16 @@ namespace NeuralNet
 			
 			auto result = go(std::get<0>(data));
 			
-			auto err = std::get<1>(data) - result;
+			
+			InOut err(result.size());
+			auto exper = std::get<1>(data);
+			for (auto i = 0; i < result.size(); i++)
+			{
+				err[i] = exper[i] - result[i];
+			}
+			
+			
+			
 			auto i = 0;
 			for (auto out : output_n)
 			{
@@ -201,7 +206,7 @@ namespace NeuralNet
 	
 	template <typename T>
 	template <typename List>
-	Math::tensor_t<1, T> Net<T>::go(List input)
+	std::vector<T> Net<T>::go(List input)
 	{
 		reset();
 		for (int i = 0; i < inSize; i++)
@@ -219,7 +224,7 @@ namespace NeuralNet
 		{
 			results.push_back(out->get());
 		}
-		return Math::tensor_t<1, T>(std::make_shared<Math::DataMatrix<1, T>>(results));
+		return results;
 		
 	}
 	

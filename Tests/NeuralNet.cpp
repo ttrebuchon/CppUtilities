@@ -1,11 +1,12 @@
 #include "../Tests_Helpers.h"
 
 #include <NeuralNet/NeuralNet.h>
-#include <boost/multiprecision/cpp_dec_float.hpp>
+#include <sstream>
+//#include <boost/multiprecision/cpp_dec_float.hpp>
 
 using Utils::NeuralNet::Net;
-using boost::multiprecision::cpp_dec_float;
-using boost::multiprecision::number;
+//using boost::multiprecision::cpp_dec_float;
+//using boost::multiprecision::number;
 
 template <typename T>
 T recipricoal(T t)
@@ -35,6 +36,19 @@ auto outF(auto f, auto str)
 		dout << res << std::endl;
 		return res;
 	};
+}
+
+template <typename T>
+std::string vPrint(const std::vector<T>& v)
+{
+	std::stringstream ss;
+	ss << "< " << v[0];
+	for (auto i = 1; i < v.size(); i++)
+	{
+		ss << ", " << v[i];
+	}
+	ss << " >";
+	return ss.str();
 }
 
 
@@ -87,16 +101,16 @@ bool Neural_Run()
 	}
 	
 	auto result = nn.go({0, 0});
-	dout << "Result for {0, 0}: " << result.toString() << std::endl;
+	dout << "Result for {0, 0}: " << vPrint(result) << std::endl;
 	
 	auto result2 = nn.go({0, 1});
-	dout << "Result for {0, 1}: " << result2.toString() << std::endl;
+	dout << "Result for {0, 1}: " << vPrint(result2) << std::endl;
 	
 	auto result3 = nn.go({1, 0});
-	dout << "Result for {1, 0}: " << result3.toString() << std::endl;
+	dout << "Result for {1, 0}: " << vPrint(result3) << std::endl;
 	
 	auto result4 = nn.go({1, 1});
-	dout << "Result for {1, 1}: " << result4.toString() << std::endl;
+	dout << "Result for {1, 1}: " << vPrint(result4) << std::endl;
 	
 	//typedef number<cpp_dec_float<10>> Precise;
 	typedef double Precise;
@@ -124,22 +138,22 @@ bool Neural_Run()
 	}
 	
 	auto result_2 = nn2.go({0, 0});
-	dout << "Result for {0, 0}: " << result_2.toString() << std::endl;
+	dout << "Result for {0, 0}: " << vPrint(result_2) << std::endl;
 	
 	auto result2_2 = nn2.go({0, 1});
-	dout << "Result for {0, 1}: " << result2_2.toString() << std::endl;
+	dout << "Result for {0, 1}: " << vPrint(result2_2) << std::endl;
 	
 	auto result3_2 = nn2.go({1, 0});
-	dout << "Result for {1, 0}: " << result3_2.toString() << std::endl;
+	dout << "Result for {1, 0}: " << vPrint(result3_2) << std::endl;
 	
 	auto result4_2 = nn2.go({1, 1});
-	dout << "Result for {1, 1}: " << result4_2.toString() << std::endl;
+	dout << "Result for {1, 1}: " << vPrint(result4_2) << std::endl;
 	
 	auto result5_2 = nn2.go({2, 1});
-	dout << "Result for {2, 1}: " << result5_2.toString() << std::endl;
+	dout << "Result for {2, 1}: " << vPrint(result5_2) << std::endl;
 	
 	auto result6_2 = nn2.go({1, 2});
-	dout << "Result for {1, 2}: " << result6_2.toString() << std::endl;
+	dout << "Result for {1, 2}: " << vPrint(result6_2) << std::endl;
 	
 	
 	

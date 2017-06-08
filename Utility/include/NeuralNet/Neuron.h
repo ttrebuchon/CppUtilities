@@ -2,8 +2,8 @@
 
 #include "Synapse.h"
 
-#include <Math/Matrix.h>
 #include <vector>
+#include <functional>
 
 namespace Util
 {
