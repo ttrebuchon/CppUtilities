@@ -58,4 +58,13 @@
 26) Add vector functions to Matrix<1,...> class
 	26.1) Unit()
 	26.2) Magnitude()
+	26.3) Reflect()
+
+27) Associative graphs
+	27.1) Time series based
+	27.2) Static/Time independent
+	27.3) Weighted
+	27.4) Unweighted
+	27.5) Traversal/Shortest path
+
 	
