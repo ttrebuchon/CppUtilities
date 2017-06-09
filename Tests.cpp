@@ -65,12 +65,13 @@ void Testing::run()
 	RUN(Tensor_T());
 	RUN(Matrix_Algs());
 	RUN(Raytrace());
+	RUN(Neural());
 	#ifndef SHORT_TEST
 	RUN(Tuple_Test());
 	RUN(CSV_Test());
 	RUN(Matrix());
 	RUN(Math());
-	RUN(Neural());
+	
 	RUN(Sleep());
 	RUN(Lazy());
 	RUN(Func());

@@ -71,6 +71,14 @@ namespace NeuralNet
 		std::vector<T> go(List input);
 		
 		void setOutputActivation(Activation_t act, Activation_t deriv);
+		
+		std::vector<InputNeuron<T>*> inputLayer() const;
+		
+		std::vector<OutputNeuron<T>*> outputLayer() const;
+		
+		std::vector<Neuron<T>*> all() const;
+		
+		std::string toString() const;
 	};
 	
 }

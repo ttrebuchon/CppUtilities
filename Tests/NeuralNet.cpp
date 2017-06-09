@@ -2,6 +2,7 @@
 
 #include <NeuralNet/NeuralNet.h>
 #include <sstream>
+#include <limits>
 //#include <boost/multiprecision/cpp_dec_float.hpp>
 
 using Utils::NeuralNet::Net;
@@ -42,6 +43,10 @@ template <typename T>
 std::string vPrint(const std::vector<T>& v)
 {
 	std::stringstream ss;
+	if (v.size() <= 0)
+	{
+		return "< >";
+	}
 	ss << "< " << v[0];
 	for (auto i = 1; i < v.size(); i++)
 	{
@@ -51,6 +56,7 @@ std::string vPrint(const std::vector<T>& v)
 	return ss.str();
 }
 
+bool Mult_Test();
 
 bool Neural_Run()
 {
@@ -155,6 +161,78 @@ bool Neural_Run()
 	auto result6_2 = nn2.go({1, 2});
 	dout << "Result for {1, 2}: " << vPrint(result6_2) << std::endl;
 	
+	
+	
+	return Mult_Test();
+}
+
+bool Mult_Test()
+{
+	Net<double> n(2, 1);
+	n.addData({1, 0}, {0});
+	n.addData({0, 0}, {0});
+	n.addData({0, 1000}, {0});
+	n.addData({1000, 0}, {0});
+	n.addData({1, 1}, {1});
+	n.addData({-1, 1}, {-1});
+	n.addData({-1, -1}, {1});
+	n.addData({1, 3}, {3});
+	n.addData({2, 3}, {6});
+	n.addData({6, 4}, {24});
+	
+	
+	
+	
+	
+	auto prodN = new Utils::NeuralNet::Neurons::ProductNeuron<double>();
+	
+	
+	auto ins = n.inputLayer();
+	for (auto in : ins)
+	{
+		assert_ex(in->getOuts().size() == 0);
+	}
+	
+	auto outputs = n.outputLayer();
+	prodN->addDown(outputs[0], 1);
+	for (auto in : ins)
+	{
+		assert_ex(in->getAllDown().size() == 0);
+		assert_ex(in->getOuts().size() == 0);
+	}
+	
+	
+	for (auto in : ins)
+	{
+		prodN->addUp(in, 1);
+		
+		
+		
+		assert_ex(in->getAllDown().size() == 2);
+		assert_ex(in->getOuts().size() == 1);
+	}
+	
+	
+	assert_ex(prodN->getIns().size() == 2);
+	assert_ex(outputs[0]->getIns().size() == 1);
+	
+	
+	
+	
+	
+	dout << n.toString() << std::endl;
+	for (int i = 0; i < 10; i++)
+	{
+	n.train(1);
+	dout << "Training done" << std::endl;
+	dout << n.toString() << std::endl;
+	}
+	n.train(4);
+	dout << "Training done" << std::endl;
+	dout << n.toString() << std::endl;
+	
+	auto r1_3 = n.go({1, 3});
+	dout << "Result for <1,3>:  " << vPrint(r1_3) << std::endl;
 	
 	
 	return true;

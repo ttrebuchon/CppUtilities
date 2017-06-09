@@ -29,7 +29,7 @@ namespace NeuralNet
 
 		for (auto i = 0; i < inSize; i++)
 		{
-			input_n[i] = new InputNeuron<T>(activation, activation_D);
+			input_n[i] = new InputNeuron<T>();
 		}
 		
 		for (auto i = 0; i < outSize; i++)
@@ -57,26 +57,7 @@ namespace NeuralNet
 	template <typename T>
 	Net<T>::~Net()
 	{
-		auto neuronPresent = [] (std::vector<Neuron<T>*> v, Neuron<T>* n) -> bool
-		{
-			auto it = std::find(v.begin(), v.end(), n);
-			return (it != v.end());
-		};
-		
-		std::vector<Neuron<T>*> allNeurons;
-		for (auto in : input_n)
-		{
-			if (in == NULL)
-			    continue;
-			
-			for (auto n : in->getAllDown())
-			{
-				if (!neuronPresent(allNeurons, n))
-				{
-					allNeurons.push_back(n);
-				}
-			}
-		}
+		auto allNeurons = this->all();
 		
 		while (allNeurons.size() > 0)
 		{
@@ -236,6 +217,72 @@ namespace NeuralNet
 		{
 			neuron->setFuncs(act, deriv);
 		}
+	}
+	
+	template <typename T>
+	std::vector<InputNeuron<T>*> Net<T>::inputLayer() const
+	{
+		return input_n;
+	}
+	
+	template <typename T>
+	std::vector<OutputNeuron<T>*> Net<T>::outputLayer() const
+	{
+		return output_n;
+	}
+	
+	template <typename T>
+	std::vector<Neuron<T>*> Net<T>::all() const
+	{
+		auto neuronPresent = [] (std::vector<Neuron<T>*>& v, Neuron<T>* n) -> bool
+		{
+			auto it = std::find(v.begin(), v.end(), n);
+			return (it != v.end());
+		};
+		
+		std::vector<Neuron<T>*> allNeurons;
+		for (auto in : input_n)
+		{
+			if (in == NULL)
+			    continue;
+			
+			for (auto n : in->getAllDown())
+			{
+				if (!neuronPresent(allNeurons, n))
+				{
+					allNeurons.push_back(n);
+				}
+			}
+			allNeurons.push_back(in);
+		}
+		
+		return allNeurons;
+	}
+	
+	template <typename T>
+	std::string Net<T>::toString() const
+	{
+		auto all = this->all();
+		
+		std::vector<Synapse<T>*> links;
+		for (auto n : all)
+		{
+			for (auto syn : n->getOuts())
+			{
+				links.push_back(syn);
+			}
+		}
+		
+		std::string str;
+		if (links.size() > 0)
+		{
+			str += links[0]->toString();
+			for (auto i = 1; i < links.size(); i++)
+			{
+				str += "\n" + links[i]->toString();
+			}
+		}
+		return str;
 	}
 	
 	

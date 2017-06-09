@@ -2,13 +2,14 @@
 
 
 #include "Synapse.h"
+#include <sstream>
 
 namespace Util
 {
 namespace NeuralNet
 {
 	template <typename T>
-	Synapse<T>::Synapse(Neuron<T>* up, Neuron<T>* down, T wgt) : in(up), out(down), wgt(wgt)
+	Synapse<T>::Synapse(Neuron<T>* up, Neuron<T>* down, T wgt) : in(up), out(down), wgt(wgt), lastVal(wgt) //lastVal is initialized to wgt in the case that T does not have a default constructor
 	{
 		
 	}
@@ -16,6 +17,13 @@ namespace NeuralNet
 	template <typename T>
 	Synapse<T>::Synapse(Neuron<T>* up, Neuron<T>* down) : Synapse<T>(up, down, static_cast<T>(Internal::RandWgt::Get()))
 	{ }
+	
+	
+	template <typename T>
+	Synapse<T>::~Synapse()
+	{
+		//TODO
+	}
 	
 	
 	
@@ -43,7 +51,8 @@ namespace NeuralNet
 	template <typename T>
 	void Synapse<T>::propagate(T value) const
 	{
-		out->propagate(value*wgt);
+		((Synapse<T>*)this)->lastVal = value*wgt;
+		out->propagate(this->lastVal);
 	}
 	
 	template <typename T>
@@ -54,6 +63,14 @@ namespace NeuralNet
 		T next_delta = ((T)wgt)*delta_sum;
 		wgt = wgt + delta_wgt;
 		in->backPropagate(next_delta);
+	}
+	
+	template <typename T>
+	std::string Synapse<T>::toString() const
+	{
+		std::stringstream ss;
+		ss << in << " -> " << wgt << " -> " << out;
+		return ss.str();
 	}
 	
 }

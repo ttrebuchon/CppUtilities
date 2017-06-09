@@ -32,11 +32,16 @@ namespace NeuralNet
 		virtual ~Neuron();
 		
 		virtual void addDown(Neuron<T>*, T wgt);
+		virtual void addDown(Neuron<T>*);
 		virtual void addDown(Synapse<T>*);
 		virtual void addUp(Synapse<T>*);
+		virtual void addUp(Neuron<T>*, T wgt);
+		virtual void addUp(Neuron<T>*);
 		
-		virtual void removeUp(Synapse<T>*);
-		virtual void removeDown(Synapse<T>*);
+		virtual Synapse<T>* removeUp(Synapse<T>*);
+		virtual Synapse<T>* removeDown(Synapse<T>*);
+		virtual std::vector<Synapse<T>*> getOuts() const { return out; }
+		virtual std::vector<Synapse<T>*> getIns() const { return in; }
 		
 		std::vector<Neuron<T>*> getAllDown() const;
 		
@@ -77,8 +82,8 @@ namespace NeuralNet
 		protected:
 		
 		public:
-		InputNeuron(T init, std::function<T(T)>, std::function<T(T)>);
-		InputNeuron(std::function<T(T)> act, std::function<T(T)> act_D) : InputNeuron(0, act, act_D) {}
+		InputNeuron(T init);
+		InputNeuron() : InputNeuron(0) {}
 		
 		
 		virtual void set(T value);

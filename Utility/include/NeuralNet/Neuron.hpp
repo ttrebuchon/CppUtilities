@@ -30,6 +30,12 @@ namespace NeuralNet
 	}
 	
 	template <typename T>
+	void Neuron<T>::addDown(Neuron<T>* n)
+	{
+		addDown(n, static_cast<T>(Internal::RandWgt::Get()));
+	}
+	
+	template <typename T>
 	void Neuron<T>::addDown(Synapse<T>* syn)
 	{
 		this->out.push_back(syn);
@@ -42,13 +48,29 @@ namespace NeuralNet
 	}
 	
 	template <typename T>
-	void Neuron<T>::removeUp(Synapse<T>* syn)
+	void Neuron<T>::addUp(Neuron<T>* n, T wgt)
+	{
+		auto syn = new Synapse<T>(n, this, wgt);
+		this->in.push_back(syn);
+		n->addDown(syn);
+	}
+	
+	template <typename T>
+	void Neuron<T>::addUp(Neuron<T>* n)
+	{
+		auto syn = new Synapse<T>(n, this);
+		this->in.push_back(syn);
+		n->addDown(syn);
+	}
+	
+	template <typename T>
+	Synapse<T>* Neuron<T>::removeUp(Synapse<T>* syn)
 	{
 		throw NotImp();
 	}
 	
 	template <typename T>
-	void Neuron<T>::removeDown(Synapse<T>* syn)
+	Synapse<T>* Neuron<T>::removeDown(Synapse<T>* syn)
 	{
 		throw NotImp();
 	}
@@ -77,11 +99,13 @@ namespace NeuralNet
 					allNeurons.push_back(n);
 				}
 			}
+			allNeurons.push_back(syn->get_out());
 		}
 		
-		if (!neuronPresent(allNeurons, this))
+		if (neuronPresent(allNeurons, this))
 		{
-			allNeurons.push_back((Neuron*) this);
+			throw NotImp();
+			//TODO: Handle circular net
 		}
 		
 		return allNeurons;
@@ -176,7 +200,7 @@ namespace NeuralNet
 	
 	
 	template <typename T>
-	InputNeuron<T>::InputNeuron(T init, std::function<T(T)> act, std::function<T(T)> act_D) : Neuron<T>(init, act, act_D)
+	InputNeuron<T>::InputNeuron(T init) : Neuron<T>(init, [](T t) -> T { return t; }, [](T) -> T { return 1; })
 	{
 		
 	}
