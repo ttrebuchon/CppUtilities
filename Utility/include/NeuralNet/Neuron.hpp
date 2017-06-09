@@ -66,13 +66,27 @@ namespace NeuralNet
 	template <typename T>
 	Synapse<T>* Neuron<T>::removeUp(Synapse<T>* syn)
 	{
-		throw NotImp();
+		auto loc = std::find(in.begin(), in.end(), syn);
+		if (loc != in.end())
+		{
+			auto s = *loc;
+			in.erase(loc);
+			return s;
+		}
+		return NULL;
 	}
 	
 	template <typename T>
 	Synapse<T>* Neuron<T>::removeDown(Synapse<T>* syn)
 	{
-		throw NotImp();
+		auto loc = std::find(out.begin(), out.end(), syn);
+		if (loc != out.end())
+		{
+			auto s = *loc;
+			out.erase(loc);
+			return s;
+		}
+		return NULL;
 	}
 	
 	template <typename T>

@@ -11,6 +11,17 @@ namespace Util
 {
 namespace NeuralNet
 {
+	
+	enum LayerType
+	{
+		FullyConnected = 0,
+		OneToOne = 1,
+		Unique = 2,
+		
+		
+	};
+	
+	
 	template <typename T>
 	struct Bounds
 	{
@@ -61,7 +72,7 @@ namespace NeuralNet
 		virtual ~Net();
 		
 		
-		void grow(int newLayers, double multiplier = 1);
+		void grow(int newLayers, double multiplier = 1, LayerType = FullyConnected);
 		
 		template <typename List = std::vector<T>>
 		void addData(List input, List output);

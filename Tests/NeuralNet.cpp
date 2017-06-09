@@ -99,7 +99,7 @@ bool Neural_Run()
 	
 	int progressInterval = 1000;
 	
-	nn.grow(layers, multiplier);
+	nn.grow(layers, multiplier, Utils::NeuralNet::LayerType::Unique);
 	for (int i = 0; i < cycles; i++)
 	{
 		dout << "Training " << i*progressInterval << "\t/" << cycles*progressInterval << std::endl;
@@ -127,13 +127,13 @@ bool Neural_Run()
 	
 	Net<Precise> nn2(2, 1);
 	//nn2.setOutputActivation(invSig_A, invSig_D);
-	nn2.addData({0, 0}, {0});
+	//nn2.addData({0, 0}, {0});
 	nn2.addData({0, 1}, {1});
 	nn2.addData({1, 0}, {1});
-	nn2.addData({1, 1}, {2});
+	//nn2.addData({1, 1}, {2});
 	nn2.addData({2, 1}, {3});
 	nn2.addData({1, 2}, {3});
-	nn2.grow(layers, multiplier);
+	nn2.grow(layers, multiplier, Utils::NeuralNet::LayerType::FullyConnected);
 
 	nn2.bounds.min = 0;
 	
