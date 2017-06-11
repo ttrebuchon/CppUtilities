@@ -41,7 +41,6 @@ bool Testing::CSV_Test()
     
     CSV_File anorexia_data;
     anorexia_data.openFile("Test_Files/Sample-Data-Anorexia-Treatment.csv");
-    dout << "Read" << std::endl;
     for (int i = 0; i < anorexia_data.length(); i++)
     {
         for (int j = 0; j < anorexia_data[i].length(); j++)
