@@ -37,12 +37,17 @@ namespace Rules
 		}
 		
 		template <typename ...T>
-		auto get(const std::string name)
+		auto get(const std::string name, const Engine* eng)
 		{
-			return getDB<T...>()->get(name);
+			return getDB<T...>()->get(name, eng);
+		}
+		
+		template <typename ...T>
+		void newRule(const std::string name, typename Record<T...>::Rule r)
+		{
+			getDB<T...>()->newRule(name, r);
 		}
 		
 	};
 }
 }
-

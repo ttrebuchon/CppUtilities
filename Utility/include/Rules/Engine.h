@@ -48,7 +48,13 @@ namespace Rules
 		template <typename T, typename ...G>
 		auto checkf(const std::string name) const
 		{
-			return records->template get<T, G...>(name);
+			return records->template get<T, G...>(name, this);
+		}
+		
+		template <typename T, typename ...G>
+		void rule(const std::string name, typename Record<T, G...>::Rule r) const
+		{
+			records->template newRule<T, G...>(name, r);
 		}
 		
 	};

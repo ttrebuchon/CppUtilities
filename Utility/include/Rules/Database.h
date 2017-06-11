@@ -59,15 +59,36 @@ namespace Rules
 			records[name]->add(t...);
 		}
 		
-		typename Record<T...>::Result get(const std::string name) const
+		typename Record<T...>::Result get(const std::string name, auto... args) const
 		{
-			return records.at(name)->get();
+			return records.at(name)->get(args...);
+		}
+		
+		void newRule(const std::string name, typename Record<T...>::Rule r)
+		{
+			if (records.count(name) > 0)
+			{
+				//TODO
+				throw std::exception();
+			}
+			records[name] = new Record<T...>();
+			records[name]->setRule(r);
 		}
 		
 		template <typename ...G>
 		friend class DBWrapperT;
 		friend class DatabaseHandler;
 	};
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	template <typename ...T>
 	std::map<long long, Database<T...>*> Database<T...>::Databases;

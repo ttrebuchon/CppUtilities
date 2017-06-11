@@ -98,11 +98,39 @@ namespace Rules
 	}
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	class Engine;
+	
 	template <typename T, typename ...G>
 	class Record
 	{
 		public:
 		typedef std::function<castor::relation(castor::lref<T>, castor::lref<G>...)> Result;
+		
+		typedef std::function<castor::relation(const Engine*, castor::lref<T>, castor::lref<G>...)> Rule;
+		
 		private:
 		
 		
@@ -111,10 +139,12 @@ namespace Rules
 		std::vector<std::tuple<T, G...>> facts;
 		bool changed = true;
 		
-		Result rule;
+		
+		Result record;
+		Rule rule;
 		
 		public:
-		Record() : facts()
+		Record() : facts(), record(), rule()
 		{
 			
 		}
@@ -125,11 +155,11 @@ namespace Rules
 			changed = true;
 		}
 		
-		Result get()
+		Result get(const Engine* eng)
 		{
 			if (!changed)
 			{
-				return rule;
+				return record;
 			}
 			
 			auto eqR = [](auto& x, auto& y) -> Helpers::RelWrapper//castor::relation
@@ -167,11 +197,24 @@ namespace Rules
 					//con.push_back(eqR(std::get<0>(v), t));
 					dis.push_back(con);
 				}
-				return dis;
+				if (rule)
+				{
+					return dis || rule(eng, t, g...);
+				}
+				else
+				{
+					return dis;
+				}
 			});
-			rule = f;
+			record = f;
 			changed = false;
-			return rule;
+			return record;
+		}
+		
+		void setRule(const Rule r)
+		{
+			this->rule = r;
+			this->changed = true;
 		}
 	};
 	
