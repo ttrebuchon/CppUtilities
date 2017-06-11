@@ -22,9 +22,9 @@ namespace Util
 		std::tuple<T...> inner;
 		
 		public:
-		Tuple(std::tuple<T...> tup) : inner(tup)
+		Tuple(const std::tuple<T...> tup) : inner(tup)
 		{ }
-		Tuple(T... args) : inner(std::make_tuple(args...))
+		Tuple(const T... args) : inner(std::make_tuple(args...))
 		{ }
 		/*Tuple() : inner()
 		{ }*/
@@ -69,10 +69,19 @@ namespace Util
 		
 		static Tuple<T...> make(T...);
 		static Tuple<T...> make(std::tuple<T...>);
+
+		template <int N, typename ...G>
+		friend auto get(Tuple<G...>);
 	};
 	
 	template <typename...T>
 	Tuple<T...> Make_Tuple(std::tuple<T...>);
+
+	template <int N, typename ...T>
+	auto get(Tuple<T...> t) -> decltype(std::get<N>(t.getStd()))
+	{
+		return t.template get<N>();
+	}
 	
 	
 	
