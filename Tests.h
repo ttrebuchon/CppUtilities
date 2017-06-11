@@ -28,6 +28,8 @@ class Testing
 	static bool Tensor_T();
 	static bool Matrix_Algs();
 	static bool Raytrace();
+	static bool RulesEngine();
+	static bool CLIPS();
 };
 
 
