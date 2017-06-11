@@ -1,3 +1,6 @@
+
+
+
 Func_cpp = $(wildcard Utility/src/Func/*.cpp)
 Func = $(Func_cpp:.cpp=.o)
 #*/
@@ -46,8 +49,12 @@ Raytracer_cpp = $(wildcard Utility/src/Raytracer/*.cpp)
 Raytracer = $(Raytracer_cpp:.cpp=.o)
 #*/
 
+Rules_cpp = $(wildcard Utility/src/Rules/*.cpp)
+Rules = $(Rules_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
@@ -69,14 +76,21 @@ PREPROC_FLAGS := $(PREPROC_FLAGS) -DTEST_DEBUG
 
 
 
-WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -Wfatal-errors #-Wno-unused-variable -Wno-unused-but-set-variable
+WARNINGS_ERRORS = #-Werror -Wno-error=sign-compare -ftemplate-backtrace-limit=0
+
+WARNINGS_ERRORS := $(WARNINGS_ERRORS) #-Wno-unused-variable -Wno-unused-but-set-variable
+
+WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wfatal-errors 
 
 FLAGS = -I Utility/include
 
-DEPS = -I Deps/Castor -I ../
+CLIPS = Deps/CLIPS
+
+DEPS = -I Deps/Castor -I ../ -I Deps -I $(CLIPS) -L $(CLIPS)
 
 CXX = g++
-CXXFLAGS = -std=c++17 -MMD -fpic -I . $(PREPROC_FLAGS) -Wall $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -O0 $(DEPS)
+CXXFLAGS = -std=c++17 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -O0 $(DEPS)
+CXXFLAGS := $(CXXFLAGS)# -Wall
 libdeps = $(libobjects:.o=.d)
 testdeps = $(testobjects:.o=.d)
 name = Utility
@@ -87,7 +101,7 @@ buildOC = gcc -std=c99 -c -pie
 
 
 $(target): $(stLibTarget).a $(libobjects) $(testobjects) makefile
-	$(CXX) -o $(target) $(CXXFLAGS) -std=c++11 $(testobjects) -L. -l$(name) $(PREPROC_FLAGS)
+	$(CXX) -o $(target) $(CXXFLAGS) -std=c++11 $(testobjects) -L. -l$(name) $(PREPROC_FLAGS) -lclips++
 
 clean: 
 	rm $(libobjects)
