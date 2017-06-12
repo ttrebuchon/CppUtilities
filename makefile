@@ -1,60 +1,64 @@
 
+SRC = Utility/src
 
-
-Func_cpp = $(wildcard Utility/src/Func/*.cpp)
+Func_cpp = $(wildcard $(SRC)/Func/*.cpp)
 Func = $(Func_cpp:.cpp=.o)
 #*/
 
-NNST_cpp = $(wildcard Utility/src/NearestNeighborTree/*.cpp)
+NNST_cpp = $(wildcard $(SRC)/NearestNeighborTree/*.cpp)
 NNST = $(NNST_cpp:.cpp=.o)
 #*/
 
-DebugOut_cpp = $(wildcard Utility/src/DebugOut/*.cpp)
+DebugOut_cpp = $(wildcard $(SRC)/DebugOut/*.cpp)
 DebugOut = $(DebugOut_cpp:.cpp=.o)
 #*/
 
-Markov_cpp = $(wildcard Utility/src/Markov/*.cpp)
+Markov_cpp = $(wildcard $(SRC)/Markov/*.cpp)
 Markov = $(Markov_cpp:.cpp=.o)
 #*/
 
-Stopwatch_cpp = $(wildcard Utility/src/Stopwatch/*.cpp)
+Stopwatch_cpp = $(wildcard $(SRC)/Stopwatch/*.cpp)
 Stopwatch = $(Stopwatch_cpp:.cpp=.o)
 #*/
 
-String_cpp = $(wildcard Utility/src/String/*.cpp)
+String_cpp = $(wildcard $(SRC)/String/*.cpp)
 String = $(String_cpp:.cpp=.o)
 #*/
 
-Math_cpp = $(wildcard Utility/src/Math/*.cpp)
+Math_cpp = $(wildcard $(SRC)/Math/*.cpp)
 Math = $(Math_cpp:.cpp=.o)
 #*/
 
-LazyLoad_cpp = $(wildcard Utility/src/LazyLoad/*.cpp)
+LazyLoad_cpp = $(wildcard $(SRC)/LazyLoad/*.cpp)
 LazyLoad = $(LazyLoad_cpp:.cpp=.o)
 #*/
 
-Sleep_cpp = $(wildcard Utility/src/Sleep/*.cpp)
+Sleep_cpp = $(wildcard $(SRC)/Sleep/*.cpp)
 Sleep = $(Sleep_cpp:.cpp=.o)
 #*/
 
-NeuralNet_cpp = $(wildcard Utility/src/NeuralNet/*.cpp)
+NeuralNet_cpp = $(wildcard $(SRC)/NeuralNet/*.cpp)
 NeuralNet = $(NeuralNet_cpp:.cpp=.o)
 #*/
 
-CSV_cpp = $(wildcard Utility/src/CSV/*.cpp)
+CSV_cpp = $(wildcard $(SRC)/CSV/*.cpp)
 CSV = $(CSV_cpp:.cpp=.o)
 #*/
 
-Raytracer_cpp = $(wildcard Utility/src/Raytracer/*.cpp)
+Raytracer_cpp = $(wildcard $(SRC)/Raytracer/*.cpp)
 Raytracer = $(Raytracer_cpp:.cpp=.o)
 #*/
 
-Rules_cpp = $(wildcard Utility/src/Rules/*.cpp)
+Rules_cpp = $(wildcard $(SRC)/Rules/*.cpp)
 Rules = $(Rules_cpp:.cpp=.o)
 #*/
 
+English_cpp = $(wildcard $(SRC)/English/*.cpp)
+English = $(English_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
@@ -76,7 +80,7 @@ PREPROC_FLAGS := $(PREPROC_FLAGS) -DTEST_DEBUG
 
 
 
-WARNINGS_ERRORS = #-Werror -Wno-error=sign-compare -ftemplate-backtrace-limit=0
+WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -ftemplate-backtrace-limit=0
 
 WARNINGS_ERRORS := $(WARNINGS_ERRORS) #-Wno-unused-variable -Wno-unused-but-set-variable
 
@@ -90,7 +94,7 @@ DEPS = -I Deps/Castor -I ../ -I Deps -I $(CLIPS) -L $(CLIPS)
 
 CXX = g++
 CXXFLAGS = -std=c++17 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -O0 $(DEPS)
-CXXFLAGS := $(CXXFLAGS)# -Wall
+CXXFLAGS := $(CXXFLAGS) -Wall
 libdeps = $(libobjects:.o=.d)
 testdeps = $(testobjects:.o=.d)
 name = Utility
