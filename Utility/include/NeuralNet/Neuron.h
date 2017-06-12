@@ -49,7 +49,7 @@ namespace NeuralNet
 		
 		virtual void propagate(T val);
 		
-		virtual void backPropagate(T err);
+		virtual void backPropagate(T err, const T& learningRate);
 		
 		template <typename G>
 		friend class Synapse;
@@ -70,7 +70,7 @@ namespace NeuralNet
 		const std::vector<Synapse<T>*>& incoming() const;
 		
 		virtual const T get() const;
-		virtual void backPropagate(T err) override;
+		virtual void backPropagate(T err, const T& learningRate) override;
 		
 	};
 	
@@ -88,7 +88,7 @@ namespace NeuralNet
 		
 		virtual void set(T value);
 		virtual void propagate();
-		virtual void backPropagate(T err) override;
+		virtual void backPropagate(T err, const T& learningRate) override;
 	};
 	
 }

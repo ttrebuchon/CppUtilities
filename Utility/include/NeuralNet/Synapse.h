@@ -32,7 +32,7 @@ namespace NeuralNet
 		
 		virtual void remove();
 		virtual void propagate(T value) const;
-		virtual void backPropagate(T delta_sum);
+		virtual void backPropagate(T delta_sum, const T& learningRate);
 		
 		T lastValue() const { return lastVal; }
 		

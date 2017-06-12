@@ -26,7 +26,7 @@ namespace Neurons
 		
 		virtual void propagate(T val) override;
 		
-		virtual void backPropagate(T err) override;
+		virtual void backPropagate(T err, const T& learningRate) override;
 		
 		template <typename G>
 		friend class Synapse;

@@ -56,13 +56,13 @@ namespace NeuralNet
 	}
 	
 	template <typename T>
-	void Synapse<T>::backPropagate(T delta_sum)
+	void Synapse<T>::backPropagate(T delta_sum, const T& learningRate)
 	{
 		T delta_wgt = delta_sum*in->value;
 		
 		T next_delta = ((T)wgt)*delta_sum;
-		wgt = wgt + delta_wgt;
-		in->backPropagate(next_delta);
+		wgt = wgt + delta_wgt*learningRate;
+		in->backPropagate(next_delta, learningRate);
 	}
 	
 	template <typename T>

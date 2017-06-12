@@ -56,11 +56,11 @@ namespace Neurons
 	}
 	
 	template <typename T>
-	void ProductNeuron<T>::backPropagate(T delta_out_sum)
+	void ProductNeuron<T>::backPropagate(T delta_out_sum, const T& learningRate)
 	{
 		for (auto syn : this->in)
 		{
-			syn->backPropagate((syn->lastValue() != 0 ? this->value/syn->lastValue() : 0)*delta_out_sum);
+			syn->backPropagate((syn->lastValue() != 0 ? this->value/syn->lastValue() : 0)*delta_out_sum, learningRate);
 		}
 	}
 	

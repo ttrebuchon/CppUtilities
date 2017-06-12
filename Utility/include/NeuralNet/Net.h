@@ -49,15 +49,18 @@ namespace NeuralNet
 		Activation_t activation;
 		Activation_t activation_D;
 		
+		
+		
 		virtual void reset(T init);
 		virtual void reset() { reset(0); }
 		
 		
 		public:
-		
+		T learningRate;
 		Bounds<T> bounds;
 
-		Net(int inputSize, int outputSize, 
+		Net(int inputSize, int outputSize,
+		T learningRate = 1, 
 		std::function<T(T)> actFunc = [](T x) -> T
 		{
 			return ((T)1)/(1 + exp(x*(T)-1));

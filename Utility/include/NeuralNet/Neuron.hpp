@@ -161,12 +161,12 @@ namespace NeuralNet
 	}
 	
 	template <typename T>
-	void Neuron<T>::backPropagate(T delta_out_sum)
+	void Neuron<T>::backPropagate(T delta_out_sum, const T& learningRate)
 	{
 		T delta_sum = this->act_D(this->hidden)*delta_out_sum;
 		for (auto syn : this->in)
 		{
-			syn->backPropagate(delta_sum);
+			syn->backPropagate(delta_sum, learningRate);
 		}
 	}
 	
@@ -198,13 +198,13 @@ namespace NeuralNet
 	}
 	
 	template <typename T>
-	void OutputNeuron<T>::backPropagate(T err)
+	void OutputNeuron<T>::backPropagate(T err, const T& learningRate)
 	{
 		auto delta_sum = this->act_D(this->hidden)*err;
 		
 		for (auto syn : this->in)
 		{
-			syn->backPropagate(delta_sum);
+			syn->backPropagate(delta_sum, learningRate);
 		}
 	}
 	
@@ -236,7 +236,7 @@ namespace NeuralNet
 	}
 	
 	template <typename T>
-	void InputNeuron<T>::backPropagate(T err)
+	void InputNeuron<T>::backPropagate(T err, const T& learningRate)
 	{
 		//Intentionally blank
 	}

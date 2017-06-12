@@ -22,7 +22,7 @@ namespace Util
 namespace NeuralNet
 {
 	template <typename T>
-	Net<T>::Net(int inputSize, int outputSize, Activation_t actFunc, Activation_t actDerivFunc, T lowBound, T highBound) : inSize(inputSize), outSize(outputSize), training(), input_n(inputSize), output_n(outputSize), activation(actFunc), activation_D(actDerivFunc), bounds()
+	Net<T>::Net(int inputSize, int outputSize, T learningRate, Activation_t actFunc, Activation_t actDerivFunc, T lowBound, T highBound) : inSize(inputSize), outSize(outputSize), training(), input_n(inputSize), output_n(outputSize), activation(actFunc), activation_D(actDerivFunc), learningRate(learningRate), bounds()
 	{
 		this->bounds.min = lowBound;
 		this->bounds.max = highBound;
@@ -264,7 +264,7 @@ namespace NeuralNet
 			auto i = 0;
 			for (auto out : output_n)
 			{
-				out->backPropagate(err[i++]);
+				out->backPropagate(err[i++], learningRate);
 			}
 		}
 		

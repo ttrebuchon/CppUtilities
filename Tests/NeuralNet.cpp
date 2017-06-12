@@ -139,6 +139,7 @@ bool Neural_Run()
 	
 	for (int i = 0; i < cycles; i++)
 	{
+		nn2.learningRate = 0.5*(1 - static_cast<Precise>(i)/cycles);
 		dout << "Training " << i*progressInterval << "\t/" << cycles*progressInterval << std::endl;
 		nn2.train(progressInterval);
 	}
