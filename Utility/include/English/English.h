@@ -12,6 +12,7 @@ namespace English
 		Noun = 0,
 		Verb = 1,
 		Adjective = 2,
+		Adverb = 3,
 	};
 	
 	
@@ -20,31 +21,30 @@ namespace English
 		English = 0,
 	};
 	
-	static const std::map<Lang, std::string>& FileTable()
+	static std::string FileTable(const Lang l)
 	{
-		static std::map<Lang, std::string> table;
-		if (table.size() == 0)
+		switch (l)
 		{
-			table = std::map<Lang, std::string>{
-				{English, "english-core-wordnet.txt"},
-			};
+			case English:
+			return "Data/th_en_US_new";
+			
+			default:
+			return "";
 		}
-		
-		return table;
 	};
 	
 	class Word
 	{
 		private:
-		std::string word;
+		
 		std::string definition;
-		std::vector<Word*> synonyms;
-		PartOfSpeech type;
+		
 		
 		public:
 		Word(std::string name, PartOfSpeech);
-		
-		
+		const std::string word;
+		std::vector<Word*> synonyms;
+		const PartOfSpeech type;
 		
 	};
 	
@@ -54,7 +54,8 @@ namespace English
 		private:
 		static Language* english;
 		
-		std::map<std::string, Word*> words;
+		std::map<std::string, std::vector<Word*>> words;
+		std::map<PartOfSpeech, std::map<std::string, Word*>> wordsByType;
 		std::string filename;
 		
 		public:
@@ -62,6 +63,12 @@ namespace English
 		
 		
 		bool load();
+		
+		long long count() const;
+		
+		const std::map<std::string, std::vector<Word*>>& Words() const;
+		
+		const std::map<PartOfSpeech, std::map<std::string, Word*>>& WordsByType() const;
 		
 	};
 	

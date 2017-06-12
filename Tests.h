@@ -30,6 +30,7 @@ class Testing
 	static bool Raytrace();
 	static bool RulesEngine();
 	static bool CLIPS();
+	static bool English();
 };
 
 
