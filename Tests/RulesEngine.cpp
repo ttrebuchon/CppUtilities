@@ -60,9 +60,10 @@ bool Testing::RulesEngine()
 	int result = 0;
 	while (males())
 	{
-		if ((result %= 100) == 0)
+		if (result % 100 == 0)
 		{
 		dout << *person << " is a male" << std::endl;
+		result = 0;
 		}
 		result++;
 	}
@@ -79,9 +80,10 @@ bool Testing::RulesEngine()
 	result = 0;
 	while (genders())
 	{
-		if ((result %= 100) == 0)
+		if (result %  100 == 0)
 		{
 		dout << *person << " is a " << *gender << std::endl;
+		result = 0;
 		}
 		result++;
 	}

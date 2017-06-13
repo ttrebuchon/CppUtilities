@@ -57,8 +57,12 @@ English_cpp = $(wildcard $(SRC)/English/*.cpp)
 English = $(English_cpp:.cpp=.o)
 #*/
 
+CLIPS_cpp = $(wildcard $(SRC)/CLIPS/*.cpp)
+CLIPS = $(CLIPS_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
@@ -88,9 +92,9 @@ WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wfatal-errors
 
 FLAGS = -I Utility/include
 
-CLIPS = Deps/CLIPS
+CLIPS_Dep = Deps/Clips
 
-DEPS = -I Deps/Castor -I ../ -I Deps -I $(CLIPS) -L $(CLIPS)
+DEPS = -I Deps/Castor -I ../ -I Deps -I $(CLIPS_Dep) -L $(CLIPS_Dep)
 
 CXX = g++
 CXXFLAGS = -std=c++17 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -O0 $(DEPS)
