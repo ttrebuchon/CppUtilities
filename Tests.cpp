@@ -67,8 +67,8 @@ void Testing::run()
 	RUN(Neural());
 	RUN(RulesEngine());
 	RUN(CLIPS());
-	RUN(English());
 	#ifndef SHORT_TEST
+	RUN(English());
 	RUN(Raytrace());
 	RUN(Tuple_Test());
 	RUN(CSV_Test());
