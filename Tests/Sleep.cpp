@@ -1,5 +1,5 @@
-#include "../Tests.h"
-#include <Sleep/Sleep.h>
+#include "../Tests_Helpers.h"
+#include <QUtils/Sleep/Sleep.h>
 #include <chrono>
 
 #define TEST_DURATION ((long double)(0.1))
@@ -30,7 +30,7 @@ long double TestSleep(long double time)
 }
 
 
-bool Testing::Sleep()
+bool Test_Sleep()
 {
 	for (int i = 0; i < 10; i++)
 	{

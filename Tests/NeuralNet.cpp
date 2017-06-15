@@ -1,6 +1,6 @@
 #include "../Tests_Helpers.h"
 
-#include <NeuralNet/NeuralNet.h>
+#include <QUtils/NeuralNet/NeuralNet.h>
 #include <sstream>
 #include <limits>
 //#include <boost/multiprecision/cpp_dec_float.hpp>

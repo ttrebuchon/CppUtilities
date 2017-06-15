@@ -1,5 +1,5 @@
 
-SRC = Utility/src
+SRC = src
 
 Func_cpp = $(wildcard $(SRC)/Func/*.cpp)
 Func = $(Func_cpp:.cpp=.o)
@@ -90,11 +90,13 @@ WARNINGS_ERRORS := $(WARNINGS_ERRORS) #-Wno-unused-variable -Wno-unused-but-set-
 
 WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wfatal-errors 
 
-FLAGS = -I Utility/include
+FLAGS = -I .
 
-CLIPS_Dep = Deps/Clips
+Deps_D = Deps
 
-DEPS = -I Deps/Castor -I ../ -I Deps -I $(CLIPS_Dep) -L $(CLIPS_Dep)
+CLIPS_Dep = $(Deps_D)/Clips
+
+DEPS = -I $(Deps_D)/Castor -I ../ -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(Deps_D)/sqlite3 -L $(CLIPS_Dep)
 
 CXX = g++
 CXXFLAGS = -std=c++17 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -O0 $(DEPS)
@@ -109,7 +111,7 @@ buildOC = gcc -std=c99 -c -pie
 
 
 $(target): $(stLibTarget).a $(libobjects) $(testobjects) makefile
-	$(CXX) -o $(target) $(CXXFLAGS) -std=c++11 $(testobjects) -L. -l$(name) $(PREPROC_FLAGS) -lclips++
+	$(CXX) -o $(target) $(CXXFLAGS) -std=c++11 $(testobjects) -L. -l$(name) $(PREPROC_FLAGS) -lclips++ -lsqlite3
 
 clean: 
 	rm $(libobjects)

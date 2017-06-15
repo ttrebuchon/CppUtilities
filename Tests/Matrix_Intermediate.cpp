@@ -1,8 +1,8 @@
-#include "../Tests.h"
+#include "../Tests_Helpers.h"
 
 bool Math_Matrix();
 
-bool Testing::Matrix()
+bool Test_Matrix()
 {
 	return true;
 	return Math_Matrix();

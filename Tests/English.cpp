@@ -1,9 +1,9 @@
-#include "../Tests.h"
-#include <English/English.h>
+#include "../Tests_Helpers.h"
+#include <QUtils/English/English.h>
 #include <algorithm>
 
 
-bool Testing::English()
+bool Test_English()
 {
 	auto english = new Utils::English::Language(Utils::English::Lang::English);
 	english->load();

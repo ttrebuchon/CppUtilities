@@ -1,5 +1,5 @@
 #include "../Tests_Helpers.h"
-#include <Math/tensor_t.h>
+#include <QUtils/Math/tensor_t.h>
 #include <initializer_list>
 #include <cmath>
 #include <boost/multiprecision/cpp_dec_float.hpp>

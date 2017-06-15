@@ -1,8 +1,8 @@
 #include "../Tests_Helpers.h"
-#include <Math/Matrix.h>
-#include <Math/Matrix_Algs.h>
+#include <QUtils/Math/Matrix.h>
+#include <QUtils/Math/Matrix_Algs.h>
 
-#include <Stopwatch/Stopwatch.h>
+#include <QUtils/Stopwatch/Stopwatch.h>
 
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
@@ -17,23 +17,23 @@ void printM(T** M, int N)
 {
 	for (int k = 0; k < N; k++)
 	{
-	std::cout << "[";
+	dout << "[";
 	for (int i = 0; i < N-1; i++)
 	{
-		std::cout << M[k][i] << ", ";
+		dout << M[k][i] << ", ";
 	}
-	std::cout << M[k][N-1] << "]" << std::endl;
+	dout << M[k][N-1] << "]" << std::endl;
 	}
-	std::cout << "\n";
+	dout << "\n";
 }
 
 template <typename T>
 void printV(T* V, int N)
 {
 	for (int i = 0; i < N; i++) {
-		std::cout << "[" << V[i] << "]\n";
+		dout << "[" << V[i] << "]\n";
 	}
-	std::cout << std::endl;
+	dout << std::endl;
 }
 
 template <typename T>

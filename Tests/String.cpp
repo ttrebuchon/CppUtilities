@@ -1,7 +1,7 @@
-#include "../Tests.h"
+#include "../Tests_Helpers.h"
 
-#include <String/String.h>
-#include <Stopwatch/Stopwatch.h>
+#include <QUtils/String/String.h>
+#include <QUtils/Stopwatch/Stopwatch.h>
 
 #include <string>
 
@@ -46,7 +46,7 @@ double UtilPerfTest(int perfcount)
 
 using Util::String;
 
-bool Testing::String()
+bool Test_String()
 {
 	Util::String str;
 	

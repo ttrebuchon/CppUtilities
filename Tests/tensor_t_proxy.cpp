@@ -1,8 +1,8 @@
-#include "../Tests.h"
+#include "../Tests_Helpers.h"
 
 bool tensor_t_run();
 
-bool Testing::Tensor_T()
+bool Test_Tensor_T()
 {
 	return tensor_t_run();
 }

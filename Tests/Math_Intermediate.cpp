@@ -1,8 +1,8 @@
-#include "../Tests.h"
+#include "../Tests_Helpers.h"
 
 bool IntermediateMath();
 
-bool Testing::Math()
+bool Test_Math()
 {
 	return IntermediateMath();
 }

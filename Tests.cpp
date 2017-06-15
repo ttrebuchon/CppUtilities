@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "DebugOut/DebugOut.h"
+#include "QUtils/DebugOut/DebugOut.h"
 #include "Tests.h"
 #include <time.h>
 #include <fstream>
@@ -31,16 +31,16 @@ int main(int argc, char**argv)
 
 #define RUN(x) try { \
 	tout << "Running " << #x << "..." << std::endl; \
-	x; \
-	tout << #x << " has completed." << std::endl; \
+	Test_##x; \
+	tout << "Test_" << #x << " has completed." << std::endl; \
 	} \
 catch (std::exception& e) { \
-	tout << "\n\nException caught in " << #x << ": \n" << e.what() << std::endl; \
+	tout << "\n\nException caught in " << "Test_" << #x << ": \n" << e.what() << std::endl; \
 	failures = true; \
 	TEST_FAILS .emplace_back(#x, std::current_exception()); \
 } \
 catch (StringException* ex) { \
-	tout << "\n\nStringException* caught in " << #x << ": \n" << ex->what() << std::endl; \
+	tout << "\n\nStringException* caught in Test_" << #x << ": \n" << ex->what() << std::endl; \
 	failures = true; \
 	TEST_FAILS .emplace_back(#x, std::current_exception()); \
 } \
@@ -67,11 +67,12 @@ void Testing::run()
 	RUN(Neural());
 	RUN(RulesEngine());
 	RUN(CLIPS());
+	RUN(SQL());
 	#ifndef SHORT_TEST
 	RUN(English());
 	RUN(Raytrace());
-	RUN(Tuple_Test());
-	RUN(CSV_Test());
+	RUN(Tuple());
+	RUN(CSV());
 	RUN(Matrix());
 	RUN(Math());
 	

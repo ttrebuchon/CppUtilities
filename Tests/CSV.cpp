@@ -1,12 +1,12 @@
-#include "../Tests.h"
-#include <CSV/CSV.h>
+#include "../Tests_Helpers.h"
+#include <QUtils/CSV/CSV.h>
 #include <map>
 
 using Utils::CSV::CSV_File;
 
 void print_csv(std::string);
 
-bool Testing::CSV_Test()
+bool Test_CSV()
 {
     CSV_File file;
 

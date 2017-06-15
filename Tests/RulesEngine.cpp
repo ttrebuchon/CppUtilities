@@ -1,5 +1,5 @@
-#include "../Tests.h"
-#include <Rules/Rules.h>
+#include "../Tests_Helpers.h"
+#include <QUtils/Rules/Rules.h>
 
 
 using namespace Utils::Rules;
@@ -10,7 +10,7 @@ struct Ptr
 	
 };
 
-bool Testing::RulesEngine()
+bool Test_RulesEngine()
 {
 	auto eng = new Engine();
 	

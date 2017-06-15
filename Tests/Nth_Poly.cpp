@@ -5,7 +5,7 @@
 #define USE_MATH
 
 #ifdef USE_MATH
-#include <Math/Matrix.h>
+#include <QUtils/Math/Matrix.h>
 
 using namespace Utils;
 using namespace Math;
@@ -44,7 +44,7 @@ bool nth_poly_run()
 	dout << "L: " << fT.toString() << std::endl;
 	dout << "R: " << dT.toString() << std::endl;
 	auto dfT = fT.contract(dT);
-	std::cout << "Result: " << dfT.toString() << std::endl;
+	dout << "Result: " << dfT.toString() << std::endl;
 	
 	
 	

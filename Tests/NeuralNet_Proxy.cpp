@@ -1,8 +1,8 @@
-#include "../Tests.h"
+#include "../Tests_Helpers.h"
 
 bool Neural_Run();
 
-bool Testing::Neural()
+bool Test_Neural()
 {
 	return Neural_Run();
 }

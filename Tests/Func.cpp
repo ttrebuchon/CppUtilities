@@ -1,5 +1,5 @@
-#include "Func/Func.h"
-#include "../Tests.h"
+#include "QUtils/Func/Func.h"
+#include "../Tests_Helpers.h"
 
 void tfunc1()
 {
@@ -36,7 +36,7 @@ class TClass
 
 int TClass::count = 0;
 
-bool Testing::Func()
+bool Test_Func()
 {
 	using Utils::Func;
 	using Utils::MemberFunc;

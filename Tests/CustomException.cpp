@@ -1,5 +1,5 @@
-#include "../Tests.h"
-#include "Exception/Exception.h"
+#include "../Tests_Helpers.h"
+#include "QUtils/Exception/Exception.h"
 
 #include <sstream>
 
@@ -7,7 +7,7 @@ UTIL_CUSTOM_EXCEPTION(SomeException, SomeMsg);
 
 UTIL_CUSTOM_EXCEPTION(TestException, TestMessage);
 
-bool Testing::CustomException()
+bool Test_CustomException()
 {
 	try
 	{

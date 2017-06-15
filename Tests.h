@@ -3,7 +3,7 @@
 
 #include "Tests_Helpers.h"
 
-
+#define DEF_TEST(x) bool Test_##x()
 
 class Testing
 {
@@ -11,7 +11,7 @@ class Testing
 	
 	static void run();
 	
-	static bool Func();
+	/*static bool Func();
 	static bool NNST();
 	static bool CustomException();
 	static bool Markov();
@@ -30,8 +30,30 @@ class Testing
 	static bool Raytrace();
 	static bool RulesEngine();
 	static bool CLIPS();
-	static bool English();
+	static bool English();*/
 };
+
+DEF_TEST(Func);
+DEF_TEST(NNST);
+DEF_TEST(CustomException);
+DEF_TEST(Markov);
+DEF_TEST(Stopwatch);
+DEF_TEST(String);
+DEF_TEST(Math);
+DEF_TEST(Matrix);
+DEF_TEST(Lazy);
+DEF_TEST(Sleep);
+DEF_TEST(Neural);
+DEF_TEST(CSV);
+DEF_TEST(nth_Poly);
+DEF_TEST(Tuple);
+DEF_TEST(Tensor_T);
+DEF_TEST(Matrix_Algs);
+DEF_TEST(Raytrace);
+DEF_TEST(RulesEngine);
+DEF_TEST(CLIPS);
+DEF_TEST(English);
+DEF_TEST(SQL);
 
 
 

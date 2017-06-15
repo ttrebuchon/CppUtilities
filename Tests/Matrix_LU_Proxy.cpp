@@ -1,9 +1,9 @@
-#include "../Tests.h"
+#include "../Tests_Helpers.h"
 
 
 bool Matrix_LU_Run();
 
-bool Testing::Matrix_Algs()
+bool Test_Matrix_Algs()
 {
 	return Matrix_LU_Run();
 }

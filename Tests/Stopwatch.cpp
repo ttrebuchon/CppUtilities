@@ -1,12 +1,12 @@
-#include "../Tests.h"
-#include <Stopwatch/Stopwatch.h>
+#include "../Tests_Helpers.h"
+#include <QUtils/Stopwatch/Stopwatch.h>
 #include <ctime>
 
 #include <chrono>
 
 #define WAIT_PERIOD 1
 
-bool Testing::Stopwatch()
+bool Test_Stopwatch()
 {
 	Util::Stopwatch sw;
 	sw.start();

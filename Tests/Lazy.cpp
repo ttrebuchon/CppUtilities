@@ -1,6 +1,6 @@
-#include "../Tests.h"
+#include "../Tests_Helpers.h"
 
-#include <LazyLoad/LazyLoad.h>
+#include <QUtils/LazyLoad/LazyLoad.h>
 #include <string>
 #include <cstring>
 
@@ -32,7 +32,7 @@ std::ostream& operator<<(std::ostream& o, const TStruct& t)
 	return o;
 }
 
-bool Testing::Lazy()
+bool Test_Lazy()
 {
 	Util::LazyLoad<std::string*> l;
 	*l = "Hello";

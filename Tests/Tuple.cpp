@@ -1,12 +1,12 @@
-#include "../Tests.h"
+#include "../Tests_Helpers.h"
 
-#include <Tuple/Tuple.h>
+#include <QUtils/Tuple/Tuple.h>
 
 using Utils::Tuple;
 
 
 
-bool Testing::Tuple_Test()
+bool Test_Tuple()
 {
 	Tuple<int, char> t1(1, 'a');
 	

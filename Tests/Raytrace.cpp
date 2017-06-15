@@ -1,5 +1,5 @@
-#include "../Tests.h"
-#include <Raytracer/Raytracer.h>
+#include "../Tests_Helpers.h"
+#include <QUtils/Raytracer/Raytracer.h>
 #include <fstream>
 
 using namespace Utils;
@@ -12,7 +12,7 @@ pixel_t* gradient(pixel_t*, int w, int h);
 pixel_t* gray(pixel_t*, int w, int h);
 pixel_t* BW(pixel_t*, int w, int h);
 
-bool Testing::Raytrace()
+bool Test_Raytrace()
 {
 	Model* mod = new Model("TestModel1", 40, 1);
 	double w = 8;

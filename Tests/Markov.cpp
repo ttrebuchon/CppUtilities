@@ -1,6 +1,6 @@
-#include "../Tests.h"
-#include "Markov/Markov.h"
-#include <Stopwatch/Stopwatch.h>
+#include "../Tests_Helpers.h"
+#include "QUtils/Markov/Markov.h"
+#include <QUtils/Stopwatch/Stopwatch.h>
 
 #include <string>
 
@@ -189,7 +189,7 @@ std::string FormMsg(std::vector<Word>& vec)
 
 
 using Mk = Utils::Markov<Word>;
-bool Testing::Markov()
+bool Test_Markov()
 {
 	Mk m;
 	auto _words = "Hello, world! I am a person...and I wrote you!?!?";

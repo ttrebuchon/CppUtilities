@@ -1,5 +1,5 @@
-#include "../Tests.h"
-#include "NearestNeighborTree/NearestNeighborTree.h"
+#include "../Tests_Helpers.h"
+#include "QUtils/NearestNeighborTree/NearestNeighborTree.h"
 #include <cmath>
 #include <climits>
 
@@ -35,7 +35,7 @@ double dist(Item i1, Item i2)
 double Test2();
 #define TEST2_THRESHOLD 10
 
-bool Testing::NNST()
+bool Test_NNST()
 {
 	Item i1 {4, 3, 2};
 	Item i2 {0, 0, 0};

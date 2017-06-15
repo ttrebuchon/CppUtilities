@@ -1,7 +1,7 @@
 #include "../Tests_Helpers.h"
 
 
-#include <Math/Math.h>
+#include <QUtils/Math/Math.h>
 
 using namespace Util;
 using namespace Math;
