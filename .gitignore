@@ -32,6 +32,7 @@
 # Output
 *Seeds.txt
 *.ppm
+*.sqlite
 
 #Environment files
 .vscode*
