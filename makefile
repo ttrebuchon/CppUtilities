@@ -61,8 +61,12 @@ CLIPS_cpp = $(wildcard $(SRC)/CLIPS/*.cpp)
 CLIPS = $(CLIPS_cpp:.cpp=.o)
 #*/
 
+SQL_cpp = $(wildcard $(SRC)/SQL/**/*.cpp) $(wildcard $(SRC)/SQL/*.cpp)
+SQL = $(SQL_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
