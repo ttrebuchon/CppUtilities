@@ -48,6 +48,9 @@ bool Test_SQL()
 	
 	con.vQuery("UPDATE TTable SET y=x*x;");
 	q->reset();
+	q->next();
+	q->reset();
+	//(*q)();
 	dout << q->columnName(0) << ", " << q->columnName(1) << "\n";
 	while ((*q)())
 	{
@@ -59,9 +62,33 @@ bool Test_SQL()
 	delete q;
 	q = NULL;
 	
+	
+	q = con.query("PRAGMA table_info(TTable)");
+	while ((*q)())
+	{
+		for (int i = 0; i < q->width(); i++)
+		{
+			dout << " | " << q->column<std::string>(i);
+		}
+		dout << std::endl;
+		q->next();
+	}
+	
+	
+	
+	
 	SQL::Database DB(&con);
 	
 	SQL::Table TTable = DB["TTable"];
+	
+	for (auto col : TTable.columns())
+	{
+		dout << col->name << " | " << col->type << std::endl;
+	}
+	
+	
+	
+	
 	
 	return true;
 }
