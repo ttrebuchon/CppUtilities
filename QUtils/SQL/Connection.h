@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <QUtils/Exception/Exception.h>
 
@@ -27,6 +28,10 @@ namespace SQL
 		virtual bool vQuery(std::string) = 0;
 		
 		virtual Query* tablesQuery() const = 0;
+		
+		typedef std::tuple<int, std::string, std::string, bool, std::string, bool> ColumnInfo;
+		
+		virtual std::vector<ColumnInfo> tableColumns(const std::string tableName) const = 0;
 		
 	};
 }

@@ -63,7 +63,7 @@ namespace SQL
 			sqlite3_finalize(stmt);
 			throw SQLErrorException().Msg(sqlite3_errmsg(db));
 		}
-		sqlite3_step(stmt);
+		
 		return new SQLiteQuery(stmt);
 	}
 	
@@ -95,6 +95,22 @@ namespace SQL
 	Query* SQLiteConnection::tablesQuery() const
 	{
 		return query("SELECT name FROM sqlite_master WHERE type='table'");
+	}
+	
+	std::vector<Connection::ColumnInfo> SQLiteConnection::tableColumns(const std::string tableName) const
+	{
+		std::vector<ColumnInfo> info;
+		Query* tableInfo = query("PRAGMA table_info([" + tableName + "]);");
+		
+		while (tableInfo->next())
+		{
+			info.push_back(ColumnInfo(tableInfo->column<int>(0), tableInfo->column<std::string>(1), tableInfo->column<std::string>(2), tableInfo->column<int>(3), tableInfo->column<std::string>(4), tableInfo->column<int>(5)));
+			
+			
+		}
+		
+		delete tableInfo;
+		return info;
 	}
 	
 	

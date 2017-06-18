@@ -14,6 +14,7 @@ namespace SQL
 	{
 		protected:
 		sqlite3_stmt* stmt;
+		int status;
 		
 		
 		virtual double columnDouble(int) override;

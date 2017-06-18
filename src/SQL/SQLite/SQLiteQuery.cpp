@@ -6,7 +6,7 @@ namespace Util
 {
 namespace SQL
 {
-	SQLiteQuery::SQLiteQuery(sqlite3_stmt* ptr) : stmt(ptr)
+	SQLiteQuery::SQLiteQuery(sqlite3_stmt* ptr) : stmt(ptr), status(SQLITE_OK)
 	{
 		
 	}
@@ -50,7 +50,7 @@ namespace SQL
 	
 	bool SQLiteQuery::next()
 	{
-		int status = sqlite3_step(stmt);
+		status = sqlite3_step(stmt);
 		switch (status)
 		{
 			case SQLITE_ROW:
@@ -66,13 +66,17 @@ namespace SQL
 	
 	void SQLiteQuery::reset()
 	{
-		sqlite3_reset(stmt);
-		next();
+		status = sqlite3_reset(stmt);
 	}
 	
 	bool SQLiteQuery::operator()()
 	{
-		return (sqlite3_data_count(stmt) > 0);
+		if (status == SQLITE_OK)
+		{
+			status = sqlite3_step(stmt);
+		}
+		return (status == SQLITE_ROW);
+		//return (sqlite3_data_count(stmt) > 0);
 	}
 	
 	std::string SQLiteQuery::columnName(int index) const
@@ -141,7 +145,12 @@ namespace SQL
 	
 	std::string SQLiteQuery::columnString(int index)
 	{
-		return std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, index)));
+		auto cstr = sqlite3_column_text(stmt, index);
+		if (cstr == NULL)
+		{
+			return "NULL";
+		}
+		return std::string(reinterpret_cast<const char*>(cstr));
 	}
 	
 	

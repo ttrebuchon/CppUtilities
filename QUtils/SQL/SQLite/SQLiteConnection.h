@@ -31,6 +31,7 @@ namespace SQL
 		virtual SQLiteQuery* query(std::string) const override;
 		virtual bool vQuery(std::string query) override;
 		virtual Query* tablesQuery() const override;
+		virtual std::vector<ColumnInfo> tableColumns(const std::string tableName) const override;
 		
 		
 		void openWithFlags(int flags);

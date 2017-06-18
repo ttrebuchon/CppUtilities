@@ -4,3 +4,4 @@
 #include "SQLite/SQLite.h"
 #include "Database.h"
 #include "Table.h"
+#include "Column.h"
