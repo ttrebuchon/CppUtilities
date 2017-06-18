@@ -9,12 +9,13 @@ bool Test_SQL()
 	SQL::SQLiteConnection con("TestDB.sqlite");
 	
 	assert_ex(!con.isOpen());
-	con.openOrCreate();
+	con.open();
 	assert_ex(con.isOpen());
 	con.close();
 	assert_ex(!con.isOpen());
 	con.open();
 	assert_ex(con.isOpen());
+	
 	
 	try
 	{
@@ -27,28 +28,40 @@ bool Test_SQL()
 	assert_ex(con.vQuery("CREATE TABLE TTable (x integer);"));
 	assert_ex(con.vQuery("INSERT INTO TTable (x) VALUES (0);"));
 	assert_ex(con.vQuery("BEGIN;"));
-	for (auto i = 1; i < 10000; i++)
+	for (auto i = 1; i < 1000; i++)
 	{
 		assert_ex(con.vQuery("INSERT INTO TTable (x) VALUES (" + std::to_string(i) + ");"));
+		
 	}
-	assert_ex(con.vQuery("ROLLBACK;"));
-	
-	
+	assert_ex(con.vQuery("COMMIT;"));
+	dout << "Inserted." << std::endl;
 	SQL::SQLiteQuery* q = con.query("SELECT * FROM TTable;");
-	while (q->next())
+	while ((*q)())
 	{
-	dout << q->column<int>(0) << "\n";
+	//dout << q->column<int>(0) << "\n";
 	//dout << q->columnType(0) << std::endl;
+	q->next();
 	}
 	q->reset();
-	/*while ((*q)())
-	{
-		
-	dout << q->column<int>(0) << std::endl;
 	q->next();
-	}*/
+	con.vQuery("ALTER TABLE TTable ADD y integer;");
+	
+	con.vQuery("UPDATE TTable SET y=x*x;");
+	q->reset();
+	dout << q->columnName(0) << ", " << q->columnName(1) << "\n";
+	while ((*q)())
+	{
+		//dout << q->column<int>(0) << ", " << q->column<int>(1) << "\n";
+		q->next();
+	}
+	dout << q->statement() << std::endl;
+	
 	delete q;
 	q = NULL;
+	
+	SQL::Database DB(&con);
+	
+	SQL::Table TTable = DB["TTable"];
 	
 	return true;
 }
