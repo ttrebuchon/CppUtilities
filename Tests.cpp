@@ -61,14 +61,14 @@ void Testing::run()
 	dout << LINE_BR << testBr << std::endl;
 	try
 	{
+	RUN(CLIPS());
+	RUN(SQL());
+	#ifndef SHORT_TEST
 	RUN(nth_Poly());
 	RUN(Tensor_T());
 	RUN(Matrix_Algs());
 	RUN(Neural());
 	RUN(RulesEngine());
-	RUN(CLIPS());
-	RUN(SQL());
-	#ifndef SHORT_TEST
 	RUN(English());
 	RUN(Raytrace());
 	RUN(Tuple());
