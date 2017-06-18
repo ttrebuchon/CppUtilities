@@ -5,10 +5,10 @@ CXXFLAGS = -std=c++17 -MMD -fpic -I . $(PREPROC_FLAGS) -Wall $(FLAGS) -O3 -Wno-s
 name = sqlite3
 target = lib$(name).a
 
-buildOC = gcc -std=c99 -c -pie
+buildOC = g++ -std=c99 -c -pie -DSQLITE_ENABLE_COLUMN_METADATA -DSQLITE_DEFAULT_MEMSTATUS=0 -DSQLITE_DEFAULT_WAL_SYNCHRONOUS=1 -DSQLITE_DEFAULT_FOREIGN_KEYS=1
 
 $(target): sqlite3.o
 	ar rvs $(target) $<
 
-%.o.c: 
-	$(buildOC) $<
+sqlite3.o: sqlite3.c
+	$(CC) -DSQLITE_ENABLE_COLUMN_METADATA -DSQLITE_DEFAULT_MEMSTATUS=0 -DSQLITE_DEFAULT_WAL_SYNCHRONOUS=1 -DSQLITE_DEFAULT_FOREIGN_KEYS=1 -std=c99 -c -pie $<
