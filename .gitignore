@@ -33,6 +33,8 @@
 *Seeds.txt
 *.ppm
 *.sqlite
+*.sqlite-shm
+*.sqlite-wal
 
 #Environment files
 .vscode*
