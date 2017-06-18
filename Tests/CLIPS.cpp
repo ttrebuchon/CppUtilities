@@ -225,12 +225,12 @@ bool Test_CLIPS()
 	
 	assert_ex(env.build("(defrule InitDoSSibling (logical (sibling ?x ?y)) (test (not (isDoS ?x ?y 1))) => (SetDoS ?x ?y 1))"));
 	
-	assert_ex(env.build("(defrule DoSRule (logical (DoS (Person1 ?x) (Person2 ?y) (N ?D))) (logical (DoS (Person1 ?y) (Person2 ?z) (N ?D2))) (or (not (DoS (Person1 ?x) (Person2 ?z) (N ?D3))) (and (DoS (Person1 ?x) (Person2 ?z) (N ?D3))   (test (< (+ ?D ?D2) ?D3)) )) (test (not (eq ?x ?z)))  => "
+	assert_ex(env.build("(defrule DoSRule (declare (salience -1)) (logical (DoS (Person1 ?x) (Person2 ?y) (N ?D))) (logical (DoS (Person1 ?y) (Person2 ?z) (N ?D2))) (or (not (DoS (Person1 ?x) (Person2 ?z) (N ?D3))) (and (DoS (Person1 ?x) (Person2 ?z) (N ?D3))   (test (< (+ ?D ?D2) ?D3)) )) (test (not (eq ?x ?z)))  => "
 	
 	"(SetDoS ?x ?z (+ ?D ?D2)))"));
 	
 	
-	assert_ex(env.build("(defrule DoS_BiDir (DoS (Person1 ?y) (Person2 ?x) (N ?n)) (or (not (DoS (Person1 ?x) (Person2 ?y))) (and (DoS (Person1 ?x) (Person2 ?y) (N ?n2)) (test (< ?n ?n2)))) => (SetDoS ?x ?y ?n))"));
+	assert_ex(env.build("(defrule DoS_BiDir (declare (salience 1))(DoS (Person1 ?y) (Person2 ?x) (N ?n)) (or (not (DoS (Person1 ?x) (Person2 ?y))) (and (DoS (Person1 ?x) (Person2 ?y) (N ?n2)) (test (< ?n ?n2)))) => (SetDoS ?x ?y ?n))"));
 	
 	
 	
@@ -239,9 +239,9 @@ bool Test_CLIPS()
 	cmd("(undeffacts family)");
 	dout << "\n\n\n";
 	
-	
+	srand(0);
 	std::string manyPeopleFacts = "(deffacts ManyPeople ";
-	int pCount = 10;//25;
+	int pCount = 20;
 	int parents[pCount][2];
 	for (int i = 0; i < pCount; i++)
 	{
@@ -264,7 +264,16 @@ bool Test_CLIPS()
 	
 	
 	env.reset();
-	env.run(-1);
+	dout << "Running..." << std::endl;
+	int actCount = 0;
+	const int iterCount = -1;
+	int iter;
+	while((iter = env.run(iterCount)) > 0)
+	{
+		actCount += iter;
+		dout << "\rACount: " << actCount;
+	}
+	dout << std::endl;
 	
 	dout << "\n\n";
 	
