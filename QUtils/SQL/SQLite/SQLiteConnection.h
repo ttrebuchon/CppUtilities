@@ -18,21 +18,23 @@ namespace SQL
 		std::string filename;
 		
 		sqlite3* db;
-		
+		bool useWAL;
 		
 		public:
-		SQLiteConnection();
-		SQLiteConnection(std::string file);
+		SQLiteConnection(int WAL = true);
+		SQLiteConnection(std::string file, int WAL = true);
 		virtual ~SQLiteConnection();
 		
 		virtual bool isOpen() const override;
 		virtual void open() override;
 		virtual void close() override;
-		virtual SQLiteQuery* query(std::string) override;
+		virtual SQLiteQuery* query(std::string) const override;
 		virtual bool vQuery(std::string query) override;
+		virtual Query* tablesQuery() const override;
 		
 		
-		void openOrCreate();
+		void openWithFlags(int flags);
+		void openNoCreate();
 		std::string& file();
 		const std::string& file() const;
 		

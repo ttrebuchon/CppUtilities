@@ -21,12 +21,17 @@ namespace SQL
 		
 		template <class T> T column(int Index);
 		
-		virtual int count() const = 0;
+		virtual int width() const = 0;
 		virtual ValueType columnType(int Index) const = 0;
 		virtual bool columnNULL(int) = 0;
 		virtual bool next() = 0;
 		virtual void reset() = 0;
 		virtual bool operator()() = 0;
+		
+		virtual std::string columnName(int) const = 0;
+		virtual std::string tableName(int) const = 0;
+		virtual std::string dbName(int) const = 0;
+		virtual std::string statement() const = 0;
 		
 	};
 	

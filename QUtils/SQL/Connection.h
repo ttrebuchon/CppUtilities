@@ -22,9 +22,11 @@ namespace SQL
 		virtual void open() = 0;
 		virtual void close() = 0;
 		
-		virtual Query* query(std::string) = 0;
+		virtual Query* query(std::string) const = 0;
 		
 		virtual bool vQuery(std::string) = 0;
+		
+		virtual Query* tablesQuery() const = 0;
 		
 	};
 }

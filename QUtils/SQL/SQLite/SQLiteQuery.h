@@ -29,12 +29,17 @@ namespace SQL
 		virtual ~SQLiteQuery();
 		
 		
-		virtual int count() const override;
+		virtual int width() const override;
 		virtual ValueType columnType(int index) const override;
 		virtual bool columnNULL(int) override;
 		virtual bool next() override;
 		virtual void reset() override;
 		virtual bool operator()() override;
+		
+		virtual std::string columnName(int) const override;
+		virtual std::string tableName(int) const override;
+		virtual std::string dbName(int) const override;
+		virtual std::string statement() const override;
 	};
 	
 }

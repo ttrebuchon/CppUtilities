@@ -8,12 +8,12 @@ namespace Util
 {
 namespace SQL
 {
-	SQLiteConnection::SQLiteConnection() : filename(), db(NULL)
+	SQLiteConnection::SQLiteConnection(int WAL) : SQLiteConnection("", WAL)
 	{
 		
 	}
 	
-	SQLiteConnection::SQLiteConnection(std::string file) : filename(file), db(NULL)
+	SQLiteConnection::SQLiteConnection(std::string file, int WAL) : filename(file), db(NULL), useWAL(WAL > 0)
 	{
 		
 	}
@@ -35,24 +35,7 @@ namespace SQL
 	
 	void SQLiteConnection::open()
 	{
-		if (db != NULL)
-		{
-			//TODO
-			throw std::exception();
-		}
-		
-		if (filename == "")
-		{
-			//TODO
-			throw std::exception();
-		}
-		
-		if (sqlite3_open_v2(filename.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE, NULL) != SQLITE_OK)
-		{
-			//TODO
-			std::string err = sqlite3_errmsg(db);
-			throw std::exception();
-		}
+		openWithFlags(-1);
 	}
 	
 	void SQLiteConnection::close()
@@ -69,7 +52,7 @@ namespace SQL
 	
 	
 	
-	SQLiteQuery* SQLiteConnection::query(std::string str)
+	SQLiteQuery* SQLiteConnection::query(std::string str) const
 	{
 		sqlite3_stmt* stmt = NULL;
 		int status;
@@ -80,6 +63,7 @@ namespace SQL
 			sqlite3_finalize(stmt);
 			throw SQLErrorException().Msg(sqlite3_errmsg(db));
 		}
+		sqlite3_step(stmt);
 		return new SQLiteQuery(stmt);
 	}
 	
@@ -108,9 +92,19 @@ namespace SQL
 	}
 	
 	
+	Query* SQLiteConnection::tablesQuery() const
+	{
+		return query("SELECT name FROM sqlite_master WHERE type='table'");
+	}
 	
 	
-	void SQLiteConnection::openOrCreate()
+	
+	
+	
+	
+	
+	
+	void SQLiteConnection::openWithFlags(int flags)
 	{
 		if (db != NULL)
 		{
@@ -121,16 +115,30 @@ namespace SQL
 		if (filename == "")
 		{
 			//TODO
+			std::cerr << "Inv Filename\n";
 			throw std::exception();
 		}
 		
-		if (sqlite3_open_v2(filename.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_SHAREDCACHE, NULL) != SQLITE_OK)
+		if (flags == -1)
 		{
-			//TODO
-			std::string err = sqlite3_errmsg(db);
-			std::cerr << "Error: " << err << std::endl;
-			throw std::exception();
+			flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_SHAREDCACHE;
 		}
+		
+		if (sqlite3_open_v2(filename.c_str(), &db, flags, NULL) != SQLITE_OK)
+		{
+			std::string err = sqlite3_errmsg(db);
+			throw SQLErrorException().Msg(err);
+		}
+		
+		if (useWAL)
+		{
+			vQuery("PRAGMA journal_mode=WAL");
+		}
+	}
+	
+	void SQLiteConnection::openNoCreate()
+	{
+		openWithFlags(SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE);
 	}
 	
 	std::string& SQLiteConnection::file()

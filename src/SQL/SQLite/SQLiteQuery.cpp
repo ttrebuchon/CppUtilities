@@ -16,7 +16,7 @@ namespace SQL
 		//TODO
 	}
 	
-	int SQLiteQuery::count() const
+	int SQLiteQuery::width() const
 	{
 		return sqlite3_column_count(stmt);
 	}
@@ -73,6 +73,50 @@ namespace SQL
 	bool SQLiteQuery::operator()()
 	{
 		return (sqlite3_data_count(stmt) > 0);
+	}
+	
+	std::string SQLiteQuery::columnName(int index) const
+	{
+		auto cstr = sqlite3_column_name(stmt, index);
+		if (cstr == NULL)
+		{
+			//TODO
+			throw std::exception();
+		}
+		return std::string(cstr);
+	}
+	
+	std::string SQLiteQuery::tableName(int index) const
+	{
+		auto cstr = sqlite3_column_table_name(stmt, index);
+		if (cstr == NULL)
+		{
+			//TODO
+			throw std::exception();
+		}
+		return std::string(cstr);
+	}
+	
+	std::string SQLiteQuery::dbName(int index) const
+	{
+		auto cstr = sqlite3_column_database_name(stmt, index);
+		if (cstr == NULL)
+		{
+			//TODO
+			throw std::exception();
+		}
+		return std::string(cstr);
+	}
+	
+	std::string SQLiteQuery::statement() const
+	{
+		auto cstr = sqlite3_sql(stmt);
+		if (cstr == NULL)
+		{
+			//TODO
+			throw std::exception();
+		}
+		return std::string(cstr);
 	}
 	
 	
