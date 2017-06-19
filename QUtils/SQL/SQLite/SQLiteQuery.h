@@ -17,10 +17,10 @@ namespace SQL
 		int status;
 		
 		
-		virtual double columnDouble(int) override;
-		virtual int columnInt(int) override;
-		virtual long columnLong(int) override;
-		virtual std::string columnString(int) override;
+		virtual double columnDouble(int) const override;
+		virtual int columnInt(int) const override;
+		virtual long columnLong(int) const override;
+		virtual std::string columnString(int) const override;
 		
 		
 		
@@ -32,7 +32,7 @@ namespace SQL
 		
 		virtual int width() const override;
 		virtual ValueType columnType(int index) const override;
-		virtual bool columnNULL(int) override;
+		virtual bool columnNULL(int) const override;
 		virtual bool next() override;
 		virtual void reset() override;
 		virtual bool operator()() override;

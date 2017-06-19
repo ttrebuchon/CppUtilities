@@ -43,7 +43,7 @@ namespace SQL
 		}
 	}
 	
-	bool SQLiteQuery::columnNULL(int index)
+	bool SQLiteQuery::columnNULL(int index) const
 	{
 		return sqlite3_column_type(stmt, index) == SQLITE_NULL;
 	}
@@ -128,22 +128,22 @@ namespace SQL
 	
 	
 	
-	double SQLiteQuery::columnDouble(int index)
+	double SQLiteQuery::columnDouble(int index) const
 	{
 		return sqlite3_column_double(stmt, index);
 	}
 	
-	int SQLiteQuery::columnInt(int index)
+	int SQLiteQuery::columnInt(int index) const
 	{
 		return sqlite3_column_int(stmt, index);
 	}
 	
-	long SQLiteQuery::columnLong(int index)
+	long SQLiteQuery::columnLong(int index) const
 	{
 		return sqlite3_column_int64(stmt, index);
 	}
 	
-	std::string SQLiteQuery::columnString(int index)
+	std::string SQLiteQuery::columnString(int index) const
 	{
 		auto cstr = sqlite3_column_text(stmt, index);
 		if (cstr == NULL)
