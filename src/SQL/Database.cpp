@@ -26,7 +26,7 @@ namespace SQL
 			tables->next();
 		}
 		delete tables;
-		throw SQLErrorException().Msg("Table '" + table + "' not present in database");
+		throw SQLErrorException().Msg("Table [" + table + "] not present in database");
 	}
 	
 }
