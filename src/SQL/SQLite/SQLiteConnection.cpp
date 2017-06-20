@@ -94,7 +94,19 @@ namespace SQL
 	
 	Query* SQLiteConnection::tablesQuery() const
 	{
-		return query("SELECT name FROM sqlite_master WHERE type='table'");
+		return query("SELECT name FROM [sqlite_master] WHERE type='table'");
+	}
+	
+	bool SQLiteConnection::tableExists(std::string name) const
+	{
+		Query* q = query("SELECT name FROM [sqlite_master] WHERE type='table' AND name='" + name + "';");
+		while (q->next())
+		{
+			delete q;
+			return true;
+		}
+		delete q;
+		return false;
 	}
 	
 	std::vector<Connection::ColumnInfo> SQLiteConnection::tableColumns(const std::string tableName) const

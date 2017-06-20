@@ -28,6 +28,7 @@ namespace SQL
 		virtual bool vQuery(std::string) = 0;
 		
 		virtual Query* tablesQuery() const = 0;
+		virtual bool tableExists(std::string) const = 0;
 		
 		typedef std::tuple<int, std::string, std::string, bool, std::string, bool> ColumnInfo;
 		
