@@ -36,11 +36,11 @@ bool Test_SQL()
 	}
 	delete dropQuery;
 	
-	
-	assert_ex(con.vQuery("CREATE TABLE TTable (x integer);"));
+	const int rCount = 1000;
+	assert_ex(con.vQuery("CREATE TABLE TTable (x INTEGER PRIMARY KEY);"));
 	assert_ex(con.vQuery("INSERT INTO TTable (x) VALUES (0);"));
 	assert_ex(con.vQuery("BEGIN;"));
-	for (auto i = 1; i < 1000; i++)
+	for (auto i = 1; i < rCount; i++)
 	{
 		assert_ex(con.vQuery("INSERT INTO TTable (x) VALUES (" + std::to_string(i) + ");"));
 		
@@ -72,7 +72,7 @@ bool Test_SQL()
 		if (first)
 		{
 			first = false;
-			con.vQuery("INSERT INTO TTable (x, y) VALUES (100, 10000);");
+			con.vQuery("INSERT INTO TTable (x, y) VALUES (" + std::to_string(rCount+1) + ", " + std::to_string((rCount+1)*(rCount+1)) + ");");
 		}
 		
 		
@@ -103,15 +103,53 @@ bool Test_SQL()
 	
 	SQL::Table TTable = DB["TTable"];
 	
-	for (auto col : TTable.columns())
+	for (auto col : TTable.columns)
 	{
 		dout << col->name << " | " << col->type << std::endl;
 	}
 	
 	
-	assert_ex(con.vQuery("CREATE TABLE [TTable 2] (x INTEGER UNIQUE);"));
+	assert_ex(con.vQuery("CREATE TABLE [TTable 2] (x INTEGER PRIMARY KEY, z INTEGER, [x z] INTEGER);"));
 	
 	SQL::Table TTable_2 = DB["TTable 2"];
+	
+	assert_ex(con.vQuery("BEGIN;"));
+	for (auto i = 0; i < rCount; i++)
+	{
+		assert_ex(con.vQuery("INSERT INTO [TTable 2] (x) VALUES (" + std::to_string(i) + ");"));
+		
+	}
+	
+	assert_ex(con.vQuery("UPDATE [TTable 2] SET z=x*x*x;"));
+	assert_ex(con.vQuery("UPDATE [TTable 2] SET [x z]=x+z;"));
+	assert_ex(con.vQuery("COMMIT;"));
+	
+	SQL::Table joined = TTable.join(TTable_2, "x", "x");
+	
+	q = con.query("SELECT * FROM [TTable_TTable 2];");
+	int pIndex = 0;
+	while ((*q)())
+	{
+		for (int i = 0; i < q->width(); i++)
+		{
+			dout << " | " << q->column<std::string>(i);
+		}
+		dout << std::endl;
+		q->next();
+		pIndex++;
+		if (pIndex > 5)
+		{
+			break;
+		}
+	}
+	delete q;
+	
+	for (auto col : joined.columns)
+	{
+		dout << col->name << " | " << col->type << " | PK: " << col->PK << std::endl;
+	}
+	
+	joined.drop();
 	
 	
 	
