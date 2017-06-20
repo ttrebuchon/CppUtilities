@@ -68,4 +68,11 @@
 	27.5) Traversal/Shortest path
 
 28) Cleanup Castor files to not throw compilation warnings
-	
+
+29) Add module for server/multithreaded singleton operations
+	29.1) Mutexed data operations
+	29.2) Methods to pass lambda funcs that will run on the server
+	29.3) Socket(?) and MT message channel access
+	29.4) Example:
+		29.4.1) Single SQLite server/connection accessible by multiple threads/processes
+		29.4.2) Segmented neural networks
