@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Util
+namespace QUtils
 {
 namespace SQL
 {
@@ -15,5 +15,80 @@ namespace SQL
 		Null = 4,
 		
 	};
+	
+	template <typename T>
+	struct SQL_ValueType
+	{ };
+	
+	template <>
+	struct SQL_ValueType<std::string>
+	{
+		constexpr static ValueType type = Text;
+	};
+	
+	template <>
+	struct SQL_ValueType<const char*>
+	{
+		constexpr static ValueType type = Text;
+	};
+	
+	template <>
+	struct SQL_ValueType<int>
+	{
+		constexpr static ValueType type = Integer;
+	};
+	
+	template <>
+	struct SQL_ValueType<long>
+	{
+		constexpr static ValueType type = Integer64;
+	};
+	
+	template <>
+	struct SQL_ValueType<double>
+	{
+		constexpr static ValueType type = Double;
+	};
+	
+	
+	
+	
+	template <ValueType T>
+	struct C_ValueType
+	{ };
+	
+	template <>
+	struct C_ValueType<Text>
+	{
+		typedef std::string type;
+	};
+	
+	template <>
+	struct C_ValueType<Integer>
+	{
+		typedef int type;
+	};
+	
+	template <>
+	struct C_ValueType<Integer64>
+	{
+		typedef long type;
+	};
+	
+	template <>
+	struct C_ValueType<Double>
+	{
+		typedef double type;
+	};
+	
+	
+	template <typename T>
+	constexpr bool SQL_Primitive()
+	{
+		return false;
+	}
+	
+	
+	
 }
 }
