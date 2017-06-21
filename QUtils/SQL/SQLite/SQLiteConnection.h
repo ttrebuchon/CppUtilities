@@ -39,6 +39,7 @@ namespace SQL
 		void openNoCreate();
 		std::string& file();
 		const std::string& file() const;
+		std::vector<sqlite3_stmt*> pending() const;
 		
 	};
 }
