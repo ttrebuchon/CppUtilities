@@ -2,7 +2,7 @@
 
 #include <QUtils/SQL/SQL.h>
 
-using namespace Utils;
+using namespace QUtils;
 
 bool Test_SQL()
 {
@@ -142,6 +142,7 @@ bool Test_SQL()
 			break;
 		}
 	}
+	
 	delete q;
 	
 	for (auto col : joined.columns)
@@ -149,11 +150,78 @@ bool Test_SQL()
 		dout << col->name << " | " << col->type << " | PK: " << col->PK << std::endl;
 	}
 	
+	
+	
+	dout << "Dropping join table..." << std::endl;
 	joined.drop();
+	dout << "Dropped." << std::endl;
+	
+	auto cl = ((TTable["x"] == TTable["y"]) || (TTable["x"] > 1000));
+	dout << cl.toString() << std::endl;
+	
+	q = con.query("SELECT * FROM TTable WHERE " + cl.toString() + ";");
+	while (q->next())
+	{
+		dout << q->column<int>(0) << "\n";
+	}
+	delete q;
+	
+	dout << "Joining on y->z...\n";
+	joined = TTable.join(TTable_2, "y", "z");
+	dout << "Joined.\n";
+	
+	for (auto col : joined.columns)
+	{
+		dout << col->name << " | " << col->type << " | PK: " << col->PK << std::endl;
+	}
 	
 	
+	q = con.query("SELECT * FROM [TTable_TTable 2];");
+	pIndex = 0;
+	dout << "Iterating...\n";
+	while ((*q)())
+	{
+		for (int i = 0; i < q->width(); i++)
+		{
+			dout << " | " << q->column<std::string>(i);
+		}
+		dout << std::endl;
+		q->next();
+		pIndex++;
+		if (pIndex > 5)
+		{
+			break;
+		}
+	}
+	dout << "Done.\n";
+	delete q;
+	
+	SQL::Query* q2 = joined.select("x", "y AS yz", "z AS zy", "[x:1]", "x z");
+	pIndex = 0;
+	dout << "Iterating...\n";
+	while ((*q2)())
+	{
+		for (int i = 0; i < q2->width(); i++)
+		{
+			dout << " | " << q2->column<std::string>(i);
+		}
+		dout << std::endl;
+		q2->next();
+		pIndex++;
+		if (pIndex > 5)
+		{
+			break;
+		}
+	}
+	dout << "Done.\n";
+	
+	delete q2;
 	
 	
+	for (auto table : DB)
+	{
+		dout << "Table: [" << table.name << "]\n";
+	}
 	
 	return true;
 }
