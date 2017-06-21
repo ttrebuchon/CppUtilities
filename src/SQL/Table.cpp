@@ -7,9 +7,19 @@ namespace QUtils
 {
 namespace SQL
 {
-	Table::Table(Connection* con, std::string name) : con(con), _columns(), _PK(NULL), name(name), columns(_columns)
+	Table::Table(Connection* con, std::string name) : con(con), _name(name), _columns(), _columnsByName(), _PK(NULL), name(_name), columns(_columns), columnsByName(_columnsByName)
 	{
 		refreshColumns();
+	}
+	
+	Table& Table::operator=(const Table t)
+	{
+		con = t.con;
+		_columns = t._columns;
+		_columnsByName = t._columnsByName;
+		_PK = t._PK;
+		_name = t._name;
+		return *this;
 	}
 	
 	long Table::count() const
@@ -21,14 +31,9 @@ namespace SQL
 		return n;
 	}
 	
-	bool Table::drop()
+	void Table::drop()
 	{
-		if (con->tableExists(name))
-		{
-			con->vQuery("DROP TABLE [" + name + "];");
-			return true;
-		}
-		return false;
+		con->vQuery("DROP TABLE IF EXISTS [" + name + "];");
 	}
 	
 	
@@ -58,12 +63,16 @@ namespace SQL
 	{
 		_PK = NULL;
 		_columns.clear();
+		_columnsByName.clear();
 		
 		
 		auto info = con->tableColumns(name);
+		std::shared_ptr<Column> ptr;
 		for (auto col : info)
 		{
-			_columns.push_back(std::make_shared<Column>(std::get<0>(col), std::get<1>(col), std::get<2>(col), std::get<3>(col), std::get<4>(col), std::get<5>(col)));
+			
+			_columns.push_back(ptr = std::make_shared<Column>(std::get<0>(col), std::get<1>(col), std::get<2>(col), std::get<3>(col), std::get<4>(col), std::get<5>(col), name));
+			_columnsByName[std::get<1>(col)] = ptr;
 		}
 		
 		for (auto col : this->columns)
@@ -75,6 +84,20 @@ namespace SQL
 		}
 	}
 	
+	Query* Table::rows() const
+	{
+		return con->query("SELECT rowid,* FROM [" + name + "];");
+	}
+	
+	const Column& Table::operator[](const std::string columnName) const
+	{
+		return *(columnsByName.at(columnName));
+	}
+	
+	Query* Table::select(std::string cols) const
+	{
+		return con->query("SELECT " + cols + " FROM [" + name + "];");
+	}
 	
 	
 }
