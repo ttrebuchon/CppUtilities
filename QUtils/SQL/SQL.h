@@ -5,3 +5,4 @@
 #include "Database.h"
 #include "Table.h"
 #include "Column.h"
+#include "Clause.h"

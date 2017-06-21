@@ -2,11 +2,11 @@
 
 #include <string>
 
-namespace Util
+namespace QUtils
 {
 namespace SQL
 {
-	
+	class Clause;
 	
 	class Column
 	{
@@ -17,9 +17,12 @@ namespace SQL
 		bool _notNull;
 		std::string _defaultValue;
 		bool _PK;
+		std::string _table;
 		
 		public:
-		Column(const int, const std::string, const std::string, const bool, const std::string, const bool);
+		Column(const int, const std::string, const std::string, const bool, const std::string, const bool, const std::string);
+		
+		Column& operator=(Column&&);
 		
 		const int& index;
 		const std::string& name;
@@ -27,6 +30,38 @@ namespace SQL
 		const bool& notNull;
 		const std::string& defaultValue;
 		const bool& PK;
+		
+		
+		
+		
+		
+		
+		
+		Clause operator==(const Column&) const;
+		Clause operator!=(const Column&) const;
+		Clause operator*(const Column&) const;
+		Clause operator/(const Column&) const;
+		Clause operator+(const Column&) const;
+		Clause operator-(const Column&) const;
+		Clause operator>(const Column&) const;
+		Clause operator>=(const Column&) const;
+		Clause operator<(const Column&) const;
+		Clause operator<=(const Column&) const;
+		
+		
+		Clause operator==(const double n) const;
+		Clause operator!=(const double n) const;
+		Clause operator*(const double n) const;
+		Clause operator/(const double n) const;
+		Clause operator+(const double n) const;
+		Clause operator-(const double n) const;
+		Clause operator>(const double n) const;
+		Clause operator>=(const double n) const;
+		Clause operator<(const double n) const;
+		Clause operator<=(const double n) const;
+		
+		
+		
 		
 		friend class Table;
 		
