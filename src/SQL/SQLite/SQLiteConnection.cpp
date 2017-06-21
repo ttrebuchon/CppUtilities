@@ -58,7 +58,7 @@ namespace SQL
 		int status;
 		
 		status = sqlite3_prepare_v2(db, str.c_str(), -1, &stmt, NULL);
-		if (status == SQLITE_ERROR)
+		if (status != SQLITE_OK)
 		{
 			sqlite3_finalize(stmt);
 			throw SQLErrorException().Msg(sqlite3_errmsg(db));
@@ -70,22 +70,24 @@ namespace SQL
 	bool SQLiteConnection::vQuery(std::string query)
 	{
 		sqlite3_stmt* ptr = NULL;
-		if (sqlite3_prepare(db, query.c_str(), -1, &ptr, NULL) != SQLITE_OK)
+		int status;
+		if ((status = sqlite3_prepare_v2(db, query.c_str(), -1, &ptr, NULL)) != SQLITE_OK)
 		{
 			std::string err = sqlite3_errmsg(db);
 			sqlite3_finalize(ptr);
-			throw SQLErrorException().Msg(err);
+			throw SQLErrorException().Msg(err + " (" + std::to_string(status) + ")");
 			return false;
 		}
-		int status = SQLITE_OK;
-		while (status != SQLITE_DONE && status != SQLITE_ERROR)
+		status = SQLITE_ROW;
+		while (status == SQLITE_ROW)
 		{
 			status = sqlite3_step(ptr);
 		}
-		if (status == SQLITE_ERROR)
+		if (status != SQLITE_DONE)
 		{
 			std::string err = sqlite3_errmsg(db);
-			throw SQLErrorException().Msg(err);
+			sqlite3_finalize(ptr);
+			throw SQLErrorException().Msg(err + " (" + std::to_string(status) + ")");
 		}
 		sqlite3_finalize(ptr);
 		return true;
@@ -177,6 +179,16 @@ namespace SQL
 	const std::string& SQLiteConnection::file() const
 	{
 		return filename;
+	}
+	
+	std::vector<sqlite3_stmt*> SQLiteConnection::pending() const
+	{
+		std::vector<sqlite3_stmt*> vec;
+		for (auto stmt = sqlite3_next_stmt(db, NULL); stmt != NULL; stmt = sqlite3_next_stmt(db, stmt))
+		{
+			vec.push_back(stmt);
+		}
+		return vec;
 	}
 }
 }
