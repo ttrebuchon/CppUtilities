@@ -14,6 +14,7 @@ namespace SQL
 	SQLiteQuery::~SQLiteQuery()
 	{
 		//TODO
+		sqlite3_finalize(stmt);
 	}
 	
 	int SQLiteQuery::width() const
