@@ -63,6 +63,8 @@ void Testing::run()
 	{
 	RUN(CLIPS());
 	RUN(SQL());
+	RUN(Multi());
+	RUN(TravellingSalesman());
 	#ifndef SHORT_TEST
 	RUN(nth_Poly());
 	RUN(Tensor_T());

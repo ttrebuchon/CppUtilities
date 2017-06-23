@@ -54,6 +54,8 @@ DEF_TEST(RulesEngine);
 DEF_TEST(CLIPS);
 DEF_TEST(English);
 DEF_TEST(SQL);
+DEF_TEST(Multi);
+DEF_TEST(TravellingSalesman);
 
 
 
