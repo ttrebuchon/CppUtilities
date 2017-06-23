@@ -239,7 +239,6 @@ bool Test_CLIPS()
 	cmd("(undeffacts family)");
 	dout << "\n\n\n";
 	
-	srand(0);
 	std::string manyPeopleFacts = "(deffacts ManyPeople ";
 	int pCount = 20;
 	int parents[pCount][2];
