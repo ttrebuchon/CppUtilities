@@ -65,8 +65,12 @@ SQL_cpp = $(wildcard $(SRC)/SQL/**/*.cpp) $(wildcard $(SRC)/SQL/*.cpp)
 SQL = $(SQL_cpp:.cpp=.o)
 #*/
 
+Multi_cpp = $(wildcard $(SRC)/Multi/**/*.cpp) $(wildcard $(SRC)/Multi/*.cpp)
+Multi = $(Multi_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
