@@ -5,6 +5,7 @@
 #include <tuple>
 #include <math.h>
 #include <exception>
+#include <QUtils/Genetic/Genetic.h>
 
 
 void generateProblem(const int count, const int bound, std::vector<std::tuple<int, int, double>>& edges)
@@ -209,7 +210,33 @@ int* genRandomSolution(const int count)
 
 
 
+bool isValid(const int* solution, const int count)
+{
+	bool* visited = new bool[count];
+	for (int i = 0; i < count; i++)
+	{
+		visited[i] = false;
+	}
+	
+	for (int i = 0; i < count; i++)
+	{
+		assert_ex(solution[i] < count);
+		visited[solution[i]] = true;
+	}
+	
+	bool all = true;
+	for (int i = 0; i < count && all; i++)
+	{
+		all = all && visited[i];
+	}
+	
+	delete[] visited;
+	return all;
+}
 
+
+
+bool Test_Genetic_Module(const std::map<int, std::map<int, double>>& edges, const int count, const int popSize, const int generations, int** solution);
 
 
 bool Test_TravellingSalesman()
@@ -288,7 +315,9 @@ bool Test_TravellingSalesman()
 	
 	for (int g = 0; g < generations; g++)
 	{
-	dout << "Gen " << (g+1) << ":\n";
+	if (g % 10 == 0) {
+	dout << "Gen " << g << ":\n";
+	}
 	
 	//dout << "\tBreeding..." << std::endl;
 	int eIndex = popSize-1;
@@ -309,32 +338,126 @@ bool Test_TravellingSalesman()
 	
 	//dout << "\tSorting..." << std::endl;
 	sortPop();
+	if (g % 10 == 0) {
 	dout << "\tTop: " << populationFitness[population[0]] << "\n";
+	}
 	
 	
 	}
 	
 	
 	
+	const int printCount = 5;
 	
 	dout << "Printing..." << std::endl;
-	for (auto it = population; it != population + 5 && it != population + popSize; it++)
+	for (auto it = population; it != population + printCount && it != population + popSize; it++)
 	{
 		dout << "\n\n";
 		pArray(*it, count);
 		dout << "fit: " << fitness(edges, *it, count) << "\n";
 	}
-	/*
-	dout << "Brute Forcing..." << std::endl;
-	int* best;
-	bruteForce(&best, count, edges);
-	dout << "\n\nActual: " << fitness(edges, best, count) << "\n";
-	pArray(best, count);
-	delete[] best;*/
+	
+	
+	
+	dout << "\n\n\n\nTesting Module GA Solution..." << std::endl;
+	int* modSol;
+	assert_ex(Test_Genetic_Module(edges, count, popSize, generations, &modSol));
+	
+	
+	dout << "Best Manual GA Solution: " << fitness(edges, *population, count) << std::endl;
+	
+	dout << "Best Module GA Solution: " << fitness(edges, modSol, count) << std::endl;
+	
+	assert_ex(isValid(*population, count));
+	assert_ex(isValid(modSol, count));
+	
+	
+	
+	
+	
 	
 	dout << "Deleting..." << std::endl;
+	for (int i = 0; i < popSize; i++)
+	{
+		delete[] population[i];
+	}
+	dout << "\tPopulation Solutions Deleted." << std::endl;
 	delete[] population;
+	dout << "\tPopulation Deleted." << std::endl;
+	delete[] modSol;
 	dout << "Deleted." << std::endl;
+	
+	return true;
+}
+
+
+using namespace QUtils::Genetic;
+
+
+double fitness(const std::map<int, std::map<int, double>>& edges, const auto& v, const int count)
+{
+	
+	double total = 0;
+	for (int i = 1; i < count; i++)
+	{
+		if (v[i-1] > v[i])
+		{
+			total += edges.at(v[i]).at(v[i-1]);
+		}
+		else
+		{
+			total += edges.at(v[i-1]).at(v[i]);
+		}
+	}
+	
+	if (v[count-1] > v[0])
+	{
+		total += edges.at(v[0]).at(v[count-1]);
+	}
+	else
+	{
+		total += edges.at(v[count-1]).at(v[0]);
+	}
+	
+	return total;
+}
+
+
+bool Test_Genetic_Module(const std::map<int, std::map<int, double>>& edges, const int count, const int popSize, const int generations, int** solution)
+{
+	
+	
+	int* best = *solution = new int[count];
+	for (int i = 0; i < count; i++)
+	{
+		best[i] = i;
+	}
+	
+	auto fitness = [=](auto sol) -> double
+	{
+		return ::fitness(edges, sol, count);
+	};
+	
+	auto pop = std::make_shared<ArrayPopulation<OrderedSolution<int>>>(fitness, popSize);
+	for (int i = 0; i < popSize; i++)
+	{
+		pop->at(i) = std::make_shared<OrderedSolution<int>>(count, 0, count-1);
+	}
+	CrossoverAlgorithm<OrderedSolution<int>> alg(pop);
+	
+	alg.go(generations);
+	
+	auto sBest = alg.best();
+	for (int i = 0; i < count; i++)
+	{
+		best[i] = (*sBest)[i];
+	}
+	
+	
+	
+	
+	
+	
 	
 	return true;
 }

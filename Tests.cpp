@@ -16,6 +16,8 @@ int main(int argc, char**argv)
 	#else
 	DebugOut::enabled() = false;
 	#endif
+	
+	std::ios::sync_with_stdio(false);
 	Testing::run();
 	return 0;
 }
