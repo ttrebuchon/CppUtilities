@@ -58,6 +58,7 @@ DEF_TEST(Multi);
 DEF_TEST(TravellingSalesman);
 DEF_TEST(GameOfLifeExtended);
 DEF_TEST(Types);
+DEF_TEST(SymbolicList);
 
 
 

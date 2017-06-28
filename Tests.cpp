@@ -63,13 +63,15 @@ void Testing::run()
 	dout << LINE_BR << testBr << std::endl;
 	try
 	{
-	RUN(CLIPS());
-	RUN(SQL());
+	
 	RUN(Multi());
 	RUN(TravellingSalesman());
 	RUN(GameOfLifeExtended());
 	RUN(Types());
+	RUN(SymbolicList());
 	#ifndef SHORT_TEST
+	RUN(CLIPS());
+	RUN(SQL());
 	RUN(nth_Poly());
 	RUN(Tensor_T());
 	RUN(Matrix_Algs());
