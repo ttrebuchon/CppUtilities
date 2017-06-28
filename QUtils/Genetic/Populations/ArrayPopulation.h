@@ -24,6 +24,7 @@ namespace Genetic
 		virtual unsigned int size() const override;
 		
 		virtual void sort() override;
+		virtual void newGeneration() override;
 	};
 }
 }

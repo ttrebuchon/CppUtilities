@@ -56,6 +56,8 @@ DEF_TEST(English);
 DEF_TEST(SQL);
 DEF_TEST(Multi);
 DEF_TEST(TravellingSalesman);
+DEF_TEST(GameOfLifeExtended);
+DEF_TEST(Types);
 
 
 

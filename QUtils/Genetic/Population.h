@@ -8,7 +8,7 @@ namespace QUtils
 {
 namespace Genetic
 {
-	template <class T>
+	template <class T, class H>
 	class Solution;
 	
 	template <class Solution_t>
@@ -31,6 +31,8 @@ namespace Genetic
 		virtual unsigned int size() const = 0;
 		
 		virtual void sort() = 0;
+		
+		virtual void newGeneration() = 0;
 	};
 }
 }

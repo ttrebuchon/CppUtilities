@@ -67,6 +67,8 @@ void Testing::run()
 	RUN(SQL());
 	RUN(Multi());
 	RUN(TravellingSalesman());
+	RUN(GameOfLifeExtended());
+	RUN(Types());
 	#ifndef SHORT_TEST
 	RUN(nth_Poly());
 	RUN(Tensor_T());

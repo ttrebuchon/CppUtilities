@@ -37,7 +37,7 @@ namespace Genetic
 	template <typename T>
 	class Population;
 	
-	template <typename T>
+	template <typename T, class H>
 	class Solution;
 	
 	

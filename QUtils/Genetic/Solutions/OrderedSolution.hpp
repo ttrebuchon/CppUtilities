@@ -7,7 +7,7 @@ namespace QUtils
 namespace Genetic
 {
 	template <class T>
-	OrderedSolution<T>::OrderedSolution(const unsigned int size, const T lowerBound, const T upperBound) : Solution<std::vector<T>>(), order(size)
+	OrderedSolution<T>::OrderedSolution(const unsigned int size, const T lowerBound, const T upperBound) : Solution<std::vector<T>, T>(), order(size)
 	{
 		auto v = lowerBound;
 		for (auto i = 0; i < size; i++)
@@ -25,7 +25,7 @@ namespace Genetic
 	
 	
 	template <class T>
-	OrderedSolution<T>::OrderedSolution(const unsigned int size, const T lowerBound) : Solution<std::vector<T>>(), order(size)
+	OrderedSolution<T>::OrderedSolution(const unsigned int size, const T lowerBound) : Solution<std::vector<T>, T>(), order(size)
 	{
 		auto v = lowerBound;
 		for (auto i = 0; i < size; i++)
@@ -38,7 +38,7 @@ namespace Genetic
 	}
 	
 	template <class T>
-	OrderedSolution<T>::OrderedSolution(const unsigned int size) : Solution<std::vector<T>>(), order(size)
+	OrderedSolution<T>::OrderedSolution(const unsigned int size) : Solution<std::vector<T>, T>(), order(size)
 	{
 		
 	}
@@ -104,11 +104,11 @@ namespace Genetic
 	}
 	
 	template <class T>
-	std::shared_ptr<Solution<std::vector<T>>> OrderedSolution<T>::clone() const
+	std::shared_ptr<Solution<std::vector<T>, T>> OrderedSolution<T>::clone() const
 	{
-		auto ptr = std::make_shared<OrderedSolution<T>>(size());
+		auto ptr = std::make_shared<OrderedSolution<T>>(this->size());
 		int index = 0;
-		for (auto t : order)
+		for (auto t : this->order)
 		{
 			ptr->at(index++) = t;
 		}
@@ -120,6 +120,23 @@ namespace Genetic
 	void OrderedSolution<T>::modified()
 	{
 		
+	}
+	
+	template <class T>
+	T& OrderedSolution<T>::set(const int index, const T t)
+	{
+		auto it = std::find(this->order.begin(), this->order.end(), t);
+		if (it == this->order.end())
+		{
+			//TODO
+			throw std::exception();
+		}
+		
+		auto offset = it - this->order.begin();
+		
+		this->order[offset] = this->order[index];
+		this->order[index] = t;
+		return this->order[index];
 	}
 	
 }

@@ -6,7 +6,7 @@ namespace QUtils
 {
 namespace Genetic
 {
-	template <class T>
+	template <class T, class H = T>
 	class Solution
 	{
 		protected:
@@ -19,9 +19,10 @@ namespace Genetic
 		
 		virtual T get() const = 0;
 		
-		virtual std::shared_ptr<Solution<T>> clone() const = 0;
+		virtual std::shared_ptr<Solution<T, H>> clone() const = 0;
 		
 		virtual void modified() = 0;
+		virtual H& set(const int index, const H) = 0;
 	};
 }
 }

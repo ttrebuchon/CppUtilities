@@ -61,5 +61,12 @@ namespace Genetic
 		
 		
 	}
+	
+	
+	template <class T>
+	void ArrayPopulation<T>::newGeneration()
+	{
+		
+	}
 }
 }

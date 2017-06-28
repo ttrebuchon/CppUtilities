@@ -57,11 +57,13 @@ namespace Genetic
 				seqStart = rand() % solutionSize;
 				for (int i = 0; i < sequenceLength; i++)
 				{
-					auto overwritten = child->at((seqStart + i) % solutionSize);
+					//auto overwritten = child->at((seqStart + i) % solutionSize);
 					
 					auto nVal = s2->at((seqStart + i) % solutionSize);
 					
-					for (auto j = 0; j < solutionSize; j++)
+					child->set((seqStart + i) % solutionSize, nVal);
+					
+					/*for (auto j = 0; j < solutionSize; j++)
 					{
 						if (child->at(j) == nVal)
 						{
@@ -69,7 +71,7 @@ namespace Genetic
 						}
 					}
 					
-					child->at((seqStart + i) % solutionSize) = nVal;
+					child->at((seqStart + i) % solutionSize) = nVal;*/
 				}
 				
 				this->population->at(endIndex) = child;
@@ -87,6 +89,7 @@ namespace Genetic
 				child->modified();
 				endIndex--;
 			}
+			this->population->newGeneration();
 		}
 	}
 	

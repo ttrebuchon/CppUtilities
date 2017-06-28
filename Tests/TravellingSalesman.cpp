@@ -244,7 +244,7 @@ bool Test_TravellingSalesman()
 	const int count = 200;
 	const int bound = 10;
 	const int popSize = 100;
-	const int generations = 100;
+	const int generations = 50;
 	const int genotype = count / 3;
 	
 	
@@ -266,7 +266,7 @@ bool Test_TravellingSalesman()
 	
 	
 	
-	auto pArray = [] (const int* arr, const int count) -> void
+	/*auto pArray = [] (const int* arr, const int count) -> void
 	{
 		dout << "[";
 		for (auto i = 0; i < count; i++)
@@ -274,7 +274,7 @@ bool Test_TravellingSalesman()
 			dout << (i == 0 ? "" : ", ") << arr[i];
 		}
 		dout << "]\n";
-	};
+	};*/
 	
 	
 	dout << "Generating population..." << std::endl;
@@ -349,11 +349,10 @@ bool Test_TravellingSalesman()
 	
 	const int printCount = 5;
 	
-	dout << "Printing..." << std::endl;
 	for (auto it = population; it != population + printCount && it != population + popSize; it++)
 	{
-		dout << "\n\n";
-		pArray(*it, count);
+		//dout << "\n\n";
+		//pArray(*it, count);
 		dout << "fit: " << fitness(edges, *it, count) << "\n";
 	}
 	
@@ -376,16 +375,12 @@ bool Test_TravellingSalesman()
 	
 	
 	
-	dout << "Deleting..." << std::endl;
 	for (int i = 0; i < popSize; i++)
 	{
 		delete[] population[i];
 	}
-	dout << "\tPopulation Solutions Deleted." << std::endl;
 	delete[] population;
-	dout << "\tPopulation Deleted." << std::endl;
 	delete[] modSol;
-	dout << "Deleted." << std::endl;
 	
 	return true;
 }
@@ -438,13 +433,14 @@ bool Test_Genetic_Module(const std::map<int, std::map<int, double>>& edges, cons
 		return ::fitness(edges, sol, count);
 	};
 	
-	auto pop = std::make_shared<ArrayPopulation<OrderedSolution<int>>>(fitness, popSize);
+	auto pop = std::make_shared<ArrayPopulation<CircularOrderedSolution<int>>>(fitness, popSize);
 	for (int i = 0; i < popSize; i++)
 	{
-		pop->at(i) = std::make_shared<OrderedSolution<int>>(count, 0, count-1);
+		pop->at(i) = std::make_shared<CircularOrderedSolution<int>>(count, 0, count-1);
 	}
-	CrossoverAlgorithm<OrderedSolution<int>> alg(pop);
+	CrossoverAlgorithm<CircularOrderedSolution<int>> alg(pop);
 	
+	alg.mutateProbability = 0.25;
 	alg.go(generations);
 	
 	auto sBest = alg.best();
@@ -452,12 +448,6 @@ bool Test_Genetic_Module(const std::map<int, std::map<int, double>>& edges, cons
 	{
 		best[i] = (*sBest)[i];
 	}
-	
-	
-	
-	
-	
-	
 	
 	return true;
 }
