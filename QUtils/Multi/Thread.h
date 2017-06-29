@@ -7,10 +7,7 @@ namespace Multi
 {
 namespace Thread
 {
-	class Foo
-	{
-		
-	};
+	
 }
 }
 }
