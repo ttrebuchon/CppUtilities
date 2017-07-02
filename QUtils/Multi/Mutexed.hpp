@@ -9,13 +9,13 @@ namespace Multi
 {
 	template <class T>
 	template <class ...Args>
-	Mutexed<T>::Mutexed(Args... args) : mut(), t(args...)
+	Mutexed<T>::Mutexed(Args... args) : Types::IndexerForward<typename Mutexed<T>::type>(NULL), mut(), t(args...)
 	{
-		
+		this->Types::IndexerForward<type>::ptr = &t;
 	}
 	
 	template <class T>
-	T& Mutexed<T>::operator*()
+	typename Mutexed<T>::type& Mutexed<T>::operator*()
 	{
 		if (this->try_lock())
 		{
@@ -27,7 +27,31 @@ namespace Multi
 	}
 	
 	template <class T>
-	T* Mutexed<T>::operator->()
+	typename Mutexed<T>::type* Mutexed<T>::operator->()
+	{
+		if (this->try_lock())
+		{
+			this->unlock();
+			//TODO
+			throw std::exception();
+		}
+		return &t;
+	}
+	
+	template <class T>
+	const typename Mutexed<T>::type& Mutexed<T>::operator*() const
+	{
+		if (this->try_lock())
+		{
+			this->unlock();
+			//TODO
+			throw std::exception();
+		}
+		return t;
+	}
+	
+	template <class T>
+	const typename Mutexed<T>::type* Mutexed<T>::operator->() const
 	{
 		if (this->try_lock())
 		{

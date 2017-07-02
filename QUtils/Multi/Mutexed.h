@@ -1,19 +1,23 @@
 #pragma once
 #include <mutex>
+#include <type_traits>
+#include <QUtils/Types/OperatorForwarding.h>
 
 
 namespace QUtils
 {
 namespace Multi
 {
+	
 	template <class T>
-	class Mutexed
+	class Mutexed : public Types::IndexerForward<typename std::decay<T>::type>
 	{
 		private:
 		
 		protected:
+		typedef typename std::decay<T>::type type;
 		std::mutex mut;
-		T t;
+		type t;
 		
 		
 		
@@ -22,14 +26,18 @@ namespace Multi
 		Mutexed(Args... args);
 		
 		
-		T& operator*();
-		T* operator->();
+		type& operator*();
+		type* operator->();
+		const type& operator*() const;
+		const type* operator->() const;
 		
 		bool try_lock();
 		void lock();
 		void unlock();
 		
 	};
+	
+	
 	
 }
 }
