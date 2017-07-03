@@ -57,6 +57,7 @@ std::string vPrint(const std::vector<T>& v)
 }
 
 bool Mult_Test();
+void Regex_Matching();
 
 bool Neural_Run()
 {
@@ -235,6 +236,48 @@ bool Mult_Test()
 	auto r1_3 = n.go({1, 3});
 	dout << "Result for <1,3>:  " << vPrint(r1_3) << std::endl;
 	
-	
+	Regex_Matching();
 	return true;
+}
+
+void Regex_Matching()
+{
+	dout << "\n\n\nTesting Regex-Style-Matching\n";
+	Net<long double> nn(1, 1);
+	//nn.bounds.min = 0;
+	//nn.bounds.max = 1;
+	for (long double i = 97; i <= 122; i++)
+	{
+		nn.addData({i}, {1});
+	}
+	for (long double i = 48; i <= 57; i++)
+	{
+		nn.addData({i}, {0});
+	}
+	/*nn.addData({(int)'a'}, {1});
+	nn.addData({(int)'b'}, {1});
+	nn.addData({(int)'c'}, {1});
+	nn.addData({(int)'1'}, {0});*/
+	
+	
+	
+	const int layers = 3;
+	const double multiplier = 3;
+	int cycles = 10;
+	
+	int progressInterval = 1000;
+	
+	nn.grow(layers, multiplier, QUtils::NeuralNet::LayerType::FullyConnected);
+	for (int i = 0; i < cycles; i++)
+	{
+		dout << "Training " << i*progressInterval << "\t/" << cycles*progressInterval << std::endl;
+		nn.train(progressInterval);
+	}
+	
+	auto result = nn.go({'a'});
+	dout << "Result for {a}: " << vPrint(result) << std::endl;
+	
+	result = nn.go({'1'});
+	dout << "Result for {1}: " << vPrint(result) << std::endl;
+	
 }
