@@ -1,5 +1,5 @@
 // Castor : Logic Programming Library
-// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// Copyright ï¿½ 2007-2010 Roshan Naik (roshan@mpprogramming.com).
 // This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #if !defined CASTOR_TLR_H
@@ -51,7 +51,8 @@ public:
     // Concept : F supports the method... bool F::operator()(relation&)
     template<class F>
     relation_tlr(F f) : pimpl(new wrapper<F>(f)) { 
-        typedef bool (F::* boolMethod)(relation&);  // Compiler Error : f must support method bool F::operator()(relation)
+        //typedef bool (F::* boolMethod)(relation&);  // Compiler Error : f must support method bool F::operator()(relation)
+        static_assert(std::is_same<decltype(std::declval<F>().operator()(std::declval<relation>())), bool>::value, "F supports method... bool F::operator()(relation&)");
     }
 
     relation_tlr(const relation_tlr& rhs) : pimpl(rhs.pimpl->clone())
@@ -938,6 +939,7 @@ GroupBy<Item,group<K,V>,K,V,detail::FuncList<Sel,detail::None>, std::less<K> > i
 group_by(lref<Item>& i_, Sel keySelector, lref<group<K,V> >& g) {
 	using namespace detail;
 	typedef typename return_type<Sel>::result_type ret_type;
+	static_assert(std::is_same<ret_type, K>::value, "Group's key type does not match Selector's return type");
 	//ASSERT_SAME_TYPE(ret_type,K,"Group's key type does not match Selector's return type");
 	return GroupBy<Item,group<K,V>,K,V,FuncList<Sel,None>,std::less<K> >(i_,FuncList<Sel,None>(keySelector),g, std::less<K>());
 }
@@ -949,6 +951,7 @@ GroupBy<Item,group<K,V>, K,V,detail::FuncList<Sel,detail::None>,KCmp> inline
 group_by(lref<Item>& i_, Sel keySelector, lref<group<K,V> >& g, KCmp keyCmp) {
 	using namespace detail;
 	typedef typename return_type<Sel>::result_type ret_type;
+	static_assert(std::is_same<ret_type, K>::value, "Group's key type does not match Selector's return type");
 	//ASSERT_SAME_TYPE(ret_type,K,"Group's key type does not match Selector's return type");
 	return GroupBy<Item,group<K,V>,K,V,FuncList<Sel,None>,KCmp>(i_,FuncList<Sel,None>(keySelector),g,keyCmp);
 }

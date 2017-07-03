@@ -1,5 +1,5 @@
 // Castor : Logic Programming Library
-// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// Copyright ï¿½ 2007-2010 Roshan Naik (roshan@mpprogramming.com).
 // This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #if !defined CASTOR_RELATION_H
@@ -8,6 +8,7 @@
 
 #include "workaround.h"
 #include "coroutine.h"
+#include "meta_concepts.h"
 
 namespace castor {
 
@@ -44,11 +45,13 @@ class relation {
     relation(const Ile<Expr>& rhs);
 public:
     typedef bool result_type;
-
+    
+    
     // Concept : F supports method... bool F::operator()(void)
     template<class F> 
     relation(F f) : pimpl(new wrapper<F>(f)) { 
-        typedef bool (F::* boolMethod)(void);  // Static Assertion : f must support method bool F::operator()(void)
+        //typedef bool (F::* boolMethod)(void);  // Static Assertion : f must support method bool F::operator()(void)
+        static_assert(meta::SupportsInvoke<F>::value, "f must support method bool F::operator()(void)");
     }
 
     relation(const relation& rhs) : pimpl(rhs.pimpl->clone())

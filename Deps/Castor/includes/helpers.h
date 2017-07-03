@@ -1,5 +1,5 @@
 // Castor : Logic Programming Library
-// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// Copyright ï¿½ 2007-2010 Roshan Naik (roshan@mpprogramming.com).
 // This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #if !defined CASTOR_HELPERS_H
@@ -8,6 +8,8 @@
 #include <iterator>
 #include <algorithm>
 #include <set>
+
+#include "meta_concepts.h"
 
 namespace castor { namespace detail {
 
@@ -256,7 +258,8 @@ public:
     // Concept : F supports method... bool F::operator()(void)
     template<class F> 
     Func1(F f) : fptr(new dispatcher<F>(f)) { 
-        typedef R (F::* boolMethod)(param_type);  // Static assertion to ensure F satisfies concept
+        //typedef R (F::* boolMethod)(param_type);  // Static assertion to ensure F satisfies concept
+        static_assert(std::is_same<decltype(std::declval<F>().operator()(std::declval<param_type>())), R>::value, "F supports method... bool F::operator()(void)");
     }
 
 	Func1(const Func1& rhs) : fptr(rhs.fptr->clone())
@@ -264,7 +267,8 @@ public:
 
     template<class F> 
 	Func1& operator =(F f) {
-		typedef R (F::* boolMethod)(param_type);  // Static assertion to ensure F satisfies concept
+		//typedef R (F::* boolMethod)(param_type);  // Static assertion to ensure F satisfies concept
+		static_assert(std::is_same<decltype(std::declval<F>().operator()(std::declval<param_type>())), R>::value, "F supports method... bool F::operator()(void)");
 		fptr(new dispatcher<F>(f));
     }
 	
