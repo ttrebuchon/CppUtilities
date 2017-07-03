@@ -70,6 +70,7 @@ void Testing::run()
 	RUN(Types());
 	RUN(SymbolicList());
 	RUN(English_Analysis());
+	RUN(Network());
 	#ifndef SHORT_TEST
 	RUN(CLIPS());
 	RUN(SQL());

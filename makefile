@@ -69,8 +69,12 @@ Multi_cpp = $(wildcard $(SRC)/Multi/**/*.cpp) $(wildcard $(SRC)/Multi/*.cpp)
 Multi = $(Multi_cpp:.cpp=.o)
 #*/
 
+Network_cpp = $(wildcard $(SRC)/Network/**/*.cpp) $(wildcard $(SRC)/Network/*.cpp)
+Network = $(Network_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
@@ -111,8 +115,17 @@ FLAGS = -I .
 Deps_D = Deps
 
 CLIPS_Dep = $(Deps_D)/Clips
+Curlpp_Dep = -I $(Deps_D)/curlpp/include -L $(Deps_D)/curlpp
 
-DEPS = -I $(Deps_D)/Castor -I ../ -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(Deps_D)/sqlite3 -L $(CLIPS_Dep)
+DEPS = -I $(Deps_D)/Castor -I ../ -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(Deps_D)/sqlite3 -L $(CLIPS_Dep) $(Curlpp_Dep)
+
+
+LINKING = -lclips++ -lsqlite3 -lcurlpp -lcurl -lz
+
+
+
+
+
 
 CXX = g++
 CXXFLAGS = -std=c++17 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -O0 $(DEPS)
@@ -127,7 +140,7 @@ buildOC = gcc -std=c99 -c -pie
 
 
 $(target): $(stLibTarget).a $(libobjects) $(testobjects) makefile
-	$(CXX) -o $(target) $(CXXFLAGS) -std=c++11 $(testobjects) -L. -l$(name) $(PREPROC_FLAGS) -lclips++ -lsqlite3
+	$(CXX) -o $(target) $(CXXFLAGS) -std=c++11 $(testobjects) -L. -l$(name) $(PREPROC_FLAGS) $(LINKING)
 
 clean: 
 	rm $(libobjects)

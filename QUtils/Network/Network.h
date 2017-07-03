@@ -4,6 +4,6 @@ namespace QUtils
 {
 namespace Network
 {
-	
+	void Test();
 }
 }

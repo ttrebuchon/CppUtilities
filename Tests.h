@@ -60,6 +60,7 @@ DEF_TEST(GameOfLifeExtended);
 DEF_TEST(Types);
 DEF_TEST(SymbolicList);
 DEF_TEST(English_Analysis);
+DEF_TEST(Network);
 
 
 
