@@ -1,4 +1,4 @@
-#include <NeuralNet/RandWgt.h>
+#include <QUtils/NeuralNet/RandWgt.h>
 
 #include <random>
 
