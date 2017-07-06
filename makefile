@@ -53,7 +53,7 @@ Rules_cpp = $(wildcard $(SRC)/Rules/*.cpp)
 Rules = $(Rules_cpp:.cpp=.o)
 #*/
 
-English_cpp = $(wildcard $(SRC)/English/*.cpp)
+English_cpp = $(wildcard $(SRC)/English/**/*.cpp) $(wildcard $(SRC)/English/*.cpp)
 English = $(English_cpp:.cpp=.o)
 #*/
 
