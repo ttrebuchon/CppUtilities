@@ -5,7 +5,7 @@
 #include <sstream>
 
 
-	#define UTIL_CUSTOM_EXCEPTION(name, msg) class name : public std::exception { \
+	#define QUTILS_CUSTOM_EXCEPTION(name, msg) class name : public std::exception { \
 	std::string file; \
 	int line; \
 	std::string func; \
@@ -100,6 +100,8 @@
 	\
 	\
 	}
+	
+	#define UTIL_CUSTOM_EXCEPTION(name, msg) QUTILS_CUSTOM_EXCEPTION(name, msg)
 
 #endif
 	
