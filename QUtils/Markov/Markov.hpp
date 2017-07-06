@@ -5,7 +5,9 @@
 
 UTIL_CUSTOM_EXCEPTION(UnsetEqualsFunc, equals needs to be set!);
 
-namespace Util
+namespace QUtils
+{
+namespace Markov
 {
 	template <typename T>
 	Markov<T>::Markov() : beginning(new Markov_Int::BeginLink<T>()), ending(new Markov_Int::EndLink<T>())
@@ -96,4 +98,5 @@ namespace Util
 	}
 	
 	
+}
 }

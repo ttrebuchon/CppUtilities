@@ -2,7 +2,9 @@
 #define INCLUDED_MARKOV_CONFIGURATION_H
 
 
-namespace Util
+namespace QUtils
+{
+namespace Markov
 {
 namespace Markov_Int
 {
@@ -20,6 +22,7 @@ namespace Markov_Int
 		
 	};
 	
+}
 }
 }
 

@@ -2,12 +2,20 @@
 #define INCLUDED_UTIL_MARKOV_CHAIN_H
 
 #include "Link.h"
+#include <QUtils/Exception/Exception.h>
 
 #include <cstdlib>
+#include <iostream>
 
 
-namespace Util
+
+
+namespace QUtils
 {
+namespace Markov
+{
+	QUTILS_CUSTOM_EXCEPTION(MarkovInfiniteLoopException, No way to end the chain);
+	
 	namespace Markov_Int
 	{
 	
@@ -56,6 +64,10 @@ namespace Util
 						break;
 					}
 				}
+				if (link->combined.size() <= 0)
+				{
+					throw std::exception();
+				}
 				
 				
 				if (link->type != "end")
@@ -72,6 +84,7 @@ namespace Util
 	}
 	
 	
+}
 }
 
 

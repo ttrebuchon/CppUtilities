@@ -9,7 +9,9 @@
 #include "Configuration.h"
 #include "Option.h"
 
-namespace Util
+namespace QUtils
+{
+namespace Markov
 {
 	namespace Markov_Int
 	{
@@ -65,6 +67,7 @@ namespace Util
 	
 	
 	}
+}
 }
 
 #include "Link.hpp"

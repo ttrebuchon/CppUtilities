@@ -9,7 +9,9 @@
 #include "Link.h"
 #include "Chain.h"
 
-namespace Util
+namespace QUtils
+{
+namespace Markov
 {
 	template <typename T>
 	class Markov
@@ -39,6 +41,7 @@ namespace Util
 	};
 	
 	
+}
 }
 
 #include "Markov.hpp"

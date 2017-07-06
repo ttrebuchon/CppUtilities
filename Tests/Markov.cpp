@@ -188,7 +188,7 @@ std::string FormMsg(std::vector<Word>& vec)
 
 
 
-using Mk = Utils::Markov<Word>;
+using Mk = QUtils::Markov::Markov<Word>;
 bool Test_Markov()
 {
 	Mk m;

@@ -1,6 +1,8 @@
 #include "Link.h"
 
-namespace Util
+namespace QUtils
+{
+namespace Markov
 {
 namespace Markov_Int
 {
@@ -28,5 +30,6 @@ namespace Markov_Int
 		totCount++;
 	}
 	
+}
 }
 }

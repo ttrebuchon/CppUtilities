@@ -3,7 +3,9 @@
 
 
 #include <map>
-namespace Util
+namespace QUtils
+{
+namespace Markov
 {
 namespace Markov_Int
 {
@@ -18,6 +20,7 @@ namespace Markov_Int
 		std::map<BaseLink<T>*, int> choices;
 	};
 	
+}
 }
 }
 
