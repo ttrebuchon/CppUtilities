@@ -70,8 +70,8 @@ void Testing::run()
 	RUN(Types());
 	RUN(SymbolicList());
 	RUN(English_Analysis());
-	RUN(Network());
 	#ifndef SHORT_TEST
+	RUN(Network());
 	RUN(CLIPS());
 	RUN(SQL());
 	RUN(nth_Poly());
