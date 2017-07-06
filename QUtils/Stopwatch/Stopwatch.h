@@ -4,7 +4,9 @@
 #include <vector>
 #include <chrono>
 
-namespace Util
+namespace QUtils
+{
+namespace Stopwatch
 {
 	class Stopwatch
 	{
@@ -33,6 +35,7 @@ namespace Util
 		
 	};
 	
+}
 }
 
 

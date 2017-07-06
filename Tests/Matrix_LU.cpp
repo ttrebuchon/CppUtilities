@@ -204,7 +204,7 @@ bool Matrix_LU_Run()
 	
 	
 	
-	Utils::Stopwatch sw;
+	Utils::Stopwatch::Stopwatch sw;
 	tensor_t<2, Num> largeMat = new FuncMatrix<2, Num>([](int i, int j) {return (i*2) + j + 1;});
 	largeMat.setSize(0, N2);
 	largeMat.setSize(1, 2);

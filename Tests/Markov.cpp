@@ -250,7 +250,7 @@ bool Test_Markov()
 	
 	
 	dout << "\nGenerating More...\n" << std::endl;
-	Utils::Stopwatch sw;
+	QUtils::Stopwatch::Stopwatch sw;
 	sw.start();
 	for (int i = 0; i < TEST_COUNT; i++)
 	{

@@ -1,7 +1,9 @@
-#include "Stopwatch/Stopwatch.h"
+#include <QUtils/Stopwatch/Stopwatch.h>
 
 
-namespace Util
+namespace QUtils
+{
+namespace Stopwatch
 {
 	Stopwatch::Stopwatch() : times()
 	{
@@ -58,4 +60,5 @@ namespace Util
 	
 	
 	
+}
 }

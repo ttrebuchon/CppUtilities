@@ -7,7 +7,7 @@
 
 double CppPerfTest(int perfcount)
 {
-	Util::Stopwatch sw;
+	Util::Stopwatch::Stopwatch sw;
 	std::vector<std::string> cppStrs;
 	
 	sw.start();
@@ -26,7 +26,7 @@ double CppPerfTest(int perfcount)
 
 double UtilPerfTest(int perfcount)
 {
-	Util::Stopwatch sw;
+	Util::Stopwatch::Stopwatch sw;
 	std::vector<Util::String> utilStrs;
 	
 	
