@@ -66,7 +66,7 @@ namespace Markov
 				}
 				if (link->combined.size() <= 0)
 				{
-					throw std::exception();
+					throw MarkovInfiniteLoopException();
 				}
 				
 				
