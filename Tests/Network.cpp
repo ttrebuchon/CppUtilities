@@ -4,6 +4,6 @@
 
 bool Test_Network()
 {
-	QUtils::Network::Test();
+	QUtils::Network::Test(dout);
 	return true;
 }
