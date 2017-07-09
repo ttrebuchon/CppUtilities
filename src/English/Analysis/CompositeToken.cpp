@@ -10,6 +10,11 @@ namespace Internal
 	{
 		
 	}
+	
+	CompositeToken::~CompositeToken()
+	{
+		
+	}
 	CompositeToken::CompositeToken(const int size) : Token(), tokens(size)
 	{
 		
@@ -28,6 +33,22 @@ namespace Internal
 			str += token->text();
 		}
 		return str;
+	}
+	
+	bool CompositeToken::operator==(const CompositeToken& t) const
+	{
+		if (tokens.size() != t.tokens.size())
+		{
+			return false;
+		}
+		for (int i = 0; i < tokens.size(); i++)
+		{
+			if (tokens[i] != t.tokens[i])
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 }
 }

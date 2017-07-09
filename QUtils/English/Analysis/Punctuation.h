@@ -18,7 +18,7 @@ namespace Internal
 		Punctuation();
 		
 		virtual std::string text() const override;
-		virtual std::string type() const override { return "punctuation"; }
+		virtual TokenType type() const override { return TokenType::Punctuation; }
 	};
 }
 }

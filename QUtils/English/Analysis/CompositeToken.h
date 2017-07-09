@@ -17,6 +17,7 @@ namespace Internal
 		CompositeToken(const std::vector<std::shared_ptr<Token>>&);
 		CompositeToken(const int size);
 		CompositeToken();
+		virtual ~CompositeToken();
 		
 		virtual bool operator==(const CompositeToken&) const;
 		
@@ -24,7 +25,9 @@ namespace Internal
 		{ return !operator==(t); }
 		
 		virtual std::string text() const override;
-		virtual std::string type() const override = 0;
+		virtual TokenType type() const override = 0;
+		
+		virtual std::vector<std::shared_ptr<const Token>> expand() const override = 0;
 	};
 }
 }

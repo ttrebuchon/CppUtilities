@@ -16,7 +16,7 @@ namespace Internal
 		Whitespace(const std::string);
 		
 		virtual std::string text() const override;
-		virtual std::string type() const override { return "whitespace"; }
+		virtual TokenType type() const override { return TokenType::Whitespace; }
 	};
 }
 }

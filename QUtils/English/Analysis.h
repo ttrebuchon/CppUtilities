@@ -4,6 +4,8 @@
 #include <fstream>
 #include <vector>
 #include <memory>
+#include <unordered_set>
+#include <functional>
 
 namespace QUtils
 {
@@ -20,6 +22,17 @@ namespace English
 	namespace Internal
 	{
 		class Token;
+		class Word;
+		class Number;
+		class Symbol;
+		class Punctuation;
+		class Sentence;
+		
+		/*template <typename Key>
+		using Token_Set = std::unordered_set<std::shared_ptr<Key>, std::hash<std::shared_ptr<Key>>, std::function<bool(const std::shared_ptr<Key>, const std::shared_ptr<Key>)>>;*/
+		
+		template <typename Key>
+		using Token_Set = std::unordered_set<std::shared_ptr<Key>>;
 	};
 	
 	inline bool isLetterOrNumber(const char c)
@@ -68,7 +81,15 @@ namespace English
 	}
 	
 	
-	std::shared_ptr<Internal::Token> parseToken(const std::string);
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	class Analyzer
@@ -76,8 +97,20 @@ namespace English
 		private:
 		std::string _contents;
 		std::vector<std::shared_ptr<Internal::Token>> _tokens;
+		Internal::Token_Set<Internal::Word> _words;
+		Internal::Token_Set<Internal::Number> _numbers;
+		Internal::Token_Set<Internal::Symbol> _symbols;
+		Internal::Token_Set<Internal::Punctuation> _punctuation;
+		Internal::Token_Set<Internal::Sentence> _sentences;
+		
+		
+		
+		void parseToken(const std::string);
+		
+		
 		
 		protected:
+		Analyzer();
 		
 		public:
 		Analyzer(std::ifstream& file);
@@ -87,10 +120,19 @@ namespace English
 		
 		const std::string& contents;
 		const std::vector<std::shared_ptr<Internal::Token>>& tokens;
+		const Internal::Token_Set<Internal::Word>& words;
+		const Internal::Token_Set<Internal::Number>& numbers;
+		const Internal::Token_Set<Internal::Symbol>& symbols;
+		const Internal::Token_Set<Internal::Punctuation>& punctuation;
+		const Internal::Token_Set<Internal::Sentence>& sentences;
+		
+		
 		
 		void parse();
 		
 		std::shared_ptr<Markov::Markov<std::shared_ptr<Internal::Token>>> markov(bool separateBySentence = true) const;
+		
+		std::vector<std::shared_ptr<const Internal::Token>> expand() const;
 		
 	};
 }

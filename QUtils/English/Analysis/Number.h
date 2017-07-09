@@ -18,7 +18,7 @@ namespace Internal
 		
 		virtual std::string text() const override;
 		
-		virtual std::string type() const override { return "number"; }
+		virtual TokenType type() const override { return TokenType::Number; }
 	};
 }
 }

@@ -20,7 +20,9 @@ namespace Internal
 		
 		virtual std::string text() const override;
 		
-		virtual std::string type() const override { return "sentence"; }
+		virtual TokenType type() const override { return TokenType::Sentence; }
+		
+		virtual std::vector<std::shared_ptr<const Token>> expand() const override;
 	};
 }
 }

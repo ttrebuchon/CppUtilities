@@ -16,7 +16,7 @@ namespace Internal
 		Symbol(std::string);
 		
 		virtual std::string text() const override;
-		virtual std::string type() const override { return "symbol"; }
+		virtual TokenType type() const override { return TokenType::Symbol; }
 	};
 }
 }

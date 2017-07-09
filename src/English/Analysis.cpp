@@ -1,19 +1,44 @@
 #include <QUtils/English/Analysis.h>
 #include <QUtils/English/Analysis/Analysis.h>
+#include <QUtils/English/Analysis/TokenType.h>
 #include <QUtils/String/String.h>
 #include <QUtils/Markov/Markov.h>
+#include <QUtils/Exception/Exception.h>
 #include <iostream>
 #include <map>
+#include <type_traits>
 
 namespace QUtils
 {
 namespace English
 {
+	namespace Internal
+	{
+		template <class Key>
+		bool Token_Set_Eq(const Key k1, const Key k2)
+		{
+			return (k1->text() == k2->text());
+		}
+		
+		
+		template <class Key>
+		auto init_token_set()
+		{
+			return Token_Set<Key>();
+			//return Token_Set<Key>(0, std::hash<std::shared_ptr<Key>>(), Token_Set_Eq<std::shared_ptr<Key>>);
+		}
+	}
+	
+	QUTILS_CUSTOM_EXCEPTION(AnalyzerParseException, "Can't parse text");
 	
 	
 	
+	Analyzer::Analyzer() : _contents(), _tokens(), _words(Internal::init_token_set<Internal::Word>()), _numbers(Internal::init_token_set<Internal::Number>()), _symbols(Internal::init_token_set<Internal::Symbol>()), _punctuation(Internal::init_token_set<Internal::Punctuation>()), _sentences(Internal::init_token_set<Internal::Sentence>()),  contents(_contents), tokens(_tokens), words(_words), numbers(_numbers), symbols(_symbols), punctuation(_punctuation), sentences(_sentences)
+	{
+		
+	}
 	
-	Analyzer::Analyzer(std::ifstream& file) : _contents(), _tokens(), contents(_contents), tokens(_tokens)
+	Analyzer::Analyzer(std::ifstream& file) : Analyzer()
 	{
 		file.seekg(0, std::ios::end);
 		_contents.resize(file.tellg());
@@ -21,19 +46,26 @@ namespace English
 		file.read(&_contents[0], _contents.size());
 	}
 	
-	Analyzer::Analyzer(const std::string& contents) : _contents(contents), _tokens(), contents(_contents), tokens(_tokens)
-	{}
-	
-	Analyzer::Analyzer(const std::vector<std::string>& lines) : _contents(lines.at(0)), _tokens(), contents(_contents), tokens(_tokens)
+	Analyzer::Analyzer(const std::string& contents) : Analyzer()
 	{
+		_contents = contents;
+	}
+	
+	Analyzer::Analyzer(const std::vector<std::string>& lines) : Analyzer()
+	{
+		if (lines.size() > 0)
+		{
+		_contents = lines.at(0);
 		for (auto it = lines.begin()+1; it != lines.end(); ++it)
 		{
 			_contents += "\n" + *it;
+		}
 		}
 	}
 	
 	void Analyzer::parse()
 	{
+		{
 		QUtils::String _cont = _contents;
 		_cont = _cont.replace("\r\n", "\n");
 		_contents = _cont;
@@ -47,7 +79,7 @@ namespace English
 			Symbol = 4,
 		};
 		Last_t last;
-		//char last_c;
+		char last_c;
 		for (char c : contents)
 		{
 			if (tmp == "")
@@ -78,7 +110,7 @@ namespace English
 					continue;
 				}
 				tmp = c;
-				//last_c = c;
+				last_c = c;
 				continue;
 			}
 			
@@ -94,7 +126,7 @@ namespace English
 					break;
 					
 					default:
-					_tokens.push_back(parseToken(tmp));
+					parseToken(tmp);
 					tmp = c;
 				}
 				last = Letter;
@@ -111,7 +143,7 @@ namespace English
 					break;
 					
 					default:
-					_tokens.push_back(parseToken(tmp));
+					parseToken(tmp);
 					tmp = c;
 					
 				}
@@ -125,23 +157,33 @@ namespace English
 					if (c == '\'')
 					{
 						tmp += c;
-						//last_c = c;
+						last_c = c;
 						continue;
 					}
 					else
 					{
-						_tokens.push_back(parseToken(tmp));
+						parseToken(tmp);
 						tmp = c;
 					}
 					break;
 					
 					case Number:
-					tmp += c;
-					break;
+					if (c == ',' || c == '.')
+					{
+						tmp += c;
+						break;
+					}
+					
+					case Punc:
+					if (c == '.' && last_c == '.')
+					{
+						tmp += c;
+						break;
+					}
 					
 					
 					default:
-					_tokens.push_back(parseToken(tmp));
+					parseToken(tmp);
 					tmp = c;
 				}
 				last = Punc;
@@ -155,7 +197,7 @@ namespace English
 					break;
 					
 					default:
-					_tokens.push_back(parseToken(tmp));
+					parseToken(tmp);
 					tmp = c;
 				}
 				last = Whitespace;
@@ -165,7 +207,7 @@ namespace English
 				switch (last)
 				{
 					default:
-					_tokens.push_back(parseToken(tmp));
+					parseToken(tmp);
 					tmp = c;
 				}
 				last = Symbol;
@@ -181,23 +223,43 @@ namespace English
 				throw std::exception();
 			}
 			
-			//last_c = c;
+			last_c = c;
+		}
 		}
 		
 		auto clearNulls = [](auto& tokens)
 		{
-			decltype(tokens.begin()) it;
-			while ((it = std::find(tokens.begin(), tokens.end(), (std::shared_ptr<Internal::Token>)NULL)) != tokens.end())
+			//bool reachedEnd = false;
+			int j;
+			for (int i = 0; i < tokens.size(); i++)
 			{
-				tokens.erase(it);
+				if (tokens[i] == NULL)
+				{
+					for (j = i+1; j < tokens.size(); j++)
+					{
+						if (tokens[j] != NULL)
+						{
+							tokens[i] = tokens[j];
+							tokens[j] = NULL;
+							break;
+						}
+					}
+					if (j == tokens.size())
+					{
+						tokens.erase(tokens.begin()+i, tokens.end());
+						break;
+					}
+				}
+				
 			}
+			
 		};
 		
 		auto simplifyTokens = [clearNulls](auto& tokens)
 		{
 		clearNulls(tokens);
 		
-		std::map<int, std::vector<std::shared_ptr<Internal::Token>>> hashTable;
+		std::map<int, std::vector<typename std::remove_reference<decltype(tokens[0])>::type>> hashTable;
 		
 		int checksum;
 		std::string text;
@@ -233,6 +295,14 @@ namespace English
 		
 		
 		
+		
+		
+		
+		
+		
+		
+		
+		//Combine adjacent exclamation and question marks
 		simplifyTokens(_tokens);
 		auto onlyExcAndQuest = [](const std::string str) -> bool
 		{
@@ -248,7 +318,7 @@ namespace English
 		bool lastWasPunc = false;
 		if (_tokens.size() > 0)
 		{
-			lastWasPunc = (_tokens[0]->type() == "punctuation");
+			lastWasPunc = (_tokens[0]->type() == Punctuation);
 		}
 		int lastIndex = 0;
 		for (int i = 1; i < _tokens.size(); i++)
@@ -257,7 +327,7 @@ namespace English
 			{
 				continue;
 			}
-			if (_tokens[i]->type() == "punctuation")
+			if (_tokens[i]->type() == Punctuation)
 			{
 				if (lastWasPunc)
 				{
@@ -283,31 +353,211 @@ namespace English
 		simplifyTokens(_tokens);
 		
 		
-		std::vector<int> sentenceEndIndexes;
-		for (int i = 0; i < tokens.size(); i++)
+		
+		//Insert tokens into categories
 		{
-			if (tokens[i] == NULL)
-			{
-				continue;
-			}
-			if (tokens[i]->type() != "punctuation")
-			{
-				continue;
-			}
+			_words.clear();
+			_punctuation.clear();
+			_symbols.clear();
+			_numbers.clear();
 			
-			for (auto c : tokens[i]->text())
+			for (auto token : tokens)
 			{
-				if (endsSentence(c))
+				switch (token->type())
 				{
-					sentenceEndIndexes.push_back(i);
+					case Word:
+					_words.insert(std::dynamic_pointer_cast<Internal::Word>(token));
 					break;
+					
+					case Number:
+					_numbers.insert(std::dynamic_pointer_cast<Internal::Number>(token));
+					break;
+					
+					case Symbol:
+					_symbols.insert(std::dynamic_pointer_cast<Internal::Symbol>(token));
+					break;
+					
+					case Punctuation:
+					_punctuation.insert(std::dynamic_pointer_cast<Internal::Punctuation>(token));
+					break;
+					
+					case Whitespace:
+					break;
+					
+					default:
+					std::cerr << "Unknown token type of \"" << token->text() << "\"!\n";
+					throw std::exception();
 				}
 			}
+			
 		}
 		
 		
 		
-		std::cerr << "Sentence enders: " << sentenceEndIndexes.size() << "\n";
+		//Parse parentheses/brackets
+		{
+			bool openChar[2] = {false, false};
+			std::function<int(const int, bool*, const char)> parsePB;
+			
+			parsePB = [&](const int index, bool* openChar, const char target) -> int
+			{
+				std::string text;
+				for (int i = index+1; i < tokens.size(); i++)
+				{
+					if (tokens[i]->type() == Punctuation)
+					{
+						text = tokens[i]->text();
+						if (text == "(")
+						{
+							bool alreadyTrue = openChar[0];
+							openChar[0] = true;
+							i = parsePB(i, openChar, ')');
+							openChar[0] = alreadyTrue;
+						}
+						else if (text == "[")
+						{
+							bool alreadyTrue = openChar[1];
+							openChar[1] = true;
+							i = parsePB(i, openChar, ']');
+							openChar[1] = alreadyTrue;
+						}
+						else if (text == ")")
+						{
+							if (openChar[0])
+							{
+								if (target != ')')
+								{
+									return i-1;
+								}
+								std::vector<std::shared_ptr<Internal::Token>> segment(tokens.begin()+index+1, tokens.begin()+i-1);
+								clearNulls(segment);
+								auto ptr = std::make_shared<Internal::Parentheses>(std::dynamic_pointer_cast<Internal::Punctuation>(tokens[index]), segment, std::dynamic_pointer_cast<Internal::Punctuation>(tokens[i]));
+								_tokens[index] = ptr;
+								for (int j = index+1; j <= i; j++)
+								{
+									_tokens[j] = NULL;
+								}
+								return i+1;
+							}
+						}
+						else if (text == "]")
+						{
+							if (openChar[1])
+							{
+								if (target != ']')
+								{
+									return i-1;
+								}
+								std::vector<std::shared_ptr<Internal::Token>> segment(tokens.begin()+index+1, tokens.begin()+i-1);
+								clearNulls(segment);
+								auto ptr = std::make_shared<Internal::Parentheses>(std::dynamic_pointer_cast<Internal::Punctuation>(tokens[index]), segment, std::dynamic_pointer_cast<Internal::Punctuation>(tokens[i]));
+								_tokens[index] = ptr;
+								for (int j = index+1; j <= i; j++)
+								{
+									_tokens[j] = NULL;
+								}
+								return i+1;
+							}
+						}
+					}
+				}
+				return tokens.size();
+			};
+			
+			
+			
+			
+			
+			
+			std::string text;
+			for (int i = 0; i < tokens.size(); i++)
+			{
+				
+				if (tokens[i]->type() == Punctuation)
+				{
+					text = tokens[i]->text();
+					if (text == "(")
+					{
+						openChar[0] = true;
+						i = parsePB(i, openChar, ')');
+						openChar[0] = false;
+					}
+					else if (text == "[")
+					{
+						openChar[1] = true;
+						i = parsePB(i, openChar, ']');
+						openChar[1] = false;
+					}
+				}
+			}
+			
+		}
+		
+		simplifyTokens(_tokens);
+		
+		
+		
+		
+		
+		
+		
+		//Parse into sentences
+		{
+			std::vector<int> sentenceEndIndexes;
+			for (int i = 0; i < tokens.size(); i++)
+			{
+				if (tokens[i] == NULL)
+				{
+					continue;
+				}
+				if (tokens[i]->type() == Punctuation)
+				{
+					for (auto c : tokens[i]->text())
+					{
+						if (endsSentence(c))
+						{
+							sentenceEndIndexes.push_back(i);
+							break;
+						}
+					}
+				}
+			}
+		
+		
+			int startIndex = 0;
+			for (int i = 0; i < sentenceEndIndexes.size(); i++)
+			{
+				
+				std::vector<std::shared_ptr<Internal::Token>> segment(tokens.begin()+startIndex, tokens.begin()+sentenceEndIndexes[i]);
+				auto ptr = std::make_shared<Internal::Sentence>(segment, std::dynamic_pointer_cast<Internal::Punctuation>(tokens[sentenceEndIndexes[i]]));
+				_tokens[startIndex] = ptr;
+				//_sentences.insert(ptr);
+				for (int j = startIndex+1; j <= sentenceEndIndexes[i]; j++)
+				{
+					_tokens[j] = NULL;
+				}
+				startIndex = sentenceEndIndexes[i]+1;
+			}
+		}
+		
+		simplifyTokens(_tokens);
+		
+		
+		//DEBUG
+		{
+		std::unordered_set<std::string> strs;
+		std::string text;
+		for (auto w : words)
+		{
+			text = w->text();
+			if (strs.count(text) > 0)
+			{
+				std::cerr << "Duplicate found: " << text << "\n";
+				throw std::exception();
+			}
+			strs.insert(text);
+		}
+		}
 	}
 	
 	
@@ -330,9 +580,59 @@ namespace English
 	}
 	
 	
+	std::vector<std::shared_ptr<const Internal::Token>> Analyzer::expand() const
+	{
+		std::vector<std::shared_ptr<const Internal::Token>> eTokens;
+		
+		std::function<void(const std::shared_ptr<const Internal::Token>)> getTokens;
+		
+		getTokens = [&getTokens, &eTokens] (const std::shared_ptr<const Internal::Token> token)
+		{
+			auto subs = token->expand();
+			if (subs.size() > 1)
+			{
+				for (auto subToken : subs)
+				{
+					getTokens(subToken);
+				}
+			}
+			else
+			{
+				eTokens.push_back(subs[0]);
+			}
+		};
+		
+		for (auto token : tokens)
+		{
+			getTokens(token);
+		}
+		
+		
+		return eTokens;
+	}
 	
 	
-	std::shared_ptr<Internal::Token> parseToken(const std::string text)
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	void Analyzer::parseToken(const std::string text)
 	{
 		bool letters = false;
 		bool numbers = false;
@@ -349,16 +649,6 @@ namespace English
 			symbols |= isSymbol(c);
 		}
 		
-		if (!(letters || numbers || punctuation || whitespaces || symbols))
-		{
-			std::cerr << "Indeterminate: \"" << text << "\"\n";
-			for (auto c : text)
-			{
-				std::cerr << "#" << (int)c << "\tSym: " << isSymbol(c) << "\n";
-			}
-			throw std::exception();
-		}
-		
 		
 		if (whitespaces)
 		{
@@ -373,35 +663,37 @@ namespace English
 			}
 			else
 			{
-				return std::make_shared<Internal::Whitespace>(text);
+				_tokens.push_back(std::make_shared<Internal::Whitespace>(text));
 			}
 		}
 		else if (symbols)
 		{
-			return std::make_shared<Internal::Symbol>(text);
+			_tokens.push_back(std::make_shared<Internal::Symbol>(text));
 		}
 		else if (letters)
 		{
-			return std::make_shared<Internal::Word>(text);
+			auto ptr = std::make_shared<Internal::Word>(text);
+			_tokens.push_back(ptr);
+			//_words.insert(ptr);
 		}
 		else if (punctuation)
 		{
 			if (numbers)
 			{
-				return std::make_shared<Internal::Number>(text);
+				_tokens.push_back(std::make_shared<Internal::Number>(text));
 			}
 			else
 			{
-				return std::make_shared<Internal::Punctuation>(text);
+				_tokens.push_back(std::make_shared<Internal::Punctuation>(text));
 			}
 		}
 		else if (numbers)
 		{
-			return std::make_shared<Internal::Number>(text);
+			_tokens.push_back(std::make_shared<Internal::Number>(text));
 		}
 		else
 		{
-			throw std::exception();
+			throw AnalyzerParseException().Msg("\"" + text + "\"");
 		}
 	}
 }

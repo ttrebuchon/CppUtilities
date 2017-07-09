@@ -8,3 +8,4 @@
 #include "Symbol.h"
 #include "CompositeToken.h"
 #include "Sentence.h"
+#include "Parentheses.h"

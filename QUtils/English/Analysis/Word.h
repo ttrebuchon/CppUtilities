@@ -17,7 +17,7 @@ namespace Internal
 		Word();
 		
 		virtual std::string text() const override;
-		virtual std::string type() const override { return "word"; }
+		virtual TokenType type() const override { return TokenType::Word; }
 	};
 }
 }

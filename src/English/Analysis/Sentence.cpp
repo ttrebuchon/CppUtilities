@@ -16,6 +16,13 @@ namespace Internal
 	{
 		return CompositeToken::text() + punc->text();
 	}
+	
+	std::vector<std::shared_ptr<const Token>> Sentence::expand() const
+	{
+		std::vector<std::shared_ptr<const Token>> v(this->tokens.begin(), this->tokens.end());
+		v.push_back(punc);
+		return v;
+	}
 }
 }
 }
