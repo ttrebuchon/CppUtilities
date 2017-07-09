@@ -399,12 +399,30 @@ namespace Math
 	
 	template <int Dims1, int Dims2, typename Elem, typename Index, template <int, typename, typename> typename T, template <int, typename, typename> typename H>
 	tensor_t<Dims1+Dims2-2, Elem, Index> MatrixContract(std::shared_ptr<T<Dims1, Elem, Index>>, std::shared_ptr<H<Dims2, Elem, Index>>);
+	
+	extern template class Matrix<2, double, int>;
+	extern template class Matrix<1, double, int>;
+	
 }
 }
+
+
 
 #include "FuncMatrix.h"
 #include "DataMatrix.h"
 #include "DataMatrix.hpp"
 
 #include "tensor_t.h"
+namespace QUtils {
+namespace Math {
+extern template class tensor_t<2, double, int>;
+extern template class tensor_t<1, double, int>;
+
+extern template class FuncMatrix<2, double, int>;
+extern template class FuncMatrix<1, double, int>;
+
+extern template class DataMatrix<2, double, int>;
+extern template class DataMatrix<1, double, int>;
+}
+}
 #include "Matrix.hpp"
