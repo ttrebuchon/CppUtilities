@@ -102,6 +102,7 @@ namespace English
 		Internal::Token_Set<Internal::Symbol> _symbols;
 		Internal::Token_Set<Internal::Punctuation> _punctuation;
 		Internal::Token_Set<Internal::Sentence> _sentences;
+		Internal::Token_Set<Internal::Token> _distinctTokens;
 		
 		
 		
@@ -125,6 +126,7 @@ namespace English
 		const Internal::Token_Set<Internal::Symbol>& symbols;
 		const Internal::Token_Set<Internal::Punctuation>& punctuation;
 		const Internal::Token_Set<Internal::Sentence>& sentences;
+		const Internal::Token_Set<Internal::Token>& distinctTokens;
 		
 		
 		

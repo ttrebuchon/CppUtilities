@@ -6,7 +6,7 @@
 #include <QUtils/Exception/Exception.h>
 #include <iostream>
 #include <map>
-#include <type_traits>
+#include <queue>
 
 namespace QUtils
 {
@@ -33,7 +33,23 @@ namespace English
 	
 	
 	
-	Analyzer::Analyzer() : _contents(), _tokens(), _words(Internal::init_token_set<Internal::Word>()), _numbers(Internal::init_token_set<Internal::Number>()), _symbols(Internal::init_token_set<Internal::Symbol>()), _punctuation(Internal::init_token_set<Internal::Punctuation>()), _sentences(Internal::init_token_set<Internal::Sentence>()),  contents(_contents), tokens(_tokens), words(_words), numbers(_numbers), symbols(_symbols), punctuation(_punctuation), sentences(_sentences)
+	Analyzer::Analyzer() : 
+	_contents(),
+	_tokens(),
+	 _words(Internal::init_token_set<Internal::Word>()),
+	 _numbers(Internal::init_token_set<Internal::Number>()),
+	 _symbols(Internal::init_token_set<Internal::Symbol>()),
+	 _punctuation(Internal::init_token_set<Internal::Punctuation>()),
+	 _sentences(Internal::init_token_set<Internal::Sentence>()),
+	 _distinctTokens(Internal::init_token_set<Internal::Token>()),
+	 contents(_contents),
+	 tokens(_tokens),
+	 words(_words),
+	 numbers(_numbers),
+	 symbols(_symbols),
+	 punctuation(_punctuation),
+	 sentences(_sentences),
+	 distinctTokens(_distinctTokens)
 	{
 		
 	}
@@ -503,7 +519,8 @@ namespace English
 		
 		//Parse into sentences
 		{
-			std::vector<int> sentenceEndIndexes;
+			std::queue<int> sentenceStartIndexes;
+			std::queue<int> sentenceEndIndexes;
 			for (int i = 0; i < tokens.size(); i++)
 			{
 				if (tokens[i] == NULL)
@@ -516,31 +533,69 @@ namespace English
 					{
 						if (endsSentence(c))
 						{
-							sentenceEndIndexes.push_back(i);
+							sentenceEndIndexes.push(i);
 							break;
 						}
+					}
+				}
+				else if (tokens[i]->type() == Word)
+				{
+					if (isCapital(tokens[i]->text()[0]))
+					{
+						sentenceStartIndexes.push(i);
 					}
 				}
 			}
 		
 		
-			int startIndex = 0;
-			for (int i = 0; i < sentenceEndIndexes.size(); i++)
+			int startIndex = -1;
+			int endIndex = -1;
+			while (sentenceStartIndexes.size() > 0)
 			{
+				while (sentenceEndIndexes.front() < sentenceStartIndexes.front() && sentenceEndIndexes.size() > 1)
+				{
+					sentenceEndIndexes.pop();
+					if (sentenceEndIndexes.size() == 0)
+					{
+						break;
+					}
+				}
+				if (sentenceEndIndexes.size() == 0)
+				{
+					break;
+				}
+				startIndex = sentenceStartIndexes.front();
+				endIndex = sentenceEndIndexes.front();
 				
-				std::vector<std::shared_ptr<Internal::Token>> segment(tokens.begin()+startIndex, tokens.begin()+sentenceEndIndexes[i]);
-				auto ptr = std::make_shared<Internal::Sentence>(segment, std::dynamic_pointer_cast<Internal::Punctuation>(tokens[sentenceEndIndexes[i]]));
+				std::vector<std::shared_ptr<Internal::Token>> segment(tokens.begin()+startIndex, tokens.begin() + endIndex);
+				auto ptr = std::make_shared<Internal::Sentence>(segment, std::dynamic_pointer_cast<Internal::Punctuation>(tokens[endIndex]));
 				_tokens[startIndex] = ptr;
-				//_sentences.insert(ptr);
-				for (int j = startIndex+1; j <= sentenceEndIndexes[i]; j++)
+				for (int j = startIndex+1; j <= endIndex; j++)
 				{
 					_tokens[j] = NULL;
 				}
-				startIndex = sentenceEndIndexes[i]+1;
+				while ((sentenceStartIndexes.size() > 0 ? (sentenceStartIndexes.front() < endIndex) : false))
+				{
+					sentenceStartIndexes.pop();
+				}
 			}
 		}
 		
 		simplifyTokens(_tokens);
+		
+		
+		//Insert sentences into category
+		{
+			_sentences.clear();
+			
+			for (auto token : tokens)
+			{
+				if (token->type() == Sentence)
+				{
+					_sentences.insert(std::dynamic_pointer_cast<Internal::Sentence>(token));
+				}
+			}
+		}
 		
 		
 		//DEBUG
@@ -553,6 +608,22 @@ namespace English
 			if (strs.count(text) > 0)
 			{
 				std::cerr << "Duplicate found: " << text << "\n";
+				throw std::exception();
+			}
+			strs.insert(text);
+		}
+		}
+		
+		//DEBUG
+		{
+		std::unordered_set<std::string> strs;
+		std::string text;
+		for (auto w : sentences)
+		{
+			text = w->text();
+			if (strs.count(text) > 0)
+			{
+				std::cerr << "Duplicate found: \"" << text << "\"\n";
 				throw std::exception();
 			}
 			strs.insert(text);

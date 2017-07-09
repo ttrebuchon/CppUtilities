@@ -3,6 +3,7 @@
 #include <QUtils/Markov/Markov.h>
 #include <QUtils/English/Analysis/Analysis.h>
 #include <QUtils/Stopwatch/Stopwatch.h>
+#include <QUtils/String/String.h>
 
 #include <fstream>
 
@@ -79,13 +80,26 @@ bool Test_English_Analysis()
 		int i = 0;
 		for (auto sen : AN.sentences)
 		{
-			dout << sen->text() << ", ";
+			QUtils::String text = sen->text();
+			if (!text.contains("[]"))
+			{
+			dout << "\"" << sen->text() << "\"\n";
 			if (i++ > 10)
 			{
-				dout << std::endl;
+				dout << "-------------\n\n";
 				break;
 			}
+			}
 		}
+	}
+	dout << std::flush;
+	{
+		std::string text;
+		for (auto token : AN.tokens)
+		{
+			text += token->text();
+		}
+		dout << "Length of full string: " << text.length() << std::endl;
 	}
 	return true;
 }
