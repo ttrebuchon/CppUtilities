@@ -7,6 +7,19 @@
 #ifdef USE_MATH
 #include <QUtils/Math/Matrix.h>
 
+namespace QUtils {
+namespace Math {
+extern template class tensor_t<2, double, int>;
+extern template class tensor_t<1, double, int>;
+
+extern template class FuncMatrix<2, double, int>;
+extern template class FuncMatrix<1, double, int>;
+
+extern template class DataMatrix<2, double, int>;
+extern template class DataMatrix<1, double, int>;
+}
+}
+
 using namespace Utils;
 using namespace Math;
 #endif
