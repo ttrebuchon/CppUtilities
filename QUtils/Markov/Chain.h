@@ -64,9 +64,9 @@ namespace Markov
 						break;
 					}
 				}
-				if (link->combined.size() <= 0)
+				if (link->totCount <= 0)
 				{
-					throw MarkovInfiniteLoopException();
+					//throw MarkovInfiniteLoopException();
 				}
 				
 				
