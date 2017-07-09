@@ -106,7 +106,7 @@ PREPROC_FLAGS := $(PREPROC_FLAGS) $(SQL_FLAGS)
 
 WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -ftemplate-backtrace-limit=0
 
-WARNINGS_ERRORS := $(WARNINGS_ERRORS) #-Wno-unused-variable -Wno-unused-but-set-variable
+WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wno-unused-variable -Wno-unused-but-set-variable
 
 WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wfatal-errors 
 
@@ -141,6 +141,8 @@ buildOC = gcc -std=c99 -c -pie
 
 $(target): $(stLibTarget).a $(libobjects) $(testobjects) makefile
 	$(CXX) -o $(target) $(CXXFLAGS) -std=c++11 $(testobjects) -L. -l$(name) $(PREPROC_FLAGS) $(LINKING)
+	$(NM) -C Tests/Nth_Poly.o >> tests.obj.txt
+	
 
 clean: 
 	rm $(libobjects)
