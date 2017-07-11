@@ -4,9 +4,13 @@
 #include <QUtils/String/String.h>
 #include <QUtils/Markov/Markov.h>
 #include <QUtils/Exception/Exception.h>
+#include <QUtils/Exception/NotImplemented.h>
 #include <iostream>
 #include <map>
 #include <queue>
+#include <set>
+#include <array>
+#include <tuple>
 
 namespace QUtils
 {
@@ -42,6 +46,11 @@ namespace English
 	 _punctuation(Internal::init_token_set<Internal::Punctuation>()),
 	 _sentences(Internal::init_token_set<Internal::Sentence>()),
 	 _distinctTokens(Internal::init_token_set<Internal::Token>()),
+	 _subTokens(),
+	 _tokenIndexes(),
+	 _equivalents(),
+	 _tokensByText(),
+	 _clusteringRatings(),
 	 contents(_contents),
 	 tokens(_tokens),
 	 words(_words),
@@ -49,7 +58,11 @@ namespace English
 	 symbols(_symbols),
 	 punctuation(_punctuation),
 	 sentences(_sentences),
-	 distinctTokens(_distinctTokens)
+	 distinctTokens(_distinctTokens),
+	 subTokens(_subTokens),
+	 tokenIndexes(_tokenIndexes),
+	 equivalents(_equivalents),
+	 clusteringRatings(_clusteringRatings)
 	{
 		
 	}
@@ -82,9 +95,7 @@ namespace English
 	void Analyzer::parse()
 	{
 		{
-		QUtils::String _cont = _contents;
-		_cont = _cont.replace("\r\n", "\n");
-		_contents = _cont;
+		sanitize(_contents);
 		std::string tmp;
 		enum Last_t
 		{
@@ -271,7 +282,9 @@ namespace English
 			
 		};
 		
-		auto simplifyTokens = [clearNulls](auto& tokens)
+		auto& _dTokens = this->_distinctTokens;
+		
+		auto simplifyTokens = [clearNulls, &_dTokens](auto& tokens, bool addDistinct = true)
 		{
 		clearNulls(tokens);
 		
@@ -303,6 +316,10 @@ namespace English
 			if (!found)
 			{
 				hashTable[checksum].push_back(token);
+				if (addDistinct)
+				{
+				_dTokens.insert(token);
+				}
 			}
 		}
 		
@@ -319,7 +336,7 @@ namespace English
 		
 		
 		//Combine adjacent exclamation and question marks
-		simplifyTokens(_tokens);
+		simplifyTokens(_tokens, false);
 		auto onlyExcAndQuest = [](const std::string str) -> bool
 		{
 			for (auto c : str)
@@ -369,7 +386,6 @@ namespace English
 		simplifyTokens(_tokens);
 		
 		
-		
 		//Insert tokens into categories
 		{
 			_words.clear();
@@ -404,6 +420,9 @@ namespace English
 					std::cerr << "Unknown token type of \"" << token->text() << "\"!\n";
 					throw std::exception();
 				}
+				
+				auto uCopy = token->clone();
+				uCopy->toLowerCase();
 			}
 			
 		}
@@ -516,7 +535,6 @@ namespace English
 		
 		
 		
-		
 		//Parse into sentences
 		{
 			std::queue<int> sentenceStartIndexes;
@@ -568,7 +586,11 @@ namespace English
 				endIndex = sentenceEndIndexes.front();
 				
 				std::vector<std::shared_ptr<Internal::Token>> segment(tokens.begin()+startIndex, tokens.begin() + endIndex);
+				
+				clearNulls(segment);
+				
 				auto ptr = std::make_shared<Internal::Sentence>(segment, std::dynamic_pointer_cast<Internal::Punctuation>(tokens[endIndex]));
+				
 				_tokens[startIndex] = ptr;
 				for (int j = startIndex+1; j <= endIndex; j++)
 				{
@@ -579,6 +601,18 @@ namespace English
 					sentenceStartIndexes.pop();
 				}
 			}
+		}
+		
+		{
+			std::vector<std::shared_ptr<Internal::Token>> nTokens;
+			for (auto token : tokens)
+			{
+				if (token != NULL)
+				{
+					nTokens.push_back(token);
+				}
+			}
+			this->_tokens = nTokens;
 		}
 		
 		simplifyTokens(_tokens);
@@ -598,37 +632,183 @@ namespace English
 		}
 		
 		
-		//DEBUG
+		//Index the tokens
 		{
-		std::unordered_set<std::string> strs;
-		std::string text;
-		for (auto w : words)
-		{
-			text = w->text();
-			if (strs.count(text) > 0)
+			auto& m = this->_tokenIndexes;
+			int fullIndex = 0;
+			for (int i = 0; i < this->tokens.size(); i++)
 			{
-				std::cerr << "Duplicate found: " << text << "\n";
-				throw std::exception();
+				m[this->tokens[i]].push_back(fullIndex);
+				auto subM = this->tokens[i]->indexes();
+				int inc = 0;
+				for (auto pair : subM)
+				{
+					for (auto subIndex : pair.second)
+					{
+						m[pair.first].push_back(subIndex+fullIndex);
+						if (subIndex > inc)
+						{
+							inc = subIndex;
+						}
+					}
+				}
+				++inc;
+				fullIndex += inc;
 			}
-			strs.insert(text);
-		}
 		}
 		
-		//DEBUG
+		
+		//Map tokens by text
 		{
-		std::unordered_set<std::string> strs;
-		std::string text;
-		for (auto w : sentences)
-		{
-			text = w->text();
-			if (strs.count(text) > 0)
+			for (auto token : distinctTokens)
 			{
-				std::cerr << "Duplicate found: \"" << text << "\"\n";
+				_tokensByText[token->text()] = token;
+			}
+		}
+		
+	}
+	
+	
+	
+	
+	void Analyzer::calcSubtokens()
+	{
+		_subTokens.clear();
+		std::queue<std::shared_ptr<Internal::Token>> waiting;
+		std::unordered_set<std::shared_ptr<Internal::Token>> processed;
+		for (auto token : tokens)
+		{
+			if (processed.count(token) <= 0)
+			{
+				waiting.push(token);
+				processed.insert(token);
+			}
+		}
+		
+		while (waiting.size() > 0)
+		{
+			auto next = waiting.front();
+			auto subs = next->subTokens();
+			for (auto sub : subs)
+			{
+				_subTokens[sub].insert(next);
+				
+				if (processed.count(sub) <= 0)
+				{
+					waiting.push(sub);
+					processed.insert(sub);
+				}
+			}
+			waiting.pop();
+		}
+		
+	}
+	
+	
+	
+	void Analyzer::calcEquivalents()
+	{
+		_equivalents.clear();
+		std::map<std::string, std::set<std::shared_ptr<Internal::Token>>> values;
+		std::map<std::shared_ptr<Internal::Token>, std::string> lowerStrs;
+		
+		for (auto token : distinctTokens)
+		{
+			if (lowerStrs.count(token) > 0)
+			{
 				throw std::exception();
 			}
-			strs.insert(text);
+			std::string text = QUtils::String(token->text());
+			lowerStrs[token] = text;
+			values[text].insert(token);
 		}
+		
+		for (auto pair : values)
+		{
+			for (auto token : pair.second)
+			{
+				_equivalents[token] = pair.second;
+				_equivalents[token].erase(token);
+			}
 		}
+	}
+	
+	
+	void Analyzer::calcDistances()
+	{
+		std::set<std::shared_ptr<Internal::Token>> processed;
+		std::map<std::shared_ptr<Internal::Token>, std::vector<int>> indexes;
+		
+		for (auto word : words)
+		{
+			if (processed.count(word) > 0)
+			{
+				continue;
+			}
+			auto wIndexes = _tokenIndexes[word];
+			for (auto i : wIndexes)
+			{
+				indexes[word].push_back(i);
+			}
+			processed.insert(word);
+			for (auto eq : equivalents.at(word))
+			{
+				wIndexes = _tokenIndexes[eq];
+			for (auto i : wIndexes)
+			{
+				indexes[word].push_back(i);
+			}
+			processed.insert(eq);
+			}
+		}
+		
+		//Formula: N/n*sqrt(sum(i, sum(j, 1/(Index(i) - Index(j))^2)))
+		
+		for (auto pair : indexes)
+		{
+			auto ptr = std::make_shared<std::vector<std::pair<int, long double>>>();
+			
+			
+			auto word = std::dynamic_pointer_cast<Internal::Word>(pair.first);
+			_clusteringRatings[word] = ptr;
+			
+			for (auto eq : _equivalents[pair.first])
+			{
+				word = std::dynamic_pointer_cast<Internal::Word>(eq);
+				_clusteringRatings[word] = ptr;
+				
+			}
+			
+			
+			word = std::dynamic_pointer_cast<Internal::Word>(pair.first);
+			
+			long double val;
+			for (auto i = 0; i < pair.second.size(); ++i)
+			{
+				val = 0;
+				auto index = pair.second[i];
+				
+				for (auto j = 0; j < pair.second.size(); ++j)
+				{
+					if (index == pair.second[j])
+					{
+						continue;
+					}
+					val += sqrt(static_cast<long double>(1)/((index - pair.second[j])*(index - pair.second[j])));
+				}
+				int occurrences = this->_tokenIndexes.at(pair.first).size();
+				
+				for (auto eq : equivalents.at(pair.first))
+				{
+					occurrences += _tokenIndexes.at(eq).size();
+				}
+				
+				val *= static_cast<long double>(1)/occurrences;
+				ptr->emplace_back(index, val);
+			}
+		}
+		
+		//throw NotImp();
 	}
 	
 	
@@ -680,6 +860,26 @@ namespace English
 		
 		
 		return eTokens;
+	}
+	
+	
+	
+	std::shared_ptr<const Internal::Token> Analyzer::getToken(std::string text) const
+	{
+		if (_tokensByText.count(text) > 0)
+		{
+			return _tokensByText.at(text);
+		}
+		return NULL;
+	}
+	
+	std::shared_ptr<Internal::Token> Analyzer::getToken(std::string text)
+	{
+		if (_tokensByText.count(text) > 0)
+		{
+			return _tokensByText.at(text);
+		}
+		return NULL;
 	}
 	
 	
@@ -766,6 +966,28 @@ namespace English
 		{
 			throw AnalyzerParseException().Msg("\"" + text + "\"");
 		}
+	}
+	
+	unsigned int Analyzer::sanitize(std::string& str)
+	{
+		unsigned int count = 0;
+		
+		std::tuple<std::string, std::string> bads[] = { std::make_tuple("‘", "'"), std::make_tuple("’", "'"), std::make_tuple("“", "\""), std::make_tuple("”", "\""), {"\r\n", "\n"}};
+		
+		decltype(str.find("")) it = 0;
+		for (auto bad : bads)
+		{
+			it = 0;
+			while ((it = str.find(std::get<0>(bad), it)) != std::string::npos)
+			{
+				str.replace(it, std::get<0>(bad).length(), std::get<1>(bad));
+				count++;
+			}
+		}
+		
+		
+		
+		return count;
 	}
 }
 }

@@ -50,6 +50,19 @@ namespace Internal
 		}
 		return true;
 	}
+	
+	void CompositeToken::toLowerCase()
+	{
+		for (auto t : tokens)
+		{
+			t->toLowerCase();
+		}
+	}
+	
+	std::vector<std::shared_ptr<Token>> CompositeToken::subTokens() const
+	{
+		return tokens;
+	}
 }
 }
 }

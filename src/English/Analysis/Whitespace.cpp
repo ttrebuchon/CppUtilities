@@ -16,6 +16,17 @@ namespace Internal
 	{
 		return space;
 	}
+	
+	std::shared_ptr<Token> Whitespace::clone() const
+	{
+		return std::make_shared<Whitespace>(space);
+	}
+	
+	std::map<std::shared_ptr<Token>, std::vector<unsigned int>> Whitespace::indexes() const
+	 {
+	 	std::map<std::shared_ptr<Token>, std::vector<unsigned int>> m;
+	 	return m;
+	 }
 }
 }
 }

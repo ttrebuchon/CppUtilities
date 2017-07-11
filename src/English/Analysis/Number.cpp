@@ -22,6 +22,17 @@ namespace Internal
 	{
 		return num;
 	}
+	
+	std::shared_ptr<Token> Number::clone() const
+	{
+		return std::make_shared<Number>(num);
+	}
+	
+	std::map<std::shared_ptr<Token>, std::vector<unsigned int>> Number::indexes() const
+	 {
+	 	std::map<std::shared_ptr<Token>, std::vector<unsigned int>> m;
+	 	return m;
+	 }
 }
 }
 }

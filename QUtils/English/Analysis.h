@@ -5,7 +5,9 @@
 #include <vector>
 #include <memory>
 #include <unordered_set>
+#include <set>
 #include <functional>
+#include <map>
 
 namespace QUtils
 {
@@ -32,7 +34,7 @@ namespace English
 		using Token_Set = std::unordered_set<std::shared_ptr<Key>, std::hash<std::shared_ptr<Key>>, std::function<bool(const std::shared_ptr<Key>, const std::shared_ptr<Key>)>>;*/
 		
 		template <typename Key>
-		using Token_Set = std::unordered_set<std::shared_ptr<Key>>;
+		using Token_Set = std::set<std::shared_ptr<Key>>;
 	};
 	
 	inline bool isLetterOrNumber(const char c)
@@ -104,9 +106,21 @@ namespace English
 		Internal::Token_Set<Internal::Sentence> _sentences;
 		Internal::Token_Set<Internal::Token> _distinctTokens;
 		
+		std::map<std::shared_ptr<Internal::Token>, std::unordered_set<std::shared_ptr<Internal::Token>>> _subTokens;
+		
+		std::map<std::shared_ptr<Internal::Token>, std::vector<unsigned int>> _tokenIndexes;
+		
+		std::map<std::shared_ptr<Internal::Token>, std::set<std::shared_ptr<Internal::Token>>> _equivalents;
+		
+		std::map<std::string, std::shared_ptr<Internal::Token>> _tokensByText;
+		
+		std::map<std::shared_ptr<Internal::Word>, std::shared_ptr<std::vector<std::pair<int, long double>>>> _clusteringRatings;
+		
+		
 		
 		
 		void parseToken(const std::string);
+		unsigned int sanitize(std::string&);
 		
 		
 		
@@ -127,14 +141,24 @@ namespace English
 		const Internal::Token_Set<Internal::Punctuation>& punctuation;
 		const Internal::Token_Set<Internal::Sentence>& sentences;
 		const Internal::Token_Set<Internal::Token>& distinctTokens;
+		const std::map<std::shared_ptr<Internal::Token>, std::unordered_set<std::shared_ptr<Internal::Token>>>& subTokens;
+		const std::map<std::shared_ptr<Internal::Token>, std::vector<unsigned int>>& tokenIndexes;
+		const std::map<std::shared_ptr<Internal::Token>, std::set<std::shared_ptr<Internal::Token>>>& equivalents;
+		const std::map<std::shared_ptr<Internal::Word>, std::shared_ptr<std::vector<std::pair<int, long double>>>>& clusteringRatings;
 		
 		
 		
 		void parse();
+		void calcSubtokens();
+		void calcEquivalents();
+		void calcDistances();
 		
 		std::shared_ptr<Markov::Markov<std::shared_ptr<Internal::Token>>> markov(bool separateBySentence = true) const;
 		
 		std::vector<std::shared_ptr<const Internal::Token>> expand() const;
+		
+		std::shared_ptr<const Internal::Token> getToken(std::string) const;
+		std::shared_ptr<Internal::Token> getToken(std::string);
 		
 	};
 }

@@ -25,6 +25,17 @@ namespace Internal
 	{
 		return punc;
 	}
+	
+	std::shared_ptr<Token> Punctuation::clone() const
+	{
+		return std::make_shared<Punctuation>(punc);
+	}
+	
+	std::map<std::shared_ptr<Token>, std::vector<unsigned int>> Punctuation::indexes() const
+	 {
+	 	std::map<std::shared_ptr<Token>, std::vector<unsigned int>> m;
+	 	return m;
+	 }
 }
 }
 }

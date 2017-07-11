@@ -23,6 +23,14 @@ namespace Internal
 		virtual TokenType type() const override { return TokenType::Sentence; }
 		
 		virtual std::vector<std::shared_ptr<const Token>> expand() const override;
+		
+		virtual void toLowerCase() override;
+		
+		virtual std::shared_ptr<Token> clone() const override;
+		
+		virtual std::map<std::shared_ptr<Token>, std::vector<unsigned int>> indexes() const override;
+		
+		virtual std::vector<std::shared_ptr<Token>> subTokens() const override;
 	};
 }
 }

@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <map>
 #include "TokenType.h"
 
 namespace QUtils
@@ -29,6 +30,14 @@ namespace Internal
 			v.push_back(shared_from_this()); 
 			return v;
 		}
+		
+		virtual void toLowerCase() = 0;
+		
+		virtual std::shared_ptr<Token> clone() const = 0;
+		
+		virtual std::map<std::shared_ptr<Token>, std::vector<unsigned int>> indexes() const = 0;
+		
+		virtual std::vector<std::shared_ptr<Token>> subTokens() const = 0;
 	};
 }
 }

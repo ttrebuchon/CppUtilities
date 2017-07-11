@@ -26,11 +26,16 @@ bool Test_English_Analysis()
 	}
 	dout << "Letters/Numbers: " << letters_nums << std::endl;
 	
+	QUtils::Stopwatch::Stopwatch sw;
+	sw.start();
+	
 	AN.parse();
+	sw.stop();
+	dout << "Took " << sw.value() << std::endl;
 	
 	dout << "Tokens Count: " << AN.tokens.size() << "\n";
 	
-	/*QUtils::Stopwatch::Stopwatch sw;
+	/*sw.reset();
 	sw.start();
 	
 	
@@ -101,5 +106,40 @@ bool Test_English_Analysis()
 		}
 		dout << "Length of full string: " << text.length() << std::endl;
 	}
+	
+	dout << "Distinct Tokens: " << AN.distinctTokens.size() << "\n";
+	//dout << "Uniform Token Count: " << AN.uniformTokens.size() << std::endl;
+	
+	auto anubisToken = std::dynamic_pointer_cast<QUtils::English::Internal::Word>(AN.getToken("Anubis"));
+	assert_ex(anubisToken != NULL);
+	dout << "Anubis Token: \"" << anubisToken->text() << "\"\n";
+	
+	
+	sw.reset();
+	sw.start();
+	AN.calcSubtokens();
+	sw.stop();
+	dout << "Calculated Subtokens.\n";
+	dout << "Took " << sw.value() << std::endl;
+	
+	
+	sw.reset();
+	sw.start();
+	AN.calcEquivalents();
+	sw.stop();
+	dout << "Calculated Equivalents.\n";
+	dout << "Took " << sw.value() << std::endl;
+	
+	sw.reset();
+	/*sw.start();
+	AN.calcDistances();
+	sw.stop();
+	dout << "Calculated Distances.\n";
+	dout << "Took " << sw.value() << std::endl;
+	
+	dout << "Anubis clustering count: " << AN.clusteringRatings.at(anubisToken)->size() << "\n";*/
+	
+	
+	
 	return true;
 }

@@ -15,6 +15,17 @@ namespace Internal
 	{
 		return symbol;
 	}
+	
+	std::shared_ptr<Token> Symbol::clone() const
+	{
+		return std::make_shared<Symbol>(symbol);
+	}
+	
+	 std::map<std::shared_ptr<Token>, std::vector<unsigned int>> Symbol::indexes() const
+	 {
+	 	std::map<std::shared_ptr<Token>, std::vector<unsigned int>> m;
+	 	return m;
+	 }
 }
 }
 }
