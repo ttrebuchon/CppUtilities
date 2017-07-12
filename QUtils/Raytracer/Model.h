@@ -13,6 +13,9 @@ namespace Raytracer
 	class Material;
 	class Texture;
 	class Light;
+	class Image;
+	template <class T>
+	class BitmapImg;
 	
 	class Model : public std::enable_shared_from_this<Model>, public RaytracerItem
 	{
@@ -32,8 +35,8 @@ namespace Raytracer
 		Model(std::string name);
 		virtual ~Model();
 		
-		image_t go(int x, int y);
-		virtual void go(image_t const, const int x, const int y);
+		BitmapImg<pixel_t>* go(int x, int y);
+		virtual void go(Image* const, const int x, const int y);
 		
 		std::shared_ptr<Camera> initCamera(const double w, const double h, const vector_t viewpoint);
 		

@@ -1,5 +1,6 @@
-#include <Raytracer/Camera.h>
-#include <Exception/NullPointer.h>
+#include <QUtils/Raytracer/Camera.h>
+#include <QUtils/Exception/NullPointer.h>
+#include <QUtils/Raytracer/Image.h>
 
 namespace Util
 {
@@ -24,16 +25,21 @@ namespace Raytracer
 		npix = clamp(npix);
 		pixel_t scaled(npix.R, npix.G, npix.B);
 		
-		int row = dims[1] - y - 1;
+		this->img->setPixel(x, y, scaled);
+		
+		/*int row = dims[1] - y - 1;
 		int col = x;
-		img[dims[0]*row + col] = scaled;
+		img[dims[0]*row + col] = scaled;*/
+		
+		
 	}
 	
 	pixel_t Camera::getPixel(int x, int y) const
 	{
-		int row = dims[1] - y - 1;
+		/*int row = dims[1] - y - 1;
 		int col = x;
-		return img[dims[0]*row + col];
+		return img[dims[0]*row + col];*/
+		return img->getPixel(x, y);
 	}
 	
 	
@@ -71,7 +77,7 @@ namespace Raytracer
 		dims[1] = y;
 	}
 	
-	void Camera::setImg(image_t img)
+	void Camera::setImg(Image* img)
 	{
 		this->img = img;
 	}

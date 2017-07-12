@@ -1,11 +1,12 @@
-#include <Raytracer/Model.h>
-#include <Raytracer/Camera.h>
-#include <Raytracer/Object.h>
-#include <Raytracer/Light.h>
-#include <Raytracer/Material.h>
-#include <Raytracer/Texture.h>
-#include <Exception/NotImplemented.h>
-#include <Exception/Exception.h>
+#include <QUtils/Raytracer/Model.h>
+#include <QUtils/Raytracer/Camera.h>
+#include <QUtils/Raytracer/Object.h>
+#include <QUtils/Raytracer/Light.h>
+#include <QUtils/Raytracer/Material.h>
+#include <QUtils/Raytracer/Texture.h>
+#include <QUtils/Raytracer/BitmapImg.h>
+#include <QUtils/Exception/NotImplemented.h>
+#include <QUtils/Exception/Exception.h>
 
 #include <algorithm>
 
@@ -32,14 +33,14 @@ namespace Raytracer
 		
 	}
 	
-	image_t Model::go(int x, int y)
+	BitmapImg<pixel_t>* Model::go(int x, int y)
 	{
-		image_t img = new pixel_t[x*y];
+		BitmapImg<pixel_t>* img = new BitmapImg<pixel_t>(x, y);
 		this->go(img, x, y);
 		return img;
 	}
 	
-	void Model::go(image_t const img, const int x, const int y)
+	void Model::go(Image* const img, const int x, const int y)
 	{
 		if (cam == NULL)
 		{

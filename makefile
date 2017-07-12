@@ -45,7 +45,7 @@ CSV_cpp = $(wildcard $(SRC)/CSV/*.cpp)
 CSV = $(CSV_cpp:.cpp=.o)
 #*/
 
-Raytracer_cpp = $(wildcard $(SRC)/Raytracer/*.cpp)
+Raytracer_cpp = $(wildcard $(SRC)/Raytracer/*.cpp) $(wildcard $(SRC)/Raytracer/**/*.cpp)
 Raytracer = $(Raytracer_cpp:.cpp=.o)
 #*/
 
@@ -106,7 +106,7 @@ PREPROC_FLAGS := $(PREPROC_FLAGS) $(SQL_FLAGS)
 
 WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -ftemplate-backtrace-limit=0
 
-WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wno-unused-variable -Wno-unused-but-set-variable
+WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wno-unused-local-typedefs #-Wno-unused-variable -Wno-unused-but-set-variable 
 
 WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wfatal-errors 
 
@@ -120,7 +120,7 @@ Curlpp_Dep = -I $(Deps_D)/curlpp/include -L $(Deps_D)/curlpp
 DEPS = -I $(Deps_D)/Castor -I ../ -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(Deps_D)/sqlite3 -L $(CLIPS_Dep) $(Curlpp_Dep)
 
 
-LINKING = -lclips++ -lsqlite3 -lcurlpp -lcurl -lz
+LINKING = -lclips++ -lsqlite3 -lcurlpp -lcurl -lz -ljpeg
 
 
 

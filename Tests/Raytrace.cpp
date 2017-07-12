@@ -1,5 +1,6 @@
 #include "../Tests_Helpers.h"
 #include <QUtils/Raytracer/Raytracer.h>
+#include <QUtils/Raytracer/Images/Images.h>
 #include <fstream>
 
 using namespace Utils;
@@ -16,7 +17,8 @@ bool Test_Raytrace()
 {
 	Model* mod = new Model("TestModel1", 40, 1);
 	double w = 8;
-	double h = 6;
+	//double h = 6;
+	double h = 4.5;
 	mod->initCamera(w, h, vector_t(w/2, h/2, 4));
 	
 	
@@ -58,29 +60,21 @@ bool Test_Raytrace()
 	
 	
 	
-	const int x = 640, y = 480;
-	//const int x = 1920, y = 1080;
-	auto img = mod->go(x, y);
-	for (auto i = img; i != img + x*y; i++)
-	{
-		//auto pix = *i;
-		//dout << "(" << pix.R << ", " << pix.G << ", " << pix.B << ")" << endl;
-	}
+	//const int x = 640, y = 480;
+	const int x = 1920, y = 1080;
+	//const int x=640, y = 360;
 	
-	dout << "Writing file..." << std::endl;
-	writePPM("Test.ppm", x, y, img);
-	/*dout << "Calculating gradient..." << std::endl;
-	auto grad = gradient(img, x, y);
-	dout << "Writing file..." << std::endl;
-	writePPM("Grad.ppm", x, y, grad);
-	dout << "Calculating Gray..." << std::endl;
-	auto gray = ::gray(img, x, y);
-	dout << "Writing file..." << std::endl;
-	writePPM("Gray.ppm", x, y, gray);
-	dout << "Calculating B&W..." << std::endl;
-	delete[] gray;
-	delete[] grad;*/
-	delete[] img;
+	//auto imgO = mod->go(x, y);
+	//QUtils::Raytracer::pixel_t* img = *(imgO);
+	
+	//dout << "Writing file..." << std::endl;
+	//writePPM("Test.ppm", x, y, img);
+	//delete imgO;
+	
+	Images::JPGImage jImg(x, y);
+	mod->go(&jImg, x, y);
+	dout << "Writing jpeg file..." << std::endl;
+	assert_ex(jImg.save("TestImg.jpg"));
 	
 	
 	
