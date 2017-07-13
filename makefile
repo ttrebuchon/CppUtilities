@@ -37,7 +37,7 @@ Sleep_cpp = $(wildcard $(SRC)/Sleep/*.cpp)
 Sleep = $(Sleep_cpp:.cpp=.o)
 #*/
 
-NeuralNet_cpp = $(wildcard $(SRC)/NeuralNet/*.cpp)
+NeuralNet_cpp = $(wildcard $(SRC)/NeuralNet/*.cpp) $(wildcard $(SRC)/NeuralNet/**/*.cpp)
 NeuralNet = $(NeuralNet_cpp:.cpp=.o)
 #*/
 
@@ -82,14 +82,12 @@ Tests = $(Tests_cpp:.cpp=.o)
 #*/
 testobjects = Tests.o $(Tests)
 
-NAMESPACE=Utils
-
-NEW_NAMESPACE=QUtils
+NAMESPACE=QUtils
 
 SQL_FLAGS = -DSQLITE_ENABLE_COLUMN_METADATA -DSQLITE_DEFAULT_MEMSTATUS=0 -DSQLITE_DEFAULT_WAL_SYNCHRONOUS=1 -DSQLITE_DEFAULT_FOREIGN_KEYS=1
 
 
-PREPROC_FLAGS = -DUtil=$(NAMESPACE) -D__NS__="$(NAMESPACE)" -D$(NEW_NAMESPACE)=$(NAMESPACE)
+PREPROC_FLAGS = -D__NS__="$(NAMESPACE)"
 
 PREPROC_FLAGS := $(PREPROC_FLAGS) -DSHORT_TEST
 
@@ -139,7 +137,7 @@ target = $(name)Tests.out
 buildOC = gcc -std=c99 -c -pie
 
 
-$(target): $(stLibTarget).a $(libobjects) $(testobjects) makefile
+$(target): $(stLibTarget).a $(testobjects) makefile $(libobjects)
 	$(CXX) -o $(target) $(CXXFLAGS) -std=c++11 $(testobjects) -L. -l$(name) $(PREPROC_FLAGS) $(LINKING)
 	$(NM) -C Tests/Nth_Poly.o >> tests.obj.txt
 	
