@@ -4,7 +4,7 @@
 
 #include "NearestNeighborTree.h"
 
-namespace Util
+namespace QUtils
 {
 	template <typename Elem, typename Dim1, typename ...Dims>
 	NearestNeighbor<Elem, Dim1, Dims...>::NearestNeighbor(std::function<Dim1(Elem*)> f1, std::function<Dims(Elem*)>... fs) : root(NULL)

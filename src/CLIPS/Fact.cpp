@@ -1,8 +1,8 @@
-#include <CLIPS/Fact.h>
+#include <QUtils/CLIPS/Fact.h>
 #include <Clips/clips.h>
 #include <iostream>
 
-namespace Util
+namespace QUtils
 {
 namespace Clips
 {

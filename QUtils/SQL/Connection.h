@@ -5,7 +5,7 @@
 
 #include <QUtils/Exception/Exception.h>
 
-namespace Util
+namespace QUtils
 {
 namespace SQL
 {

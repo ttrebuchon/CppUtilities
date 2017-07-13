@@ -3,7 +3,7 @@
 #include <string>
 #include <queue>
 
-namespace Util
+namespace QUtils
 {
 namespace English
 {

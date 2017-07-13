@@ -1,6 +1,6 @@
 #include <QUtils/SQL/Connection.h>
 
-namespace Util
+namespace QUtils
 {
 namespace SQL
 {

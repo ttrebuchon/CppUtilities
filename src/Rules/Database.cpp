@@ -1,6 +1,6 @@
-#include <Rules/Database.h>
+#include <QUtils/Rules/Database.h>
 
-namespace Util
+namespace QUtils
 {
 namespace Rules
 {

@@ -8,7 +8,7 @@
 
 bool Test_Stopwatch()
 {
-	Util::Stopwatch::Stopwatch sw;
+	QUtils::Stopwatch::Stopwatch sw;
 	sw.start();
 	auto cur = std::chrono::steady_clock::now();
 	while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - cur).count() < WAIT_PERIOD*1000)

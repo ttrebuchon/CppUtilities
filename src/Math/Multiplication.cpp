@@ -1,13 +1,13 @@
-#include <Math/Multiplication.h>
+#include <QUtils/Math/Multiplication.h>
 
-#include <Math/Num.h>
-#include <Math/Exponent.h>
-#include <Math/Division.h>
+#include <QUtils/Math/Num.h>
+#include <QUtils/Math/Exponent.h>
+#include <QUtils/Math/Division.h>
 
 #include <iostream>
 #include <algorithm>
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

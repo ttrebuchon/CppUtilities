@@ -1,7 +1,7 @@
-#include <Math/Var.h>
+#include <QUtils/Math/Var.h>
 
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

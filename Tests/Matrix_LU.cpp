@@ -9,7 +9,7 @@
 using boost::multiprecision::cpp_dec_float;
 using boost::multiprecision::number;
 
-using namespace Utils;
+using namespace QUtils;
 using namespace Math;
 
 template <typename T>
@@ -97,7 +97,7 @@ bool Matrix_LU_Run()
 		R[i] = new Num[N];
 	}
 	
-	Utils::Math::Algorithms::LUP<Num**, Num*, Num, int> LUP;
+	QUtils::Math::Algorithms::LUP<Num**, Num*, Num, int> LUP;
 	LUP.getM = getM;
 	LUP.getV = getV;
 	LUP.Decompose(M, R, P, N, 0.1);
@@ -204,7 +204,7 @@ bool Matrix_LU_Run()
 	
 	
 	
-	Utils::Stopwatch::Stopwatch sw;
+	QUtils::Stopwatch::Stopwatch sw;
 	tensor_t<2, Num> largeMat = new FuncMatrix<2, Num>([](int i, int j) {return (i*2) + j + 1;});
 	largeMat.setSize(0, N2);
 	largeMat.setSize(1, 2);

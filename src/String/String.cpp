@@ -1,5 +1,5 @@
-#include <String/String.h>
-#include <Exception/NotImplemented.h>
+#include <QUtils/String/String.h>
+#include <QUtils/Exception/NotImplemented.h>
 
 #include <iostream>
 #include <algorithm>
@@ -13,7 +13,7 @@
 #endif
 
 
-namespace Util
+namespace QUtils
 {
 	//Constructors
 	String::String(std::string str) : str(str)
@@ -552,12 +552,12 @@ namespace Util
 
 namespace std
 {
-	std::istream& getline(std::istream& is, Util::String& s)
+	std::istream& getline(std::istream& is, QUtils::String& s)
 	{
 		return getline(is, s.str);
 	}
 	
-	std::istream& getline(std::istream& is, Util::String& s, char c)
+	std::istream& getline(std::istream& is, QUtils::String& s, char c)
 	{
 		return getline(is, s.str, c);
 	}

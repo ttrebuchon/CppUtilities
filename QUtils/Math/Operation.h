@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Expression.h"
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

@@ -8,7 +8,7 @@
 #include "Matrix_Algs.h"
 #include "DataMatrix.h"
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

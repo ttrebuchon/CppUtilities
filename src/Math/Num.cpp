@@ -1,9 +1,9 @@
-#include <Math/Num.h>
+#include <QUtils/Math/Num.h>
 #include <iomanip>
 #include <sstream>
 #include <iostream>
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

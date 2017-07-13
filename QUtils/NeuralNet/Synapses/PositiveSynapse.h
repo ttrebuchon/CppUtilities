@@ -2,7 +2,7 @@
 
 #include "../Synapse.h"
 
-namespace Util
+namespace QUtils
 {
 namespace NeuralNet
 {

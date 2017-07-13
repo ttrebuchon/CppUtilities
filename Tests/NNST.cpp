@@ -4,7 +4,7 @@
 #include <climits>
 
 template <typename ...T>
-using NNT = Utils::NearestNeighbor<T...>;
+using NNT = QUtils::NearestNeighbor<T...>;
 
 using std::vector;
 

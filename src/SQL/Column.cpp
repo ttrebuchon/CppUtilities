@@ -1,7 +1,7 @@
 #include <QUtils/SQL/Column.h>
 #include <QUtils/SQL/Clause.h>
 
-namespace Util
+namespace QUtils
 {
 namespace SQL
 {

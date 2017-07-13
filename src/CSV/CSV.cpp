@@ -1,9 +1,9 @@
-#include <CSV/CSV.h>
+#include <QUtils/CSV/CSV.h>
 
-#include <Exception/NotImplemented.h>
+#include <QUtils/Exception/NotImplemented.h>
 #include <sstream>
-#include <String/String.h>
-namespace Util
+#include <QUtils/String/String.h>
+namespace QUtils
 {
 namespace CSV
 {

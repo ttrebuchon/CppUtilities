@@ -1,1 +1,1 @@
-#include <NeuralNet/NeuralNet.h>
+#include <QUtils/NeuralNet/NeuralNet.h>

@@ -35,7 +35,8 @@ bool Test_English_Analysis()
 	
 	dout << "Tokens Count: " << AN.tokens.size() << "\n";
 	
-	/*sw.reset();
+	/*
+	sw.reset();
 	sw.start();
 	
 	
@@ -52,12 +53,13 @@ bool Test_English_Analysis()
 	std::ofstream ofile("English_Out.txt");
 	for (auto link : *chain)
 	{
-		dout << link->text();
+		//dout << link->text();
 		ofile << link->text();
 	}
 	ofile.close();
 	dout << "------------\n";
-	dout << "Took " << sw.value() << "\n";*/
+	dout << "Took " << sw.value() << "\n";
+	*/
 	
 	/*for (int i = 0; i < 100; i++)
 	{

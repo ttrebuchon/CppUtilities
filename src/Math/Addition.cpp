@@ -1,10 +1,10 @@
-#include <Math/Addition.h>
+#include <QUtils/Math/Addition.h>
 
-#include <Math/Num.h>
-#include <Math/Multiplication.h>
+#include <QUtils/Math/Num.h>
+#include <QUtils/Math/Multiplication.h>
 
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

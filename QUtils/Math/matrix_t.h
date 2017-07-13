@@ -7,7 +7,7 @@
 #include <assert.h>
 #include <iostream>
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

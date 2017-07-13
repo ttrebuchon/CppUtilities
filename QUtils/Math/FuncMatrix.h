@@ -7,7 +7,7 @@
 #include <map>
 
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

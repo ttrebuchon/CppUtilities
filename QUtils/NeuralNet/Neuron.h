@@ -5,7 +5,7 @@
 #include <vector>
 #include <functional>
 
-namespace Util
+namespace QUtils
 {
 namespace NeuralNet
 {

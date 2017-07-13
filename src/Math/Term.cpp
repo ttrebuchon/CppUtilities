@@ -1,17 +1,17 @@
-#include <Math/Term.h>
-#include <Math/Expression.h>
+#include <QUtils/Math/Term.h>
+#include <QUtils/Math/Expression.h>
 
-#include <Math/Exponent.h>
-#include <Math/Multiplication.h>
-#include <Math/Division.h>
-#include <Math/Addition.h>
-#include <Math/Subtraction.h>
+#include <QUtils/Math/Exponent.h>
+#include <QUtils/Math/Multiplication.h>
+#include <QUtils/Math/Division.h>
+#include <QUtils/Math/Addition.h>
+#include <QUtils/Math/Subtraction.h>
 
-#include <Math/Num.h>
-#include <Math/Var.h>
+#include <QUtils/Math/Num.h>
+#include <QUtils/Math/Var.h>
 
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

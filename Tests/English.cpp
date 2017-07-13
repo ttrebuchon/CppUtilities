@@ -5,7 +5,7 @@
 
 bool Test_English()
 {
-	auto english = new Utils::English::Language(Utils::English::Lang::English);
+	auto english = new QUtils::English::Language(QUtils::English::Lang::English);
 	english->load();
 	dout << "Words: " << english->count() << std::endl;
 	

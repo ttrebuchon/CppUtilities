@@ -1,7 +1,7 @@
 #include "Func.h"
 #include <cstdlib>
 
-namespace Util
+namespace QUtils
 {
 	template <typename Result, typename ...Args>
 	Func<Result, Args...>::Func(ptr_type ptr) : ptr(ptr)

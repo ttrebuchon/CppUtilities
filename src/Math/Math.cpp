@@ -1,6 +1,6 @@
-#include "Math/Math.h"
+#include <QUtils/Math/Math.h>
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

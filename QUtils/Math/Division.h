@@ -2,7 +2,7 @@
 
 #include "Operation.h"
 #include <vector>
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

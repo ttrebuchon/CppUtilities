@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-namespace Util
+namespace QUtils
 {
 namespace Combinatorial
 {

@@ -1,7 +1,7 @@
-#include <Math/Constant.h>
+#include <QUtils/Math/Constant.h>
 
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

@@ -2,7 +2,7 @@
 
 #include <random>
 
-namespace Util
+namespace QUtils
 {
 namespace NeuralNet
 {

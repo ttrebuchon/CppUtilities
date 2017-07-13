@@ -18,7 +18,7 @@
 
 #endif
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

@@ -3,7 +3,7 @@
 #include "RandWgt.h"
 #include <string>
 
-namespace Util
+namespace QUtils
 {
 namespace NeuralNet
 {

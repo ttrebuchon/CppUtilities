@@ -2,7 +2,7 @@
 
 #include <type_traits>
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

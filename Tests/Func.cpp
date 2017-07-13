@@ -38,8 +38,8 @@ int TClass::count = 0;
 
 bool Test_Func()
 {
-	using Utils::Func;
-	using Utils::MemberFunc;
+	using QUtils::Func;
+	using QUtils::MemberFunc;
 	
 	
 	Func<void> f;

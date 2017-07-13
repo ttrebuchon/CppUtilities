@@ -7,7 +7,7 @@
 #include <QUtils/Exception/NullPointer.h>
 
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

@@ -2,7 +2,7 @@
 #include <chrono>
 #include <thread>
 
-namespace Util
+namespace QUtils
 {
 	
 	enum Sleep
@@ -12,6 +12,6 @@ namespace Util
 		Microseconds = 1,
 	};
 	
-	void sleep(long double duration, Util::Sleep units = Util::Sleep::Milliseconds);
+	void sleep(long double duration, QUtils::Sleep units = QUtils::Sleep::Milliseconds);
 	
 }

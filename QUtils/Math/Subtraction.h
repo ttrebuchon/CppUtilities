@@ -4,7 +4,7 @@
 
 #include <vector>
 #include <tuple>
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

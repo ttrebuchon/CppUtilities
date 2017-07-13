@@ -2,7 +2,7 @@
 #include <sqlite3.h>
 #include <iostream>
 
-namespace Util
+namespace QUtils
 {
 namespace SQL
 {

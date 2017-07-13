@@ -1,6 +1,6 @@
-#include <Rules/Engine.h>
+#include <QUtils/Rules/Engine.h>
 
-namespace Util
+namespace QUtils
 {
 namespace Rules
 {

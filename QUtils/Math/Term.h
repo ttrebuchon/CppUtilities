@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace Util
+namespace QUtils
 {
 class String;
 namespace Math

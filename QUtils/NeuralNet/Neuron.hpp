@@ -4,7 +4,7 @@
 #include "Neuron.h"
 #include <QUtils/Exception/NotImplemented.h>
 #include <algorithm>
-namespace Util
+namespace QUtils
 {
 namespace NeuralNet
 {

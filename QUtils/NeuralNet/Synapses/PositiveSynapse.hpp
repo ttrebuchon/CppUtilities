@@ -3,7 +3,7 @@
 
 #include "PositiveSynapse.h"
 
-namespace Util
+namespace QUtils
 {
 namespace NeuralNet
 {

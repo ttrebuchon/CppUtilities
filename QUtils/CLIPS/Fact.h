@@ -2,7 +2,7 @@
 
 #include <Clips/clips.h>
 
-namespace Util
+namespace QUtils
 {
 namespace Clips
 {

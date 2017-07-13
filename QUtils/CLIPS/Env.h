@@ -6,7 +6,7 @@
 #include <memory>
 
 
-namespace Util
+namespace QUtils
 {
 namespace Clips
 {

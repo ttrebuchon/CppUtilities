@@ -5,7 +5,7 @@
 #include "Record.h"
 #include <iostream>
 
-namespace Util
+namespace QUtils
 {
 namespace Rules
 {

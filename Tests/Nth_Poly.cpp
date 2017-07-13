@@ -20,7 +20,7 @@ extern template class DataMatrix<1, double, int>;
 }
 }
 
-using namespace Utils;
+using namespace QUtils;
 using namespace Math;
 #endif
 

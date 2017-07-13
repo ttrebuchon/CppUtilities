@@ -3,18 +3,18 @@
 #include <string>
 #include <vector>
 
-namespace Util
+namespace QUtils
 {
 	class String;
 }
 
 namespace std
 {
-	std::istream& getline(std::istream&, Util::String&);
-	std::istream& getline(std::istream&, Util::String&, char);
+	std::istream& getline(std::istream&, QUtils::String&);
+	std::istream& getline(std::istream&, QUtils::String&, char);
 }
 
-namespace Util
+namespace QUtils
 {
 	class String
 	{

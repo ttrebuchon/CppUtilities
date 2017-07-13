@@ -3,7 +3,7 @@
 #include <tuple>
 #include <functional>
 
-namespace Util
+namespace QUtils
 {
 namespace TupleArgs_Internal
 {

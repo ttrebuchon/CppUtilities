@@ -2,7 +2,7 @@
 #include <string>
 #include "Records.h"
 
-namespace Util
+namespace QUtils
 {
 namespace Rules
 {

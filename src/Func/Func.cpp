@@ -1,1 +1,1 @@
-#include "Func/Func.h"
+#include <QUtils/Func/Func.h>

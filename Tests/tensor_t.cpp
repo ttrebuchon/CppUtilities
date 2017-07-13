@@ -8,7 +8,7 @@ using boost::multiprecision::cpp_dec_float;
 using boost::multiprecision::number;
 
 
-using namespace Utils;
+using namespace QUtils;
 using namespace Math;
 
 #define TOL 1

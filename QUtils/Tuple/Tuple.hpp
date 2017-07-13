@@ -3,7 +3,7 @@
 
 #include "Tuple.h"
 
-namespace Util
+namespace QUtils
 {
 	namespace Tuple_Helpers
 	{

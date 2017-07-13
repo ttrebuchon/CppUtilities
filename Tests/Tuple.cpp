@@ -2,7 +2,7 @@
 
 #include <QUtils/Tuple/Tuple.h>
 
-using Utils::Tuple;
+using QUtils::Tuple;
 
 
 

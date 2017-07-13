@@ -2,7 +2,7 @@
 
 #include <tuple>
 
-namespace Util
+namespace QUtils
 {
 	template <typename ...T>
 	class Tuple;

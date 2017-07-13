@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-namespace Util
+namespace QUtils
 {
 	
 	template <typename Result, typename ...Args>

@@ -9,7 +9,7 @@
 //using namespace clips;
 
 using namespace std;
-using namespace Util;
+using namespace QUtils;
 
 #define BUFFER_SIZE 1024
 

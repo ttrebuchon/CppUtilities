@@ -1,11 +1,11 @@
-#include <CLIPS/Env.h>
-#include <CLIPS/Fact.h>
-#include <CLIPS/Value.h>
+#include <QUtils/CLIPS/Env.h>
+#include <QUtils/CLIPS/Fact.h>
+#include <QUtils/CLIPS/Value.h>
 #include <sstream>
 #include <iostream>
 
 
-namespace Util
+namespace QUtils
 {
 namespace Clips
 {

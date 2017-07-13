@@ -1,7 +1,7 @@
-#include <LazyLoad/LazyLoad.h>
+#include <QUtils/LazyLoad/LazyLoad.h>
 
 
-namespace Util
+namespace QUtils
 {
 	
 }

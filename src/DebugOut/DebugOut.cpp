@@ -1,6 +1,6 @@
-#include "DebugOut/DebugOut.h"
+#include <QUtils/DebugOut/DebugOut.h>
 
-namespace Util
+namespace QUtils
 {
 	
 	DebugOut DebugOut::inst;

@@ -4,7 +4,7 @@
 #include "Synapse.h"
 #include <sstream>
 
-namespace Util
+namespace QUtils
 {
 namespace NeuralNet
 {

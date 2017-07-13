@@ -4,7 +4,7 @@
 #include <vector>
 #include <QUtils/Exception/Exception.h>
 
-namespace Util
+namespace QUtils
 {
 namespace CSV
 {

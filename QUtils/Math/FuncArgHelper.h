@@ -3,7 +3,7 @@
 #include <functional>
 #include <vector>
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

@@ -5,7 +5,7 @@
 #include <functional>
 #include <QUtils/Tuple/Tuple.h>
 
-namespace Util
+namespace QUtils
 {
 namespace Rules
 {

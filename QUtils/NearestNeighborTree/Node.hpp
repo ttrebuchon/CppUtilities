@@ -4,7 +4,7 @@
 
 #include "Node.h"
 
-namespace Util
+namespace QUtils
 {
 namespace NN_Internal
 {

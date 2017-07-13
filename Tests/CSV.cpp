@@ -2,7 +2,7 @@
 #include <QUtils/CSV/CSV.h>
 #include <map>
 
-using Utils::CSV::CSV_File;
+using QUtils::CSV::CSV_File;
 
 void print_csv(std::string);
 

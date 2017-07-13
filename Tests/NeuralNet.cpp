@@ -5,7 +5,7 @@
 #include <limits>
 //#include <boost/multiprecision/cpp_dec_float.hpp>
 
-using Utils::NeuralNet::Net;
+using QUtils::NeuralNet::Net;
 //using boost::multiprecision::cpp_dec_float;
 //using boost::multiprecision::number;
 
@@ -99,7 +99,7 @@ bool Neural_Run()
 	
 	int progressInterval = 1000;
 	
-	nn.grow(layers, multiplier, Utils::NeuralNet::LayerType::Unique);
+	nn.grow(layers, multiplier, QUtils::NeuralNet::LayerType::Unique);
 	for (int i = 0; i < cycles; i++)
 	{
 		dout << "Training " << i*progressInterval << "\t/" << cycles*progressInterval << std::endl;
@@ -133,7 +133,7 @@ bool Neural_Run()
 	//nn2.addData({1, 1}, {2});
 	nn2.addData({2, 1}, {3});
 	nn2.addData({1, 2}, {3});
-	nn2.grow(layers, multiplier, Utils::NeuralNet::LayerType::FullyConnected);
+	nn2.grow(layers, multiplier, QUtils::NeuralNet::LayerType::FullyConnected);
 
 	nn2.bounds.min = 0;
 	
@@ -185,7 +185,7 @@ bool Mult_Test()
 	
 	
 	
-	auto prodN = new Utils::NeuralNet::Neurons::ProductNeuron<double>();
+	auto prodN = new QUtils::NeuralNet::Neurons::ProductNeuron<double>();
 	
 	
 	auto ins = n.inputLayer();

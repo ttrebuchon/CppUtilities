@@ -13,7 +13,7 @@
 
 #include "Node.h"
 
-namespace Util
+namespace QUtils
 {
 	
 	

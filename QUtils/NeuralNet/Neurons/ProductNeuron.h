@@ -2,7 +2,7 @@
 
 #include "../Neuron.h"
 
-namespace Util
+namespace QUtils
 {
 namespace NeuralNet
 {

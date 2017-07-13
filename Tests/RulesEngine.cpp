@@ -2,7 +2,7 @@
 #include <QUtils/Rules/Rules.h>
 
 
-using namespace Utils::Rules;
+using namespace QUtils::Rules;
 
 template <std::string* ptr>
 struct Ptr

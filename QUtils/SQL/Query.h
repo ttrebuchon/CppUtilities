@@ -2,7 +2,7 @@
 #include "ValueType.h"
 #include <string>
 
-namespace Util
+namespace QUtils
 {
 namespace SQL
 {

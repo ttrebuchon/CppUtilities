@@ -1,6 +1,6 @@
 #include <QUtils/SQL/Query.h>
 
-namespace Util
+namespace QUtils
 {
 namespace SQL
 {

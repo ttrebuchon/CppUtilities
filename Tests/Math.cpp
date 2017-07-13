@@ -3,7 +3,7 @@
 
 #include <QUtils/Math/Math.h>
 
-using namespace Util;
+using namespace QUtils;
 using namespace Math;
 
 #define OUTPUT

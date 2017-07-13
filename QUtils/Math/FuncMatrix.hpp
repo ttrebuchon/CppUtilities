@@ -9,7 +9,7 @@
 #include <iostream>
 #include "DataMatrix.h"
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {
@@ -648,7 +648,7 @@ namespace Math
 			auto n = _TupleEveryOther<index+2, size>::call(tup);
 			auto val = std::get<index>(tup);
 			
-			auto N = Util::Make_Tuple(n);
+			auto N = QUtils::Make_Tuple(n);
 			return N.prepend(val).getStd();
 		}
 	};

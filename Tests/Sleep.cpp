@@ -12,7 +12,7 @@ long double TestSleep(long double time)
 {
 	
 	auto start = std::chrono::high_resolution_clock::now(); //Get start time
-	Util::sleep(time, Util::Sleep::Seconds);
+	QUtils::sleep(time, QUtils::Sleep::Seconds);
 	auto stop = std::chrono::high_resolution_clock::now(); //Get stop time
 	auto diff = std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count(); //Get delta in microseconds
 	

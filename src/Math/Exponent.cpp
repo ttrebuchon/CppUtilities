@@ -1,12 +1,12 @@
-#include <Math/Exponent.h>
+#include <QUtils/Math/Exponent.h>
 
-#include <Math/Num.h>
-#include <Math/Multiplication.h>
+#include <QUtils/Math/Num.h>
+#include <QUtils/Math/Multiplication.h>
 
 #include <cmath>
 #include <iostream>
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

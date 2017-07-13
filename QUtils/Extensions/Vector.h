@@ -32,4 +32,20 @@ namespace std
 		return v;
 	}*/
 	
+	namespace Extensions
+	{
+		template <class T>
+		bool remove(std::vector<T>& v, const T item)
+		{
+			auto pos = std::find(v.begin(), v.end(), item);
+			if (pos == v.end())
+			{
+				return false;
+			}
+			v.erase(pos);
+			return true;
+		}
+	
+	}
+	
 }

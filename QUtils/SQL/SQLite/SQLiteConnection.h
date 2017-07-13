@@ -6,7 +6,7 @@
 
 class sqlite3;
 
-namespace Util
+namespace QUtils
 {
 namespace SQL
 {

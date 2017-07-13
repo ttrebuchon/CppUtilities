@@ -1,10 +1,10 @@
-#include <Math/Division.h>
+#include <QUtils/Math/Division.h>
 
-#include <Math/Num.h>
-#include <Math/Multiplication.h>
+#include <QUtils/Math/Num.h>
+#include <QUtils/Math/Multiplication.h>
 
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

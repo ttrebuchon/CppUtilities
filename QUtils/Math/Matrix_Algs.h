@@ -2,7 +2,7 @@
 #include <functional>
 
 
-namespace Utils
+namespace QUtils
 {
 namespace Math
 {

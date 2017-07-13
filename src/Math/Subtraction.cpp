@@ -1,13 +1,13 @@
-#include <Math/Subtraction.h>
+#include <QUtils/Math/Subtraction.h>
 
-#include <Math/Addition.h>
-#include <Math/Num.h>
+#include <QUtils/Math/Addition.h>
+#include <QUtils/Math/Num.h>
 
 #include <iostream>
 using std::cout;
 using std::endl;
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

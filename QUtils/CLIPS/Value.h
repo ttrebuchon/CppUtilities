@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Util
+namespace QUtils
 {
 namespace Clips
 {

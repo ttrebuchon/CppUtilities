@@ -7,7 +7,7 @@
 
 double CppPerfTest(int perfcount)
 {
-	Util::Stopwatch::Stopwatch sw;
+	QUtils::Stopwatch::Stopwatch sw;
 	std::vector<std::string> cppStrs;
 	
 	sw.start();
@@ -26,14 +26,14 @@ double CppPerfTest(int perfcount)
 
 double UtilPerfTest(int perfcount)
 {
-	Util::Stopwatch::Stopwatch sw;
-	std::vector<Util::String> utilStrs;
+	QUtils::Stopwatch::Stopwatch sw;
+	std::vector<QUtils::String> utilStrs;
 	
 	
 	sw.start();
 	for (int i = 0; i < 100; i++)
 	{
-		Util::String utilStr;
+		QUtils::String utilStr;
 		for (int x = 0; x <= perfcount; x++)
 		{
 			utilStr << x;
@@ -44,11 +44,11 @@ double UtilPerfTest(int perfcount)
 	return sw.value();
 }
 
-using Util::String;
+using QUtils::String;
 
 bool Test_String()
 {
-	Util::String str;
+	QUtils::String str;
 	
 	assert_ex(((std::string)str) == "");
 	
@@ -68,7 +68,7 @@ bool Test_String()
 	str[str.length()-1] = 'O';
 	assert_ex(str == "HElO");
 	
-	Util::String str_2 = str;
+	QUtils::String str_2 = str;
 	assert_ex(str_2.toLower() == "helo");
 	assert_ex(str_2.toUpper() == "HELO");
 	str += ' ';
@@ -97,7 +97,7 @@ bool Test_String()
 	assert_ex(str_2.find("A") == 7);
 	
 	assert_ex(str_2.startsWith("___"));
-	assert_ex(str_2.startsWith(Util::String("___")));
+	assert_ex(str_2.startsWith(QUtils::String("___")));
 	assert_ex(str_2.endsWith("A"));
 	str = "A";
 	assert_ex(str_2.endsWith(str));
@@ -122,7 +122,7 @@ bool Test_String()
 	assert_ex(v1.size() == 4);
 	for (int i = 0; i < v1.size(); i++)
 	{
-		Util::String correctV;
+		QUtils::String correctV;
 		switch (i)
 		{
 			case 0:
@@ -152,7 +152,7 @@ bool Test_String()
 	assert_ex(v2.size() == 2);
 	for (int i = 0; i < v2.size(); i++)
 	{
-		Util::String correctV;
+		QUtils::String correctV;
 		switch (i)
 		{
 			case 0:
@@ -171,7 +171,7 @@ bool Test_String()
 		assert_ex(correctV == v2[i]);
 	}
 	
-	assert_ex(Util::String("ABCDE").separateBy(" ").size() == 1);
+	assert_ex(QUtils::String("ABCDE").separateBy(" ").size() == 1);
 	
 	str = "4";
 	assert_ex(str.toInt() == (int)4);

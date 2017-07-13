@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Operation.h"
-namespace Util
+namespace QUtils
 {
 namespace Math
 {

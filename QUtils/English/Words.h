@@ -3,7 +3,7 @@
 #include <vector>
 #include <map>
 
-namespace Util
+namespace QUtils
 {
 namespace English
 {

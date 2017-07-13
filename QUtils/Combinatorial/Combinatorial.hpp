@@ -1,7 +1,7 @@
 #pragma once
 #include "Combinatorial.h"
 
-namespace Util
+namespace QUtils
 {
 namespace Combinatorial
 {

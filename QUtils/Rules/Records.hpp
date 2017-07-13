@@ -3,7 +3,7 @@
 #include "Database.h"
 #include <functional>
 
-namespace Util
+namespace QUtils
 {
 namespace Rules
 {

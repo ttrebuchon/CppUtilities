@@ -2,7 +2,7 @@
 #include "Env.h"
 
 
-namespace Util
+namespace QUtils
 {
 namespace Clips
 {

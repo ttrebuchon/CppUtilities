@@ -7,7 +7,7 @@
 #include <cmath>
 #include <limits>
 
-namespace Util
+namespace QUtils
 {
 namespace NeuralNet
 {

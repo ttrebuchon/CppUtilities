@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <initializer_list>
 
-namespace Util
+namespace QUtils
 {
 namespace Math
 {
