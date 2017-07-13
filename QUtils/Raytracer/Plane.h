@@ -2,7 +2,7 @@
 #include "Object.h"
 #include <memory>
 
-namespace Util
+namespace QUtils
 {
 namespace Raytracer
 {

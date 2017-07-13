@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-namespace Util
+namespace QUtils
 {
 namespace Raytracer
 {

@@ -1,11 +1,11 @@
-#include <Raytracer/Light.h>
-#include <Raytracer/Model.h>
-#include <Raytracer/Object.h>
+#include <QUtils/Raytracer/Light.h>
+#include <QUtils/Raytracer/Model.h>
+#include <QUtils/Raytracer/Object.h>
 
 #include <sstream>
 #include <cmath>
 
-namespace Util
+namespace QUtils
 {
 namespace Raytracer
 {

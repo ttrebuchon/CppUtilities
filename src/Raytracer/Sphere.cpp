@@ -1,8 +1,8 @@
-#include <Raytracer/Sphere.h>
+#include <QUtils/Raytracer/Sphere.h>
 #include <cmath>
 #include <sstream>
 
-namespace Util
+namespace QUtils
 {
 namespace Raytracer
 {

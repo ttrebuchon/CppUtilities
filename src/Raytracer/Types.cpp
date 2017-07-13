@@ -1,7 +1,7 @@
-#include <Raytracer/Types.h>
+#include <QUtils/Raytracer/Types.h>
 #include <iostream>
 
-namespace Util
+namespace QUtils
 {
 namespace Raytracer
 {

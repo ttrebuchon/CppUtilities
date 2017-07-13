@@ -51,6 +51,20 @@ namespace Images
 	{
 		throw NotImp();
 	}
+	
+	JPGImage* JPGImage::clone() const
+	{
+		auto w = width();
+		auto h = height();
+		auto newImg = new JPGImage(w, h);
+		
+		for (auto it = 0; it < w*h; ++it)
+		{
+			newImg->map[it] = map[it];
+		}
+		
+		return newImg;
+	}
 }
 }
 }

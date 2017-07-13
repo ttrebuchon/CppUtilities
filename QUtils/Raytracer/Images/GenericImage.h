@@ -33,6 +33,8 @@ namespace Images
 		virtual bool save(const std::string filename) const = 0;
 		
 		virtual bool load(const std::string filename) = 0;
+		
+		virtual Image* clone() const = 0;
 	};
 }
 }

@@ -10,7 +10,7 @@
 
 #include <algorithm>
 
-namespace Util
+namespace QUtils
 {
 namespace Raytracer
 {

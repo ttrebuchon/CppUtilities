@@ -1,9 +1,9 @@
-#include <Raytracer/Object.h>
-#include <Raytracer/Material.h>
+#include <QUtils/Raytracer/Object.h>
+#include <QUtils/Raytracer/Material.h>
 
 #include <sstream>
 
-namespace Util
+namespace QUtils
 {
 namespace Raytracer
 {

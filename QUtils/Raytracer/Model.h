@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 
-namespace Util
+namespace QUtils
 {
 namespace Raytracer
 {

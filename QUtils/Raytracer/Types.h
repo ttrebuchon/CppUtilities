@@ -2,7 +2,7 @@
 #include <cmath>
 #include "RaytracerItem.h"
 
-namespace Util
+namespace QUtils
 {
 namespace Raytracer
 {

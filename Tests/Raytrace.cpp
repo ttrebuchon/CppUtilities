@@ -3,7 +3,7 @@
 #include <QUtils/Raytracer/Images/Images.h>
 #include <fstream>
 
-using namespace Utils;
+using namespace QUtils;
 using namespace Raytracer;
 
 void writePPM(std::string filename, int w, int h, pixel_t* bitmap);
@@ -78,6 +78,55 @@ bool Test_Raytrace()
 	
 	
 	
+	/*dout << "Taking B&W...\n";
+	jImg.BWConvert();
+	
+	assert_ex(jImg.save("BW_TestImg.jpg"));*/
+	
+	right->move(vector_t(-1, 0, -1));
+	
+	dout << "Running Img_2...\n";
+	
+	Images::JPGImage jImg_2(x, y);
+	mod->go(&jImg_2, x, y);
+	
+	dout << "Saving image 2\n";
+	
+	assert_ex(jImg_2.save("TestImg_2.jpg"));
+	
+	dout << "Cloning image 2\n";
+	
+	Images::JPGImage* jImg_2_bak = jImg_2.clone();
+	
+	dout << "Getting diff...\n";
+	jImg_2.diff(&jImg);
+	
+	dout << "Saving\n";
+	assert_ex(jImg_2.save("Diff_Test.jpg"));
+	
+	dout << "BWConvert\n";
+	jImg_2.BWConvert();
+	
+	dout << "Saving\n";
+	assert_ex(jImg_2.save("Diff_Test_BW.jpg"));
+	
+	dout << "Converting bak and 2 to BW\n";
+	jImg_2_bak->BWConvert();
+	jImg.BWConvert();
+	
+	dout << "Diffing\n";
+	
+	jImg_2_bak->diff(&jImg);
+	
+	dout << "Saving\n";
+	
+	assert_ex(jImg_2_bak->save("BW_Diff_Test.jpg"));
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -89,6 +138,7 @@ bool Test_Raytrace()
 	
 	
 	delete mod;
+	delete jImg_2_bak;
 	return true;
 }
 

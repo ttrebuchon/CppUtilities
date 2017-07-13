@@ -2,7 +2,7 @@
 #include <QUtils/Exception/NullPointer.h>
 #include <QUtils/Raytracer/Image.h>
 
-namespace Util
+namespace QUtils
 {
 namespace Raytracer
 {

@@ -1,10 +1,12 @@
 #pragma once
 #include "Types.h"
+#include <QUtils/Exception/Exception.h>
 
 namespace QUtils
 {
 namespace Raytracer
 {
+	QUTILS_CUSTOM_EXCEPTION(ImageDimensionMismatchException,);
 	class Image
 	{
 		private:
@@ -21,6 +23,11 @@ namespace Raytracer
 		
 		virtual unsigned int width() const = 0;
 		virtual unsigned int height() const = 0;
+		
+		virtual void BWConvert();
+		virtual void diff(const Image*);
+		
+		virtual Image* clone() const = 0;
 	};
 }
 }

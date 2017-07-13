@@ -54,6 +54,19 @@ namespace Raytracer
 		
 		virtual unsigned int width() const override { return w; }
 		virtual unsigned int height() const override { return h; }
+		
+		virtual BitmapImg<Pixel>* clone() const override
+		{
+			BitmapImg<Pixel>* newImg = new BitmapImg<Pixel>(w, h);
+			for (int y = 0; y < h; ++y)
+			{
+				for (int x = 0; x < w; ++x)
+				{
+					newImg->setPixel(x, y, getPixel(x, y));
+				}
+			}
+			return newImg;
+		}
 	};
 }
 }

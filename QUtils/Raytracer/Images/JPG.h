@@ -10,6 +10,7 @@ namespace Images
 {
 	class JPGImage : public GenericImage
 	{
+		protected:
 		
 		
 		public:
@@ -21,6 +22,8 @@ namespace Images
 		virtual bool save(const std::string filename) const override;
 		
 		virtual bool load(const std::string filename) override;
+		
+		virtual JPGImage* clone() const override;
 	};
 }
 }

@@ -1,7 +1,7 @@
-#include <Raytracer/Plane.h>
+#include <QUtils/Raytracer/Plane.h>
 #include <sstream>
 
-namespace Util
+namespace QUtils
 {
 namespace Raytracer
 {

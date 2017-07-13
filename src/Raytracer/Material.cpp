@@ -1,7 +1,7 @@
-#include <Raytracer/Material.h>
+#include <QUtils/Raytracer/Material.h>
 #include <sstream>
 
-namespace Util
+namespace QUtils
 {
 namespace Raytracer
 {
