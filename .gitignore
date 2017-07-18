@@ -40,6 +40,7 @@
 *.sqlite-wal
 *.jpg
 *.jpeg
+*.obj.txt
 
 #Environment files
 .vscode*
