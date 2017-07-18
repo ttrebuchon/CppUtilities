@@ -45,7 +45,7 @@ English_Out.txt
 
 #Environment files
 .vscode*
-*.c4droid
+*.c4droid*
 
 #Local Test Files
 *English_Analyzer_Test.txt
