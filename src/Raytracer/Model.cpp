@@ -4,7 +4,7 @@
 #include <QUtils/Raytracer/Light.h>
 #include <QUtils/Raytracer/Material.h>
 #include <QUtils/Raytracer/Texture.h>
-#include <QUtils/Raytracer/BitmapImg.h>
+#include <QUtils/Graphics/Images/BitmapImg.h>
 #include <QUtils/Exception/NotImplemented.h>
 #include <QUtils/Exception/Exception.h>
 
@@ -14,9 +14,6 @@ namespace QUtils
 {
 namespace Raytracer
 {
-	UTIL_CUSTOM_EXCEPTION(ItemNotFoundException, Item not found in model);
-	
-	UTIL_CUSTOM_EXCEPTION(CameraNotSetException, Camera needs to be set before raytracing);
 	
 	Model::Model(std::string name, double maxDist, unsigned int aaSamples) : RaytracerItem(name), MAX_DIST(maxDist), AA_SAMPLES(aaSamples), cam(NULL)
 	{
@@ -33,14 +30,15 @@ namespace Raytracer
 		
 	}
 	
-	BitmapImg<pixel_t>* Model::go(int x, int y)
+	Graphics::Image<pixel_t>* Model::go(int x, int y)
 	{
-		BitmapImg<pixel_t>* img = new BitmapImg<pixel_t>(x, y);
+		Graphics::BitmapImg<pixel_t>* img = new Graphics::BitmapImg<pixel_t>(x, y);
 		this->go(img, x, y);
 		return img;
 	}
 	
-	void Model::go(Image* const img, const int x, const int y)
+	/*template <class Pixel>
+	void Model::go(Graphics::Image<Pixel>* const img, const int x, const int y)
 	{
 		if (cam == NULL)
 		{
@@ -53,7 +51,7 @@ namespace Raytracer
 		{
 			this->runRow(i);
 		}
-	}
+	}*/
 	
 	std::shared_ptr<Camera> Model::initCamera(const double w, const double h, const vector_t viewpoint)
 	{

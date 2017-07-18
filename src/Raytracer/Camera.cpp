@@ -1,6 +1,6 @@
 #include <QUtils/Raytracer/Camera.h>
 #include <QUtils/Exception/NullPointer.h>
-#include <QUtils/Raytracer/Image.h>
+#include <QUtils/Graphics/IImage.h>
 
 namespace QUtils
 {
@@ -39,7 +39,9 @@ namespace Raytracer
 		/*int row = dims[1] - y - 1;
 		int col = x;
 		return img[dims[0]*row + col];*/
-		return img->getPixel(x, y);
+		pixel_t p;
+		img->getPixel(x, y, p.R, p.G, p.B);
+		return p;
 	}
 	
 	
@@ -77,7 +79,7 @@ namespace Raytracer
 		dims[1] = y;
 	}
 	
-	void Camera::setImg(Image* img)
+	void Camera::setImg(Graphics::IImage* img)
 	{
 		this->img = img;
 	}

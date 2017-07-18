@@ -5,10 +5,12 @@
 
 namespace QUtils
 {
+namespace Graphics
+{
+	class IImage;
+}
 namespace Raytracer
 {
-	
-	class Image;
 	
 	class Camera : public std::enable_shared_from_this<Camera>, public RaytracerItem
 	{
@@ -17,7 +19,7 @@ namespace Raytracer
 		double viewpointDims[2];
 		vector_t viewpoint;
 		//image_t img;
-		Image* img;
+		Graphics::IImage* img;
 		
 		
 		protected:
@@ -35,7 +37,7 @@ namespace Raytracer
 		vector_t view() const { return viewpoint; }
 		
 		virtual void setImgDims(const int x, const int y);
-		virtual void setImg(Image*);
+		virtual void setImg(Graphics::IImage*);
 		
 		virtual std::string toString() const override;
 	};
