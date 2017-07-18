@@ -1,6 +1,6 @@
 #include "../Tests_Helpers.h"
 #include <QUtils/Raytracer/Raytracer.h>
-#include <QUtils/Raytracer/Images/Images.h>
+#include <QUtils/Graphics/Images/Images.h>
 #include <fstream>
 
 using namespace QUtils;
@@ -60,9 +60,11 @@ bool Test_Raytrace()
 	
 	
 	
-	//const int x = 640, y = 480;
-	const int x = 1920, y = 1080;
+	//const int x = 1920, y = 1080;
 	//const int x=640, y = 360;
+	const int x=64, y = 36;
+	
+	const std::string suffix = "_" + std::to_string(x) + "_" + std::to_string(y);
 	
 	//auto imgO = mod->go(x, y);
 	//QUtils::Raytracer::pixel_t* img = *(imgO);
@@ -71,10 +73,10 @@ bool Test_Raytrace()
 	//writePPM("Test.ppm", x, y, img);
 	//delete imgO;
 	
-	Images::JPGImage jImg(x, y);
+	Graphics::Images::JPGImage jImg(x, y);
 	mod->go(&jImg, x, y);
 	dout << "Writing jpeg file..." << std::endl;
-	assert_ex(jImg.save("TestImg.jpg"));
+	assert_ex(jImg.save("TestImg" + suffix + ".jpg"));
 	
 	
 	
@@ -83,45 +85,91 @@ bool Test_Raytrace()
 	
 	assert_ex(jImg.save("BW_TestImg.jpg"));*/
 	
-	right->move(vector_t(-1, 0, -1));
+	right->move(vector_t(-4, 0, -1));
 	
 	dout << "Running Img_2...\n";
 	
-	Images::JPGImage jImg_2(x, y);
+	Graphics::Images::JPGImage jImg_2(x, y);
 	mod->go(&jImg_2, x, y);
 	
 	dout << "Saving image 2\n";
 	
-	assert_ex(jImg_2.save("TestImg_2.jpg"));
+	assert_ex(jImg_2.save("TestImg_2" + suffix + ".jpg"));
 	
 	dout << "Cloning image 2\n";
 	
-	Images::JPGImage* jImg_2_bak = jImg_2.clone();
+	Graphics::Images::JPGImage* jImg_2_bak = jImg_2.clone();
+	
+	dout << "Cloning image 2 again\n";
+	
+	Graphics::Images::JPGImage* jImg_2_bak2 = jImg_2.clone();
 	
 	dout << "Getting diff...\n";
-	jImg_2.diff(&jImg);
+	jImg_2.imgDiff(&jImg);
 	
 	dout << "Saving\n";
-	assert_ex(jImg_2.save("Diff_Test.jpg"));
+	assert_ex(jImg_2.save("Diff_Test" + suffix + ".jpg"));
 	
-	dout << "BWConvert\n";
+	
+	
+	
+	dout << "BWConvert of diff\n";
 	jImg_2.BWConvert();
 	
 	dout << "Saving\n";
-	assert_ex(jImg_2.save("Diff_Test_BW.jpg"));
+	assert_ex(jImg_2.save("Diff_Test_BW" + suffix + ".jpg"));
 	
-	dout << "Converting bak and 2 to BW\n";
-	jImg_2_bak->BWConvert();
-	jImg.BWConvert();
-	
-	dout << "Diffing\n";
-	
-	jImg_2_bak->diff(&jImg);
+	dout << "Absolute diff of 2 and 1\n";
+	jImg_2_bak2->imgAbsDiff(&jImg);
 	
 	dout << "Saving\n";
+	assert_ex(jImg_2_bak2->save("AbsDiff_Test" + suffix + ".jpg"));
 	
-	assert_ex(jImg_2_bak->save("BW_Diff_Test.jpg"));
+	dout << "BW Absolute diff of 2 and 1\n";
+	jImg_2_bak2->BWConvert();
 	
+	dout << "Saving\n";
+	assert_ex(jImg_2_bak2->save("BW_AbsDiff_Test" + suffix + ".jpg"));
+	
+	
+	
+	dout << "Getting matrix diff\n";
+	auto matDiff = jImg_2_bak->diff(&jImg);
+	
+	dout << "Converting 2_bak and 1 to BW\n";
+	jImg_2_bak->BWConvert();
+	jImg.BWConvert();
+	auto bwMat = jImg_2_bak->diff(&jImg);
+	
+	jImg_2_bak->imgDiff(&jImg);
+	assert_ex(jImg_2_bak->save("BW_Diff_Test" + suffix + ".jpg"));
+	
+	
+	auto print3Mat = [](auto matrix, auto w, auto h, auto d) -> void
+	{
+		for (int y = 0; y < h; ++y)
+		{
+			dout << "[";
+			for (auto x = 0; x < w; ++x)
+			{
+				dout << "[";
+				for (int z = 0; z < 0; ++z)
+				{
+					dout << matrix[y][x][z] << ", ";
+				}
+				dout << matrix[y][x][d-1] << "]";
+			}
+			dout << "]\n";
+		}
+	};
+	if (x*y <= 1000)
+	{
+	dout << "Color Diff: \n";
+	print3Mat(matDiff, x, y, 3);
+	
+	dout << "\n\n\n\nBW Diff: \n";
+	print3Mat(bwMat, x, y, 3);
+	}
 	
 	
 	
@@ -139,6 +187,7 @@ bool Test_Raytrace()
 	
 	delete mod;
 	delete jImg_2_bak;
+	delete jImg_2_bak2;
 	return true;
 }
 
