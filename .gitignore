@@ -41,6 +41,7 @@
 *.jpg
 *.jpeg
 *.obj.txt
+English_Out.txt
 
 #Environment files
 .vscode*
