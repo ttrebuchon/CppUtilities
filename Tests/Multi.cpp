@@ -1,10 +1,12 @@
 #include "../Tests_Helpers.h"
 
 #include <QUtils/Multi/Multi.h>
+#include <QUtils/Multi/Service.h>
 #include <exception>
 #include <type_traits>
 #include <vector>
 #include <memory>
+#include <chrono>
 
 void someFunc(int x)
 {
@@ -12,7 +14,7 @@ void someFunc(int x)
 	{
 		
 	}
-	dout << "someFunc(" << x << ")\n";
+	//dout << "someFunc(" << x << ")\n";
 }
 
 class FooClass
@@ -55,7 +57,7 @@ bool Test_Multi()
 	{
 	auto F2 = [](auto x) -> auto
 	{
-		dout << "F2(" << x << ")\n";
+		//dout << "F2(" << x << ")\n";
 		return 42;
 	};
 	std::thread t(someFunc, 4);
@@ -64,17 +66,17 @@ bool Test_Multi()
 	auto t2_2 = std::async(F2, 7);
 	
 	t2_2.wait();
-	dout << "t2_2: " << t2_2.get() << "\n";
+	//dout << "t2_2: " << t2_2.get() << "\n";
 	t2.join();
 	t.join();
 	
 	FooClass c;
-	dout << c.x() << "\n";
+	//dout << c.x() << "\n";
 	QUtils::Multi::Mutexed<FooClass> cl(c);
 	cl.lock();
 	cl.unlock();
 	cl.lock();
-	dout << cl->x() << std::endl;
+	//dout << cl->x() << std::endl;
 	cl.unlock();
 	cl.unlock();
 	
@@ -104,7 +106,7 @@ bool Test_Multi()
 	clt2.join();
 	
 	
-	dout << "\n";
+	//dout << "\n";
 	
 	
 	FooClass2 c2;
@@ -140,10 +142,10 @@ bool Test_Multi()
 			return k;
 		}
 		
-		virtual void print() const
+		/*virtual void print() const
 		{
 			dout << get() << "\n";
-		}
+		}*/
 		
 	};
 	
@@ -151,7 +153,7 @@ bool Test_Multi()
 	{
 		protected:
 		QUtils::Multi::Mutexed<X>* x;
-		using X::print;
+		//using X::print;
 		public:
 		Y(QUtils::Multi::Mutexed<X>* x) : X(), x(x)
 		{
@@ -248,11 +250,11 @@ bool Test_Multi()
 	
 	
 	x.lock();
-	dout << x->get() << ": " << v2 << "? " << (x->get() == v2) << std::endl;
+	//dout << x->get() << ": " << v2 << "? " << (x->get() == v2) << std::endl;
 	assert_ex(x->get() == v2);
 	x.unlock();
 	y.lock();
-	dout << y->get() << " == " << v1 << "? " << (y->get() == v1) << "\n";
+	//dout << y->get() << " == " << v1 << "? " << (y->get() == v1) << "\n";
 	auto yv = y->get();
 	y.unlock();
 	
@@ -317,6 +319,11 @@ bool Test_Multi()
 		
 	}*/
 	
+	
+	//Service Testing
+	{
+		
+	}
 	
 	
 	
