@@ -1,7 +1,7 @@
 #include "../Tests_Helpers.h"
 
 #include <QUtils/Multi/Multi.h>
-#include <QUtils/Multi/Service.h>
+#include <QUtils/Multi/Parallel.h>
 #include <exception>
 #include <type_traits>
 #include <vector>
