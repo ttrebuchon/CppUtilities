@@ -10,7 +10,7 @@
 using QUtils::English::Analyzer;
 bool Test_English_Analysis()
 {
-	std::ifstream file("Test_Files/ScatterAndHowl.txt");
+	std::ifstream file("Test_Files/English_Analyzer_Test.txt");
 	Analyzer AN(file);
 	file.close();
 	
