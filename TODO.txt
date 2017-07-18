@@ -76,3 +76,5 @@
 	29.4) Example:
 		29.4.1) Single SQLite server/connection accessible by multiple threads/processes
 		29.4.2) Segmented neural networks
+
+30) Genetic algorithm module
