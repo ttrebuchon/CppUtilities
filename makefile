@@ -73,8 +73,12 @@ Network_cpp = $(wildcard $(SRC)/Network/**/*.cpp) $(wildcard $(SRC)/Network/*.cp
 Network = $(Network_cpp:.cpp=.o)
 #*/
 
+Graphics_cpp = $(wildcard $(SRC)/Graphics/**/*.cpp) $(wildcard $(SRC)/Graphics/*.cpp)
+Graphics = $(Graphics_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
