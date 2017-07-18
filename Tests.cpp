@@ -70,8 +70,10 @@ void Testing::run()
 	RUN(Types());
 	RUN(SymbolicList());
 	RUN(English_Analysis());
-	#ifndef SHORT_TEST
 	RUN(Network());
+	RUN(Raytrace());
+	#ifndef SHORT_TEST
+	//RUN(Network());
 	RUN(CLIPS());
 	RUN(SQL());
 	RUN(nth_Poly());
@@ -80,7 +82,7 @@ void Testing::run()
 	RUN(Neural());
 	RUN(RulesEngine());
 	RUN(English());
-	RUN(Raytrace());
+	//RUN(Raytrace());
 	RUN(Tuple());
 	RUN(CSV());
 	RUN(Matrix());
