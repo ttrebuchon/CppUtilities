@@ -1,5 +1,5 @@
 #include <iostream>
-#include <Markov/Markov.h>
+#include <QUtils/Markov/Markov.h>
 
 
 #include "SongImport.h"
@@ -97,7 +97,7 @@ int main()
 	
 	
 	
-	Util::Markov<SongPrediction::Track*> MC;
+	QUtils::Markov::Markov<SongPrediction::Track*> MC;
 	MC.equals = [](SongPrediction::Track* t1, SongPrediction::Track* t2) { return t1 == t2; };
 	
 	std::vector<SongPrediction::Playlist> playlists;

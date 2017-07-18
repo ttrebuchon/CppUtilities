@@ -6,7 +6,7 @@
 #include "Artist.h"
 
 #include "NotImpEx.h"
-#include <DebugOut/DebugOut.h>
+#include <QUtils/DebugOut/DebugOut.h>
 #include <tinyxml2.h>
 #include <assert.h>
 

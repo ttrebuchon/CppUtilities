@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Exception/Exception.h>
+#include <QUtils/Exception/Exception.h>
 
-UTIL_CUSTOM_EXCEPTION(NotImplementedException, This has not been implemented);
+QUTILS_CUSTOM_EXCEPTION(NotImplementedException, This has not been implemented);
 
 #define NotImp() NotImplementedException("", __func__)
