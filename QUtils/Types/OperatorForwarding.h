@@ -1,5 +1,6 @@
 #pragma once
 #include <type_traits>
+#include "Void_t.h"
 
 namespace QUtils
 {
@@ -8,8 +9,6 @@ namespace Types
 	//Indexer/Subscript Forwarding
 	namespace Internal
 	{
-		template <class...>
-		using void_t = void;
 		
 		template <class T, class G, typename = void>
 		struct has_subscript_op : std::false_type
