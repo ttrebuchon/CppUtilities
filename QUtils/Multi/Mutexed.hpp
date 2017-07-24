@@ -7,11 +7,12 @@ namespace QUtils
 {
 namespace Multi
 {
+	
 	template <class T>
 	template <class ...Args>
-	Mutexed<T>::Mutexed(Args... args) : Types::IndexerForward<typename Mutexed<T>::type>(NULL), mut(), t(args...)
+	Mutexed<T>::Mutexed(Args... args) : Internal::MutexedClass<T>(this), Types::AllOperatorForward<typename Mutexed<T>::type>(NULL), mut(), t(args...)
 	{
-		this->Types::IndexerForward<type>::ptr = &t;
+		this->Types::AllOperatorForward<type>::set(&t);
 	}
 	
 	template <class T>
@@ -79,5 +80,31 @@ namespace Multi
 	{
 		return this->mut.unlock();
 	}
+	
+	namespace Internal
+	{
+		template <class T>
+		template <class Ret, class... Args>
+		Ret IsMutexedClass<T, true>::run(Ret(T::*func)(Args...), Args... args)
+		{
+			ptr->lock();
+			Ret r = (ptr->t.*func)(args...);
+			ptr->unlock();
+			return r;
+		}
+		
+		template <class T>
+		template <class... Args>
+		void IsMutexedClass<T, true>::run(void(T::*func)(Args...), Args... args)
+		{
+			ptr->lock();
+			(ptr->t.*func)(args...);
+			ptr->unlock();
+		}
+		
+	}
+	
+	
+	
 }
 }
