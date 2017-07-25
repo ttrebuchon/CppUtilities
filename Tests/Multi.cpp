@@ -583,14 +583,14 @@ bool Test_Multi()
 			}
 		};
 		
-		auto pVals = [](Tree& t)
+		/*auto pVals = [](Tree& t)
 		{
 			auto nodes = t.bottom();
 			for (auto n : nodes)
 			{
 				dout << n->value << "\n";
 			}
-		};
+		};*/
 		
 		auto sVals = [](Tree& t)
 		{
