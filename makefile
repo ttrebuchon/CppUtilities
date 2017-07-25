@@ -108,7 +108,7 @@ PREPROC_FLAGS := $(PREPROC_FLAGS) $(SQL_FLAGS)
 
 WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -ftemplate-backtrace-limit=0
 
-WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wno-unused-local-typedefs #-Wno-unused-variable -Wno-unused-but-set-variable 
+WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wno-unused-local-typedefs -Wno-unused-variable -Wno-unused-but-set-variable 
 
 WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wfatal-errors 
 

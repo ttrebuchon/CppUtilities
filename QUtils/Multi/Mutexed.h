@@ -61,7 +61,7 @@ namespace Multi
 		
 		public:
 		template <class ...Args>
-		Mutexed(Args... args);
+		explicit Mutexed(Args... args);
 		
 		
 		type& operator*();

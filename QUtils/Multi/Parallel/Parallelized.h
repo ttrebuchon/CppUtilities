@@ -5,6 +5,7 @@
 #include <thread>
 #include <condition_variable>
 #include <future>
+#include <iostream>
 
 namespace QUtils
 {
@@ -16,6 +17,20 @@ namespace Multi
 		{
 			bool operator()(const std::shared_ptr<Job> a, const std::shared_ptr<Job> b) const
 			{
+				bool aReady = a->ready();
+				bool bReady = b->ready();
+				if (aReady)
+				{
+					if (!bReady)
+					{
+						return false;
+					}
+				}
+				else if (bReady)
+				{
+					return true;
+				}
+				
 				return a->priority() <= b->priority();
 			}
 		};
@@ -24,13 +39,25 @@ namespace Multi
 	class Parallelized
 	{
 		private:
+		std::mutex threadsMut;
 		std::vector<std::thread> threads;
-		std::vector<std::future<void>> futures;
-		Mutexed<unsigned int> allowedFutures;
-		Mutexed<unsigned int> toRemove;
+		std::vector<std::shared_future<void>> futures;
+		
+		std::future<void> jobMnger;
+		unsigned int allowedFutures;
+		unsigned int running;
+		unsigned int toRemove;
+		bool destroy;
+		
+		void manageJobs();
 		
 		void getJob();
 		void finishJob();
+		
+		void startNext();
+		void startNextNoLock();
+		
+		void removeThread(std::thread::id);
 		
 		
 		protected:
@@ -50,6 +77,15 @@ namespace Multi
 		
 		template <class F, class... Args>
 		std::shared_ptr<Job> addJob(F func, Args... args);
+		
+		bool isRunning() const
+		{
+			Parallelized* ptr = (Parallelized*)this;
+			ptr->threadsMut.lock();
+			bool b = ptr->running > 0;
+			ptr->threadsMut.unlock();
+			return b;
+		}
 		
 	};
 }

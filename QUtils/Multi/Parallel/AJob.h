@@ -40,6 +40,8 @@ namespace Multi
 		
 		virtual Result_t result();
 		
+		virtual std::shared_future<void> launch() override;
+		
 	};
 	
 	

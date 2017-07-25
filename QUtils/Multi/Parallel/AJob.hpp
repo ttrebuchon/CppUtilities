@@ -33,7 +33,7 @@ namespace Multi
 	template <class Result_t>
 	bool AJob<Result_t>::running() const
 	{
-		throw 4;
+		return launched;
 	}
 	
 	template <class Result_t>
@@ -52,6 +52,27 @@ namespace Multi
 	Result_t AJob<Result_t>::result()
 	{
 		return future.get();
+	}
+	
+	template <class Result_t>
+	std::shared_future<void> AJob<Result_t>::launch()
+	{
+		if (launched)
+		{
+			throw std::exception();
+		}
+		
+		launched = true;
+		return (this->launchFuture = std::async(std::launch::async, 
+		[&]() -> void
+		{
+			func(promise);
+			for (auto callback : callbacks)
+			{
+				callback();
+			}
+			this->cond.notify_all();
+		})).share();
 	}
 	
 }

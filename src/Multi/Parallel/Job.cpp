@@ -4,6 +4,36 @@ namespace QUtils
 {
 namespace Multi
 {
+	void Job::readinessChanged(bool b)
+	{
+		if (!b)
+		{
+			if (this->isReady)
+			{
+				this->isReady = false;
+				for (auto dep : this->_dependents)
+				{
+					dep->child()->readinessChanged(false);
+				}
+			}
+		}
+		else if (!this->isReady)
+		{
+			for (auto it = dependencies().begin(); it != dependencies().end() && b; ++it)
+			{
+				b = b && (*it)->parent()->ready();
+			}
+			if (b)
+			{
+				this->isReady = true;
+				for (auto dep : _dependents)
+				{
+					dep->child()->readinessChanged(true);
+				}
+			}
+		}
+	}
+	
 	void Job::depends(std::shared_ptr<Job> job)
 	{
 		std::shared_ptr<Job> thisPtr;
@@ -18,6 +48,11 @@ namespace Multi
 		auto dep = std::make_shared<Dependency>(thisPtr, job);
 		this->_dependencies.push_back(dep);
 		job->_dependents.push_back(dep);
+		
+		if (!job->ready())
+		{
+			this->readinessChanged(false);
+		}
 	}
 		
 	const std::vector<std::shared_ptr<Dependency>>& Job::dependencies() const
@@ -65,9 +100,12 @@ namespace Multi
 	
 	void Job::wait()
 	{
-		std::mutex mut;
-		std::unique_lock<std::mutex> lk(mut);
-		this->cond.wait(lk);
+		if (!launched)
+		{
+		std::unique_lock<std::mutex> lk(condMut);
+		cond.wait(lk);
+		}
+		this->launchFuture.wait();
 	}
 	
 	std::shared_ptr<const std::exception> Job::exception() const

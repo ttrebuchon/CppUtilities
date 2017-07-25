@@ -2,6 +2,7 @@
 #include <functional>
 #include <vector>
 #include <condition_variable>
+#include <future>
 
 #include "Result.h"
 #include "Dependency.h"
@@ -42,19 +43,24 @@ namespace Multi
 	class Job : public std::enable_shared_from_this<Job>
 	{
 		protected:
+		bool launched = false;
+		std::future<void> launchFuture;
 		std::vector<std::shared_ptr<Dependency>> _dependencies;
 		std::vector<std::shared_ptr<Dependency>> _dependents;
 		
 		unsigned long rawPriority;
+		bool isReady;
 		
 		std::vector<std::function<void()>> callbacks;
 		
+		std::mutex condMut;
 		std::condition_variable cond;
 		
 		std::shared_ptr<std::exception> ex;
+		void readinessChanged(bool);
 		
 		public:
-		Job(unsigned long priority) : _dependencies(), _dependents(), rawPriority(priority), callbacks(), cond(), ex(NULL) {}
+		Job(unsigned long priority) : launchFuture(), _dependencies(), _dependents(), rawPriority(priority), isReady(true), callbacks(), cond(), ex(NULL) {}
 		Job() : Job(1) {}
 		
 		virtual ~Job() {}
@@ -76,6 +82,11 @@ namespace Multi
 		virtual void wait();
 		
 		virtual std::shared_ptr<const std::exception> exception() const;
+		
+		virtual std::shared_future<void> launch() = 0;
+		
+		virtual bool ready() const
+		{ return isReady; }
 		
 	};
 	

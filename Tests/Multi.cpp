@@ -9,6 +9,7 @@
 #include <chrono>
 
 #include <QUtils/Types/CompilerPrint.h>
+#include <QUtils/Sleep/Sleep.h>
 
 void someFunc(int x)
 {
@@ -427,15 +428,24 @@ bool Test_Multi()
 				
 			}
 			
-			static void nodeGoMT(Node* n, unsigned long v)
+			void nodeGoMT(Node* n, unsigned long v)
 			{
-				if (!n)
+				//dout << "nodeGoMT(" << n << ")...\n";
+				if (n == NULL)
 				{
 					return;
 				}
+				
 				n->value += v;
+				
+				
+				
+				auto j = addJob([&](auto... x) { return this->nodeGoMT(x...); }, n->right, n->value);
+				
 				nodeGoMT(n->left, n->value);
-				nodeGoMT(n->right, n->value);
+				//nodeGoMT(n->right, n->value);
+				//j->wait();
+				dout << "Returning\n";
 				
 			}
 			
@@ -543,7 +553,7 @@ bool Test_Multi()
 				getNodes(root, _nodes);
 			}
 			
-			Tree() : Parallelized(4), root(NULL), _nodes(), nodes(_nodes) {}
+			Tree() : Parallelized(1), root(NULL), _nodes(), nodes(_nodes) {}
 			Tree(double prob) : Tree()
 			{
 				generate(prob);
@@ -566,9 +576,15 @@ bool Test_Multi()
 			
 			void goMT()
 			{
-				auto j = addJob(nodeGoMT, root, 0);
+				//auto j = addJob(nodeGoMT, root, 0);
+				auto j = addJob([&](auto... x) { return this->nodeGoMT(x...); }, root, 0);
 				dout << "Waiting...\n";
 				j->wait();
+				while (isRunning())
+				{
+					QUtils::sleep(100);
+				}
+				dout << "Waiting done\n";
 			}
 			
 			std::vector<Node*> bottom()
@@ -603,8 +619,10 @@ bool Test_Multi()
 			return v;
 		};
 		
+		dout << "Constructing...\n";
 		const double prob = 1048576;
 		Tree t;
+		dout << "Generating...\n";
 		t.generate(prob);
 		
 		
@@ -614,9 +632,10 @@ bool Test_Multi()
 		t.goMT();
 		dout << "Bottom Vals: " << sVals(t) << "\n";
 		dout << "Gen 2\n";
-		t.go();
+		t.goMT();
 		dout << "Bottom Vals: " << sVals(t) << "\n";
 		
+		/*
 		dout << "\n\nGenerating mutexed tree\n";
 		QUtils::Multi::Mutexed<Tree> mutTree;
 		mutTree.run<double>(&Tree::generate, prob);
@@ -624,7 +643,7 @@ bool Test_Multi()
 		mutTree.lock();
 		dout << "Count: " << mutTree->nodes.size() << std::endl;
 		dout << "Bottom Vals: " << sVals(*mutTree) << "\n" << std::endl;
-		mutTree.unlock();
+		mutTree.unlock();*/
 		
 	}
 	
