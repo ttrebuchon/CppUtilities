@@ -1,10 +1,20 @@
 #pragma once
-#include <iostream>
+#include <memory>
+
+namespace curlpp
+{
+	class Cleanup;
+}
 
 namespace QUtils
 {
 namespace Network
 {
-	void Test(std::ostream&);
+	class Curl
+	{
+		static std::shared_ptr<curlpp::Cleanup> cleanPtr;
+		public:
+		static void Init();
+	};
 }
 }

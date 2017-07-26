@@ -6,3 +6,4 @@
 #include "Service/ServiceFactory.h"
 #include "Service/Client.h"
 #include "Service/ReturnMessage.h"
+#include "Service/RPCMessage.h"
