@@ -105,21 +105,31 @@ namespace Network
 		}
 		
 		
-		virtual void job()
+		virtual bool job()
 		{
 			auto msg = next();
 			if (msg != NULL)
 			{
 				handleMsg(msg);
+				return true;
+			}
+			else
+			{
+				return false;
 			}
 		}
 		
-		virtual void fast_job()
+		virtual bool fast_job()
 		{
 			auto msg = fast_next();
 			if (msg != NULL)
 			{
 				handleMsg(msg);
+				return true;
+			}
+			else
+			{
+				return false;
 			}
 		}
 		

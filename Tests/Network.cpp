@@ -299,21 +299,37 @@ bool Test_Network()
 			
 			StringClient& operator=(std::string str)
 			{
-				auto setMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, const int, std::string>>("set", objID, str, 1);
+				/*auto setMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, const int, std::string>>("set", objID, str, 1);
 				router->send(setMsg);
 				//setMsg->future().get();
+				*/
+				this->sendRPCRequestAsync<void, const int, std::string>("set", objID, str, 1);
 				return *this;
 			}
 			
 			void print()
 			{
-				auto printMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, const int>>("print", objID, 1);
+				/*auto printMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, const int>>("print", objID, 1);
 				router->send(printMsg);
 				if (!printMsg->future().valid())
 				{
 					throw std::future_error(std::future_errc::no_state);
 				}
-				printMsg->future().get();
+				printMsg->future().get();*/
+				return this->sendRPCRequest<void, const int>("print", objID, 1);
+			}
+			
+			
+			std::shared_future<void> printAsync()
+			{
+				/*auto printMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, const int>>("print", objID, 1);
+				router->send(printMsg);
+				if (!printMsg->future().valid())
+				{
+					throw std::future_error(std::future_errc::no_state);
+				}
+				printMsg->future().get();*/
+				return this->sendRPCRequestAsync<void, const int>("print", objID, 1);
 			}
 			
 		};
@@ -328,21 +344,21 @@ bool Test_Network()
 		StringClient str1(router);
 		str1 = "Testing";
 		str1.print();
-		for (int i = 0; i < 100; ++i)
+		for (int i = 0; i < 10; ++i)
 		{
 			str1 = "Testing_" + std::to_string(i+1);
 			
 			StringClient str2(router);
 			str2 = "String_" + std::to_string(i+1);
-			str1.print();
-			str2.print();
+			str1.printAsync();
+			str2.printAsync();
 			str2 = "Hello";
 			str2 = ", world" + std::to_string(i+1);
 			str2 = "X" + std::to_string(i+1);
-			str2.print();
+			str2.printAsync();
 		}
 		
-		
+		srv->wait();
 		
 		
 		dout << "\n\n\n\n";

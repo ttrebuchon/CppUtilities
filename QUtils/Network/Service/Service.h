@@ -102,6 +102,9 @@ namespace Network
 			_started.unlock();
 		}
 		
+		
+		virtual void wait();
+		
 		friend class Message;
 		
 	};

@@ -30,5 +30,13 @@ namespace Network
 		{}
 		std::cout << "Service stopped...\n";
 	}
+	
+	void Service::wait()
+	{
+		this->stop();
+		this->serviceFuture.get();
+		while (router->job())
+		{}
+	}
 }
 }
