@@ -19,9 +19,8 @@ namespace Network
 		{
 		while (go)
 		{
-			//sleep(2000);
 			router->job();
-			
+			//QUtils::sleep(100);
 			_started.lock();
 			go = *_started;
 			_started.unlock();

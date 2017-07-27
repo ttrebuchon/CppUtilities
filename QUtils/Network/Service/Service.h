@@ -3,6 +3,7 @@
 #include <memory>
 #include <queue>
 #include <chrono>
+#include <future>
 #include <iostream>
 
 #include <QUtils/Multi/Mutexed.h>
@@ -23,6 +24,7 @@ namespace Network
 		private:
 		Multi::Mutexed<bool> _started;
 		bool registered;
+		std::future<void> serviceFuture;
 		
 		Service(std::shared_ptr<Router> router) : _started(false), registered(false), router(router), started(_started)
 		{
@@ -78,10 +80,23 @@ namespace Network
 		}
 		
 		virtual void start();
+		virtual void startThreaded()
+		{
+			if (this->serviceFuture.valid())
+			{
+				if (serviceFuture.wait_for(std::chrono::seconds(1)) != std::future_status::ready)
+				{
+					//TODO
+					throw std::exception();
+				}
+			}
+			this->serviceFuture = std::async(std::launch::async, [&] () {
+				this->start();
+			});
+		}
 		
 		virtual void stop()
 		{
-			std::cout << "Stop()\n";
 			_started.lock();
 			_started = false;
 			_started.unlock();

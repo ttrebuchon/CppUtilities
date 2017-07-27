@@ -99,11 +99,9 @@ namespace Network
 		
 		void send(std::shared_ptr<Message> msg)
 		{
-			std::cout << "Sending msg\n";
 			messageTmpQueue.lock();
 			messageTmpQueue->push(msg);
 			messageTmpQueue.unlock();
-			std::cout << "Message in Tmp Queue\n";
 		}
 		
 		
@@ -112,9 +110,7 @@ namespace Network
 			auto msg = next();
 			if (msg != NULL)
 			{
-				std::cout << "Handling message " << msg << "\n";
 				handleMsg(msg);
-				std::cout << "Handled.\n";
 			}
 		}
 		

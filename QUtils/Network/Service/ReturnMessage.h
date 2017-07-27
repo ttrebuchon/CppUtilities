@@ -21,7 +21,6 @@ namespace Network
 		template <class F>
 		void setValue(F f)
 		{
-			std::cout << "Setting value\n";
 			try
 			{
 				prom.set_value(f());
@@ -30,11 +29,13 @@ namespace Network
 			{
 				try
 				{
+					
 				prom.set_exception(std::current_exception());
 				}
-				catch (...) {}
+				catch (std::exception& ex) {
+					std::cerr << ex.what() << "\n";
+				}
 			}
-			std::cout << "Set.\n";
 		}
 		
 		void setException(std::exception_ptr ex)
@@ -62,7 +63,6 @@ namespace Network
 	template <class F>
 	void ReturnMessage<void>::setValue(F f)
 	{
-		std::cout << "Setting value\n";
 		try
 		{
 		f();
@@ -74,9 +74,11 @@ namespace Network
 			{
 			prom.set_exception(std::current_exception());
 			}
-			catch (...) {}
+			catch (std::exception& ex)
+			{
+				std::cerr << ex.what() << "\n";
+			}
 		}
-		std::cout << "Set.\n";
 	}
 	
 }

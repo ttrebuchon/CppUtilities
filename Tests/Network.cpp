@@ -129,6 +129,12 @@ bool Test_Network()
 	
 	
 	{
+		
+		
+		
+		
+		
+		
 		class StringService : public QUtils::Network::Service, public std::enable_shared_from_this<StringService>
 		{
 			public:
@@ -189,19 +195,21 @@ bool Test_Network()
 			}
 			
 		};
-		try
-		{
+		
+		std::shared_ptr<StringService> srv = NULL;
+		
+		
+		
 		dout << "Creating Service...\n";
-		auto srv = StringService::Create();
+		srv = StringService::Create();
 		
 		dout << "Getting Router...\n";
 		auto router = std::dynamic_pointer_cast<StringService::Router>(srv->localRouter());
 		
 		dout << "Launching service thread...\n";
-		auto startF = std::async(std::launch::async, [srv]() {
-			srv->start();
-			dout << "srv->start() ended...\n";
-		});
+		srv->startThreaded();
+		
+		
 		
 		dout << "Creating 'create()' Message...\n";
 		auto newMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, int>>("create");
@@ -215,11 +223,13 @@ bool Test_Network()
 		assert_ex(idFuture.valid());
 		dout << "Getting Result...\n";
 		int strID = idFuture.get();
+		
+		
+		
 		dout << "Creating 'set(id, str)' Message...\n";
 		
 		auto setMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, const int, std::string>>("set", strID, "TestString");
 		
-		//QUtils::sleep(1000);
 		router->send(setMsg);
 		
 		
@@ -237,17 +247,107 @@ bool Test_Network()
 		{
 			std::cout << "printFut not valid!!\n";
 		}
+		assert_ex(printFut.valid());
 		printFut.get();
 		dout << "Ending\n";
 		srv->stop();
-		QUtils::sleep(1000);/*
-		srv.reset();
-		router.reset();*/
-		}
-		catch(...)
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	
+	
+	
+	
+	
+	
+		srv->startThreaded();
+		
+		
+		
+		
+		
+		
+		class StringClient : public QUtils::Network::LocalClient<StringService>
 		{
-			dout << "Caught\n";
+			private:
+			//std::shared_ptr<StringService::Router> router;
+			int objID;
+			
+			public:
+			StringClient(std::shared_ptr<StringService::Router> router) : QUtils::Network::LocalClient<StringService>(router), objID(-1)
+			{
+				/*auto newMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, int>>("create", 4);
+				router->send(newMsg);
+				objID = newMsg->future().get();*/
+				objID = this->sendRPCRequest<int>("create", 4);
+			}
+			
+			StringClient& operator=(std::string str)
+			{
+				auto setMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, const int, std::string>>("set", objID, str, 1);
+				router->send(setMsg);
+				//setMsg->future().get();
+				return *this;
+			}
+			
+			void print()
+			{
+				auto printMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, const int>>("print", objID, 1);
+				router->send(printMsg);
+				if (!printMsg->future().valid())
+				{
+					throw std::future_error(std::future_errc::no_state);
+				}
+				printMsg->future().get();
+			}
+			
+		};
+		
+		
+		
+		
+		
+		
+		QUtils::sleep(200);
+		dout << "\n\n\n\n";
+		StringClient str1(router);
+		str1 = "Testing";
+		str1.print();
+		for (int i = 0; i < 100; ++i)
+		{
+			str1 = "Testing_" + std::to_string(i+1);
+			
+			StringClient str2(router);
+			str2 = "String_" + std::to_string(i+1);
+			str1.print();
+			str2.print();
+			str2 = "Hello";
+			str2 = ", world" + std::to_string(i+1);
+			str2 = "X" + std::to_string(i+1);
+			str2.print();
 		}
+		
+		
+		
+		
+		dout << "\n\n\n\n";
+		srv->stop();
+		
 	}
 	
 	

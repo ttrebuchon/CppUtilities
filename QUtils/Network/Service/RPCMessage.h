@@ -30,8 +30,6 @@ namespace Network
 			static Ret callWithArgs(F& f, std::tuple<>& args)
 			{
 				return f();
-				std::cout << "Invalid state!\n";
-				throw std::exception();
 			}
 		};
 	}
@@ -56,20 +54,17 @@ namespace Network
 		{
 			try
 			{
-			std::cout << "Visiting\n";
 			Procedure proc = ProcedureLookup<Index, Service_t, Ret, Args...>::Find(procIndex);
 			Service_t& srv = static_cast<Service_t&>(baseSrv);
 			
 			
 			auto call = [&](auto... x)
 			{
-				std::cout << "Calling...\n";
 				return (srv.*proc)(x...);
 			};
 			
 			auto value = [&]() -> Ret
 			{
-				std::cout << "Calling via helper...\n";
 				return Helpers::CallerHelper<Ret, Args...>::callWithArgs(call, args);
 				/*if (sizeof...(Args) > 0)
 				{
@@ -87,13 +82,12 @@ namespace Network
 			{
 				this->setException(std::current_exception());
 			}
-			std::cout << "Visited.\n";
 		}
 		
 		
 		
 		public:
-		RPCMessage(Index index, Args... args) : procIndex(index), args(std::tuple<Args...>(args...))
+		RPCMessage(Index index, Args... args, int priority = 1) : ReturnMessage<Ret>(), _priority(priority), procIndex(index), args(std::tuple<Args...>(args...))
 		{}
 		
 		virtual int priority() const override
