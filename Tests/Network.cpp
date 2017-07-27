@@ -10,6 +10,7 @@
 
 
 #include <QUtils/Sleep/Sleep.h>
+#include <QUtils/Types/CompilerPrint.h>
 
 using json = nlohmann::json;
 using namespace curlpp::options;
@@ -135,6 +136,17 @@ bool Test_Network()
 		
 		
 		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		class StringService : public QUtils::Network::Service, public std::enable_shared_from_this<StringService>
 		{
 			public:
@@ -151,10 +163,18 @@ bool Test_Network()
 			
 			virtual void registerProcs() override
 			{
-				QUtils::Network::ProcedureLookup<std::string, StringService, int>::Register("create", &StringService::create);
-				QUtils::Network::ProcedureLookup<std::string, StringService, void, const int, std::string>::Register("set", &StringService::set);
+				//QUtils::Network::ProcedureLookup<std::string, StringService, int>::Register("create", &StringService::create);
 				
-				QUtils::Network::ProcedureLookup<std::string, StringService, void, const int>::Register("print", &StringService::print);
+				this->registerProc("create", &StringService::create);
+				//QUtils::Network::ProcedureLookup<std::string, StringService, void, const int, std::string>::Register("set", &StringService::set);
+				this->registerProc("set", &StringService::set);
+				
+				//QUtils::Network::ProcedureLookup<std::string, StringService, void, const int>::Register("print", &StringService::print);
+				
+				this->registerProc<StringService, void, int>("print", &StringService::print);
+				
+				//QUtils::Network::ProcedureLookup<std::string, StringService, std::string, const int>::Register("str", &StringService::str);
+				this->registerProc("str", &StringService::str);
 			}
 			
 			
@@ -194,6 +214,11 @@ bool Test_Network()
 				return next++;
 			}
 			
+			std::string str(const int id) const
+			{
+				return strings.at(id);
+			}
+			
 		};
 		
 		std::shared_ptr<StringService> srv = NULL;
@@ -228,14 +253,14 @@ bool Test_Network()
 		
 		dout << "Creating 'set(id, str)' Message...\n";
 		
-		auto setMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, const int, std::string>>("set", strID, "TestString");
+		auto setMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, int, std::string>>("set", strID, "TestString");
 		
 		router->send(setMsg);
 		
 		
 		
 		dout << "Creating 'print(id)' Message...\n";
-		auto printMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, const int>>("print", strID);
+		auto printMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, int>>("print", strID);
 		dout << "Sending Message...\n";
 		router->send(printMsg);
 		
@@ -291,45 +316,29 @@ bool Test_Network()
 			public:
 			StringClient(std::shared_ptr<StringService::Router> router) : QUtils::Network::LocalClient<StringService>(router), objID(-1)
 			{
-				/*auto newMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, int>>("create", 4);
-				router->send(newMsg);
-				objID = newMsg->future().get();*/
 				objID = this->sendRPCRequest<int>("create", 4);
 			}
 			
 			StringClient& operator=(std::string str)
 			{
-				/*auto setMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, const int, std::string>>("set", objID, str, 1);
-				router->send(setMsg);
-				//setMsg->future().get();
-				*/
-				this->sendRPCRequestAsync<void, const int, std::string>("set", objID, str, 1);
+				this->sendRPCRequestAsync<void, int, std::string>("set", objID, str, 1);
 				return *this;
 			}
 			
 			void print()
 			{
-				/*auto printMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, const int>>("print", objID, 1);
-				router->send(printMsg);
-				if (!printMsg->future().valid())
-				{
-					throw std::future_error(std::future_errc::no_state);
-				}
-				printMsg->future().get();*/
-				return this->sendRPCRequest<void, const int>("print", objID, 1);
+				return this->sendRPCRequest<void, int>("print", objID, 1);
 			}
 			
 			
 			std::shared_future<void> printAsync()
 			{
-				/*auto printMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, const int>>("print", objID, 1);
-				router->send(printMsg);
-				if (!printMsg->future().valid())
-				{
-					throw std::future_error(std::future_errc::no_state);
-				}
-				printMsg->future().get();*/
-				return this->sendRPCRequestAsync<void, const int>("print", objID, 1);
+				return this->sendRPCRequestAsync<void, int>("print", objID, 1);
+			}
+			
+			std::string str() const
+			{
+				return this->sendRPCRequest<std::string, int>("str", objID, 1);
 			}
 			
 		};
@@ -338,13 +347,14 @@ bool Test_Network()
 		
 		
 		
-		
-		QUtils::sleep(200);
+		//Sleep to make sure all the print statements are executed before the line break
+		QUtils::sleep(200); 
 		dout << "\n\n\n\n";
 		StringClient str1(router);
 		str1 = "Testing";
 		str1.print();
-		for (int i = 0; i < 10; ++i)
+		const int stringCallCount = 10;
+		for (int i = 0; i < stringCallCount; ++i)
 		{
 			str1 = "Testing_" + std::to_string(i+1);
 			
@@ -357,6 +367,8 @@ bool Test_Network()
 			str2 = "X" + std::to_string(i+1);
 			str2.printAsync();
 		}
+		
+		assert_ex(str1.str() == "Testing_" + std::to_string(stringCallCount));
 		
 		srv->wait();
 		

@@ -74,6 +74,29 @@ namespace Network
 		
 		
 		
+		
+		
+		template <class Ret, class ...Args>
+		Ret sendRPCRequest(std::string name, Args... args, int priority = 1) const
+		{
+			auto msg = std::make_shared<RPCMessage<const Service_t, Ret, Args...>>(name, args..., priority);
+			router->send(msg);
+			if (!msg->future().valid())
+			{
+				throw std::future_error(std::future_errc::no_state);
+			}
+			return msg->future().get();
+		}
+		
+		template <class Ret, class ...Args>
+		std::shared_future<Ret> sendRPCRequestAsync(std::string name, Args... args, int priority = 1) const
+		{
+			auto msg = std::make_shared<RPCMessage<const Service_t, Ret, Args...>>(name, args..., priority);
+			router->send(msg);
+			return msg->future();
+		}
+		
+		
 		public:
 		
 		LocalClient(std::shared_ptr<ServiceRouter<Service_t>> router) : router(router)

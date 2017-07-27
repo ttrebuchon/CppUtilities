@@ -4,9 +4,11 @@
 #include <queue>
 #include <chrono>
 #include <future>
-#include <iostream>
+#include <string>
 
 #include <QUtils/Multi/Mutexed.h>
+
+#include "ProcedureLookup.h"
 
 namespace QUtils
 {
@@ -46,6 +48,18 @@ namespace Network
 		
 		virtual void registerProcs() = 0;
 		
+		template <class Service_t, class Ret, class ...Args>
+		void registerProc(std::string name, Ret(Service_t::*proc)(Args...)) const
+		{
+			ProcedureLookup<std::string, Service_t, Ret, Args...>::Register(name, proc);
+		}
+		
+		template <class Service_t, class Ret, class ...Args>
+		void registerProc(std::string name, Ret(Service_t::*proc)(Args...) const) const
+		{
+			ProcedureLookup<std::string, Service_t, Ret, Args...>::Register(name, proc);
+		}
+		
 		public:
 		const Multi::Mutexed<bool>& started;
 		template <class this_type>
@@ -58,7 +72,6 @@ namespace Network
 		virtual ~Service()
 		{
 			router = NULL;
-			std::cout << "~Service()\n";
 			this->stop();
 			
 		}
