@@ -80,6 +80,12 @@ namespace Multi
 			return *this;
 		}
 		
+		operator T()
+		{
+			T value = **this;
+			return value;
+		}
+		
 		template <class G, bool B>
 		friend class Internal::IsMutexedClass;
 	};

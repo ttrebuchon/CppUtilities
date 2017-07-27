@@ -81,6 +81,20 @@ namespace Types
 		struct has_subtraction_op<T, G, void_t<decltype(std::declval<T>() - std::declval<G>())>> : std::true_type
 		{};
 		
+		
+		
+		
+		
+		
+		
+		template <class T, typename = void, class... G>
+		struct has_invoke_op : std::false_type
+		{};
+		
+		template <class T, class... G>
+		struct has_invoke_op<T, void_t<decltype(std::declval<T>()( (std::declval<G>())...))>, G...> : std::true_type
+		{};
+		
 	}
 	
 	
@@ -268,14 +282,51 @@ namespace Types
 	
 	
 	
+	template <class T>
+	class InvokeForward
+	{
+		protected:
+		T* ptr;
+		
+		public:
+		InvokeForward(T* t) : ptr(t)
+		{}
+		
+		
+		template <class... G>
+		typename std::enable_if<Internal::has_invoke_op<T, G...>::value, decltype(std::declval<T>()((std::declval<G>())...))>::type operator()(G... g)
+		{
+			return (*ptr)(g...);
+		}
+		
+		template <class... G>
+		typename std::enable_if<Internal::has_invoke_op<const T, G...>::value, decltype(std::declval<const T>()((std::declval<G>())...))>::type operator()(G... g) const
+		{
+			return (*ptr)(g...);
+		}
+	};
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	template <class T>
-	class AllOperatorForward : public IndexerForward<T>, public GreaterLessThanForward<T>, public ArithmeticForward<T>
+	class AllOperatorForward : public IndexerForward<T>, public GreaterLessThanForward<T>, public ArithmeticForward<T>, public InvokeForward<T>
 	{
 		public:
 		
-		AllOperatorForward(T* t) : IndexerForward<T>(t), GreaterLessThanForward<T>(t), ArithmeticForward<T>(t)
+		AllOperatorForward(T* t) : IndexerForward<T>(t), GreaterLessThanForward<T>(t), ArithmeticForward<T>(t), InvokeForward<T>(t)
 		{
 			
 		}

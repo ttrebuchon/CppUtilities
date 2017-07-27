@@ -19,6 +19,12 @@ namespace Types
 		typedef Sequence<0, M...> type;
 	};
 	
+	template <int ...M>
+	struct SequenceGen<-1, M...> : public Sequence<M...>
+	{
+		typedef Sequence<M...> type;
+	};
+	
 	
 	
 }

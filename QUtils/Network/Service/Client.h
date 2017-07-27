@@ -9,12 +9,13 @@ namespace QUtils
 {
 namespace Network
 {
+	template <class Service_t>
 	class Client
 	{
 		private:
 		
 		protected:
-		std::shared_ptr<Router> router;
+		std::shared_ptr<ServiceRouter<Service_t>> router;
 		
 		template <class Ret, class ...T>
 		std::future<Ret> sendJSONRequestAsync(std::string name, T... t)

@@ -80,7 +80,7 @@ namespace Types
 		struct CallWithTupleArgs_Inner
 		{
 			template <int ...N>
-			decltype(std::declval<F>()((std::declval<Args>())...)) call(F f, std::tuple<Args...>& argsTup, Sequence<N...>)
+			static decltype(std::declval<F>()((std::declval<Args>())...)) call(F f, std::tuple<Args...>& argsTup, Sequence<N...>)
 			{
 				return f(std::get<N>(argsTup)...);
 			}
@@ -91,7 +91,7 @@ namespace Types
 	template <class F, class ...Args>
 	decltype(std::declval<F>()((std::declval<Args>())...)) CallWithTupleArgs(F f, std::tuple<Args...> argsTup)
 	{
-		return Helpers::CallWithTupleArgs_Inner<F, Args...>::call(f, argsTup, SequenceGen<sizeof...(Args)>());
+		return Helpers::CallWithTupleArgs_Inner<F, Args...>::call(f, argsTup, SequenceGen<sizeof...(Args)-1>());
 	};
 }
 }
