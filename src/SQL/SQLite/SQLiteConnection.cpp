@@ -8,12 +8,36 @@ namespace QUtils
 {
 namespace SQL
 {
+	namespace Helpers
+	{
+		template <class Ret, class ...Args>
+		Ret sqlite_callback(void* callback, Args... args)
+		{
+			auto func = (std::function<Ret(Args...)>*)callback;
+			return (*func)(args...);
+		}
+	}
+	void SQLiteConnection::registerUpdateHook()
+	{
+		sqlite3_update_hook(db, &Helpers::sqlite_callback<void, int, char const*, char const*, long long>, (void*)&updateHook);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	SQLiteConnection::SQLiteConnection(int WAL) : SQLiteConnection("", WAL)
 	{
 		
 	}
 	
-	SQLiteConnection::SQLiteConnection(std::string file, int WAL) : filename(file), db(NULL), useWAL(WAL > 0)
+	SQLiteConnection::SQLiteConnection(std::string file, int WAL) : filename(file), db(NULL), useWAL(WAL > 0), updateHook()
 	{
 		
 	}
@@ -54,6 +78,9 @@ namespace SQL
 	
 	SQLiteQuery* SQLiteConnection::query(std::string str) const
 	{
+		#ifdef PRINT_SQL_QUERIES
+		std::cout << str << "\n";
+		#endif
 		sqlite3_stmt* stmt = NULL;
 		int status;
 		
@@ -61,7 +88,7 @@ namespace SQL
 		if (status != SQLITE_OK)
 		{
 			sqlite3_finalize(stmt);
-			throw SQLErrorException().Msg(sqlite3_errmsg(db));
+			throw SQLErrorException().Msg(sqlite3_errmsg(db) + std::string("\t\tQuery: '") + str + "'");
 		}
 		
 		return new SQLiteQuery(stmt);
@@ -69,6 +96,9 @@ namespace SQL
 	
 	bool SQLiteConnection::vQuery(std::string query)
 	{
+		#ifdef PRINT_SQL_QUERIES
+		std::cout << query << "\n";
+		#endif
 		sqlite3_stmt* ptr = NULL;
 		int status;
 		if ((status = sqlite3_prepare_v2(db, query.c_str(), -1, &ptr, NULL)) != SQLITE_OK)
@@ -94,9 +124,16 @@ namespace SQL
 	}
 	
 	
-	Query* SQLiteConnection::tablesQuery() const
+	Query* SQLiteConnection::tablesQuery(std::string tableName) const
 	{
-		return query("SELECT name FROM [sqlite_master] WHERE type='table'");
+		if (tableName == "")
+		{
+			return query("SELECT name, sql AS statement FROM [sqlite_master] WHERE type='table'");
+		}
+		else
+		{
+			return query("SELECT name, sql AS statement FROM [sqlite_master] WHERE type='table' AND name='" + tableName + "'");
+		}
 	}
 	
 	bool SQLiteConnection::tableExists(std::string name) const

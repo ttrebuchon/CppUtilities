@@ -115,7 +115,7 @@ namespace SQL
 	
 	std::string SQLiteQuery::statement() const
 	{
-		auto cstr = sqlite3_sql(stmt);
+		auto cstr = sqlite3_expanded_sql(stmt);
 		if (cstr == NULL)
 		{
 			//TODO

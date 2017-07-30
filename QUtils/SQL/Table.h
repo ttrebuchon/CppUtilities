@@ -5,6 +5,8 @@
 #include <memory>
 #include <map>
 
+#include "Columns.h"
+
 
 namespace QUtils
 {
@@ -30,12 +32,13 @@ namespace SQL
 		
 		void refreshColumns();
 		public:
+		Columns columns;
 		
 		Table& operator=(const Table);
 		
 		const std::string& name;
-		const std::vector<std::shared_ptr<Column>>& columns;
-		const std::map<std::string, std::shared_ptr<Column>>& columnsByName;
+		/*const std::vector<std::shared_ptr<Column>>& columns;
+		const std::map<std::string, std::shared_ptr<Column>>& columnsByName;*/
 		long count() const;
 		void drop();
 		Table join(const Table t, std::string col1, std::string col2) const;
@@ -44,7 +47,7 @@ namespace SQL
 		Query* rows() const;
 		
 		
-		const Column& operator[](const std::string columnName) const;
+		
 		
 		template <typename... S>
 		Query* select(std::string c1, std::string c2, S... s)
@@ -52,6 +55,8 @@ namespace SQL
 			return select(c1 + ", " + c2, s...);
 		}
 		Query* select(std::string) const;
+		
+		std::string tableStatement() const;
 		
 		
 		friend class Database;

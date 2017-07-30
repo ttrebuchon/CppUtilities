@@ -2,11 +2,14 @@
 
 #include <QUtils/SQL/SQL.h>
 
+#include <sqlite3.h>
+
 using namespace QUtils;
 
 bool Test_SQL()
 {
 	SQL::SQLiteConnection con("TestDB.sqlite");
+	{
 	
 	assert_ex(!con.isOpen());
 	con.open();
@@ -16,28 +19,41 @@ bool Test_SQL()
 	con.open();
 	assert_ex(con.isOpen());
 	
+	long long int updates = 0;
+	con.setUpdateCallback([&updates](int code, char const* db, char const* table, long long row) {
+		++updates;
+		if (updates % 100 == 0 || updates == 1)
+		{
+			//dout << "[" << db << "].[" << table << "]->" << row << "\n";
+			dout << updates << " Updates\n";
+		}
+	});
+	
 	auto dropQuery = con.tablesQuery();
+	std::vector<std::string> dropTableNames;
 	while (dropQuery->next())
 	{
-	try
-	{
-		
-		auto name = dropQuery->column<std::string>(0);
-		dropQuery->reset();
-		//dout << "DROP TABLE [" << dropQuery->column<std::string>(0) << "];" << std::endl;
-		con.vQuery("DROP TABLE IF EXISTS [" + name + "];");
-		
-		//dropQuery->reset();
-	}
-	catch (std::exception& e)
-	{
-		dout << "Caught " << e.what() << std::endl;
-	}
+		dropTableNames.push_back(dropQuery->column<std::string>(0));
 	}
 	delete dropQuery;
 	
+	for (auto name : dropTableNames)
+	{
+		try
+		{
+			//dout << "DROP TABLE [" << dropQuery->column<std::string>(0) << "];" << std::endl;
+			con.vQuery("DROP TABLE IF EXISTS [" + name + "];");
+		}
+		catch (std::exception& e)
+		{
+			dout << "Caught " << e.what() << std::endl;
+		}
+	}
+	
+	
+	std::string ttableCreateStmt = "CREATE TABLE TTable (x INTEGER PRIMARY KEY)";
 	const int rCount = 1000;
-	assert_ex(con.vQuery("CREATE TABLE TTable (x INTEGER PRIMARY KEY);"));
+	assert_ex(con.vQuery(ttableCreateStmt));
 	assert_ex(con.vQuery("INSERT INTO TTable (x) VALUES (0);"));
 	assert_ex(con.vQuery("BEGIN;"));
 	for (auto i = 1; i < rCount; i++)
@@ -99,6 +115,20 @@ bool Test_SQL()
 	
 	
 	
+	dout << "Pending Statements:\n";
+	auto werePending = con.pending();
+	for (auto stmt : werePending)
+	{
+		dout << sqlite3_expanded_sql(stmt) << "\n";
+		assert_ex(std::string(sqlite3_expanded_sql(stmt)) == "PRAGMA table_info(TTable)");
+	}
+	assert_ex(werePending.size() == 1);
+	delete q;
+	assert_ex(con.pending().size() == 0);
+	
+	
+	
+	
 	SQL::Database DB(&con);
 	
 	SQL::Table TTable = DB["TTable"];
@@ -125,6 +155,7 @@ bool Test_SQL()
 	assert_ex(con.vQuery("COMMIT;"));
 	
 	SQL::Table joined = TTable.join(TTable_2, "x", "x");
+	assert_ex(joined.name == "TTable_TTable 2");
 	
 	q = con.query("SELECT * FROM [TTable_TTable 2];");
 	int pIndex = 0;
@@ -156,7 +187,7 @@ bool Test_SQL()
 	joined.drop();
 	dout << "Dropped." << std::endl;
 	
-	auto cl = ((TTable["x"] == TTable["y"]) || (TTable["x"] > 1000));
+	auto cl = ((TTable.columns["x"] == TTable.columns["y"]) || (TTable.columns["x"] > 1000));
 	dout << cl.toString() << std::endl;
 	
 	q = con.query("SELECT * FROM TTable WHERE " + cl.toString() + ";");
@@ -168,6 +199,7 @@ bool Test_SQL()
 	
 	dout << "Joining on y->z...\n";
 	joined = TTable.join(TTable_2, "y", "z");
+	assert_ex(joined.name == "TTable_TTable 2");
 	dout << "Joined.\n";
 	
 	for (auto col : joined.columns)
@@ -223,5 +255,40 @@ bool Test_SQL()
 		dout << "Table: [" << table.name << "]\n";
 	}
 	
+	
+	
+	
+	dout << "TTable Create Statement:\n";
+	auto ttableTableStmt = TTable.tableStatement();
+	dout << ttableTableStmt << std::endl;
+	assert_ex(ttableTableStmt == "CREATE TABLE TTable (x INTEGER PRIMARY KEY, y integer)");
+	
+	
+	try
+	{
+	dout << joined.tableStatement() << "\n";
+	assert_ex(false);
+	}
+	catch (SQL::SQLErrorException)
+	{
+		
+	}
+	
+	
+	
+	
+	}
+	
+	
+	
+	dout << "\nPending Statements:\n";
+	for (auto stmt : con.pending())
+	{
+		dout << sqlite3_expanded_sql(stmt) << "\n";
+	}
+	assert_ex(con.pending().size() == 0);
+	
+	
+	dout << "\n\n";
 	return true;
 }

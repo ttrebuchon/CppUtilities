@@ -7,7 +7,7 @@ namespace QUtils
 {
 namespace SQL
 {
-	Table::Table(Connection* con, std::string name) : con(con), _name(name), _columns(), _columnsByName(), _PK(NULL), name(_name), columns(_columns), columnsByName(_columnsByName)
+	Table::Table(Connection* con, std::string name) : con(con), _name(name), _columns(), _columnsByName(), _PK(NULL), /*columns(_columns), columnsByName(_columnsByName),*/ columns(_columns, _columnsByName, _PK), name(_name)
 	{
 		refreshColumns();
 	}
@@ -89,14 +89,25 @@ namespace SQL
 		return con->query("SELECT rowid,* FROM [" + name + "];");
 	}
 	
-	const Column& Table::operator[](const std::string columnName) const
-	{
-		return *(columnsByName.at(columnName));
-	}
-	
 	Query* Table::select(std::string cols) const
 	{
 		return con->query("SELECT " + cols + " FROM [" + name + "];");
+	}
+	
+	std::string Table::tableStatement() const
+	{
+		std::string statement;
+		Query* query = con->tablesQuery(name);
+		while (query->next())
+		{
+			statement = query->column<std::string>(1);
+			delete query;
+			return statement;
+		}
+		
+		delete query;
+		throw SQLErrorException().Msg("Could not find CREATE statement for table '" + name + "'");
+		
 	}
 	
 	
