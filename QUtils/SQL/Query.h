@@ -1,12 +1,13 @@
 #pragma once
 #include "ValueType.h"
 #include <string>
+#include <memory>
 
 namespace QUtils
 {
 namespace SQL
 {
-	class Query
+	class Query : public std::enable_shared_from_this<Query>
 	{
 		protected:
 		virtual double columnDouble(int) const = 0;
