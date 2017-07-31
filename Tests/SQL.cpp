@@ -275,6 +275,10 @@ bool Test_SQL()
 	}
 	
 	
+	assert_ex(con.tableExists("TTable"));
+	assert_ex(!con.tableExists("[TTable]"));
+	
+	
 	
 	
 	}

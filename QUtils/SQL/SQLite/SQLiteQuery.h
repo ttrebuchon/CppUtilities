@@ -41,6 +41,21 @@ namespace SQL
 		virtual std::string tableName(int) const override;
 		virtual std::string dbName(int) const override;
 		virtual std::string statement() const override;
+		
+		
+		
+		
+		virtual void unbind() override;
+		
+		virtual void bind(std::string parameter, double value) override;
+		virtual void bind(std::string parameter, int value) override;
+		virtual void bind(std::string parameter, long value) override;
+		virtual void bind(std::string parameter, std::string value) override;
+		
+		virtual void bind(unsigned int index, double value) override;
+		virtual void bind(unsigned int index, int value) override;
+		virtual void bind(unsigned int index, long value) override;
+		virtual void bind(unsigned int index, std::string value) override;
 	};
 	
 }

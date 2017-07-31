@@ -3,13 +3,12 @@
 #include <string>
 #include <vector>
 
-#include <QUtils/Exception/Exception.h>
+#include "Errors.h"
 
 namespace QUtils
 {
 namespace SQL
 {
-	UTIL_CUSTOM_EXCEPTION(SQLErrorException,);
 	
 	class Query;
 	

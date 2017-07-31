@@ -33,6 +33,19 @@ namespace SQL
 		virtual std::string statement() const = 0;
 		
 		
+		virtual void unbind() = 0;
+		
+		virtual void bind(std::string parameter, double value) = 0;
+		virtual void bind(std::string parameter, int value) = 0;
+		virtual void bind(std::string parameter, long value) = 0;
+		virtual void bind(std::string parameter, std::string value) = 0;
+		
+		virtual void bind(unsigned int index, double value) = 0;
+		virtual void bind(unsigned int index, int value) = 0;
+		virtual void bind(unsigned int index, long value) = 0;
+		virtual void bind(unsigned int index, std::string value) = 0;
+		
+		
 	};
 	
 }

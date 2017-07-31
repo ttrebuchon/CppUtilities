@@ -132,13 +132,18 @@ namespace SQL
 		}
 		else
 		{
-			return query("SELECT name, sql AS statement FROM [sqlite_master] WHERE type='table' AND name='" + tableName + "'");
+			auto q = query("SELECT name, sql AS statement FROM [sqlite_master] WHERE type='table' AND name=@NAME");
+			q->bind("@NAME", tableName);
+			return q;
 		}
 	}
 	
 	bool SQLiteConnection::tableExists(std::string name) const
 	{
-		Query* q = query("SELECT name FROM [sqlite_master] WHERE type='table' AND name='" + name + "';");
+		Query* q = query("SELECT name FROM [sqlite_master] WHERE type='table' AND name=@TABLENAME;");
+		q->bind("@TABLENAME", name);
+		
+		
 		while (q->next())
 		{
 			delete q;
