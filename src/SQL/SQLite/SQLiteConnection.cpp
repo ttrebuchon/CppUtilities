@@ -124,7 +124,7 @@ namespace SQL
 	}
 	
 	
-	Query* SQLiteConnection::tablesQuery(std::string tableName) const
+	SQLQuery* SQLiteConnection::tablesQuery(std::string tableName) const
 	{
 		if (tableName == "")
 		{
@@ -140,7 +140,7 @@ namespace SQL
 	
 	bool SQLiteConnection::tableExists(std::string name) const
 	{
-		Query* q = query("SELECT name FROM [sqlite_master] WHERE type='table' AND name=@TABLENAME;");
+		SQLQuery* q = query("SELECT name FROM [sqlite_master] WHERE type='table' AND name=@TABLENAME;");
 		q->bind("@TABLENAME", name);
 		
 		
@@ -153,10 +153,10 @@ namespace SQL
 		return false;
 	}
 	
-	std::vector<Connection::ColumnInfo> SQLiteConnection::tableColumns(const std::string tableName) const
+	std::vector<SQLConnection::ColumnInfo> SQLiteConnection::tableColumns(const std::string tableName) const
 	{
 		std::vector<ColumnInfo> info;
-		Query* tableInfo = query("PRAGMA table_info([" + tableName + "]);");
+		SQLQuery* tableInfo = query("PRAGMA table_info([" + tableName + "]);");
 		
 		while (tableInfo->next())
 		{

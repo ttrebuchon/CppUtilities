@@ -129,9 +129,9 @@ bool Test_SQL()
 	
 	
 	
-	SQL::Database DB(&con);
+	SQL::SQLDatabase DB(&con);
 	
-	SQL::Table TTable = DB["TTable"];
+	SQL::SQLTable TTable = DB["TTable"];
 	
 	for (auto col : TTable.columns)
 	{
@@ -141,7 +141,7 @@ bool Test_SQL()
 	
 	assert_ex(con.vQuery("CREATE TABLE [TTable 2] (x INTEGER PRIMARY KEY, z INTEGER, [x z] INTEGER);"));
 	
-	SQL::Table TTable_2 = DB["TTable 2"];
+	SQL::SQLTable TTable_2 = DB["TTable 2"];
 	
 	assert_ex(con.vQuery("BEGIN;"));
 	for (auto i = 0; i < rCount; i++)
@@ -154,7 +154,7 @@ bool Test_SQL()
 	assert_ex(con.vQuery("UPDATE [TTable 2] SET [x z]=x+z;"));
 	assert_ex(con.vQuery("COMMIT;"));
 	
-	SQL::Table joined = TTable.join(TTable_2, "x", "x");
+	SQL::SQLTable joined = TTable.join(TTable_2, "x", "x");
 	assert_ex(joined.name == "TTable_TTable 2");
 	
 	q = con.query("SELECT * FROM [TTable_TTable 2];");
@@ -228,7 +228,7 @@ bool Test_SQL()
 	dout << "Done.\n";
 	delete q;
 	
-	SQL::Query* q2 = joined.select("x", "y AS yz", "z AS zy", "[x:1]", "x z");
+	SQL::SQLQuery* q2 = joined.select("x", "y AS yz", "z AS zy", "[x:1]", "x z");
 	pIndex = 0;
 	dout << "Iterating...\n";
 	while ((*q2)())

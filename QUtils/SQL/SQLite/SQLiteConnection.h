@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Connection.h"
+#include "../SQLConnection.h"
 #include "SQLiteQuery.h"
 #include <string>
 #include <functional>
@@ -13,7 +13,7 @@ namespace SQL
 {
 	
 	
-	class SQLiteConnection : public Connection
+	class SQLiteConnection : public SQLConnection
 	{
 		protected:
 		std::string filename;
@@ -36,7 +36,7 @@ namespace SQL
 		virtual void close() override;
 		virtual SQLiteQuery* query(std::string) const override;
 		virtual bool vQuery(std::string query) override;
-		virtual Query* tablesQuery(std::string tableName = "") const override;
+		virtual SQLQuery* tablesQuery(std::string tableName = "") const override;
 		virtual bool tableExists(std::string name) const override;
 		virtual std::vector<ColumnInfo> tableColumns(const std::string tableName) const override;
 		

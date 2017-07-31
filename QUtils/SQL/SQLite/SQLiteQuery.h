@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Query.h"
+#include "../SQLQuery.h"
 #include <string>
 
 class sqlite3;
@@ -10,7 +10,7 @@ namespace QUtils
 {
 namespace SQL
 {
-	class SQLiteQuery : public Query
+	class SQLiteQuery : public SQLQuery
 	{
 		protected:
 		sqlite3_stmt* stmt;
