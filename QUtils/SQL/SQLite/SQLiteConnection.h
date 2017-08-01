@@ -39,6 +39,7 @@ namespace SQL
 		virtual SQLQuery* tablesQuery(std::string tableName = "") const override;
 		virtual bool tableExists(std::string name) const override;
 		virtual std::vector<ColumnInfo> tableColumns(const std::string tableName) const override;
+		virtual bool tableHasRid(const std::string tableName) override;
 		
 		
 		void openWithFlags(int flags);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SQLRID.h"
+#include "SQLPK.h"
 #include "SQLConnection.h"
 #include "SQLite/SQLite.h"
 #include "SQLDatabase.h"
@@ -7,3 +9,5 @@
 #include "SQLColumns.h"
 #include "SQLColumn.h"
 #include "SQLClause.h"
+#include "SQLRow.h"
+#include "SQLRows.h"

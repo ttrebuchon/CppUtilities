@@ -7,7 +7,16 @@ namespace QUtils
 {
 namespace SQL
 {
-	SQLTable::SQLTable(SQLConnection* con, std::string name) : con(con), _name(name), _columns(), _columnsByName(), _PK(NULL), /*columns(_columns), columnsByName(_columnsByName),*/ columns(_columns, _columnsByName, _PK), name(_name)
+	SQLTable::SQLTable(SQLConnection* con, std::string name) : 
+	con(con),
+	_name(name),
+	_columns(),
+	_columnsByName(),
+	_rows(con->tableHasRid(name) ? std::static_pointer_cast<SQLRows>(std::make_shared<SQLRows_RID>()) : std::static_pointer_cast<SQLRows>(std::make_shared<SQLRows_PK>())),
+	 _PK(NULL),
+	 columns(_columns, _columnsByName, _PK),
+	 rows(*_rows),
+	 name(_name)
 	{
 		refreshColumns();
 	}
@@ -84,7 +93,7 @@ namespace SQL
 		}
 	}
 	
-	SQLQuery* SQLTable::rows() const
+	SQLQuery* SQLTable::rowsQuery() const
 	{
 		return con->query("SELECT rowid,* FROM [" + name + "];");
 	}
@@ -106,6 +115,7 @@ namespace SQL
 		}
 		
 		delete query;
+		
 		throw SQLErrorException().Msg("Could not find CREATE statement for table '" + name + "'");
 		
 	}

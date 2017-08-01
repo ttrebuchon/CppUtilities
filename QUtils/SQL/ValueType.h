@@ -13,6 +13,7 @@ namespace SQL
 		Integer64 = 2,
 		Double = 3,
 		Null = 4,
+		Blob = 5,
 		
 	};
 	
@@ -87,6 +88,10 @@ namespace SQL
 	{
 		return false;
 	}
+	
+	
+	
+	
 	
 	
 	

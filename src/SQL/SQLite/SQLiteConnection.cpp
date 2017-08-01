@@ -1,5 +1,8 @@
 #include <QUtils/SQL/SQLite/SQLiteConnection.h>
 #include <QUtils/SQL/SQLite/SQLiteQuery.h>
+
+#include <QUtils/String/String.h>
+
 #include <sqlite3.h>
 #include <iostream>
 
@@ -88,7 +91,7 @@ namespace SQL
 		if (status != SQLITE_OK)
 		{
 			sqlite3_finalize(stmt);
-			throw SQLErrorException().Msg(sqlite3_errmsg(db) + std::string("\t\tQuery: '") + str + "'");
+			throw SQLErrorException().Msg(sqlite3_errmsg(db) + std::string("\t\tQuery: '") + str + "'").Function(__func__).File(__FILE__).Line(__LINE__);
 		}
 		
 		return new SQLiteQuery(stmt);
@@ -167,6 +170,28 @@ namespace SQL
 		
 		delete tableInfo;
 		return info;
+	}
+	
+	bool SQLiteConnection::tableHasRid(const std::string tableName)
+	{
+		String statement;
+		SQLQuery* query = tablesQuery(tableName);
+		while (query->next())
+		{
+			statement = query->column<std::string>(1);
+			delete query;
+			return !statement.toUpper().contains("WITHOUT ROWID");
+		}
+		
+		delete query;
+		query = this->query("SELECT rowid FROM [" + tableName + "] LIMIT 1;");
+		while (query->next())
+		{
+			delete query;
+			return true;
+		}
+		delete query;
+		return false;
 	}
 	
 	

@@ -20,12 +20,18 @@ bool Test_SQL()
 	assert_ex(con.isOpen());
 	
 	long long int updates = 0;
-	con.setUpdateCallback([&updates](int code, char const* db, char const* table, long long row) {
+	std::map<int, long long int> updatesByCode;
+	con.setUpdateCallback([&updates, &updatesByCode](int code, char const* db, char const* table, long long row) {
 		++updates;
+		++updatesByCode[code];
 		if (updates % 100 == 0 || updates == 1)
 		{
 			//dout << "[" << db << "].[" << table << "]->" << row << "\n";
 			dout << updates << " Updates\n";
+		}
+		if (updatesByCode[code] % 100 == 0 || updatesByCode[code] == 1)
+		{
+			dout << updates << " Updates for " << code << "\n";
 		}
 	});
 	
@@ -33,7 +39,10 @@ bool Test_SQL()
 	std::vector<std::string> dropTableNames;
 	while (dropQuery->next())
 	{
-		dropTableNames.push_back(dropQuery->column<std::string>(0));
+		if (dropQuery->column<std::string>(0) != "sqlite_sequence")
+		{
+			dropTableNames.push_back(dropQuery->column<std::string>(0));
+		}
 	}
 	delete dropQuery;
 	

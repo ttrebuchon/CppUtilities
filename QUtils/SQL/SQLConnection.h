@@ -33,6 +33,8 @@ namespace SQL
 		
 		virtual std::vector<ColumnInfo> tableColumns(const std::string tableName) const = 0;
 		
+		virtual bool tableHasRid(const std::string tableName) = 0;
+		
 	};
 }
 }
