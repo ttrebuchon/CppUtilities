@@ -1,4 +1,5 @@
 #include <QUtils/SQL/SQLColumns.h>
+#include <QUtils/SQL/Errors.h>
 #include <string>
 
 
@@ -8,7 +9,21 @@ namespace SQL
 {
 	const SQLColumn& SQLColumns::operator[](const std::string columnName) const
 	{
-		return *(columnsByName.at(columnName));
+		try
+		{
+		return *(columnsByName->at(columnName));
+		}
+		catch (...)
+		{
+			throw SQLErrorException(std::current_exception()).Function(__func__).Msg("column: \"" + columnName + "\"");
+		}
+	}
+	
+	SQLColumns& SQLColumns::operator=(const SQLColumns& cols)
+	{
+		columns = cols.columns;
+		columnsByName = cols.columnsByName;
+		return *this;
 	}
 	
 	
@@ -16,12 +31,12 @@ namespace SQL
 	
 	iterator SQLColumns::begin() const
 	{
-		return columns.begin();
+		return columns->begin();
 	}
 	
 	iterator SQLColumns::end() const
 	{
-		return columns.end();
+		return columns->end();
 	}
 }
 }

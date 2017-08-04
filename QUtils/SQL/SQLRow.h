@@ -34,6 +34,7 @@ namespace SQL
 		
 		SQLRow(std::shared_ptr<Internal::SQLRowContainer>);
 		public:
+		SQLRow(const SQLRow&);
 		
 		SQLRow& operator=(SQLRow&&);
 		

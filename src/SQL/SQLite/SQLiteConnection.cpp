@@ -1,5 +1,6 @@
 #include <QUtils/SQL/SQLite/SQLiteConnection.h>
 #include <QUtils/SQL/SQLite/SQLiteQuery.h>
+#include <QUtils/SQL/SQL_Name.h>
 
 #include <QUtils/String/String.h>
 
@@ -135,13 +136,17 @@ namespace SQL
 		}
 		else
 		{
+			if (tableName[0] == '[')
+			{
+				tableName = SQL_Name_Parse(tableName).back();
+			}
 			auto q = query("SELECT name, sql AS statement FROM [sqlite_master] WHERE type='table' AND name=@NAME");
 			q->bind("@NAME", tableName);
 			return q;
 		}
 	}
 	
-	bool SQLiteConnection::tableExists(std::string name) const
+	bool SQLiteConnection::tableExists(const std::string name) const
 	{
 		SQLQuery* q = query("SELECT name FROM [sqlite_master] WHERE type='table' AND name=@TABLENAME;");
 		q->bind("@TABLENAME", name);
@@ -158,8 +163,14 @@ namespace SQL
 	
 	std::vector<SQLConnection::ColumnInfo> SQLiteConnection::tableColumns(const std::string tableName) const
 	{
+		auto parsed = SQL_Name_Parse(tableName);
+		std::string prefix = "";
+		for (size_t i = 0; i < parsed.size()-1; ++i)
+		{
+			prefix += "[" + parsed[i] + "].";
+		}
 		std::vector<ColumnInfo> info;
-		SQLQuery* tableInfo = query("PRAGMA table_info([" + tableName + "]);");
+		SQLQuery* tableInfo = query("PRAGMA " + prefix + "table_info([" + parsed.back() + "]);");
 		
 		while (tableInfo->next())
 		{
@@ -174,7 +185,7 @@ namespace SQL
 	
 	bool SQLiteConnection::tableHasRid(const std::string tableName)
 	{
-		String statement;
+		QUtils::String statement;
 		SQLQuery* query = tablesQuery(tableName);
 		while (query->next())
 		{
@@ -184,7 +195,7 @@ namespace SQL
 		}
 		
 		delete query;
-		query = this->query("SELECT rowid FROM [" + tableName + "] LIMIT 1;");
+		query = this->query("SELECT rowid FROM " + tableName + " LIMIT 1;");
 		while (query->next())
 		{
 			delete query;
@@ -192,6 +203,55 @@ namespace SQL
 		}
 		delete query;
 		return false;
+	}
+	
+	
+	void SQLiteConnection::attachDatabase(const std::string schema, const std::string URI)
+	{
+		try
+		{
+			vQuery("ATTACH DATABASE '" + URI + "' AS [" + schema + "];");
+		}
+		catch (...)
+		{
+			throw SQLErrorException(std::current_exception()).Function(__func__).File(__FILE__).Line(__LINE__);
+		}
+	}
+	
+	std::string SQLiteConnection::getDefaultDBName() const
+	{
+		return "main";
+	}
+	
+	std::vector<std::string> SQLiteConnection::getDatabases() const
+	{
+		
+		SQLQuery* q = NULL;
+		try
+		{
+			std::vector<std::string> databases;
+			q = query("PRAGMA DATABASE_LIST;");
+			while (q->next())
+			{
+				databases.push_back(q->column<std::string>(1));
+			}
+			delete q;
+			return databases;
+		}
+		catch (...)
+		{
+			if (q != NULL)
+			{
+				delete q;
+			}
+			throw SQLErrorException(std::current_exception()).Function(__func__).Line(__LINE__);
+		}
+	}
+	
+	
+	std::string SQLiteConnection::RIDType() const
+	{
+		return "INTEGER";
 	}
 	
 	

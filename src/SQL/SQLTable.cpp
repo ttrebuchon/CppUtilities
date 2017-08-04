@@ -2,63 +2,85 @@
 #include <QUtils/SQL/SQLConnection.h>
 #include <QUtils/SQL/SQLColumn.h>
 #include <QUtils/SQL/SQLQuery.h>
+#include <QUtils/SQL/SQLClause.h>
+#include <QUtils/SQL/SQLDatabase.h>
+#include <QUtils/SQL/SQL_Name.h>
+
 
 namespace QUtils
 {
 namespace SQL
 {
-	SQLTable::SQLTable(SQLConnection* con, std::string name) : 
-	con(con),
+namespace Internal
+{
+	SQLTable_Obj::SQLTable_Obj(const SQLDatabase db, const std::string name) : SQLDatabaseObject(db),
 	_name(name),
 	_columns(),
 	_columnsByName(),
-	_rows(con->tableHasRid(name) ? std::static_pointer_cast<SQLRows>(std::make_shared<SQLRows_RID>()) : std::static_pointer_cast<SQLRows>(std::make_shared<SQLRows_PK>())),
-	 _PK(NULL),
-	 columns(_columns, _columnsByName, _PK),
-	 rows(*_rows),
-	 name(_name)
+	_PK(NULL),
+	name(_name),
+	columns(&_columns, &_columnsByName, _PK),
+	rows(db->connection->tableHasRid(name) ? std::static_pointer_cast<Internal::SQLRows_Obj>(std::make_shared<Internal::SQLRows_RID_Obj>()) : std::static_pointer_cast<Internal::SQLRows_Obj>(std::make_shared<Internal::SQLRows_PK_Obj>()), db)
 	{
 		refreshColumns();
 	}
 	
-	SQLTable& SQLTable::operator=(const SQLTable t)
+	SQLTable_Obj::SQLTable_Obj(const SQLDatabaseObject& obj, const std::string name) : SQLTable_Obj(obj.database, name)
 	{
-		con = t.con;
-		_columns = t._columns;
-		_columnsByName = t._columnsByName;
-		_PK = t._PK;
-		_name = t._name;
-		return *this;
+		
 	}
 	
-	long SQLTable::count() const
+
+	
+	
+	/*
+	
+	
+	SQLTable& SQLTable::operator=(const SQLTable t)
 	{
-		SQLQuery* q = con->query("SELECT COUNT(rowid) FROM [" + name + "]");
+		SQLDatabaseObject::operator=(t);
+		behind = t.behind;
+		//rows = SQLRows(connection->tableHasRid(name) ? std::static_pointer_cast<Internal::SQLRows_Obj>(std::make_shared<Internal::SQLRows_RID_Obj>()) : std::static_pointer_cast<Internal::SQLRows_Obj>(std::make_shared<Internal::SQLRows_PK_Obj>()));
+		rows = t.rows;
+		columns = t.columns;
+		_name = t._name;
+		return *this;
+	}*/
+	
+	
+	
+	
+	long SQLTable_Obj::count() const
+	{
+		SQLQuery* q = connection->query("SELECT COUNT(rowid) FROM [" + name + "]");
 		q->next();
 		long n = q->column<long>(0);
 		delete q;
 		return n;
 	}
 	
-	void SQLTable::drop()
+	void SQLTable_Obj::drop()
 	{
-		con->vQuery("DROP TABLE IF EXISTS [" + name + "];");
+		connection->vQuery("DROP TABLE IF EXISTS " + name + ";");
 	}
 	
 	
-	SQLTable SQLTable::join(const SQLTable t, std::string col1, std::string col2) const
+	SQLTable SQLTable_Obj::join(const SQLTable t, std::string col1, std::string col2) const
 	{
-		con->vQuery("CREATE TEMP TABLE [" + name + "_" + t.name + "] AS SELECT * FROM ([" + name + "] JOIN [" + t.name + "] ON [" + name + "].[" + col1 + "]=[" + t.name + "].[" + col2 + "]);");
-		return SQLTable(con, name + "_" + t.name);
+		std::string tName1, tName2;
+		tName1 = SQL_Name_Parse(name).back();
+		tName2 = SQL_Name_Parse(t->name).back();
+		connection->vQuery("CREATE TEMP TABLE [" + tName1 + "_" + tName2 + "] AS SELECT * FROM (" + name + " JOIN " + t->name + " ON " + name + ".[" + col1 + "]=" + t->name + ".[" + col2 + "]);");
+		return SQLTable::Create(database, "[" + tName1 + "_" + tName2 + "]");
 		
 	}
 	
-	const std::shared_ptr<SQLColumn> SQLTable::primary() const
+	const std::shared_ptr<SQLColumn> SQLTable_Obj::primary() const
 	{
 		return _PK;
 	}
 	
-	void SQLTable::refresh()
+	void SQLTable_Obj::refresh()
 	{
 		refreshColumns();
 	}
@@ -68,15 +90,25 @@ namespace SQL
 	
 	
 	
-	void SQLTable::refreshColumns()
+	void SQLTable_Obj::refreshColumns()
 	{
 		_PK = NULL;
 		_columns.clear();
 		_columnsByName.clear();
 		
 		
-		auto info = con->tableColumns(name);
+		auto info = connection->tableColumns(name);
 		std::shared_ptr<SQLColumn> ptr;
+		
+		if (connection->tableHasRid(name))
+		{
+			
+			ptr = std::make_shared<SQLColumn>(-1, "rowid", connection->RIDType(), 1, "", 0, name);
+			
+			_columnsByName["rowid"] = ptr;
+			//_columns.push_back(ptr);
+		}
+		
 		for (auto col : info)
 		{
 			
@@ -84,29 +116,37 @@ namespace SQL
 			_columnsByName[std::get<1>(col)] = ptr;
 		}
 		
+		
+		
 		for (auto col : this->columns)
 		{
 			if (col->PK)
 			{
 				_PK = col;
+				return;
 			}
 		}
 	}
 	
-	SQLQuery* SQLTable::rowsQuery() const
+	SQLQuery* SQLTable_Obj::rowsQuery() const
 	{
-		return con->query("SELECT rowid,* FROM [" + name + "];");
+		return connection->query("SELECT rowid,* FROM [" + name + "];");
 	}
 	
-	SQLQuery* SQLTable::select(std::string cols) const
+	SQLQuery* SQLTable_Obj::select(std::string cols) const
 	{
-		return con->query("SELECT " + cols + " FROM [" + name + "];");
+		return connection->query("SELECT " + cols + " FROM " + name + ";");
 	}
 	
-	std::string SQLTable::tableStatement() const
+	SQLQuery* SQLTable_Obj::select(std::string cols, SQLClause clause) const
+	{
+		return connection->query("SELECT " + cols + " FROM " + name + " WHERE " + clause.toString() + ";");
+	}
+	
+	std::string SQLTable_Obj::tableStatement() const
 	{
 		std::string statement;
-		SQLQuery* query = con->tablesQuery(name);
+		SQLQuery* query = connection->tablesQuery(name);
 		while (query->next())
 		{
 			statement = query->column<std::string>(1);
@@ -119,7 +159,6 @@ namespace SQL
 		throw SQLErrorException().Msg("Could not find CREATE statement for table '" + name + "'");
 		
 	}
-	
-	
+}
 }
 }

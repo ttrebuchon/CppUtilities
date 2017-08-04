@@ -1,3 +1,4 @@
+#include <QUtils/SQL/SQLObjects.h>
 #include <QUtils/SQL/SQLDatabase.h>
 #include <QUtils/SQL/SQLTable.h>
 #include <QUtils/SQL/SQLConnection.h>
@@ -7,21 +8,41 @@ namespace QUtils
 {
 namespace SQL
 {
-	SQLDatabase::SQLDatabase(SQLConnection* con) : lastTables(NULL), con(con)
+	
+	
+namespace Internal
+{
+	SQLDatabase_Obj::SQLDatabase_Obj(SQLConnection* connection, const std::string name) : SQLObject(connection), name(name), lastTables(NULL)
+	{
+		
+	}
+	
+	SQLDatabase_Obj::SQLDatabase_Obj(SQLConnection* con) : SQLDatabase_Obj(con, con->getDefaultDBName())
 	{
 		
 	}
 	
 	
-	SQLTable SQLDatabase::operator[](std::string table) const
+	std::shared_ptr<SQLDatabase_Obj> SQLDatabase_Obj::Create(SQLConnection* connection, const std::string name)
 	{
-		SQLQuery* tables = con->tablesQuery();
+		return std::shared_ptr<SQLDatabase_Obj>(new SQLDatabase_Obj(connection, name));
+	}
+
+
+
+
+
+
+	
+	SQLTable SQLDatabase_Obj::operator[](std::string table) const
+	{
+		SQLQuery* tables = connection->tablesQuery();
 		while ((*tables)())
 		{
 			if (tables->column<std::string>(0) == table)
 			{
 				delete tables;
-				return SQLTable(con, table);
+				return SQLTable::Create(SQLDatabase(((SQLDatabase_Obj*)this)->shared_from_this()), "[" + table + "]");
 			}
 			tables->next();
 		}
@@ -30,6 +51,14 @@ namespace SQL
 	}
 	
 	
+	/*SQLDatabase& SQLDatabase_Obj::operator=(const SQLDatabase& db)
+	{
+		SQLObject::operator=(db);
+		behind = db.behind;
+		_name = db._name;
+		
+		return *this;
+	}*/
 	
 	
 	
@@ -37,7 +66,21 @@ namespace SQL
 	
 	
 	
-	SQLDatabase::iterator::iterator(SQLConnection* con, std::shared_ptr<std::vector<std::string>> names, bool end) : vIt(), names(names), con(con)
+	
+	/*
+	SQLDatabase_Obj::iterator::iterator(SQLDatabase_Obj& db, std::shared_ptr<std::vector<std::string>> names, bool end) : SQLObject(db.connection), vIt(), names(names), behind(db.behind)
+	{
+		if (end)
+		{
+			vIt = names->end();
+		}
+		else
+		{
+			vIt = names->begin();
+		}
+	}
+	
+	SQLDatabase::iterator::iterator(std::shared_ptr<Internal::SQLDatabase_Obj> behind, std::shared_ptr<std::vector<std::string>> names, bool end) : SQLObject(behind->connection), vIt(), names(names), behind(behind)
 	{
 		if (end)
 		{
@@ -51,14 +94,14 @@ namespace SQL
 	
 	
 	
-	SQLTable SQLDatabase::iterator::operator*() const
+	SQLTable SQLDatabase_Obj::iterator::operator*() const
 	{
-		return SQLTable(con, *vIt);
+		return SQLTable::Create(SQLDatabase(this), "[" + *vIt + "]");
 	}
 	
 	typename SQLDatabase::iterator SQLDatabase::iterator::operator++()
 	{
-		iterator it(con, names);
+		iterator it(behind, names);
 		it.vIt = this->vIt;
 		vIt++;
 		return it;
@@ -76,22 +119,23 @@ namespace SQL
 	
 	typename SQLDatabase::iterator SQLDatabase::begin()
 	{
-		lastTables = std::make_shared<std::vector<std::string>>();
-		SQLQuery* q = con->tablesQuery();
+		behind->lastTables = std::make_shared<std::vector<std::string>>();
+		SQLQuery* q = connection->tablesQuery();
 		
 		while (q->next())
 		{
-			lastTables->push_back(q->column<std::string>(0));
+			behind->lastTables->push_back(q->column<std::string>(0));
 		}
 		delete q;
 		
-		return iterator(con, lastTables);
+		return iterator(*this, behind->lastTables);
 	}
 	
-	typename SQLDatabase::iterator SQLDatabase::end() const
+	typename SQLDatabase::iterator SQLDatabase::end()
 	{
-		return iterator(con, lastTables, true);
-	}
+		return iterator(*this, behind->lastTables, true);
+	}*/
 	
+}
 }
 }

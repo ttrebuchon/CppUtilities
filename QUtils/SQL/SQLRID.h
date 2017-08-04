@@ -7,21 +7,9 @@ namespace SQL
 	struct SQLRID
 	{
 		private:
-		bool nullVal;
 		unsigned long long rid;
 		public:
-		SQLRID(unsigned long long rid);
-		SQLRID(std::nullptr_t);
-		
-		bool null() const
-		{
-			return nullVal;
-		}
-		
-		unsigned long long val() const
-		{
-			return rid;
-		}
+		explicit SQLRID(unsigned long long rid) : rid(rid) {}
 		
 		operator unsigned long long();
 	};

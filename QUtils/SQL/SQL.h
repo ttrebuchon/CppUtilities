@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SQLObjects.h"
 #include "SQLRID.h"
 #include "SQLPK.h"
 #include "SQLConnection.h"

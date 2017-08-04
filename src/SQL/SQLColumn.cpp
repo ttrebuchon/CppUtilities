@@ -12,52 +12,52 @@ namespace SQL
 	
 	SQLClause SQLColumn::operator==(const SQLColumn& col) const
 	{
-		return SQLClause("[" + this->_table + "].[" + name + "]", "=", "[" + col._table + "].[" + col.name + "]");
+		return SQLClause(this->_table + ".[" + name + "]", "=", col._table + ".[" + col.name + "]");
 	}
 	
 	SQLClause SQLColumn::operator!=(const SQLColumn& col) const
 	{
-		return !(SQLClause("[" + this->_table + "].[" + name + "]", "=", "[" + col._table + "].[" + col.name + "]"));
+		return !(SQLClause(this->_table + ".[" + name + "]", "=", col._table + ".[" + col.name + "]"));
 	}
 	
 	SQLClause SQLColumn::operator*(const SQLColumn& col) const
 	{
-		return SQLClause("[" + this->_table + "].[" + name + "]", "*", "[" + col._table + "].[" + col.name + "]");
+		return SQLClause(this->_table + ".[" + name + "]", "*", col._table + ".[" + col.name + "]");
 	}
 	
 	SQLClause SQLColumn::operator/(const SQLColumn& col) const
 	{
-		return SQLClause("[" + this->_table + "].[" + name + "]", "/", "[" + col._table + "].[" + col.name + "]");
+		return SQLClause(this->_table + ".[" + name + "]", "/", col._table + ".[" + col.name + "]");
 	}
 	
 	SQLClause SQLColumn::operator+(const SQLColumn& col) const
 	{
-		return SQLClause("[" + this->_table + "].[" + name + "]", "+", "[" + col._table + "].[" + col.name + "]");
+		return SQLClause(this->_table + ".[" + name + "]", "+", col._table + ".[" + col.name + "]");
 	}
 	
 	SQLClause SQLColumn::operator-(const SQLColumn& col) const
 	{
-		return SQLClause("[" + this->_table + "].[" + name + "]", "-", "[" + col._table + "].[" + col.name + "]");
+		return SQLClause(this->_table + ".[" + name + "]", "-", col._table + ".[" + col.name + "]");
 	}
 	
 	SQLClause SQLColumn::operator>(const SQLColumn& col) const
 	{
-		return SQLClause("[" + this->_table + "].[" + name + "]", ">", "[" + col._table + "].[" + col.name + "]");
+		return SQLClause(this->_table + ".[" + name + "]", ">", col._table + ".[" + col.name + "]");
 	}
 	
 	SQLClause SQLColumn::operator>=(const SQLColumn& col) const
 	{
-		return SQLClause("[" + this->_table + "].[" + name + "]", ">=", "[" + col._table + "].[" + col.name + "]");
+		return SQLClause(this->_table + ".[" + name + "]", ">=", col._table + ".[" + col.name + "]");
 	}
 	
 	SQLClause SQLColumn::operator<(const SQLColumn& col) const
 	{
-		return SQLClause("[" + this->_table + "].[" + name + "]", "<", "[" + col._table + "].[" + col.name + "]");
+		return SQLClause(this->_table + ".[" + name + "]", "<", col._table + ".[" + col.name + "]");
 	}
 	
 	SQLClause SQLColumn::operator<=(const SQLColumn& col) const
 	{
-		return SQLClause("[" + this->_table + "].[" + name + "]", "<=", "[" + col._table + "].[" + col.name + "]");
+		return SQLClause(this->_table + ".[" + name + "]", "<=", col._table + ".[" + col.name + "]");
 	}
 	
 	
@@ -75,61 +75,61 @@ namespace SQL
 	SQLClause SQLColumn::operator==(const double n) const
 	{
 		auto s = std::to_string(n);
-		return SQLClause("[" + this->_table + "].[" + name + "]", "=", s);
+		return SQLClause(this->_table + ".[" + name + "]", "=", s);
 	}
 	
 	SQLClause SQLColumn::operator!=(const double n) const
 	{
 		auto s = std::to_string(n);
-		return !(SQLClause("[" + this->_table + "].[" + name + "]", "=", s));
+		return !(SQLClause(this->_table + ".[" + name + "]", "=", s));
 	}
 	
 	SQLClause SQLColumn::operator*(const double n) const
 	{
 		auto s = std::to_string(n);
-		return SQLClause("[" + this->_table + "].[" + name + "]", "*", s);
+		return SQLClause(this->_table + ".[" + name + "]", "*", s);
 	}
 	
 	SQLClause SQLColumn::operator/(const double n) const
 	{
 		auto s = std::to_string(n);
-		return SQLClause("[" + this->_table + "].[" + name + "]", "/", s);
+		return SQLClause(this->_table + ".[" + name + "]", "/", s);
 	}
 	
 	SQLClause SQLColumn::operator+(const double n) const
 	{
 		auto s = std::to_string(n);
-		return SQLClause("[" + this->_table + "].[" + name + "]", "+", s);
+		return SQLClause(this->_table + ".[" + name + "]", "+", s);
 	}
 	
 	SQLClause SQLColumn::operator-(const double n) const
 	{
 		auto s = std::to_string(n);
-		return SQLClause("[" + this->_table + "].[" + name + "]", "-", s);
+		return SQLClause(this->_table + ".[" + name + "]", "-", s);
 	}
 	
 	SQLClause SQLColumn::operator>(const double n) const
 	{
 		auto s = std::to_string(n);
-		return SQLClause("[" + this->_table + "].[" + name + "]", ">", s);
+		return SQLClause(this->_table + ".[" + name + "]", ">", s);
 	}
 	
 	SQLClause SQLColumn::operator>=(const double n) const
 	{
 		auto s = std::to_string(n);
-		return SQLClause("[" + this->_table + "].[" + name + "]", ">=", s);
+		return SQLClause(this->_table + ".[" + name + "]", ">=", s);
 	}
 	
 	SQLClause SQLColumn::operator<(const double n) const
 	{
 		auto s = std::to_string(n);
-		return SQLClause("[" + this->_table + "].[" + name + "]", "<", s);
+		return SQLClause(this->_table + ".[" + name + "]", "<", s);
 	}
 	
 	SQLClause SQLColumn::operator<=(const double n) const
 	{
 		auto s = std::to_string(n);
-		return SQLClause("[" + this->_table + "].[" + name + "]", "<=", s);
+		return SQLClause(this->_table + ".[" + name + "]", "<=", s);
 	}
 	
 	

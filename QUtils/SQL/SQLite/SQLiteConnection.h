@@ -12,7 +12,6 @@ namespace QUtils
 namespace SQL
 {
 	
-	
 	class SQLiteConnection : public SQLConnection
 	{
 		protected:
@@ -40,6 +39,14 @@ namespace SQL
 		virtual bool tableExists(std::string name) const override;
 		virtual std::vector<ColumnInfo> tableColumns(const std::string tableName) const override;
 		virtual bool tableHasRid(const std::string tableName) override;
+		virtual void attachDatabase(const std::string schema, const std::string URI) override;
+		virtual std::string getDefaultDBName() const override;
+		virtual std::vector<std::string> getDatabases() const override;
+		virtual std::string RIDType() const override;
+		
+		
+		
+		
 		
 		
 		void openWithFlags(int flags);

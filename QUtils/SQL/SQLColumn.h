@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "SQLTypeDefs.h"
+
 namespace QUtils
 {
 namespace SQL
@@ -63,7 +65,7 @@ namespace SQL
 		
 		
 		
-		friend class SQLTable;
+		friend SQLTable;
 		
 	};
 }

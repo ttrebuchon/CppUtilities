@@ -4,11 +4,14 @@
 
 #include <sqlite3.h>
 
+#include <QUtils/SQL/SQL_Name.h>
+
 using namespace QUtils;
 
 bool Test_SQL()
 {
-	SQL::SQLiteConnection con("TestDB.sqlite");
+	const std::string filename = "TestDB";
+	SQL::SQLiteConnection con(filename + ".sqlite");
 	{
 	
 	assert_ex(!con.isOpen());
@@ -138,11 +141,11 @@ bool Test_SQL()
 	
 	
 	
-	SQL::SQLDatabase DB(&con);
+	SQL::SQLDatabase DB = SQL::SQLDatabase::Create(&con);
 	
 	SQL::SQLTable TTable = DB["TTable"];
 	
-	for (auto col : TTable.columns)
+	for (auto col : TTable->columns)
 	{
 		dout << col->name << " | " << col->type << std::endl;
 	}
@@ -151,6 +154,7 @@ bool Test_SQL()
 	assert_ex(con.vQuery("CREATE TABLE [TTable 2] (x INTEGER PRIMARY KEY, z INTEGER, [x z] INTEGER);"));
 	
 	SQL::SQLTable TTable_2 = DB["TTable 2"];
+	dout << "TTable 2 table object created.\n";
 	
 	assert_ex(con.vQuery("BEGIN;"));
 	for (auto i = 0; i < rCount; i++)
@@ -163,8 +167,8 @@ bool Test_SQL()
 	assert_ex(con.vQuery("UPDATE [TTable 2] SET [x z]=x+z;"));
 	assert_ex(con.vQuery("COMMIT;"));
 	
-	SQL::SQLTable joined = TTable.join(TTable_2, "x", "x");
-	assert_ex(joined.name == "TTable_TTable 2");
+	SQL::SQLTable joined = TTable->join(TTable_2, "x", "x");
+	assert_ex(joined->name == "[TTable_TTable 2]");
 	
 	q = con.query("SELECT * FROM [TTable_TTable 2];");
 	int pIndex = 0;
@@ -185,18 +189,44 @@ bool Test_SQL()
 	
 	delete q;
 	
-	for (auto col : joined.columns)
+	dout << "Printing columns...\n";
+	for (auto col : joined->columns)
 	{
 		dout << col->name << " | " << col->type << " | PK: " << col->PK << std::endl;
+	}
+	dout << "Columns printed.\n";
+	/*q = con.query("PRAGMA TABLE_INFO(" + joined.name + ");");
+	while (q->next())
+	{
+		dout << q->column<std::string>(0) << "\n";
+	}
+	delete q;
+	dout << "\"" << joined.name + "\"\n";
+	for (auto segment : SQL::SQL_Name_Parse(joined.name))
+	{
+		dout << segment << "\n";
+	}*/
+	
+	{
+		const std::string nameTestString = "[TTable].[x].[z].y.h.[c]";
+		auto testSegments = SQL::SQL_Name_Parse(nameTestString);
+		assert_ex(testSegments.size() == 6);
+		assert_ex(testSegments[0] == "TTable");
+		assert_ex(testSegments[1] == "x");
+		assert_ex(testSegments[2] == "z");
+		assert_ex(testSegments[3] == "y");
+		assert_ex(testSegments[4] == "h");
+		assert_ex(testSegments[5] == "c");
+		
 	}
 	
 	
 	
 	dout << "Dropping join table..." << std::endl;
-	joined.drop();
+	joined->drop();
 	dout << "Dropped." << std::endl;
 	
-	auto cl = ((TTable.columns["x"] == TTable.columns["y"]) || (TTable.columns["x"] > 1000));
+	auto cl = ((TTable->columns["x"] == TTable->columns["y"]) || (TTable->columns["x"] > 1000));
 	dout << cl.toString() << std::endl;
 	
 	q = con.query("SELECT * FROM TTable WHERE " + cl.toString() + ";");
@@ -207,11 +237,11 @@ bool Test_SQL()
 	delete q;
 	
 	dout << "Joining on y->z...\n";
-	joined = TTable.join(TTable_2, "y", "z");
-	assert_ex(joined.name == "TTable_TTable 2");
+	joined = TTable->join(TTable_2, "y", "z");
+	assert_ex(joined->name == "[TTable_TTable 2]");
 	dout << "Joined.\n";
 	
-	for (auto col : joined.columns)
+	for (auto col : joined->columns)
 	{
 		dout << col->name << " | " << col->type << " | PK: " << col->PK << std::endl;
 	}
@@ -237,7 +267,7 @@ bool Test_SQL()
 	dout << "Done.\n";
 	delete q;
 	
-	SQL::SQLQuery* q2 = joined.select("x", "y AS yz", "z AS zy", "[x:1]", "x z");
+	SQL::SQLQuery* q2 = joined->select("x", "y AS yz", "z AS zy", "[x:1]", "x z");
 	pIndex = 0;
 	dout << "Iterating...\n";
 	while ((*q2)())
@@ -258,34 +288,78 @@ bool Test_SQL()
 	
 	delete q2;
 	
-	
+	/*
 	for (auto table : DB)
 	{
-		dout << "Table: [" << table.name << "]\n";
-	}
+		dout << "Table: " << table->name << "\n";
+	}*/
+	//TODO
 	
 	
 	
 	
 	dout << "TTable Create Statement:\n";
-	auto ttableTableStmt = TTable.tableStatement();
+	auto ttableTableStmt = TTable->tableStatement();
 	dout << ttableTableStmt << std::endl;
 	assert_ex(ttableTableStmt == "CREATE TABLE TTable (x INTEGER PRIMARY KEY, y integer)");
 	
 	
 	try
 	{
-	dout << joined.tableStatement() << "\n";
-	assert_ex(false);
+		dout << joined->tableStatement() << "\n";
+		assert_not_reached();
 	}
 	catch (SQL::SQLErrorException)
 	{
-		
+		dout << "Successfully caught exception for missing sql statement for joined table.\n"; 
 	}
 	
 	
 	assert_ex(con.tableExists("TTable"));
 	assert_ex(!con.tableExists("[TTable]"));
+	
+	con.vQuery("ATTACH DATABASE '" + filename + "-1.sqlite' AS DB2;");
+	SQL::SQLDatabase DB2 = SQL::SQLDatabase::Create(&con, "DB2");
+	
+	
+	
+	
+	auto ridClause = joined->columns["rowid"] <= 1;
+	dout << ridClause.toString() << "\n";
+	q2 = joined->select("rowid", "*", ridClause);
+	while (q2->next())
+	{
+		for (int i = 0; i < q2->width(); ++i)
+		{
+			dout << q2->columnName(i) << ", ";
+		}
+		dout << "\n";
+		for (int i = 0; i < q2->width(); ++i)
+		{
+			dout << q2->column<std::string>(i) << ", ";
+		}
+		dout << "\n";
+		/*dout << q2->columnName(0) << ", " << q2->columnName(1) << "\n";
+		dout << q2->column<int>(0) << ", " << q2->column<std::string>(1) << "\n";*/
+	}
+	delete q2;
+	
+	try
+	{
+		SQL::SQLRow jRow0 = joined->rows[SQL::SQLPK()];
+		assert_not_reached();
+	}
+	catch (SQL::SQLErrorException& ex)
+	{
+		
+	}
+	
+	SQL::SQLRow row0 = TTable->rows[SQL::SQLRID(1)];
+	
+	
+	
+	
+	
 	
 	
 	
