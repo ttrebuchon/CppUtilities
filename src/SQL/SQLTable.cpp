@@ -6,6 +6,8 @@
 #include <QUtils/SQL/SQLDatabase.h>
 #include <QUtils/SQL/SQL_Name.h>
 
+#include <iostream>
+
 
 namespace QUtils
 {
@@ -20,12 +22,17 @@ namespace Internal
 	_PK(NULL),
 	name(_name),
 	columns(&_columns, &_columnsByName, _PK),
-	rows(db->connection->tableHasRid(name) ? std::static_pointer_cast<Internal::SQLRows_Obj>(std::make_shared<Internal::SQLRows_RID_Obj>()) : std::static_pointer_cast<Internal::SQLRows_Obj>(std::make_shared<Internal::SQLRows_PK_Obj>()), db)
+	rows(db->connection->tableHasRid(name) ? std::static_pointer_cast<Internal::SQLRows_Obj>(std::shared_ptr<Internal::SQLRows_RID_Obj>(new Internal::SQLRows_RID_Obj(std::shared_ptr<SQLTable_Obj>(this)))) : std::static_pointer_cast<Internal::SQLRows_Obj>(std::shared_ptr<Internal::SQLRows_PK_Obj>(new Internal::SQLRows_PK_Obj(std::shared_ptr<SQLTable_Obj>(this)))))
 	{
 		refreshColumns();
 	}
 	
 	SQLTable_Obj::SQLTable_Obj(const SQLDatabaseObject& obj, const std::string name) : SQLTable_Obj(obj.database, name)
+	{
+		
+	}
+	
+	SQLTable_Obj::~SQLTable_Obj()
 	{
 		
 	}

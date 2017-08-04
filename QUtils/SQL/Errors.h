@@ -6,5 +6,7 @@ namespace SQL
 {
 	QUTILS_CUSTOM_EXCEPTION(SQLErrorException,);
 	
+	QUTILS_CUSTOM_EXCEPTION(SQLObjectException,);
+	
 }
 }

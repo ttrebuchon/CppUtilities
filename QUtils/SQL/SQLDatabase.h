@@ -28,7 +28,7 @@ namespace Internal
 		static std::shared_ptr<SQLDatabase_Obj> Create(SQLConnection*, const std::string);
 		
 		public:
-		SQLTable operator[](std::string name) const;
+		SQLTable operator[](std::string name);
 		
 		class iterator : public SQLObject
 		{

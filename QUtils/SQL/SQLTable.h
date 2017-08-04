@@ -23,7 +23,7 @@ namespace SQL
 	
 namespace Internal
 {
-	class SQLTable_Obj : public SQLDatabaseObject
+	class SQLTable_Obj : public SQLDatabaseObject, public std::enable_shared_from_this<SQLTable_Obj>
 	{
 		protected:
 		std::string _name;
@@ -37,6 +37,7 @@ namespace Internal
 		
 		void refreshColumns();
 		public:
+		virtual ~SQLTable_Obj();
 		const std::string& name;
 		SQLColumns columns;
 		SQLRows rows;

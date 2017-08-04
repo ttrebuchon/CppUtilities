@@ -34,7 +34,7 @@ namespace Internal
 
 
 	
-	SQLTable SQLDatabase_Obj::operator[](std::string table) const
+	SQLTable SQLDatabase_Obj::operator[](std::string table)
 	{
 		SQLQuery* tables = connection->tablesQuery();
 		while ((*tables)())
@@ -42,7 +42,19 @@ namespace Internal
 			if (tables->column<std::string>(0) == table)
 			{
 				delete tables;
-				return SQLTable::Create(SQLDatabase(((SQLDatabase_Obj*)this)->shared_from_this()), "[" + table + "]");
+				decltype(shared_from_this()) shared_this;
+				try
+				{
+					shared_this = shared_from_this();
+					
+				}
+				catch (std::bad_weak_ptr& ex)
+				{
+					throw SQLObjectException(std::current_exception(), "Could not get shared_from_this for SQLDatabase_Obj").Line(__LINE__).Function(__func__);
+				}
+				auto wrapped_this = SQLDatabase(shared_this);
+				return SQLTable::Create(wrapped_this, "[" + table + "]");
+				
 			}
 			tables->next();
 		}

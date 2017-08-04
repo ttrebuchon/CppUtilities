@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "SQLTypeDefs.h"
-#include "SQLObjects/SQLDatabaseObject.h"
+#include "SQLObjects/SQLTableObject.h"
 #include "SQLRID.h"
 #include "SQLPK.h"
 #include "SQLRow.h"
@@ -22,14 +22,17 @@ namespace SQL
 		class SQLRowContainer;
 	}
 	class SQLRow;
-	class SQLRows;
 	
 namespace Internal
 {
-	class SQLRows_Obj
+	class SQLRows_Obj : public SQLTableObject
 	{
 		protected:
 		
+		SQLRows_Obj(const SQLTable);
+		
+		public:
+		virtual ~SQLRows_Obj();
 		virtual SQLRow operator[](SQLRID rid) const = 0;
 		SQLRow at(SQLRID rid) const
 		{ return (*this)[rid]; }
@@ -42,7 +45,8 @@ namespace Internal
 		inline unsigned long size() const
 		{ return count(); }
 		
-		friend class ::QUtils::SQL::SQLRows;
+		friend ::QUtils::SQL::SQLRows;
+		friend class SQLTable_Obj;
 	};
 	
 	
@@ -52,10 +56,15 @@ namespace Internal
 		protected:
 		std::map<SQLRID, std::shared_ptr<Internal::SQLRowContainer>> containers;
 		
+		SQLRows_RID_Obj(const SQLTable);
+		
+		public:
+		
 		virtual SQLRow operator[](SQLRID rid) const override;
 		virtual SQLRow operator[](SQLPK val) const override;
 		
-		
+		friend ::QUtils::SQL::SQLRows;
+		friend class SQLTable_Obj;
 	};
 	
 	
@@ -64,13 +73,18 @@ namespace Internal
 		protected:
 		std::map<SQLPK, std::shared_ptr<Internal::SQLRowContainer>> containers;
 		
+		SQLRows_PK_Obj(const SQLTable);
+		
+		public:
 		virtual SQLRow operator[](SQLRID rid) const override;
 		virtual SQLRow operator[](SQLPK val) const override;
 		
+		friend ::QUtils::SQL::SQLRows;
+		friend class SQLTable_Obj;
 	};
 }
 	
-	class SQLRows : public SQLDatabaseObject
+	/*class SQLRows : public SQLDatabaseObject
 	{
 		private:
 		protected:
@@ -85,6 +99,6 @@ namespace Internal
 		
 		friend SQLTable;
 		friend class Internal::SQLTable_Obj;
-	};
+	};*/
 }
 }

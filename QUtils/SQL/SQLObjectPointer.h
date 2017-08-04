@@ -7,6 +7,7 @@ namespace QUtils
 {
 namespace SQL
 {
+	
 	template <class Object>
 	class SQLObjectPointer : public Types::AllOperatorForward<Object>
 	{
@@ -20,7 +21,16 @@ namespace SQL
 		template <class ...Args>
 		static SQLObjectPointer Create(Args... args)
 		{
-			return SQLObjectPointer(std::shared_ptr<Object>(new Object(args...)));
+			auto obj = new Object(args...);
+			try
+			{
+				return obj->shared_from_this();
+			}
+			catch (std::bad_weak_ptr&)
+			{
+				return std::shared_ptr<Object>(obj);
+			}
+			//return SQLObjectPointer(std::shared_ptr<Object>(new Object(args...)));
 		}
 		
 		auto operator->() const

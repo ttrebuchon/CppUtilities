@@ -34,7 +34,7 @@ bool Test_SQL()
 		}
 		if (updatesByCode[code] % 100 == 0 || updatesByCode[code] == 1)
 		{
-			dout << updates << " Updates for " << code << "\n";
+			dout << updatesByCode[code] << " Updates for " << code << "\n";
 		}
 	});
 	
@@ -142,6 +142,7 @@ bool Test_SQL()
 	
 	
 	SQL::SQLDatabase DB = SQL::SQLDatabase::Create(&con);
+	dout << "Database object created\n";
 	
 	SQL::SQLTable TTable = DB["TTable"];
 	
@@ -167,6 +168,7 @@ bool Test_SQL()
 	assert_ex(con.vQuery("UPDATE [TTable 2] SET [x z]=x+z;"));
 	assert_ex(con.vQuery("COMMIT;"));
 	
+	dout << "Joining " << TTable->name << " and " << TTable_2->name << " on their x columns...\n";
 	SQL::SQLTable joined = TTable->join(TTable_2, "x", "x");
 	assert_ex(joined->name == "[TTable_TTable 2]");
 	
@@ -245,8 +247,8 @@ bool Test_SQL()
 	{
 		dout << col->name << " | " << col->type << " | PK: " << col->PK << std::endl;
 	}
-	
-	
+	dout << "Columns Printed\n";
+	dout << "Querying...\n";
 	q = con.query("SELECT * FROM [TTable_TTable 2];");
 	pIndex = 0;
 	dout << "Iterating...\n";
