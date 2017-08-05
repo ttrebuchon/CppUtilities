@@ -25,6 +25,9 @@ bool Test_SQL()
 	long long int updates = 0;
 	std::map<int, long long int> updatesByCode;
 	con.setUpdateCallback([&updates, &updatesByCode](int code, char const* db, char const* table, long long row) {
+		bool print = false;
+		if (print)
+		{
 		++updates;
 		++updatesByCode[code];
 		if (updates % 100 == 0 || updates == 1)
@@ -36,7 +39,26 @@ bool Test_SQL()
 		{
 			dout << updatesByCode[code] << " Updates for " << code << "\n";
 		}
+		}
 	});
+	
+	con.setAuthorizerCallback([&updates, &updatesByCode](auto a, auto b, auto c, auto d, auto e) -> int
+	{
+		//dout << a << (b != NULL ? ", " : "") << (b != NULL ? b : "") << (c != NULL ? ", " : "") << (c != NULL ? c : "") << (d != NULL ? ", " : "") << (d != NULL ? d : "") << (e != NULL ? ", " : "") << (e != NULL ? b : "") << "\n";
+		return 0;
+		if (a == 21) //SELECT
+		{
+			return 0;
+		}
+		else if (a == 20) //READ
+		{
+			return 0;
+		}
+		//return 0;//SQLITE_OK;
+		//return 1; //SQLITE_DENY;
+		//return 2; //SQLITE_IGNORE;
+	});
+	
 	
 	auto dropQuery = con.tablesQuery();
 	std::vector<std::string> dropTableNames;
@@ -54,7 +76,8 @@ bool Test_SQL()
 		try
 		{
 			//dout << "DROP TABLE [" << dropQuery->column<std::string>(0) << "];" << std::endl;
-			con.vQuery("DROP TABLE IF EXISTS [" + name + "];");
+			dout << "Dropping [" << name + "]\n";
+			con.vQuery("DROP TABLE [" + name + "];");
 		}
 		catch (std::exception& e)
 		{
@@ -366,9 +389,31 @@ bool Test_SQL()
 	assert_ex(row1[0] == "1");
 	
 	
+	auto printQuery = [](SQL::SQLQuery* q) -> SQL::SQLQuery*
+	{
+		for (int i = 0; i < q->width(); ++i)
+		{
+			dout << "|" << q->columnName(i) << "|";
+		}
+		dout << "\n";
+		while (q->next())
+		{
+			for (int i = 0; i < q->width(); ++i)
+			{
+				dout << "|" << q->column<std::string>(i) << "|";
+			}
+			dout << "\n";
+		}
+		
+		
+		return q;
+	};
 	
-	
-	
+	delete printQuery(con.query("SELECT (x + 1 + (SELECT COUNT(*) FROM [TTable])) AS x, y FROM [DB2].[TTable] LIMIT 10"));
+	con.vQuery("INSERT INTO [TTable] SELECT (x + 1 + (SELECT COUNT(*) FROM [TTable])) AS x, y FROM [DB2].[TTable]");
+	auto lastTen = printQuery(con.query("SELECT * FROM [TTable] ORDER BY x DESC LIMIT 10"));
+	con.vQuery("UPDATE [TTable] SET y=x*x");
+	delete printQuery(lastTen);
 	
 	
 	}

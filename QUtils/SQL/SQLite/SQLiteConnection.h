@@ -21,9 +21,11 @@ namespace SQL
 		bool useWAL;
 		
 		std::function<void(int, char const*, char const*, long long)> updateHook;
+		std::function<int(int, const char*, const char*, const char*, const char*)> authorizerHook;
 		
 		
 		void registerUpdateHook();
+		void registerAuthorizerHook();
 		
 		public:
 		SQLiteConnection(int WAL = true);
@@ -56,15 +58,12 @@ namespace SQL
 		std::vector<sqlite3_stmt*> pending() const;
 		
 		template <class F>
-		void setUpdateCallback(F f)
-		{
-			updateHook = [f](int code, const char* db, const char* table, long long row)
-			{
-				f(code, db, table, row);
-			};
-			registerUpdateHook();
-		}
+		void setUpdateCallback(F);
+		template <class F>
+		void setAuthorizerCallback(F);
 		
 	};
 }
 }
+
+#include "SQLiteConnection.hpp"

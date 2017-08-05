@@ -21,9 +21,16 @@ namespace SQL
 			return (*func)(args...);
 		}
 	}
+	
+	
 	void SQLiteConnection::registerUpdateHook()
 	{
 		sqlite3_update_hook(db, &Helpers::sqlite_callback<void, int, char const*, char const*, long long>, (void*)&updateHook);
+	}
+	
+	void SQLiteConnection::registerAuthorizerHook()
+	{
+		sqlite3_set_authorizer(db, &Helpers::sqlite_callback<int, int, const char*, const char*, const char*, const char*>, (void*)&authorizerHook);
 	}
 	
 	
