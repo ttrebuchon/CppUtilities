@@ -313,7 +313,7 @@ bool Test_SQL()
 	}
 	catch (SQL::SQLErrorException)
 	{
-		dout << "Successfully caught exception for missing sql statement for joined table.\n"; 
+		dout << "Successfully caught exception for missing sql statement for joined table\n"; 
 	}
 	
 	
@@ -346,19 +346,24 @@ bool Test_SQL()
 	}
 	delete q2;
 	
+	
+	dout << "Getting rows from collections...\n";
 	try
 	{
-		SQL::SQLRow jRow0 = joined->rows[SQL::SQLPK()];
+		SQL::SQLRow jRow0 = joined->rows[SQL::SQLPK("H")];
 		assert_not_reached();
 	}
-	catch (SQL::SQLErrorException& ex)
+	catch (SQL::SQLErrorException&)
 	{
-		
+		dout << "jRow0 Exception successfully caught\n";
 	}
 	
 	SQL::SQLRow row0 = TTable->rows[SQL::SQLRID(1)];
-	
-	
+	assert_ex(row0[0] == "1");
+	auto row1 = TTable->rows[SQL::SQLRID(1)];
+	assert_ex(row1[0] == "1");
+	row1 = row0;
+	assert_ex(row1[0] == "1");
 	
 	
 	

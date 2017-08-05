@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "SQLRID.h"
+
 namespace QUtils
 {
 namespace SQL
@@ -10,24 +12,39 @@ namespace SQL
 	
 	namespace Internal
 	{
-		class SQLRowContainer
+		class SQLRows_RID_Obj;
+		class SQLRows_PK_Obj;
+		
+		
+		class SQLRow_Obj
 		{
 			protected:
-			int _rowid;
+			SQLRID _rowid;
 			int _pkIndex;
 			std::string pkValue;
-			const std::string table;
 			std::shared_ptr<SQLQuery> rowQuery;
-			SQLRowContainer(std::shared_ptr<SQLQuery>, const std::string table, const int pkIndex, const int rid);
-			SQLRowContainer(std::shared_ptr<SQLQuery>, const std::string table, const int pkIndex, const std::string pkValue);
+			SQLRow_Obj(std::shared_ptr<SQLQuery>, const std::string table, SQLRID rid);
+			SQLRow_Obj(std::shared_ptr<SQLQuery>, const std::string table, const int pkIndex, const std::string pkValue);
 			
 			public:
+			
+			virtual ~SQLRow_Obj();
+			
+			const SQLRID& rowid;
+			const int& pkIndex;
+			const std::string table;
+			
+			std::string operator[](const size_t);
+			std::string operator[](const std::string);
+			
+			friend SQLRows_RID_Obj;
+			friend SQLRows_PK_Obj;
 		};
 	}
 	
 	
 	
-	class SQLRow
+	/*class SQLRow
 	{
 		protected:
 		std::shared_ptr<Internal::SQLRowContainer> container;
@@ -41,6 +58,9 @@ namespace SQL
 		const int& rowid;
 		const int& pkIndex;
 		const std::string table;
-	};
+		
+		friend class Internal::SQLRows_RID_Obj;
+		friend class Internal::SQLRows_PK_Obj;
+	};*/
 }
 }

@@ -11,7 +11,8 @@ namespace SQL
 		public:
 		explicit SQLRID(unsigned long long rid) : rid(rid) {}
 		
-		operator unsigned long long();
+		operator unsigned long long() const
+		{ return rid; }
 	};
 }
 }

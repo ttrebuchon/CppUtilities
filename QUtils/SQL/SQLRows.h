@@ -19,9 +19,8 @@ namespace SQL
 {
 	namespace Internal
 	{
-		class SQLRowContainer;
+		class SQLRow_Obj;
 	}
-	class SQLRow;
 	
 namespace Internal
 {
@@ -33,12 +32,12 @@ namespace Internal
 		
 		public:
 		virtual ~SQLRows_Obj();
-		virtual SQLRow operator[](SQLRID rid) const = 0;
-		SQLRow at(SQLRID rid) const
+		virtual SQLRow operator[](SQLRID rid) = 0;
+		SQLRow at(SQLRID rid)
 		{ return (*this)[rid]; }
 		
-		virtual SQLRow operator[](SQLPK val) const = 0;
-		SQLRow at(SQLPK val) const
+		virtual SQLRow operator[](SQLPK val) = 0;
+		SQLRow at(SQLPK val)
 		{ return (*this)[val]; }
 		
 		unsigned long count() const;
@@ -54,14 +53,14 @@ namespace Internal
 	class SQLRows_RID_Obj : public SQLRows_Obj
 	{
 		protected:
-		std::map<SQLRID, std::shared_ptr<Internal::SQLRowContainer>> containers;
+		std::map<SQLRID, std::weak_ptr<Internal::SQLRow_Obj>> containers;
 		
 		SQLRows_RID_Obj(const SQLTable);
 		
 		public:
 		
-		virtual SQLRow operator[](SQLRID rid) const override;
-		virtual SQLRow operator[](SQLPK val) const override;
+		virtual SQLRow operator[](SQLRID rid) override;
+		virtual SQLRow operator[](SQLPK val) override;
 		
 		friend ::QUtils::SQL::SQLRows;
 		friend class SQLTable_Obj;
@@ -71,13 +70,13 @@ namespace Internal
 	class SQLRows_PK_Obj : public SQLRows_Obj
 	{
 		protected:
-		std::map<SQLPK, std::shared_ptr<Internal::SQLRowContainer>> containers;
+		std::map<SQLPK, std::weak_ptr<Internal::SQLRow_Obj>> containers;
 		
 		SQLRows_PK_Obj(const SQLTable);
 		
 		public:
-		virtual SQLRow operator[](SQLRID rid) const override;
-		virtual SQLRow operator[](SQLPK val) const override;
+		virtual SQLRow operator[](SQLRID rid) override;
+		virtual SQLRow operator[](SQLPK val) override;
 		
 		friend ::QUtils::SQL::SQLRows;
 		friend class SQLTable_Obj;
