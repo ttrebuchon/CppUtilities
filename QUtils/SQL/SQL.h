@@ -12,3 +12,6 @@
 #include "SQLClause.h"
 #include "SQLRow.h"
 #include "SQLRows.h"
+
+#include "SQLSystem.h"
+#include "SQLSystem.hpp"

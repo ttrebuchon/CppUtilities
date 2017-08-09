@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <QUtils/Types/Void_t.h>
 
 namespace QUtils
 {
@@ -54,6 +55,8 @@ namespace SQL
 	
 	
 	
+	
+	
 	template <ValueType T>
 	struct C_ValueType
 	{ };
@@ -89,6 +92,23 @@ namespace SQL
 		return false;
 	}
 	
+	
+	namespace Helpers
+	{
+		
+	}
+	
+	template <class Type, class = void>
+	struct SQL_ValueTypeExists : std::false_type
+	{
+		//const bool value;
+	};
+	
+	template <class Type>
+	struct SQL_ValueTypeExists<Type, Types::void_t<typename C_ValueType<SQL_ValueType<Type>::type>::type>> : std::true_type
+	{
+		const ValueType t = SQL_ValueType<Type>::type;
+	};
 	
 	
 	

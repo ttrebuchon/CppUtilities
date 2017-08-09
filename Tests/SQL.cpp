@@ -6,10 +6,17 @@
 
 #include <QUtils/SQL/SQL_Name.h>
 
+#include <QUtils/SQL/ORM/ORM.h>
+
+#include <QUtils/GUID/GUID.h>
+#include <QUtils/Exception/NotImplemented.h>
+
+
 using namespace QUtils;
 
 bool Test_SQL()
 {
+	{
 	const std::string filename = "TestDB";
 	SQL::SQLiteConnection con(filename + ".sqlite");
 	{
@@ -418,14 +425,107 @@ bool Test_SQL()
 	
 	}
 	
-	
-	
 	dout << "\nPending Statements:\n";
 	for (auto stmt : con.pending())
 	{
 		dout << sqlite3_expanded_sql(stmt) << "\n";
 	}
 	assert_ex(con.pending().size() == 0);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//ORM Testing
+	{
+		const std::string filename = "ORM_DB.sqlite";
+		auto con = new SQL::SQLiteConnection(filename);
+		auto sys = SQL::SQLSystem::Create(con);
+		class Person
+		{
+			private:
+			QUtils::GUID id;
+			
+			public:
+			Person()
+			{
+				id = QUtils::GUID::Create();
+			}
+			
+			std::string fname;
+			std::string lname;
+			decltype(time(NULL)) birth;
+			
+			auto age() const
+			{
+				return static_cast<long double>(time(NULL) - birth)/(3600*24*365);
+			}
+			
+			static Person Birth(std::string fname, std::string lname)
+			{
+				Person p;
+				p.fname = fname;
+				p.lname = lname;
+				p.birth = time(NULL);
+				return p;
+			}
+			
+			friend class PersonModel;
+		};
+		
+		class PersonModel : public SQL::SQLModel<Person>
+		{
+			protected:
+			
+			void buildModel(SQL::SQLModelBuilder<Person>& builder) override
+			{
+				builder.tablename("Person");
+				builder.property("fname", [](auto& obj) -> std::string& { return obj.fname; }).notNull();
+				builder.property("lname", [](auto& obj) -> std::string& { return obj.lname; }).notNull();
+				builder.property("birth", [](auto& obj) -> decltype(obj.birth)& { return obj.birth; }).notNull();
+				builder.id([](auto& obj) -> GUID& { return obj.id; });
+				
+			}
+			
+			std::string modelName() const override
+			{
+				return "Person";
+			}
+		};
+		
+		
+		sys->model<PersonModel>();
+		sys->primitiveType<GUID, std::string>(
+			[](GUID item) -> std::string {
+				return to_string(item);
+			},
+			[](std::string item) -> GUID 
+			{
+				throw NotImp();
+			}
+		);
+		
+		sys->buildModels();
+		
+		
+		Person p1 = Person::Birth("Person", "A");
+		
+		sys->checkIn(p1);
+		
+		
+	}
+	
+	
+	
+	
 	
 	
 	dout << "\n\n";
