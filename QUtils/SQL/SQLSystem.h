@@ -50,6 +50,12 @@ namespace SQL
 		template <class Source, class Destination>
 		void primitiveType(const std::function<Destination(Source)>, const std::function<Source(Destination)>);
 		
+		template <class Source, class Destination>
+		void primitiveModel(const std::function<Destination(Source)> a, const std::function<Source(Destination)> b)
+		{
+			primitiveType(a, b);
+		}
+		
 		template <class Object>
 		void checkIn(const Object&);
 		

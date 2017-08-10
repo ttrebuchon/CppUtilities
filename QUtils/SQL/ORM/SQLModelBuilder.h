@@ -35,7 +35,7 @@ namespace SQL
 	}
 	
 	template <class Object>
-	class SQLEntity;
+	class SQLTypeEntity;
 	
 	
 	template <class Object, class Type>
@@ -49,8 +49,8 @@ namespace SQL
 		
 		protected:
 		std::string name;
-		std::vector<std::shared_ptr<SQLEntity<Object>>> entities;
-		std::shared_ptr<SQLEntity<Object>> idEnt;
+		std::vector<std::shared_ptr<SQLTypeEntity<Object>>> entities;
+		std::shared_ptr<SQLTypeEntity<Object>> idEnt;
 		
 		public:
 		
@@ -69,7 +69,7 @@ namespace SQL
 			this->name = name;
 		}
 		
-		std::shared_ptr<const SQLEntity<Object>> idEntity() const
+		std::shared_ptr<const SQLTypeEntity<Object>> idEntity() const
 		{
 			return idEnt;
 		}

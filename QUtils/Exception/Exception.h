@@ -96,7 +96,7 @@
 			} \
 			catch (const std::exception& ex) \
 			{ \
-				ss << "\t::Inner Exception->" << ex.what(); \
+				ss << "\n::Inner Exception->" << ex.what(); \
 			} \
 		} \
 		_what = ss.str(); \

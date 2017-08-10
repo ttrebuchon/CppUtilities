@@ -93,10 +93,7 @@ namespace SQL
 	}
 	
 	
-	namespace Helpers
-	{
-		
-	}
+	
 	
 	template <class Type, class = void>
 	struct SQL_ValueTypeExists : std::false_type
@@ -111,6 +108,23 @@ namespace SQL
 	};
 	
 	
+	
+	namespace Helpers
+	{
+		
+	}
+	
+	
+	template <class Type, class = void>
+	struct SQL_TryValueType
+	{
+		constexpr static ValueType type = Null;
+	};
+	
+	template <class Type>
+	struct SQL_TryValueType<Type, Types::void_t<decltype(SQL_ValueType<Type>::type)>> : public SQL_ValueType<Type>
+	{
+	};
 	
 	
 	

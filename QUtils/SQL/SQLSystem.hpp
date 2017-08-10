@@ -14,7 +14,7 @@ namespace SQL
 	template <class Source, class Destination>
 	void SQLSystem::primitiveType(const std::function<Destination(Source)> f1, const std::function<Source(Destination)> f2)
 	{
-		throw NotImp();
+		models->addPrimitive(f1, f2);
 	}
 	
 	

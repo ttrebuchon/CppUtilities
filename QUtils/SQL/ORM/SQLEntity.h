@@ -6,35 +6,50 @@ namespace QUtils
 {
 namespace SQL
 {
-	template <class Object>
-	struct SQLEntity
+	class SQLEntity
 	{
-		private:
-		
 		protected:
 		std::string _name;
 		bool _notNull;
 		bool _unique;
 		
-		public:
-		
-		SQLEntity(const std::string name) : _name(name)
+		SQLEntity(const std::string name) : _name(name), _notNull(false), _unique(false)
 		{
 			
 		}
+		
+		public:
 		
 		virtual ValueType getValueType(SQLModels*) const = 0;
 	};
 	
 	
+	template <class Object>
+	struct SQLTypeEntity : public SQLEntity
+	{
+		private:
+		
+		
+		
+		public:
+		
+		SQLTypeEntity(const std::string name) : SQLEntity(name)
+		{
+			
+		}
+		
+		
+	};
+	
+	
 	template <class Object, class Type>
-	struct SQLEntityType : public SQLEntity<Object>
+	struct SQLFullTypeEntity : public SQLTypeEntity<Object>
 	{
 		private:
 		std::function<Type&(Object&)> entity;
 		public:
 		
-		SQLEntityType(const std::string name, const std::function<Type&(Object&)> accessor) : SQLEntity<Object>(name), entity(accessor)
+		SQLFullTypeEntity(const std::string name, const std::function<Type&(Object&)> accessor) : SQLTypeEntity<Object>(name), entity(accessor)
 		{
 			
 		}

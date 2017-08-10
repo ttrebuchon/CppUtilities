@@ -8,7 +8,7 @@ namespace QUtils
 namespace SQL
 {
 	template <class Object, class Type>
-	class SQLEntityBuilder : public SQLEntityType<Object, Type>
+	class SQLEntityBuilder : public SQLFullTypeEntity<Object, Type>
 	{
 		private:
 		
@@ -16,7 +16,7 @@ namespace SQL
 		
 		public:
 		
-		SQLEntityBuilder(const std::string name, const std::function<Type&(Object&)> accessor) : SQLEntityType<Object, Type>(name, accessor)
+		SQLEntityBuilder(const std::string name, const std::function<Type&(Object&)> accessor) : SQLFullTypeEntity<Object, Type>(name, accessor)
 		{
 			
 		}

@@ -15,5 +15,20 @@ namespace SQL
 			ptr->model = new Model();
 		}
 	}
+	
+	
+	template <class Type, class Equivalent>
+	void SQLModels::addPrimitive(const std::function<Equivalent(Type)> toEquivalent, const std::function<Type(Equivalent)> toType)
+	{
+		std::type_index tIndex(typeid(Type));
+		if (primitiveModels.count(tIndex) > 0)
+		{
+			if (primitiveModels[tIndex] != NULL)
+			{
+				delete primitiveModels[tIndex];
+			}
+		}
+		primitiveModels[tIndex] = new SQLFullTypePrimitiveModel<Type, Equivalent>(toEquivalent, toType);
+	}
 }
 }

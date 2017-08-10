@@ -51,7 +51,7 @@ namespace SQL
 		typedef Internal::Result_t<F, Object> Type;
 		auto fAccess = std::function<Type&(Object&)>([access](auto& obj) -> Type& { return access(obj); });
 		auto ptr = std::make_shared<SQLEntityBuilder<Object, Type>>(name, fAccess);
-		entities.push_back(std::static_pointer_cast<SQLEntity<Object>>(ptr));
+		entities.push_back(std::static_pointer_cast<SQLTypeEntity<Object>>(ptr));
 		return *ptr;
 	}
 	

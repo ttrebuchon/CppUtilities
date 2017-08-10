@@ -2,21 +2,29 @@
 #include <typeindex>
 #include <unordered_map>
 
+#include "../ValueType.h"
+
 namespace QUtils
 {
 namespace SQL
 {
+	
+	
+	
 	template <class Object>
 	class SQLModel;
 	
 	class SQLSystem;
 	class SQLModels;
+	class SQLPrimitiveModel;
 	
 	namespace Internal
 	{
 		struct ModelContainer
 		{
 			virtual void create(SQLModels*) = 0;
+			
+			virtual ValueType idType() const = 0;
 		};
 		
 		template <class Object>
@@ -25,6 +33,8 @@ namespace SQL
 			SQLModel<Object>* model;
 			
 			virtual void create(SQLModels* models) override;
+			
+			virtual ValueType idType() const override;
 		};
 	}
 	
@@ -49,6 +59,8 @@ namespace SQL
 		private:
 		std::unordered_map<std::type_index, Internal::ModelContainer*> models;
 		
+		std::unordered_map<std::type_index, SQLPrimitiveModel*> primitiveModels;
+		
 		public:
 		
 		template <class Model>
@@ -59,8 +71,12 @@ namespace SQL
 		
 		template <class Model, class Object>
 		void add();
+		template <class Type, class Equivalent>
+		void addPrimitive(const std::function<Equivalent(Type)>, const std::function<Type(Equivalent)>);
 		
 		void build(SQLSystem*);
+		
+		ValueType getSQLType(std::type_index);
 	};
 	
 	
@@ -71,6 +87,12 @@ namespace SQL
 		{
 			model->registerModel(models);
 			//models->add(this->model);
+		}
+		
+		template <class Object>
+		ValueType TypedModelContainer<Object>::idType() const
+		{
+			return model->idType;
 		}
 	}
 }

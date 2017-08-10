@@ -1,19 +1,18 @@
 #pragma once
 
-#include <QUtils/Exception/Exception.h>
+#include "../Errors.h"
 
 
 namespace QUtils
 {
 namespace SQL
 {
-	QUTILS_CUSTOM_EXCEPTION(SQLModelConfigException,);
+	
 	
 	
 	template <class Object>
 	void SQLModel<Object>::registerModel(SQLModels* models)
 	{
-		
 		SQLModelBuilder<Object> builder;
 		//builder.setName(this->modelName());
 		this->buildModel(builder);
@@ -24,6 +23,8 @@ namespace SQL
 		}
 		
 		this->idType = builder.idEntity()->getValueType(models);
+		
+		throw NotImp();
 	}
 }
 }
