@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include "SQLTableBuilder.h"
 
 namespace QUtils
 {
@@ -71,6 +71,50 @@ namespace SQL
 		auto ptr = std::make_shared<SQLEntityBuilder<Object, Type>>(name, fAccess);
 		idEnt = ptr;
 		return *ptr;
+	}
+	
+	template <class Object>
+	void SQLModelBuilder<Object>::resolveTypes(SQLModels* models)
+	{
+		if (idEnt->dbType == Null)
+		{
+			idEnt->getValueType(models);
+		}
+		
+		for (auto ent : entities)
+		{
+			if (ent->dbType == Null)
+			{
+				ent->getValueType(models);
+			}
+		}
+	}
+	
+	
+	template <class Object>
+	SQLTableBuilder SQLModelBuilder<Object>::buildTableDec()
+	{
+		SQLTableBuilder builder;
+		
+		auto idEnt = idEntity();
+		SQLColumnBuilder idCol;
+		idCol.name = idEnt->name();
+		idCol.PK = true;
+		idCol.type = idEnt->dbType;
+		builder.columns.push_back(idCol);
+		
+		for (auto ent : entities)
+		{
+			SQLColumnBuilder col;
+			col.name = ent->name();
+			col.type = ent->dbType;
+			col.notNull = ent->notNull();
+			col.unique = ent->unique();
+			builder.columns.push_back(col);
+			
+		}
+		
+		return builder;
 	}
 }
 }

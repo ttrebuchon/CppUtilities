@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <map>
 #include <QUtils/Types/Void_t.h>
 
 namespace QUtils
@@ -17,6 +18,15 @@ namespace SQL
 		Blob = 5,
 		
 	};
+	
+	namespace Internal
+	{
+		extern std::map<ValueType, std::string> ValueType_String_Mappings;
+		extern std::map<std::string, ValueType> String_ValueType_Mappings;
+	}
+	
+	ValueType SQL_ParseType(const std::string);
+	std::string to_string(const ValueType);
 	
 	template <typename T>
 	struct SQL_ValueType
@@ -42,6 +52,12 @@ namespace SQL
 	
 	template <>
 	struct SQL_ValueType<long>
+	{
+		constexpr static ValueType type = Integer;
+	};
+	
+	template <>
+	struct SQL_ValueType<long long>
 	{
 		constexpr static ValueType type = Integer64;
 	};
@@ -70,13 +86,13 @@ namespace SQL
 	template <>
 	struct C_ValueType<Integer>
 	{
-		typedef int type;
+		typedef long type;
 	};
 	
 	template <>
 	struct C_ValueType<Integer64>
 	{
-		typedef long type;
+		typedef long long type;
 	};
 	
 	template <>

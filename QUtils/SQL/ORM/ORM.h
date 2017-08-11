@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SQLType.h"
 #include "SQLModel.h"
 #include "SQLModelBuilder.h"
 #include "SQLEntity.h"

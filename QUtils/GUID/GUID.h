@@ -3,6 +3,7 @@
 #ifdef QUTILS_HAS_BOOST
 
 #define BOOST_UUID_NO_TYPE_TRAITS
+#define QUTILS_GUID_ENABLED
 
 #include <boost/uuid/uuid.hpp>
 

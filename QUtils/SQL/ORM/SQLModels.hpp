@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SQLPrimitiveModel.h"
+
 namespace QUtils
 {
 namespace SQL
@@ -10,9 +12,7 @@ namespace SQL
 		std::type_index index(typeid(Object));
 		if (models.count(index) <= 0)
 		{
-			Internal::TypedModelContainer<Object>* ptr;
-			models[index] = ptr = new Internal::TypedModelContainer<Object>();
-			ptr->model = new Model();
+			models[index] = new Model();
 		}
 	}
 	

@@ -10,6 +10,7 @@
 
 #include <QUtils/GUID/GUID.h>
 #include <QUtils/Exception/NotImplemented.h>
+#include <QUtils/Types/CompilerPrint.h>
 
 
 using namespace QUtils;
@@ -182,7 +183,7 @@ bool Test_SQL()
 	}
 	
 	
-	assert_ex(con.vQuery("CREATE TABLE [TTable 2] (x INTEGER PRIMARY KEY, z INTEGER, [x z] INTEGER);"));
+	assert_ex(con.vQuery("CREATE TABLE [TTable 2] (x INTEGER PRIMARY KEY, z INT, [x z] INTEGER);"));
 	
 	SQL::SQLTable TTable_2 = DB["TTable 2"];
 	dout << "TTable 2 table object created.\n";
@@ -200,6 +201,7 @@ bool Test_SQL()
 	
 	dout << "Joining " << TTable->name << " and " << TTable_2->name << " on their x columns...\n";
 	SQL::SQLTable joined = TTable->join(TTable_2, "x", "x");
+	dout << "Joined.\n";
 	assert_ex(joined->name == "[TTable_TTable 2]");
 	
 	q = con.query("SELECT * FROM [TTable_TTable 2];");
@@ -449,20 +451,34 @@ bool Test_SQL()
 		const std::string filename = "ORM_DB.sqlite";
 		auto con = new SQL::SQLiteConnection(filename);
 		auto sys = SQL::SQLSystem::Create(con);
+		
+		
+		#define GUID_t
 		class Person
 		{
+			public:
+			#ifdef GUID_t
+			typedef QUtils::GUID id_t;
+			#else
+			typedef long id_t;
+			#endif
 			private:
-			QUtils::GUID id;
+			id_t id;
 			
 			public:
 			Person()
 			{
+				#ifdef GUID_t
 				id = QUtils::GUID::Create();
+				#else
+				id = 1;
+				#endif
 			}
 			
 			std::string fname;
 			std::string lname;
-			decltype(time(NULL)) birth;
+			//decltype(time(NULL)) birth;
+			unsigned long birth;
 			
 			auto age() const
 			{
@@ -481,7 +497,7 @@ bool Test_SQL()
 			friend class PersonModel;
 		};
 		
-		class PersonModel : public SQL::SQLModel<Person>
+		class PersonModel : public SQL::SQLTypeModel<Person>
 		{
 			protected:
 			
@@ -491,7 +507,7 @@ bool Test_SQL()
 				builder.property("fname", [](auto& obj) -> std::string& { return obj.fname; }).notNull();
 				builder.property("lname", [](auto& obj) -> std::string& { return obj.lname; }).notNull();
 				builder.property("birth", [](auto& obj) -> decltype(obj.birth)& { return obj.birth; }).notNull();
-				builder.id([](auto& obj) -> GUID& { return obj.id; });
+				builder.id([](auto& obj) -> decltype(obj.id)& { return obj.id; });
 				
 			}
 			
@@ -502,18 +518,11 @@ bool Test_SQL()
 		};
 		
 		
-		sys->model<PersonModel>();
-		sys->primitiveType<GUID, std::string>(
-			[](GUID item) -> std::string {
-				return to_string(item);
-			},
-			[](std::string item) -> GUID 
-			{
-				throw NotImp();
-			}
-		);
 		
-		sys->buildModels();
+		sys->model<PersonModel>();
+		
+		
+		sys->buildModels(/*dropIfConflict: */true);
 		
 		
 		Person p1 = Person::Birth("Person", "A");

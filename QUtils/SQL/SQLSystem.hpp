@@ -1,4 +1,7 @@
 #pragma once
+
+#include "ORM/SQLModels.hpp"
+
 #include <QUtils/Exception/NotImplemented.h>
 
 namespace QUtils
@@ -16,6 +19,21 @@ namespace SQL
 	{
 		models->addPrimitive(f1, f2);
 	}
+	
+	template <class Source, class Destination>
+	void SQLSystem::primitiveType()
+	{
+		primitiveType<Source, Destination>(
+		[](Source obj) {
+			return static_cast<Destination>(obj);
+		},
+		[](Destination val)
+		{
+			return static_cast<Source>(val);
+		});
+	}
+	
+	
 	
 	
 	template <class Object>

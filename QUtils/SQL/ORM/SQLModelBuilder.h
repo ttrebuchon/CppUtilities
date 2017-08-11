@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SQLTableBuilder.h"
+
 namespace QUtils
 {
 namespace SQL
@@ -69,10 +71,21 @@ namespace SQL
 			this->name = name;
 		}
 		
+		std::string getTableName() const
+		{
+			return name;
+		}
+		
 		std::shared_ptr<const SQLTypeEntity<Object>> idEntity() const
 		{
 			return idEnt;
 		}
+		
+		void resolveTypes(SQLModels*);
+		SQLTableBuilder buildTableDec();
+		
+		template <class>
+		friend class SQLTypeModel;
 	};
 }
 }

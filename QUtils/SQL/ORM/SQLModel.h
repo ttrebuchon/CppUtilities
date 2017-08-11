@@ -9,32 +9,47 @@ namespace SQL
 	template <class Object>
 	class SQLModelBuilder;
 	
-	template <class Object>
 	class SQLModel
+	{
+		protected:
+		
+		virtual void registerModel(SQLModels*) = 0;
+		
+		virtual std::string modelName() const = 0;
+		public:
+		SQLModel() : idType(Null) {}
+		virtual ~SQLModel() {}
+		
+		ValueType idType;
+		
+		friend class SQLModels;
+	};
+	
+	template <class Object>
+	class SQLTypeModel : public SQLModel
 	{
 		private:
 		
-		std::shared_ptr<SQLModel<Object>>& GetEntity();
+		std::shared_ptr<SQLTypeModel<Object>>& GetEntity();
 		
-		void registerModel(SQLModels*);
+		void registerModel(SQLModels*) override;
 		
 		protected:
 		virtual void buildModel(SQLModelBuilder<Object>&) = 0;
-		virtual std::string modelName() const = 0;
-		SQLModel()
+		
+		SQLTypeModel() : SQLModel()
 		{
 		}
 		
 		public:
 		typedef Object type;
-		virtual ~SQLModel() {}
+		virtual ~SQLTypeModel() {}
 		
 		//void add(
 		
-		ValueType idType;
 		
-		template <class>
-		friend class Internal::TypedModelContainer;
+		
+		friend class SQLModels;
 	};
 }
 }

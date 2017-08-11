@@ -1,5 +1,8 @@
 #pragma once
 
+#include "SQLType.h"
+#include <QUtils/Exception/NullPointer.h>
+#include <QUtils/Exception/NotImplemented.h>
 
 namespace QUtils
 {
@@ -17,10 +20,7 @@ namespace SQL
 		virtual std::type_index type() const = 0;
 		virtual std::type_index equivalent() const = 0;
 		
-		ValueType dbType() const
-		{
-			return _dbType;
-		}
+		virtual ValueType dbType() const = 0;
 	};
 	
 	template <class Type>
@@ -35,6 +35,10 @@ namespace SQL
 		}
 		
 		virtual ~SQLTypePrimitiveModel() {}
+		
+		virtual std::function<std::shared_ptr<SQLType>(Type)> convert() const = 0;
+		
+		virtual std::function<Type(std::shared_ptr<SQLType>)> convertFrom() const = 0;
 	};
 	
 	template <class Type, class Equivalent>
@@ -54,8 +58,6 @@ namespace SQL
 		
 		virtual ~SQLFullTypePrimitiveModel() {}
 		
-		ValueType dbType() const;
-		
 		virtual std::type_index type() const override
 		{
 			return std::type_index(typeid(Type));
@@ -64,6 +66,40 @@ namespace SQL
 		virtual std::type_index equivalent() const override
 		{
 			return std::type_index(typeid(Equivalent));
+		}
+		
+		
+		virtual std::function<std::shared_ptr<SQLType>(Type)> convert() const override
+		{
+			auto f = toEquivalent;
+			return std::function<std::shared_ptr<SQLType>(Type)>([f](Type t) {
+				return SQLType::Create(f(t));
+			});
+		}
+		
+		virtual std::function<Type(std::shared_ptr<SQLType>)> convertFrom() const override
+		{
+			auto dbT = dbType();
+			auto f = toType;
+			return std::function<Type(std::shared_ptr<SQLType>)>([f, dbT](std::shared_ptr<SQLType> val) {
+				if (val == NULL)
+				{
+					throw NullPointerException();
+				}
+				if (val->type() != dbT)
+				{
+					//TODO
+					throw NotImp().Line(__LINE__);
+				}
+				auto ptr = (SQLType_Value<Equivalent>*)val.get();
+				
+				return f(ptr->get());
+			});
+		}
+		
+		virtual ValueType dbType() const override
+		{
+			return SQL_ValueType<Equivalent>::type;
 		}
 	};
 }

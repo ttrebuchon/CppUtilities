@@ -9,10 +9,10 @@ namespace QUtils
 namespace SQL
 {
 	
-	
+	class SQLModel;
 	
 	template <class Object>
-	class SQLModel;
+	class SQLTypeModel;
 	
 	class SQLSystem;
 	class SQLModels;
@@ -20,7 +20,7 @@ namespace SQL
 	
 	namespace Internal
 	{
-		struct ModelContainer
+		/*struct ModelContainer
 		{
 			virtual void create(SQLModels*) = 0;
 			
@@ -35,7 +35,7 @@ namespace SQL
 			virtual void create(SQLModels* models) override;
 			
 			virtual ValueType idType() const override;
-		};
+		};*/
 	}
 	
 	namespace Helpers
@@ -46,7 +46,7 @@ namespace SQL
 			
 			private:
 			template <class T>
-			static T func(SQLModel<T>&);
+			static T func(SQLTypeModel<T>&);
 			
 			public:
 			typedef decltype(func(std::declval<Model&>())) type;
@@ -57,7 +57,7 @@ namespace SQL
 	class SQLModels
 	{
 		private:
-		std::unordered_map<std::type_index, Internal::ModelContainer*> models;
+		std::unordered_map<std::type_index, SQLModel*> models;
 		
 		std::unordered_map<std::type_index, SQLPrimitiveModel*> primitiveModels;
 		
@@ -82,7 +82,7 @@ namespace SQL
 	
 	namespace Internal
 	{
-		template <class Object>
+		/*template <class Object>
 		void TypedModelContainer<Object>::create(SQLModels* models)
 		{
 			model->registerModel(models);
@@ -93,7 +93,7 @@ namespace SQL
 		ValueType TypedModelContainer<Object>::idType() const
 		{
 			return model->idType;
-		}
+		}*/
 	}
 }
 }

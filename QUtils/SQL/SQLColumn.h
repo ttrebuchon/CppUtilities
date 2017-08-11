@@ -3,6 +3,7 @@
 #include <string>
 
 #include "SQLTypeDefs.h"
+#include "ValueType.h"
 
 namespace QUtils
 {
@@ -15,7 +16,7 @@ namespace SQL
 		private:
 		int _index;
 		std::string _name;
-		std::string _type;
+		ValueType _type;
 		bool _notNull;
 		std::string _defaultValue;
 		bool _PK;
@@ -28,7 +29,7 @@ namespace SQL
 		
 		const int& index;
 		const std::string& name;
-		const std::string& type;
+		const ValueType& type;
 		const bool& notNull;
 		const std::string& defaultValue;
 		const bool& PK;

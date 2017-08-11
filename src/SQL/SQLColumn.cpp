@@ -5,7 +5,7 @@ namespace QUtils
 {
 namespace SQL
 {
-	SQLColumn::SQLColumn(const int index, const std::string name, const std::string type, const bool notNull, const std::string defaultValue, const bool PK, const std::string table) : _index(index), _name(name), _type(type), _notNull(notNull), _defaultValue(defaultValue), _PK(PK), _table(table), index(_index), name(_name), type(_type), notNull(_notNull), defaultValue(_defaultValue), PK(_PK)
+	SQLColumn::SQLColumn(const int index, const std::string name, const std::string type, const bool notNull, const std::string defaultValue, const bool PK, const std::string table) : _index(index), _name(name), _type(SQL_ParseType(type)), _notNull(notNull), _defaultValue(defaultValue), _PK(PK), _table(table), index(_index), name(_name), type(_type), notNull(_notNull), defaultValue(_defaultValue), PK(_PK)
 	{
 		
 	}

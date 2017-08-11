@@ -12,15 +12,33 @@ namespace SQL
 		std::string _name;
 		bool _notNull;
 		bool _unique;
+		ValueType _dbType;
 		
-		SQLEntity(const std::string name) : _name(name), _notNull(false), _unique(false)
+		SQLEntity(const std::string name) : _name(name), _notNull(false), _unique(false), _dbType(Null), dbType(_dbType)
 		{
 			
 		}
 		
 		public:
 		
-		virtual ValueType getValueType(SQLModels*) const = 0;
+		virtual ValueType getValueType(SQLModels*) = 0;
+		
+		const ValueType& dbType;
+		
+		std::string name() const
+		{
+			return _name;
+		}
+		
+		bool notNull() const
+		{
+			return _notNull;
+		}
+		
+		bool unique() const
+		{
+			return _unique;
+		}
 	};
 	
 	
@@ -54,7 +72,7 @@ namespace SQL
 			
 		}
 		
-		virtual ValueType getValueType(SQLModels*) const override;
+		virtual ValueType getValueType(SQLModels*) override;
 	};
 	
 	
