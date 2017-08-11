@@ -1,20 +1,26 @@
 #pragma once
 
-#include "SQLModels.h"
-#include "SQLModels.hpp"
 #include "../Errors.h"
+#include "SQLModelBuilder.h"
+#include "SQLEntity.h"
+#include "SQLModelBuilder.hpp"
+#include "../SQLConnection.h"
 
-#include <QUtils/Exception/NotImplemented.h>
+#include <iostream>
+
+#include <QUtils/Exception/NullPointer.h>
+
 
 namespace QUtils
 {
 namespace SQL
 {
+	
+	
+	
 	template <class Object>
-	SQLTableBuilder SQLModel<Object>::initModel(SQLModels* models)
+	SQLTableBuilder SQLTypeModel<Object>::registerModel(SQLModels* models)
 	{
-		throw NotImp();
-		/*
 		if (this->idType != Null)
 		{
 			return this->tableBuilder;
@@ -54,20 +60,7 @@ namespace SQL
 		
 		
 		
-		return this->tableBuilder;*/
-		
-	}
-	
-	template <class Object>
-	void SQLModel<Object>::save(SQLSystem* sys, const Object& obj, bool includeReferenced)
-	{
-		throw NotImp();
-	}
-	
-	template <class Object>
-	void SQLModel<Object>::load(SQLSystem* sys, Object& obj, bool includeReferenced)
-	{
-		throw NotImp();
+		return this->tableBuilder;
 	}
 }
 }

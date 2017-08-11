@@ -5,6 +5,8 @@
 
 #include "Errors.h"
 
+#include "SQLTableBuilder.h"
+
 namespace QUtils
 {
 namespace SQL
@@ -43,6 +45,8 @@ namespace SQL
 		virtual std::vector<std::string> getDatabases() const = 0;
 		
 		virtual std::string RIDType() const = 0;
+		
+		//virtual void buildTable(const SQLTableBuilder builder) = 0;
 		
 	};
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <functional>
 
 #include "ORM/SQLModels.h"
 
@@ -10,9 +11,9 @@ namespace SQL
 	
 	
 	class SQLConnection;
-	class SQLModel;
+	class SQLMinModel;
 	template <class Object>
-	class SQLTypeModel;
+	class SQLModel;
 	
 	
 	class SQLSystem
@@ -39,7 +40,7 @@ namespace SQL
 		}
 		
 		template <class Object>
-		void model(SQLTypeModel<Object>* model)
+		void model(SQLModel<Object>* model)
 		{
 			models->add(model);
 		}
@@ -87,7 +88,10 @@ namespace SQL
 		}
 		
 		template <class Object>
-		void checkIn(const Object&);
+		void checkIn(const Object&, bool includeReferenced = true);
+		
+		template <class Object>
+		void refresh(Object&, bool includeReferenced = true);
 		
 	};
 }

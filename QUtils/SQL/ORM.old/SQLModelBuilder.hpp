@@ -1,11 +1,13 @@
 #pragma once
 
-#include "SQLEntityBuilder.h"
+#include "SQLTableBuilder.h"
 
 namespace QUtils
 {
 namespace SQL
 {
+	
+	
 	template <class Object>
 	template <class F>
 	SQLEntityBuilder<Object, Internal::Result_t<F, Object>>& SQLModelBuilder<Object>::property(F access)
@@ -49,7 +51,7 @@ namespace SQL
 		typedef Internal::Result_t<F, Object> Type;
 		auto fAccess = std::function<Type&(Object&)>([access](auto& obj) -> Type& { return access(obj); });
 		auto ptr = std::make_shared<SQLEntityBuilder<Object, Type>>(name, fAccess);
-		entities.push_back(std::static_pointer_cast<SQLEntity<Object>>(ptr));
+		entities.push_back(std::static_pointer_cast<SQLTypeEntity<Object>>(ptr));
 		return *ptr;
 	}
 	
@@ -74,14 +76,25 @@ namespace SQL
 	template <class Object>
 	void SQLModelBuilder<Object>::resolveTypes(SQLModels* models)
 	{
-		throw NotImp();
+		if (idEnt->dbType == Null)
+		{
+			idEnt->getValueType(models);
+		}
+		
+		for (auto ent : entities)
+		{
+			if (ent->dbType == Null)
+			{
+				ent->getValueType(models);
+			}
+		}
 	}
 	
 	
 	template <class Object>
 	SQLTableBuilder SQLModelBuilder<Object>::buildTableDec()
 	{
-		/*SQLTableBuilder builder;
+		SQLTableBuilder builder;
 		
 		auto idEnt = idEntity();
 		SQLColumnBuilder idCol;
@@ -101,8 +114,7 @@ namespace SQL
 			
 		}
 		
-		return builder;*/
-		throw NotImp();
+		return builder;
 	}
 }
 }

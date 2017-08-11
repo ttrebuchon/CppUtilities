@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 
+#include "../SQLTableBuilder.h"
 
 namespace QUtils
 {
@@ -9,16 +10,21 @@ namespace SQL
 	template <class Object>
 	class SQLModelBuilder;
 	
-	class SQLModel
+	class SQLModels;
+	class SQLSystem;
+	class SQLQuery;
+	
+	class SQLMinModel
 	{
 		protected:
+		SQLTableBuilder tableBuilder;
 		
-		virtual void registerModel(SQLModels*) = 0;
+		virtual SQLTableBuilder initModel(SQLModels*) = 0;
 		
 		virtual std::string modelName() const = 0;
 		public:
-		SQLModel() : idType(Null) {}
-		virtual ~SQLModel() {}
+		SQLMinModel() : tableBuilder(), idType(Null) {}
+		virtual ~SQLMinModel() {}
 		
 		ValueType idType;
 		
@@ -26,28 +32,30 @@ namespace SQL
 	};
 	
 	template <class Object>
-	class SQLTypeModel : public SQLModel
+	class SQLModel : public SQLMinModel
 	{
 		private:
 		
-		std::shared_ptr<SQLTypeModel<Object>>& GetEntity();
+		std::shared_ptr<SQLModel<Object>>& GetEntity();
 		
-		void registerModel(SQLModels*) override;
+		SQLTableBuilder initModel(SQLModels*) override;
+		
+		std::function<void(Object&, SQLQuery*)> loader;
 		
 		protected:
 		virtual void buildModel(SQLModelBuilder<Object>&) = 0;
 		
-		SQLTypeModel() : SQLModel()
+		SQLModel() : SQLMinModel(), loader()
 		{
 		}
 		
 		public:
 		typedef Object type;
-		virtual ~SQLTypeModel() {}
-		
-		//void add(
+		virtual ~SQLModel() {}
 		
 		
+		void save(SQLSystem*, const Object&, bool includeReferenced = true);
+		void load(SQLSystem*, Object&, bool includeReferenced = true);
 		
 		friend class SQLModels;
 	};

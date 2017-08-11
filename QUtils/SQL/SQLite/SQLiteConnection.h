@@ -45,6 +45,7 @@ namespace SQL
 		virtual std::string getDefaultDBName() const override;
 		virtual std::vector<std::string> getDatabases() const override;
 		virtual std::string RIDType() const override;
+		//virtual void buildTable(const SQLTableBuilder) override;
 		
 		
 		

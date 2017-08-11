@@ -23,22 +23,12 @@ namespace SQL
 		std::type_index tIndex(typeid(Type));
 		if (primitiveModels.count(tIndex) > 0)
 		{
-			auto old = primitiveModels.at(tIndex);
-			if (old != NULL)
+			if (primitiveModels[tIndex] != NULL)
 			{
-				
-				delete old;
+				delete primitiveModels[tIndex];
 			}
 		}
-		primitiveModels[tIndex] = new SQLFullPrimitiveModel<Type, Equivalent>(toEquivalent, toType);
-	}
-	
-	template <class Object>
-	SQLModel<Object>* SQLModels::getModel()
-	{
-		std::type_index tIndex(typeid(Object));
-		auto ptr = models.at(tIndex);
-		return (SQLModel<Object>*)ptr;
+		primitiveModels[tIndex] = new SQLFullTypePrimitiveModel<Type, Equivalent>(toEquivalent, toType);
 	}
 }
 }

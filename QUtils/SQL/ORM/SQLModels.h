@@ -3,41 +3,12 @@
 #include <unordered_map>
 
 #include "../ValueType.h"
+#include "SQLModel.h"
 
 namespace QUtils
 {
 namespace SQL
 {
-	
-	class SQLModel;
-	
-	template <class Object>
-	class SQLTypeModel;
-	
-	class SQLSystem;
-	class SQLModels;
-	class SQLPrimitiveModel;
-	
-	namespace Internal
-	{
-		/*struct ModelContainer
-		{
-			virtual void create(SQLModels*) = 0;
-			
-			virtual ValueType idType() const = 0;
-		};
-		
-		template <class Object>
-		struct TypedModelContainer : public ModelContainer
-		{
-			SQLModel<Object>* model;
-			
-			virtual void create(SQLModels* models) override;
-			
-			virtual ValueType idType() const override;
-		};*/
-	}
-	
 	namespace Helpers
 	{
 		template <class Model>
@@ -46,7 +17,7 @@ namespace SQL
 			
 			private:
 			template <class T>
-			static T func(SQLTypeModel<T>&);
+			static T func(SQLModel<T>&);
 			
 			public:
 			typedef decltype(func(std::declval<Model&>())) type;
@@ -54,12 +25,22 @@ namespace SQL
 		
 	}
 	
+	
+	
+	
+	
+	
+	
+	class SQLSystem;
+	class SQLMinModel;
+	class SQLMinPrimitiveModel;
+	
 	class SQLModels
 	{
 		private:
-		std::unordered_map<std::type_index, SQLModel*> models;
+		std::unordered_map<std::type_index, SQLMinModel*> models;
 		
-		std::unordered_map<std::type_index, SQLPrimitiveModel*> primitiveModels;
+		std::unordered_map<std::type_index, SQLMinPrimitiveModel*> primitiveModels;
 		
 		public:
 		
@@ -77,23 +58,9 @@ namespace SQL
 		void build(SQLSystem*);
 		
 		ValueType getSQLType(std::type_index);
-	};
-	
-	
-	namespace Internal
-	{
-		/*template <class Object>
-		void TypedModelContainer<Object>::create(SQLModels* models)
-		{
-			model->registerModel(models);
-			//models->add(this->model);
-		}
 		
 		template <class Object>
-		ValueType TypedModelContainer<Object>::idType() const
-		{
-			return model->idType;
-		}*/
-	}
+		SQLModel<Object>* getModel();
+	};
 }
 }

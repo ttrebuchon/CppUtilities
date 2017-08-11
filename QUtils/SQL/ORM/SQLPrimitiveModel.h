@@ -8,14 +8,14 @@ namespace QUtils
 {
 namespace SQL
 {
-	class SQLPrimitiveModel
+	class SQLMinPrimitiveModel
 	{
 		protected:
 		ValueType _dbType;
 		
 		public:
-		SQLPrimitiveModel(ValueType t) : _dbType(t) {}
-		virtual ~SQLPrimitiveModel() {}
+		SQLMinPrimitiveModel(ValueType t) : _dbType(t) {}
+		virtual ~SQLMinPrimitiveModel() {}
 		
 		virtual std::type_index type() const = 0;
 		virtual std::type_index equivalent() const = 0;
@@ -24,17 +24,17 @@ namespace SQL
 	};
 	
 	template <class Type>
-	class SQLTypePrimitiveModel : public SQLPrimitiveModel
+	class SQLPrimitiveModel : public SQLMinPrimitiveModel
 	{
 		protected:
 		
 		public:
-		SQLTypePrimitiveModel(ValueType t) : SQLPrimitiveModel(t)
+		SQLPrimitiveModel(ValueType t) : SQLMinPrimitiveModel(t)
 		{
 			
 		}
 		
-		virtual ~SQLTypePrimitiveModel() {}
+		virtual ~SQLPrimitiveModel() {}
 		
 		virtual std::function<std::shared_ptr<SQLType>(Type)> convert() const = 0;
 		
@@ -42,7 +42,7 @@ namespace SQL
 	};
 	
 	template <class Type, class Equivalent>
-	class SQLFullTypePrimitiveModel : public SQLTypePrimitiveModel<Type>
+	class SQLFullPrimitiveModel : public SQLPrimitiveModel<Type>
 	{
 		protected:
 		
@@ -50,13 +50,13 @@ namespace SQL
 		std::function<Type(Equivalent)> toType;
 		
 		public:
-		SQLFullTypePrimitiveModel(const std::function<Equivalent(Type)> toEquivalent,
-		const std::function<Type(Equivalent)> toType) : SQLTypePrimitiveModel<Type>(SQL_ValueType<Equivalent>::type), toEquivalent(toEquivalent), toType(toType)
+		SQLFullPrimitiveModel(const std::function<Equivalent(Type)> toEquivalent,
+		const std::function<Type(Equivalent)> toType) : SQLPrimitiveModel<Type>(SQL_ValueType<Equivalent>::type), toEquivalent(toEquivalent), toType(toType)
 		{
 			
 		}
 		
-		virtual ~SQLFullTypePrimitiveModel() {}
+		virtual ~SQLFullPrimitiveModel() {}
 		
 		virtual std::type_index type() const override
 		{

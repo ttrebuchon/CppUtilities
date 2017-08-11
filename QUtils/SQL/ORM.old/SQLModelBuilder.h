@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../SQLTableBuilder.h"
-#include "SQLEntityBuilder.h"
+#include "SQLTableBuilder.h"
 
 namespace QUtils
 {
@@ -27,8 +26,14 @@ namespace SQL
 		using Result_t = typename RemoveRef<decltype(std::declval<F>()(std::declval<Object&>()))>::type;
 	}
 	
+	template <class Object>
+	class SQLTypeEntity;
 	
 	
+	template <class Object, class Type>
+	class SQLEntityBuilder;
+	
+	class SQLSystem;
 	
 	template <class Object>
 	class SQLModelBuilder
@@ -38,8 +43,8 @@ namespace SQL
 		
 		protected:
 		std::string name;
-		std::vector<std::shared_ptr<SQLEntity<Object>>> entities;
-		std::shared_ptr<SQLEntity<Object>> idEnt;
+		std::vector<std::shared_ptr<SQLTypeEntity<Object>>> entities;
+		std::shared_ptr<SQLTypeEntity<Object>> idEnt;
 		
 		public:
 		
@@ -63,7 +68,7 @@ namespace SQL
 			return name;
 		}
 		
-		std::shared_ptr<const SQLEntity<Object>> idEntity() const
+		std::shared_ptr<const SQLTypeEntity<Object>> idEntity() const
 		{
 			return idEnt;
 		}
@@ -72,7 +77,7 @@ namespace SQL
 		SQLTableBuilder buildTableDec();
 		
 		template <class>
-		friend class SQLModel;
+		friend class SQLTypeModel;
 	};
 }
 }

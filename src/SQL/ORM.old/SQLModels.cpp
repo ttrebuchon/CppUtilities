@@ -1,5 +1,5 @@
-#include <QUtils/SQL/ORM/SQLModels.h>
-#include <QUtils/SQL/ORM/SQLModel.h>
+/*#include <QUtils/SQL/ORM.old/SQLModels.h>
+#include <QUtils/SQL/ORM.old/SQLModel.h>
 #include <QUtils/SQL/SQLSystem.h>
 #include <QUtils/SQL/ORM/SQLPrimitiveModel.h>
 #include <QUtils/SQL/Errors.h>
@@ -15,7 +15,7 @@ namespace SQL
 	{
 		for (auto pair : models)
 		{
-			pair.second->initModel(this);
+			pair.second->registerModel(this);
 		}
 		
 		throw NotImp();
@@ -32,7 +32,7 @@ namespace SQL
 		{
 			if (models.at(tIndex)->idType == Null)
 			{
-				models.at(tIndex)->initModel(this);
+				models.at(tIndex)->registerModel(this);
 			}
 			return models.at(tIndex)->idType;
 		}
@@ -40,4 +40,4 @@ namespace SQL
 		throw SQLModelConfigException().Function(__func__).Msg(std::string("Could not find ValueType for ") + tIndex.name());
 	}
 }
-}
+}*/

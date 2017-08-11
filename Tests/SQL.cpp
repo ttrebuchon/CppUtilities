@@ -497,7 +497,7 @@ bool Test_SQL()
 			friend class PersonModel;
 		};
 		
-		class PersonModel : public SQL::SQLTypeModel<Person>
+		class PersonModel : public SQL::SQLModel<Person>
 		{
 			protected:
 			

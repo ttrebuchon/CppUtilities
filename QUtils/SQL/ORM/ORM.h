@@ -1,14 +1,14 @@
 #pragma once
-
-#include "SQLType.h"
-#include "SQLModel.h"
-#include "SQLModelBuilder.h"
 #include "SQLEntity.h"
-#include "SQLEntityBuilder.h"
+#include "SQLModel.h"
+#include "SQLModels.h"
 #include "SQLPrimitiveModel.h"
+#include "SQLEntityBuilder.h"
+#include "SQLModelBuilder.h"
+#include "SQLType.h"
 
 
+#include "SQLEntity.hpp"
+#include "SQLModel.hpp"
 #include "SQLModels.hpp"
 #include "SQLModelBuilder.hpp"
-#include "SQLModel.hpp"
-#include "SQLEntity.hpp"

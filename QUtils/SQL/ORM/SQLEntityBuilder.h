@@ -2,23 +2,28 @@
 
 #include "SQLEntity.h"
 
-
 namespace QUtils
 {
 namespace SQL
 {
 	template <class Object, class Type>
-	class SQLEntityBuilder : public SQLFullTypeEntity<Object, Type>
+	class SQLEntityBuilder : public SQLEntity<Object>
 	{
-		private:
 		
 		protected:
+		std::function<Type&(Object&)> accessor;
 		
 		public:
 		
-		SQLEntityBuilder(const std::string name, const std::function<Type&(Object&)> accessor) : SQLFullTypeEntity<Object, Type>(name, accessor)
+		SQLEntityBuilder(const std::string name, const std::function<Type&(Object&)> accessor) : SQLEntity<Object>(name), accessor(accessor)
 		{
 			
+		}
+		
+		SQLEntityBuilder<Object, Type>& name(std::string value)
+		{
+			this->_name = value;
+			return *this;
 		}
 		
 		SQLEntityBuilder<Object, Type>& notNull(bool value = true)
@@ -27,13 +32,7 @@ namespace SQL
 			return *this;
 		}
 		
-		SQLEntityBuilder<Object, Type>& name(const std::string name)
-		{
-			this->_name = name;
-			return *this;
-		}
-		
-		SQLEntityBuilder<Object, Type>& unique(const bool value = true)
+		SQLEntityBuilder<Object, Type>& unique(bool value = true)
 		{
 			this->_unique = value;
 			return *this;

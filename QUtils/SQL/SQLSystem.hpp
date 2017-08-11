@@ -2,6 +2,8 @@
 
 #include "ORM/SQLModels.hpp"
 
+#include "Errors.h"
+
 #include <QUtils/Exception/NotImplemented.h>
 
 namespace QUtils
@@ -37,9 +39,14 @@ namespace SQL
 	
 	
 	template <class Object>
-	void SQLSystem::checkIn(const Object& obj)
+	void SQLSystem::checkIn(const Object& obj, bool includeReferenced)
 	{
-		throw NotImp();
+		auto model = models->getModel<Object>();
+		if (model == NULL)
+		{
+			throw SQLModelConfigException().Msg("Could not find model").Function(__func__);
+		}
+		model->save(this, obj, includeReferenced);
 	}
 }
 }
