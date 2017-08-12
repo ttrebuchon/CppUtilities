@@ -1,4 +1,5 @@
 #include <QUtils/SQL/SQLite/SQLiteQuery.h>
+#include <QUtils/SQL/Errors.h>
 #include <sqlite3.h>
 #include <iostream>
 
@@ -115,7 +116,7 @@ namespace SQL
 	
 	std::string SQLiteQuery::statement() const
 	{
-		auto cstr = sqlite3_sql(stmt);
+		auto cstr = sqlite3_expanded_sql(stmt);
 		if (cstr == NULL)
 		{
 			//TODO
@@ -152,6 +153,110 @@ namespace SQL
 			return "NULL";
 		}
 		return std::string(reinterpret_cast<const char*>(cstr));
+	}
+	
+	
+	
+	
+	
+	void SQLiteQuery::unbind()
+	{
+		int result;
+		if ((result = sqlite3_clear_bindings(stmt)) != 0)
+		{
+			//TODO
+			throw SQLErrorException().Msg(sqlite3_errstr(result));
+		}
+	}
+	
+	
+	
+	
+	
+	void SQLiteQuery::bind(std::string parameter, double value)
+	{
+		auto index = sqlite3_bind_parameter_index(stmt, parameter.c_str());
+		if (index == 0)
+		{
+			throw SQLErrorException().Msg("No parameter with name '" + parameter + "' in statement");
+		}
+		
+		this->bind(index, value);
+	}
+	
+	void SQLiteQuery::bind(std::string parameter, int value)
+	{
+		auto index = sqlite3_bind_parameter_index(stmt, parameter.c_str());
+		if (index == 0)
+		{
+			throw SQLErrorException().Msg("No parameter with name '" + parameter + "' in statement");
+		}
+		
+		this->bind(index, value);
+	}
+	
+	void SQLiteQuery::bind(std::string parameter, long value)
+	{
+		auto index = sqlite3_bind_parameter_index(stmt, parameter.c_str());
+		if (index == 0)
+		{
+			throw SQLErrorException().Msg("No parameter with name '" + parameter + "' in statement");
+		}
+		
+		this->bind(index, value);
+	}
+	
+	void SQLiteQuery::bind(std::string parameter, std::string value)
+	{
+		auto index = sqlite3_bind_parameter_index(stmt, parameter.c_str());
+		if (index == 0)
+		{
+			throw SQLErrorException().Msg("No parameter with name '" + parameter + "' in statement");
+		}
+		
+		this->bind(index, value);
+	}
+	
+	
+	
+	void SQLiteQuery::bind(unsigned int index, double value)
+	{
+		auto result = sqlite3_bind_double(stmt, index, value);
+		if (result != SQLITE_OK)
+		{
+			this->status = result;
+			throw SQLErrorException().Msg(sqlite3_errstr(result));
+		}
+	}
+	
+	void SQLiteQuery::bind(unsigned int index, int value)
+	{
+		auto result = sqlite3_bind_int(stmt, index, value);
+		if (result != SQLITE_OK)
+		{
+			this->status = result;
+			throw SQLErrorException().Msg(sqlite3_errstr(result));
+		}
+	}
+	
+	void SQLiteQuery::bind(unsigned int index, long value)
+	{
+		auto result = sqlite3_bind_int64(stmt, index, value);
+		if (result != SQLITE_OK)
+		{
+			this->status = result;
+			throw SQLErrorException().Msg(sqlite3_errstr(result));
+		}
+	}
+	
+	void SQLiteQuery::bind(unsigned int index, std::string value)
+	{
+		auto result = sqlite3_bind_text(stmt, index, value.c_str(), value.length(), SQLITE_TRANSIENT);
+		if (result != SQLITE_OK)
+		{
+			this->status = result;
+			throw SQLErrorException().Msg(sqlite3_errstr(result));
+		}
 	}
 	
 	

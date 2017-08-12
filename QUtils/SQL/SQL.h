@@ -1,8 +1,17 @@
 #pragma once
 
-#include "Connection.h"
+#include "SQLObjects.h"
+#include "SQLRID.h"
+#include "SQLPK.h"
+#include "SQLConnection.h"
 #include "SQLite/SQLite.h"
-#include "Database.h"
-#include "Table.h"
-#include "Column.h"
-#include "Clause.h"
+#include "SQLDatabase.h"
+#include "SQLTable.h"
+#include "SQLColumns.h"
+#include "SQLColumn.h"
+#include "SQLClause.h"
+#include "SQLRow.h"
+#include "SQLRows.h"
+
+#include "SQLSystem.h"
+#include "SQLSystem.hpp"

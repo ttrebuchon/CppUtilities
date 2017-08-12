@@ -13,9 +13,10 @@
 	const char* _whatC; \
 	const std::string className = #name; \
 	std::string message; \
+	std::exception_ptr inner; \
 	\
 	public: \
-	name(std::string file, int line, std::string func) : file(file), line(line), func(func), _what(""), _whatC(NULL) \
+	name(std::string file, int line, std::string func) : file(file), line(line), func(func), _what(""), _whatC(NULL), message(""), inner(NULL) \
 	{  } \
 	\
 	name(std::string file) : name(file, -1, "") \
@@ -36,6 +37,8 @@
 	name() : name("", -1, "") \
 	{ } \
 	\
+	\
+	name(std::exception_ptr ex, std::string comment = "") : file(""), line(-1), func(""), _what(""), _whatC(NULL), message(comment), inner(ex) {} \
 	\
 	\
 	\
@@ -58,7 +61,7 @@
 		std::stringstream ss; \
 		if (file != "") \
 		{ \
-			ss << "" << __FILE__; \
+			ss << "" << file; \
 		} \
 		if (file != "" && line != -1) \
 		{ \
@@ -66,7 +69,7 @@
 		} \
 		if (line != -1) \
 		{ \
-			ss << "L" << __LINE__; \
+			ss << "L" << line; \
 		} \
 		if ((file != "" || line != -1) && func != "") \
 		{ \
@@ -85,6 +88,17 @@
 		{ \
 			ss << "::" << message; \
 		} \
+		if (inner) \
+		{ \
+			try \
+			{ \
+				std::rethrow_exception(inner); \
+			} \
+			catch (const std::exception& ex) \
+			{ \
+				ss << "\n::Inner Exception->" << ex.what(); \
+			} \
+		} \
 		_what = ss.str(); \
 		_whatC = _what.c_str(); \
 	} \
@@ -95,6 +109,21 @@
 	name & Msg(std::string s) \
 	{ \
 		this->message = s; \
+		return *this; \
+	} \
+	name & File(std::string s) \
+	{ \
+		this->file = s; \
+		return *this; \
+	} \
+	name & Function(std::string s) \
+	{ \
+		this->func = s; \
+		return *this; \
+	} \
+	name & Line(int i) \
+	{ \
+		this->line = i; \
 		return *this; \
 	} \
 	\

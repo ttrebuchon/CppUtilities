@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Void_t.h"
+#include "IntegerSequence.h"
 
 namespace QUtils
 {
@@ -65,6 +66,32 @@ namespace Types
 		{
 			return HelperClass::call(f, args...);
 		}
+	};
+	
+	
+	
+	
+	
+	
+	namespace Helpers
+	{
+		template <class F, class ...Args>
+		
+		struct CallWithTupleArgs_Inner
+		{
+			template <int ...N>
+			static decltype(std::declval<F>()((std::declval<Args>())...)) call(F f, std::tuple<Args...>& argsTup, Sequence<N...>)
+			{
+				return f(std::get<N>(argsTup)...);
+			}
+		};
+	}
+	
+	
+	template <class F, class ...Args>
+	decltype(std::declval<F>()((std::declval<Args>())...)) CallWithTupleArgs(F f, std::tuple<Args...> argsTup)
+	{
+		return Helpers::CallWithTupleArgs_Inner<F, Args...>::call(f, argsTup, SequenceGen<sizeof...(Args)-1>());
 	};
 }
 }

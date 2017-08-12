@@ -7,6 +7,8 @@
 #include <QUtils/Multi/Mutexed.h>
 #include "Message.h"
 
+#include <iostream>
+
 namespace QUtils
 {
 namespace Network
@@ -103,16 +105,32 @@ namespace Network
 		}
 		
 		
-		virtual void job()
+		virtual bool job()
 		{
 			auto msg = next();
-			handleMsg(msg);
+			if (msg != NULL)
+			{
+				handleMsg(msg);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 		
-		virtual void fast_job()
+		virtual bool fast_job()
 		{
 			auto msg = fast_next();
-			handleMsg(msg);
+			if (msg != NULL)
+			{
+				handleMsg(msg);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 		
 		

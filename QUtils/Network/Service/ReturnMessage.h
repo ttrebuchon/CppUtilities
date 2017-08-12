@@ -15,15 +15,71 @@ namespace Network
 		
 		protected:
 		std::promise<Ret> prom;
+		std::future<Ret> fut;
+		std::shared_future<Ret> sfut;
+		
+		template <class F>
+		void setValue(F f)
+		{
+			try
+			{
+				prom.set_value(f());
+			}
+			catch (...)
+			{
+				try
+				{
+					
+				prom.set_exception(std::current_exception());
+				}
+				catch (std::exception& ex) {
+					std::cerr << ex.what() << "\n";
+				}
+			}
+		}
+		
+		void setException(std::exception_ptr ex)
+		{
+			prom.set_exception(ex);
+		}
 		
 		public:
 		
-		virtual std::future<Ret> future() const
+		ReturnMessage() : prom(), fut(), sfut()
 		{
-			return prom.future();
+			fut = prom.get_future();
+			sfut = fut.share();
+		}
+		
+		virtual std::shared_future<Ret> future()
+		{
+			//return fut.share();
+			return sfut;
 		}
 		
 	};
+	
+	template <>
+	template <class F>
+	void ReturnMessage<void>::setValue(F f)
+	{
+		try
+		{
+		f();
+		prom.set_value();
+		}
+		catch (...)
+		{
+			try
+			{
+			prom.set_exception(std::current_exception());
+			}
+			catch (std::exception& ex)
+			{
+				std::cerr << ex.what() << "\n";
+			}
+		}
+	}
 	
 }
 }

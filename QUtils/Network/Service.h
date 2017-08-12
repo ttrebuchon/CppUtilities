@@ -5,4 +5,6 @@
 #include "Service/Message.h"
 #include "Service/ServiceFactory.h"
 #include "Service/Client.h"
+#include "Service/LocalClient.h"
 #include "Service/ReturnMessage.h"
+#include "Service/RPCMessage.h"

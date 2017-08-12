@@ -8,6 +8,8 @@
 #include <memory>
 #include <chrono>
 
+#include <QUtils/Types/CompilerPrint.h>
+
 void someFunc(int x)
 {
 	for (int i = 0; i < x; i++)
@@ -320,8 +322,309 @@ bool Test_Multi()
 	}*/
 	
 	
-	//Service Testing
+	//Result Type Testing
 	{
+		QUtils::Multi::Result<char, int> r;
+		auto& r2 = (QUtils::Multi::Result<char>&)(*(&r));
+		r.get() = 4;
+		assert_ex(r.get() == 4);
+		
+		r2.get() = 'z';
+		
+		static_assert(std::is_same<QUtils::Multi::Result<char>&, decltype(QUtils::Multi::result_cast<1>(r))>::value, "");
+		auto& r2_2 = QUtils::Multi::result_cast<1>(r);
+		assert_ex(&r2 == &r2_2);
+		assert_ex(r2_2.get() == 'z');
+		assert_ex(r2.get() == 'z');
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//Parallelization Testing
+	{
+		struct Node
+		{
+			Node* left;
+			Node* right;
+			int size = 1;
+			unsigned long value = 1;
+		};
+		
+		std::function<Node*(double)> genBranch;
+		genBranch = [&genBranch] (double probability) -> Node*
+		{
+			Node* n = new Node();
+			n->left = NULL;
+			n->right = NULL;
+			n->size = -1;
+			if (static_cast<double>(rand())/RAND_MAX < probability)
+			{
+				n->left = genBranch(probability/2);
+			}
+			
+			if (static_cast<double>(rand())/RAND_MAX < probability)
+			{
+				n->right = genBranch(probability/2);
+			}
+			
+			return n;
+		};
+		
+		Node* n = genBranch(4);
+		dout << n->size << std::endl;
+		
+		auto j = std::make_shared<QUtils::Multi::AJob<int>>([]() -> int { return 4; });
+		QUtils::Multi::AJob<void> j2([](int x) {}, j);
+		
+		QUtils::Multi::JobFactory<int, Node*> factory([](Node* n)->int {
+			n->size = 1;
+			if (n->left)
+			{
+			n->size += n->left->size;
+			}
+			
+			if (n->right)
+			{
+			n->size += n->right->size;
+			}
+			
+			return n->size;
+		});
+		
+		auto j3 = factory.build(n);
+		
+		dout << j3->priority() << "\n";
+		
+		auto j4 = factory.build(n->left);
+		j3->depends(j4);
+		
+		dout << j4->priority() << std::endl;
+		
+		
+		class Tree : public QUtils::Multi::Parallelized
+		{
+			public:
+			Node* root;
+			std::vector<Node*> _nodes;
+			
+			
+			static void nodeGo(Node* n, unsigned long v)
+			{
+				if (!n)
+				{
+					return;
+				}
+				n->value += v;
+				nodeGo(n->left, n->value);
+				nodeGo(n->right, n->value);
+				
+			}
+			
+			static void nodeGoMT(Node* n, unsigned long v)
+			{
+				if (!n)
+				{
+					return;
+				}
+				n->value += v;
+				nodeGoMT(n->left, n->value);
+				nodeGoMT(n->right, n->value);
+				
+			}
+			
+			static bool bottomNodes(Node* n, std::vector<Node*>& v)
+			{
+				if (n == NULL)
+				{
+					return true;
+				}
+				
+				bool b = bottomNodes(n->left, v);
+				bool b2 = bottomNodes(n->right, v);
+				if (b && b2)
+				{
+					v.push_back(n);
+				}
+				if (n->left == NULL && n->right == NULL)
+				{
+					//dout << n << " is bottom\n";
+				}
+				else
+				{
+					//dout << n << " has left " << n->left << "\n" << n << " has right " << n->right << "\n"; 
+				}
+				return false;
+			}
+			
+			static std::vector<Node*> bottomNodes(Node* n)
+			{
+				std::vector<Node*> v;
+				if (n == NULL)
+				{
+					return v;
+				}
+				
+				bool b = n->left == NULL;
+				bool b2 = n->right == NULL;
+				if (b && b2)
+				{
+					v.push_back(n);
+				}
+				if (!b)
+				{
+					for (auto node : bottomNodes(n->left))
+					{
+						v.push_back(node);
+					}
+				}
+				if (!b2)
+				{
+					for (auto node : bottomNodes(n->right))
+					{
+						v.push_back(node);
+					}
+				}
+				return v;
+			}
+			
+			
+			
+			public:
+			
+			const std::vector<Node*>& nodes;
+			private:
+			Node* genBranch(double probability)
+			{
+				if (probability < 0)
+				{
+					probability *= -1;
+				}
+				Node* n = new Node();
+				n->left = NULL;
+				n->right = NULL;
+				n->size = 1;
+				if (static_cast<double>(rand())/RAND_MAX < probability)
+				{
+					n->left = genBranch(probability/2);
+					n->size += n->left->size;
+				}
+				
+				if (static_cast<double>(rand())/RAND_MAX < probability)
+				{
+					n->right = genBranch(probability/2);
+					n->size += n->right->size;
+				}
+				return n;
+			}
+			public:
+			
+			void generate(double prob)
+			{
+				root = genBranch(prob);
+				
+				std::function<void(Node*, std::vector<Node*>&)> getNodes;
+				getNodes = [&getNodes](Node* n, std::vector<Node*>& v)
+				{
+					if (n == NULL)
+					{
+						return;
+					}
+					v.push_back(n);
+					getNodes(n->left, v);
+					getNodes(n->right, v);
+				};
+				getNodes(root, _nodes);
+			}
+			
+			Tree() : Parallelized(4), root(NULL), _nodes(), nodes(_nodes) {}
+			Tree(double prob) : Tree()
+			{
+				generate(prob);
+			}
+			
+			~Tree()
+			{
+				for (auto node : _nodes)
+				{
+					delete node;
+				}
+			}
+			
+			
+			
+			void go()
+			{
+				nodeGo(root, 0);
+			}
+			
+			void goMT()
+			{
+				auto j = addJob(nodeGoMT, root, 0);
+				dout << "Waiting...\n";
+				j->wait();
+			}
+			
+			std::vector<Node*> bottom()
+			{
+				std::vector<Node*> v;
+				
+				
+				
+				bottomNodes(root, v);
+				//return bottomNodes(root);
+				return v;
+			}
+		};
+		
+		/*auto pVals = [](Tree& t)
+		{
+			auto nodes = t.bottom();
+			for (auto n : nodes)
+			{
+				dout << n->value << "\n";
+			}
+		};*/
+		
+		auto sVals = [](Tree& t)
+		{
+			auto nodes = t.bottom();
+			unsigned long v = 0;
+			for (auto n : nodes)
+			{
+				v += n->value;
+			}
+			return v;
+		};
+		
+		const double prob = 1048576;
+		Tree t;
+		t.generate(prob);
+		
+		
+		dout << "Count: " << t.nodes.size() << std::endl;
+		dout << "Bottom Vals: " << sVals(t) << "\n" << std::endl;
+		dout << "Gen 1\n";
+		t.goMT();
+		dout << "Bottom Vals: " << sVals(t) << "\n";
+		dout << "Gen 2\n";
+		t.go();
+		dout << "Bottom Vals: " << sVals(t) << "\n";
+		
+		dout << "\n\nGenerating mutexed tree\n";
+		QUtils::Multi::Mutexed<Tree> mutTree;
+		mutTree.run<double>(&Tree::generate, prob);
+		
+		mutTree.lock();
+		dout << "Count: " << mutTree->nodes.size() << std::endl;
+		dout << "Bottom Vals: " << sVals(*mutTree) << "\n" << std::endl;
+		mutTree.unlock();
 		
 	}
 	

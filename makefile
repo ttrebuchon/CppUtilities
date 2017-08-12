@@ -1,3 +1,5 @@
+OPTIONS = -DQUTILS_HAS_BOOST -DQUTILS_HAS_CURL
+
 
 SRC = src
 
@@ -77,8 +79,12 @@ Graphics_cpp = $(wildcard $(SRC)/Graphics/**/*.cpp) $(wildcard $(SRC)/Graphics/*
 Graphics = $(Graphics_cpp:.cpp=.o)
 #*/
 
+Guid_cpp = $(wildcard $(SRC)/GUID/**/*.cpp) $(wildcard $(SRC)/GUID/*.cpp)
+Guid = $(Guid_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
@@ -102,6 +108,8 @@ PREPROC_FLAGS := $(PREPROC_FLAGS) -DSEED
 PREPROC_FLAGS := $(PREPROC_FLAGS) -DTEST_DEBUG
 
 PREPROC_FLAGS := $(PREPROC_FLAGS) $(SQL_FLAGS)
+
+PREPROC_FLAGS := $(PREPROC_FLAGS) #-DPRINT_SQL_QUERIES
 
 
 
@@ -130,7 +138,7 @@ LINKING = -lclips++ -lsqlite3 -lcurlpp -lcurl -lz -ljpeg
 
 
 CXX = g++
-CXXFLAGS = -std=c++17 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -O0 $(DEPS)
+CXXFLAGS = -std=c++17 -MMD -fpic -I . $(OPTIONS) $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -O0 $(DEPS)
 CXXFLAGS := $(CXXFLAGS) -Wall
 libdeps = $(libobjects:.o=.d)
 testdeps = $(testobjects:.o=.d)

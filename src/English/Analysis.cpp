@@ -116,8 +116,8 @@ namespace English
 			Punc = 3,
 			Symbol = 4,
 		};
-		Last_t last;
-		char last_c;
+		Last_t last = Whitespace;
+		char last_c = '\0';
 		for (char c : contents)
 		{
 			if (tmp == "")
@@ -916,6 +916,10 @@ namespace English
 	
 	void Analyzer::parseToken(const std::string text)
 	{
+		if (text == "")
+		{
+			return;
+		}
 		bool letters = false;
 		bool numbers = false;
 		bool punctuation = false;

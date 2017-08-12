@@ -65,17 +65,19 @@ void Testing::run()
 	{
 	
 	RUN(Multi());
+	RUN(Network());
+	RUN(Raytrace());
+	RUN(SQL());
+	RUN(GUID());
+	#ifndef SHORT_TEST
 	RUN(TravellingSalesman());
 	RUN(GameOfLifeExtended());
 	RUN(Types());
 	RUN(SymbolicList());
 	RUN(English_Analysis());
-	RUN(Network());
-	RUN(Raytrace());
-	#ifndef SHORT_TEST
 	//RUN(Network());
 	RUN(CLIPS());
-	RUN(SQL());
+	//RUN(SQL());
 	RUN(nth_Poly());
 	RUN(Tensor_T());
 	RUN(Matrix_Algs());
