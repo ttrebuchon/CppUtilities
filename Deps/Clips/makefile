@@ -33,10 +33,10 @@ OBJS = agenda.o analysis.o argacces.o bload.o bmathfun.o bsave.o \
 
 .c.o :
 	gcc -pie -static -c -x c++ -DALLOW_ENVIRONMENT_GLOBALS=0 \
-	    -O3 -Wall  -Wundef -Wpointer-arith -Wshadow -Wcast-qual \
+	    -O3  -Wundef -Wpointer-arith -Wshadow -Wcast-qual \
 	    -Winline -Wmissing-declarations -Wredundant-decls \
-	    -Wmissing-prototypes -Wnested-externs \
-	    -Wstrict-prototypes -Waggregate-return -Wno-implicit -lstdc++ $< -lm 
+	    -Waggregate-return -lstdc++ $< -lm 
+      #-Wmissing-prototypes -Wstrict-prototypes -Wnested-externs
 
 # Creating Unix Libraries
 # http://www.cs.duke.edu/~ola/courses/programming/libraries.html

@@ -3,6 +3,7 @@
 #include <map>
 #include <cmath>
 #include <stdexcept>
+#include <climits>
 
 #include <QUtils/Combinatorial/Combinatorial.h>
 #include <QUtils/Genetic/Genetic.h>

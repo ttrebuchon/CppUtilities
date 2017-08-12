@@ -11,6 +11,7 @@
 #include <set>
 #include <array>
 #include <tuple>
+#include <math.h>
 
 namespace QUtils
 {
@@ -34,6 +35,7 @@ namespace English
 	}
 	
 	QUTILS_CUSTOM_EXCEPTION(AnalyzerParseException, "Can't parse text");
+	QUTILS_CUSTOM_EXCEPTION(AnalyzerFileException, "Invalid file stream");
 	
 	
 	
@@ -69,8 +71,17 @@ namespace English
 	
 	Analyzer::Analyzer(std::ifstream& file) : Analyzer()
 	{
+		if (!file.is_open())
+		{
+			throw AnalyzerFileException();
+		}
 		file.seekg(0, std::ios::end);
+		if (file.tellg() < 0)
+		{
+			throw AnalyzerFileException();
+		}
 		_contents.resize(file.tellg());
+		
 		file.seekg(0, std::ios::beg);
 		file.read(&_contents[0], _contents.size());
 	}
@@ -972,7 +983,7 @@ namespace English
 	{
 		unsigned int count = 0;
 		
-		std::tuple<std::string, std::string> bads[] = { std::make_tuple("‘", "'"), std::make_tuple("’", "'"), std::make_tuple("“", "\""), std::make_tuple("”", "\""), {"\r\n", "\n"}};
+		std::tuple<std::string, std::string> bads[] = { std::make_tuple("‘", "'"), std::make_tuple("’", "'"), std::make_tuple("“", "\""), std::make_tuple("”", "\""), std::make_tuple("\r\n", "\n")};
 		
 		decltype(str.find("")) it = 0;
 		for (auto bad : bads)

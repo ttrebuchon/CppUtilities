@@ -41,7 +41,7 @@ class relation_tlr {
         F f;
     };
 
-    std::auto_ptr<impl> pimpl;
+    std::shared_ptr<impl> pimpl;
 
     template<class Expr>  // disable instantiating relation_tlr from ILE
     relation_tlr(const Ile<Expr>& rhs);

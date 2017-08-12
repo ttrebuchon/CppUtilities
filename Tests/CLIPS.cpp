@@ -1,7 +1,5 @@
 #include <iostream>
-#include <Clips/clips.h>
 #include <vector>
-//#include <clips/clips.h>
 #include <QUtils/CLIPS/Env.h>
 #include <assert.h>
 #include "../Tests_Helpers.h"

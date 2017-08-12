@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Clips/clips.h>
+#include <CLIPS/clips.h>
 
 namespace QUtils
 {

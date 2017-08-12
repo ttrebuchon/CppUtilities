@@ -14,7 +14,7 @@ bool Test_English_Analysis()
 	Analyzer AN(file);
 	file.close();
 	
-	dout << "Size: " << AN.contents.size() << std::endl;
+	dout << "Size: " << std::flush << AN.contents.size() << std::endl;
 	
 	int letters_nums = 0;
 	for (auto c : AN.contents)
