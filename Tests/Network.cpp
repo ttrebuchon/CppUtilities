@@ -31,6 +31,7 @@ namespace Network_Test
 		
 		curlpp::Easy request;
 		request.setOpt<Url>("http://www.reddit.com/.json");
+		request.setOpt<Timeout>(2); //Set timeout to 2 seconds
 		request.perform();
 		
 		br() << std::flush;
