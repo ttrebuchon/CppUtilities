@@ -43,14 +43,32 @@ namespace SQL
 		this->tableBuilder.name = tableName;
 		
 		std::vector<std::tuple<std::string, Helpers::ToSQL_t<Object>>> serializers;
-		
+
+
+		if (!builder.idEntity()->serialize)
+		{
+			throw SQLModelConfigException()
+				.Function(__func__)
+				.File(__FILE__)
+				.Line(__LINE__)
+				.Msg(std::string("ID entity '") + builder.idEntity()->name() + "' does not have valid serialize lambda, model is for type: '" + std::type_index(typeid(Object)).name() + 
+					"' and entity type is '" + builder.idEntity()->typeIndex().name());
+		}
 		serializers.emplace_back(builder.idEntity()->name(), builder.idEntity()->serialize);
 		
 		for (auto ent : builder.entities)
 		{
+			if (!ent->serialize)
+			{
+				throw SQLModelConfigException()
+					.Function(__func__)
+					.File(__FILE__)
+					.Line(__LINE__)
+					.Msg(std::string("Entity '") + ent->name() + "' does not have valid serialize lambda, model is for type: '" + std::type_index(typeid(Object)).name() + 
+						"' and entity type is '" + ent->typeIndex().name());
+			}
 			serializers.emplace_back(ent->name(), ent->serialize);
 		}
-		
 		
 		
 		
@@ -71,6 +89,15 @@ namespace SQL
 	template <class Object>
 	void SQLModel<Object>::save(SQLSystem* sys, Object& obj, bool includeReferenced)
 	{
+		std::string query;
+		if (!this->serializer)
+		{
+			throw SQLModelConfigException()
+				.Function(__func__)
+				.File(__FILE__)
+				.Line(__LINE__)
+				.Msg(std::string("Model does not have valid serializer lambda during save() function, model is for type: '") + std::type_index(typeid(Object)).name() + "'");
+		}
 		auto values = this->serializer(obj);
 		std::string PK_Name = "";
 		for (auto col : tableBuilder.columns)
@@ -97,11 +124,22 @@ namespace SQL
 		
 		if (!exists)
 		{
-			throw NotImp();
+			query = "";
+			std::string insVals = "";
+			for (auto val : values)
+			{
+				query += ", " + val.first;
+				insVals += ", " + to_string(*val.second);
+			}
+
+			query = "INSERT INTO [" + tableBuilder.name + "] (" + query.substr(2) + ") VALUES (" + insVals.substr(2) + ");";
+
+			sys->connection->vQuery(query);
+			return;
 		}
 		
 		
-		std::string query = "UPDATE [" + tableBuilder.name + "] SET";
+		query = "UPDATE [" + tableBuilder.name + "] SET";
 		
 		bool first = true;
 		for (auto val : values)

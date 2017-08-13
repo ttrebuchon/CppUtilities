@@ -48,7 +48,7 @@ namespace SQL
 		protected:
 		virtual void buildModel(SQLModelBuilder<Object>&) = 0;
 		
-		SQLModel() : SQLMinModel(), loader()
+		SQLModel() : SQLMinModel(), loader(), serializer()
 		{
 		}
 		

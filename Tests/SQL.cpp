@@ -17,6 +17,26 @@ using namespace QUtils;
 
 bool Test_SQL()
 {
+	auto printQuery = [](SQL::SQLQuery* q) -> SQL::SQLQuery*
+	{
+		for (int i = 0; i < q->width(); ++i)
+		{
+			dout << "|" << q->columnName(i) << "|";
+		}
+		dout << "\n";
+		while (q->next())
+		{
+			for (int i = 0; i < q->width(); ++i)
+			{
+				dout << "|" << q->column<std::string>(i) << "|";
+			}
+			dout << "\n";
+		}
+		
+		
+		return q;
+	};
+
 	{
 	const std::string filename = "TestDB";
 	SQL::SQLiteConnection con(filename + ".sqlite");
@@ -398,25 +418,7 @@ bool Test_SQL()
 	assert_ex(row1[0] == "1");
 	
 	
-	auto printQuery = [](SQL::SQLQuery* q) -> SQL::SQLQuery*
-	{
-		for (int i = 0; i < q->width(); ++i)
-		{
-			dout << "|" << q->columnName(i) << "|";
-		}
-		dout << "\n";
-		while (q->next())
-		{
-			for (int i = 0; i < q->width(); ++i)
-			{
-				dout << "|" << q->column<std::string>(i) << "|";
-			}
-			dout << "\n";
-		}
-		
-		
-		return q;
-	};
+	
 	
 	delete printQuery(con.query("SELECT (x + 1 + (SELECT COUNT(*) FROM [TTable])) AS x, y FROM [DB2].[TTable] LIMIT 10"));
 	con.vQuery("INSERT INTO [TTable] SELECT (x + 1 + (SELECT COUNT(*) FROM [TTable])) AS x, y FROM [DB2].[TTable]");
@@ -552,11 +554,11 @@ bool Test_SQL()
 		sys->buildModels(/*dropIfConflict: */true);
 		
 		
-		Person p1 = Person::Birth("Person", "A");
+		Person p1 = Person::Birth("SomePerson", "SomeSurname");
 		
 		sys->checkIn(p1);
 		
-		
+		delete printQuery(sys->connection->query("SELECT * FROM [Person];"));
 	}
 	
 	

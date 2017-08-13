@@ -44,7 +44,14 @@ namespace SQL
 		Type val;
 		virtual std::string _to_string() const override
 		{
-			return to_string(val);
+			if (SQL_ValueType<Type>::type != Text && SQL_ValueType<Type>::type != Blob)
+			{
+				return to_string(val);
+			}
+			else
+			{
+				return "'" + to_string(val) + "'";
+			}
 		}
 		
 		public:

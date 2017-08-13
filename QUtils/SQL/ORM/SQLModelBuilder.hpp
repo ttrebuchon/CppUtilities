@@ -53,7 +53,33 @@ namespace SQL
 		
 		std::function<SQLType_ptr(Type&)> toSQL;
 		std::function<Type(SQLType_ptr)> fromSQL;
-		models->getSQLType<Type>(toSQL, fromSQL);
+		ValueType vType = models->getSQLType<Type>(toSQL, fromSQL);
+		if (vType == Null)
+		{
+			throw SQLModelConfigException()
+				.Function(__func__)
+				.File(__FILE__)
+				.Line(__LINE__)
+				.Msg(std::string("Error retrieving ValueType for Type with Index '") + std::type_index(typeid(Type)).name() + "'");
+		}
+		if (!toSQL)
+		{
+			throw SQLModelConfigException()
+				.Function(__func__)
+				.File(__FILE__)
+				.Line(__LINE__)
+				.Msg(std::string("Error retrieving toSQL lambda for Type with Index '") + std::type_index(typeid(Type)).name() + "'");
+		}
+
+		if (!fromSQL)
+		{
+			throw SQLModelConfigException()
+				.Function(__func__)
+				.File(__FILE__)
+				.Line(__LINE__)
+				.Msg(std::string("Error retrieving fromSQL lambda for Type with Index '") + std::type_index(typeid(Type)).name() + "'");
+		}
+
 		std::function<SQLType_ptr(Object&)> serialize([fAccess, toSQL] (Object& obj)
 		{
 			return toSQL(fAccess(obj));
@@ -84,6 +110,48 @@ namespace SQL
 		typedef Internal::Result_t<F, Object> Type;
 		auto fAccess = std::function<Type&(Object&)>([access](auto& obj) -> Type& { return access(obj); });
 		auto ptr = std::make_shared<SQLEntityBuilder<Object, Type>>(name, fAccess);
+
+		std::function<SQLType_ptr(Type&)> toSQL;
+		std::function<Type(SQLType_ptr)> fromSQL;
+		ValueType vType = models->getSQLType<Type>(toSQL, fromSQL);
+		if (vType == Null)
+		{
+			throw SQLModelConfigException()
+				.Function(__func__)
+				.File(__FILE__)
+				.Line(__LINE__)
+				.Msg(std::string("Error retrieving ValueType for Type with Index '") + std::type_index(typeid(Type)).name() + "'");
+		}
+		if (!toSQL)
+		{
+			throw SQLModelConfigException()
+				.Function(__func__)
+				.File(__FILE__)
+				.Line(__LINE__)
+				.Msg(std::string("Error retrieving toSQL lambda for Type with Index '") + std::type_index(typeid(Type)).name() + "'");
+		}
+
+		if (!fromSQL)
+		{
+			throw SQLModelConfigException()
+				.Function(__func__)
+				.File(__FILE__)
+				.Line(__LINE__)
+				.Msg(std::string("Error retrieving fromSQL lambda for Type with Index '") + std::type_index(typeid(Type)).name() + "'");
+		}
+
+		std::function<SQLType_ptr(Object&)> serialize([fAccess, toSQL] (Object& obj)
+		{
+			return toSQL(fAccess(obj));
+		});
+		
+		Helpers::SetSQL_t<Object> deserialize([fAccess, fromSQL] (Object& obj, SQLType_ptr ptr)
+		{
+			fAccess(obj) = fromSQL(ptr);
+		});
+		
+		ptr->serialize = serialize;
+		ptr->deserialize = deserialize;
 		idEnt = ptr;
 		return *ptr;
 	}

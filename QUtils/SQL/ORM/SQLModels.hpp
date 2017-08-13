@@ -2,6 +2,7 @@
 
 #include "SQLPrimitiveModel.h"
 #include "MetaTypeHelpers.h"
+#include "../Errors.h"
 
 namespace QUtils
 {
@@ -51,6 +52,7 @@ namespace SQL
 		{
 			return vType;
 		}
+
 		std::type_index tIndex(typeid(Type));
 		
 		if (primitiveModels.count(tIndex) > 0)
@@ -58,6 +60,14 @@ namespace SQL
 			auto pModel = (SQLPrimitiveModel<Type>*)primitiveModels.at(tIndex);
 			toSQL = pModel->convert();
 			toType = pModel->convertFrom();
+			if (!toSQL || !toType)
+			{
+				throw SQLModelConfigException()
+					.Line(__LINE__)
+					.File(__FILE__)
+					.Function(__func__)
+					.Msg(std::string("Error with primitive model '") + tIndex.name() + "' conversion lambda(s)");
+			}
 			return pModel->dbType();
 		}
 		
