@@ -2,6 +2,7 @@
 
 #include "Void_t.h"
 #include "IntegerSequence.h"
+#include <tuple>
 
 namespace QUtils
 {

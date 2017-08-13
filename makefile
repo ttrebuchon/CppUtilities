@@ -1,4 +1,5 @@
-OPTIONS = -DQUTILS_HAS_BOOST -DQUTILS_HAS_CURL
+HAS_CURL = FALSE
+HAS_BOOST = TRUE
 
 
 SRC = src
@@ -113,6 +114,16 @@ PREPROC_FLAGS := $(PREPROC_FLAGS) #-DPRINT_SQL_QUERIES
 
 
 
+ifeq ($(HAS_CURL), TRUE)
+PREPROC_FLAGS := $(PREPROC_FLAGS) -DQUTILS_HAS_CURL
+endif
+
+ifeq ($(HAS_BOOST), TRUE)
+PREPROC_FLAGS := $(PREPROC_FLAGS) -DQUTILS_HAS_BOOST
+endif
+
+
+
 
 WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -ftemplate-backtrace-limit=0
 
@@ -124,21 +135,25 @@ FLAGS = -I .
 
 Deps_D = Deps
 
-CLIPS_Dep = $(Deps_D)/Clips
+CLIPS_Dep = $(Deps_D)/CLIPS
 Curlpp_Dep = -I $(Deps_D)/curlpp/include -L $(Deps_D)/curlpp
 
-DEPS = -I $(Deps_D)/Castor -I ../ -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(Deps_D)/sqlite3 -L $(CLIPS_Dep) $(Curlpp_Dep)
+DEPS = -I $(Deps_D)/Castor -I ../ -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(Deps_D)/sqlite3 -L $(CLIPS_Dep) 
+ifeq ($(HAS_CURL), TRUE)
+DEPS := $(DEPS) $(Curlpp_Dep)
+endif
 
+LINKING = -lclips++ -lsqlite3 -lz -ljpeg -lpthread -ldl
 
-LINKING = -lclips++ -lsqlite3 -lcurlpp -lcurl -lz -ljpeg
-
-
+ifeq ($(HAS_CURL), TRUE)
+LINKING := $(LINKING) -lcurlpp -lcurl
+endif
 
 
 
 
 CXX = g++
-CXXFLAGS = -std=c++17 -MMD -fpic -I . $(OPTIONS) $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -O0 $(DEPS)
+CXXFLAGS = -std=c++17 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -O0 $(DEPS)
 CXXFLAGS := $(CXXFLAGS) -Wall
 libdeps = $(libobjects:.o=.d)
 testdeps = $(testobjects:.o=.d)
@@ -151,11 +166,12 @@ buildOC = gcc -std=c99 -c -pie
 
 $(target): $(stLibTarget).a $(testobjects) makefile $(libobjects)
 	$(CXX) -o $(target) $(CXXFLAGS) -std=c++11 $(testobjects) -L. -l$(name) $(PREPROC_FLAGS) $(LINKING)
-	$(NM) -C Tests/Nth_Poly.o >> tests.obj.txt
+	nm -C Tests/Nth_Poly.o >> tests.obj.txt
 	
 
 clean: 
-	rm $(libobjects)
+	rm -f $(libobjects)
+	rm -f $(libobjects:.o=.d)
 
 
 $(stLibTarget).a: $(libobjects)

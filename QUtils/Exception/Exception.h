@@ -16,7 +16,7 @@
 	std::exception_ptr inner; \
 	\
 	public: \
-	name(std::string file, int line, std::string func) : file(file), line(line), func(func), _what(""), _whatC(NULL), message(""), inner(NULL) \
+	name(std::string file, int line, std::string func) : file(file), line(line), func(func), _what(""), _whatC(NULL), message(""), inner(nullptr) \
 	{  } \
 	\
 	name(std::string file) : name(file, -1, "") \
