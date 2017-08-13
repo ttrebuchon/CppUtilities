@@ -3,6 +3,7 @@
 #include "../ValueType.h"
 #include "../SQLQuery.h"
 
+#include <string>
 #include <iostream>
 
 namespace QUtils
@@ -14,7 +15,7 @@ namespace SQL
 	class SQLType
 	{
 		protected:
-		
+		virtual std::string _to_string() const = 0;
 		
 		public:
 		
@@ -28,14 +29,29 @@ namespace SQL
 		virtual ValueType type() const = 0;
 		virtual void bind(const std::string, SQLQuery*) const = 0;
 		
-		virtual std::string to_string() const = 0;
+		friend std::string to_string(const SQLType&);
 	};
-	
+
+	using std::to_string;
+
+	std::string to_string(const SQLType& t)
+	{
+		return t._to_string();
+	}
+
+	std::string to_string(std::string str)
+	{
+		return str;
+	}
 	
 	template <class Type>
 	class SQLType_Value : public SQLType
 	{
 		Type val;
+		virtual std::string _to_string() const override
+		{
+			return to_string(val);
+		}
 		
 		public:
 		SQLType_Value(const Type val) : SQLType(), val(val)
@@ -53,10 +69,7 @@ namespace SQL
 			q->bind(slot, val);
 		}
 		
-		virtual std::string to_string() const override
-		{
-			return std::to_string(val);
-		}
+		
 		
 		template <class rType>
 		rType get() const
