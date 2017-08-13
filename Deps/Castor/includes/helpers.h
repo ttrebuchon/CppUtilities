@@ -251,7 +251,7 @@ private:
         }
     };
 
-    std::auto_ptr<callable> fptr;
+    std::shared_ptr<callable> fptr;
 
 public:
 

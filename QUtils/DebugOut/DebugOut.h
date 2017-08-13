@@ -3,49 +3,48 @@
 
 #include <iostream>
 
-namespace Util
+namespace QUtils
 {
 	class DebugOut
-{
-	static std::ostream* out;
-	static DebugOut inst;
-	static bool disabled;
-	
-	class NullBuffer : public std::streambuf
 	{
+		static std::ostream* out;
+		static DebugOut inst;
+		static bool disabled;
+		
+		class NullBuffer : public std::streambuf
+		{
+			public:
+			int overflow(int c)
+			{
+				return c;
+			}
+		};
+		
 		public:
-		int overflow(int c)
+		
+		DebugOut()
 		{
-			return c;
+			#ifndef TEST_DEBUG
+			Disable();
+			#endif
 		}
+		
+		static void Disable()
+		{
+			if (!disabled)
+			{
+			out = new std::ostream(new NullBuffer());
+			disabled = true;
+			}
+		}
+		
+		static std::ostream& Out()
+		{
+			return *out;
+		}
+		
+	
 	};
-	
-	public:
-	
-	DebugOut()
-	{
-		#ifndef TEST_DEBUG
-		Disable();
-		#endif
-	}
-	
-	static void Disable()
-	{
-		if (!disabled)
-		{
-		out = new std::ostream(new NullBuffer());
-		disabled = true;
-		}
-	}
-	
-	static std::ostream& Out()
-	{
-		return *out;
-	}
-	
-	
-	
-};
 	
 }
 

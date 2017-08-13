@@ -51,7 +51,7 @@ namespace Multi
 		template <int Count, class Type1, class ...Types>
 		struct SplitTypes<void, 0, Count, Type1, Types...>
 		{
-			static_assert(Count > 0);
+			static_assert(Count > 0, "");
 			typedef decltype(std::tuple_cat(std::declval<std::tuple<Type1>>(), std::declval<typename SplitTypes<void, 0, Count-1, Types...>::type>())) type;
 		};
 		

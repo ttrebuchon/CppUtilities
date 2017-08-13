@@ -39,7 +39,7 @@ class relation {
         }
     };
 
-    std::auto_ptr<impl> pimpl;
+    std::shared_ptr<impl> pimpl;
 
     template<class Expr>  // disable instantiating relation from ILE
     relation(const Ile<Expr>& rhs);

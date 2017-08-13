@@ -1,5 +1,4 @@
 #include <QUtils/CLIPS/Fact.h>
-#include <Clips/clips.h>
 #include <iostream>
 
 namespace QUtils

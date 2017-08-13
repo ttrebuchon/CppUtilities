@@ -3,29 +3,35 @@
 #include <QUtils/Network/Service.h>
 #include <json/json.hpp>
 
+#ifdef QUTILS_HAS_CURL
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
 #include <curlpp/Infos.hpp>
-
+#endif
 
 #include <QUtils/Sleep/Sleep.h>
 #include <QUtils/Types/CompilerPrint.h>
 
 using json = nlohmann::json;
+#ifdef QUTILS_HAS_CURL
 using namespace curlpp::options;
 using namespace curlpp;
+
+#endif
 
 namespace Network_Test
 {
 	void Test()
 	{
+		#ifdef QUTILS_HAS_CURL
 		auto br = [&] () -> std::ostream& {
 			return (dout << "---------------------" << "\n\n\n\n\n" << "---------------------" << "\n");
 		};
 		
 		curlpp::Easy request;
 		request.setOpt<Url>("http://www.reddit.com/.json");
+		request.setOpt<Timeout>(2); //Set timeout to 2 seconds
 		request.perform();
 		
 		br() << std::flush;
@@ -118,7 +124,7 @@ namespace Network_Test
 		
 		
 		br() << tryRequest("http://testing.project-anna.com/Services/api/Web/SessionsCount") << std::endl;
-		
+		#endif
 	}
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "OrderedSolution.h"
+#include <algorithm>
 
 namespace QUtils
 {
