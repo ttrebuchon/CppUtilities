@@ -129,14 +129,13 @@ namespace SQL
 			for (auto val : values)
 			{
 				query += ", " + val.first;
-				insVals += ", " + to_string(*val.second);
+				insVals += ", @" + val.first;
 			}
 
 			query = "INSERT INTO [" + tableBuilder.name + "] (" + query.substr(2) + ") VALUES (" + insVals.substr(2) + ");";
-
-			sys->connection->vQuery(query);
-			return;
 		}
+		else
+		{
 		
 		
 		query = "UPDATE [" + tableBuilder.name + "] SET";
@@ -144,32 +143,32 @@ namespace SQL
 		bool first = true;
 		for (auto val : values)
 		{
+			if (val.first != PK_Name)
+			{
 			if (!first)
 			{
 				query += ",";
 			}
 			query += " [" + val.first + "]=@" + val.first;
 			first = false;
+			}
 		}
-		//query += " WHERE " + idEnt
-		std::cerr << "Query: " << query << "\n";
+		
+		query += " WHERE [" + PK_Name + "]=@" + PK_Name + ";";
+		}
 		q = sys->connection->query(query);
-		std::cerr << q->statement() << "\n";
-		/*
+		
 		for (auto val : values)
 		{
 			if (!val.second)
 			{
 				throw NullPtrEx();
 			}
-			throw NotImp();
 			val.second->bind("@" + val.first, q);
-		}*/
-		std::cerr << q->statement() << "\n";
+		}
 		while (q->next()) ;
 		
 		delete q;
-		throw NotImp();
 	}
 	
 	template <class Object>

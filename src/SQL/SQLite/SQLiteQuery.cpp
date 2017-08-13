@@ -62,7 +62,7 @@ namespace SQL
 			return false;
 			
 			default:
-			throw std::exception();
+			throw SQLErrorException().Line(__LINE__).File(__FILE__).Function(__func__).Msg(std::string(sqlite3_errstr(status)) + " (" + std::to_string(status) + ")");
 		}
 	}
 	

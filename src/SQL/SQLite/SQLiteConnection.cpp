@@ -116,7 +116,7 @@ namespace SQL
 		{
 			std::string err = sqlite3_errmsg(db);
 			sqlite3_finalize(ptr);
-			throw SQLErrorException().Msg(err + " (" + std::to_string(status) + ")");
+			throw SQLErrorException().Msg(err + " (" + std::to_string(status) + ") " + std::string("\t\tQuery: '") + query + "'");
 			return false;
 		}
 		status = SQLITE_ROW;

@@ -558,7 +558,45 @@ bool Test_SQL()
 		
 		sys->checkIn(p1);
 		
-		delete printQuery(sys->connection->query("SELECT * FROM [Person];"));
+		dout << "\n\nPerson Table: \n";
+		auto personQ = printQuery(sys->connection->query("SELECT * FROM [Person];"));
+		
+		
+		
+		auto p1Query = sys->connection->query("UPDATE [Person] SET [fname]=@val2 WHERE [birth] > @VAL");
+		p1Query->bind("@VAL", 100);
+		p1Query->bind("@val2", "NewName");
+		dout << "\n\nP1 Query: \n";
+		dout << p1Query->statement() << "\n";
+		delete printQuery(p1Query);
+		
+		
+		
+		Person p2 = Person::Birth("Person2", "SomeSurname");
+		
+		sys->checkIn(p2);
+		
+		
+		
+		dout << "\n\nPerson Table: \n";
+		personQ->reset();
+		printQuery(personQ);
+		
+		sys->checkIn(p1);
+		
+		dout << "\n\nPerson Table: \n";
+		personQ->reset();
+		printQuery(personQ);
+		
+		sys->checkIn(p2);
+		
+		Person p3 = Person::Birth("Person'3", "SomeSurname");
+		
+		sys->checkIn(p3);
+		
+		dout << "\n\nPerson Table: \n";
+		personQ->reset();
+		printQuery(personQ);
 	}
 	
 	

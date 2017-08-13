@@ -1,5 +1,6 @@
-HAS_CURL = FALSE
+HAS_CURL = TRUE
 HAS_BOOST = TRUE
+NEEDS_PTHREAD = FALSE
 
 
 SRC = src
@@ -143,10 +144,14 @@ ifeq ($(HAS_CURL), TRUE)
 DEPS := $(DEPS) $(Curlpp_Dep)
 endif
 
-LINKING = -lclips++ -lsqlite3 -lz -ljpeg -lpthread -ldl
+LINKING = -lclips++ -lsqlite3 -lz -ljpeg -ldl
 
 ifeq ($(HAS_CURL), TRUE)
 LINKING := $(LINKING) -lcurlpp -lcurl
+endif
+
+ifeq ($(NEEDS_PTHREAD), TRUE)
+LINKING := $(LINKING) -lpthread
 endif
 
 
