@@ -88,7 +88,7 @@ namespace SQL
 		
 		bool exists = false;
 		
-		auto q = sys->connection->query("SELECT COUNT(*) FROM [" + tableBuilder.name + "] WHERE [" + PK_Name + "]=" + values.at(PK_Name)->to_string() + ";");
+		auto q = sys->connection->query("SELECT COUNT(*) FROM [" + tableBuilder.name + "] WHERE [" + PK_Name + "]=" + to_string(*values.at(PK_Name)) + ";");
 		while (q->next())
 		{
 			exists = (q->template column<int>(0)) > 0;

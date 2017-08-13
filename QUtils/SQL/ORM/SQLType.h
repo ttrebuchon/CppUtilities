@@ -34,15 +34,9 @@ namespace SQL
 
 	using std::to_string;
 
-	std::string to_string(const SQLType& t)
-	{
-		return t._to_string();
-	}
+	std::string to_string(const SQLType&);
 
-	std::string to_string(std::string str)
-	{
-		return str;
-	}
+	std::string to_string(std::string);
 	
 	template <class Type>
 	class SQLType_Value : public SQLType

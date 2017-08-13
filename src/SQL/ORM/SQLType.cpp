@@ -27,5 +27,16 @@ namespace SQL
 	{
 		return std::make_shared<SQLDoubleType>(val);
 	}
+
+
+	std::string to_string(const SQLType& t)
+	{
+		return t._to_string();
+	}
+
+	std::string to_string(std::string str)
+	{
+		return str;
+	}
 }
 }

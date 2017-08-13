@@ -53,7 +53,7 @@ namespace SQL
 		
 		std::function<SQLType_ptr(Type&)> toSQL;
 		std::function<Type(SQLType_ptr)> fromSQL;
-		ValueType vType = models->getSQLType<Type>(toSQL, fromSQL);
+		models->getSQLType<Type>(toSQL, fromSQL);
 		std::function<SQLType_ptr(Object&)> serialize([fAccess, toSQL] (Object& obj)
 		{
 			return toSQL(fAccess(obj));
