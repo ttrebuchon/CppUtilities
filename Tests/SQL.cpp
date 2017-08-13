@@ -597,6 +597,12 @@ bool Test_SQL()
 		dout << "\n\nPerson Table: \n";
 		personQ->reset();
 		printQuery(personQ);
+		
+		auto p3OrigName = p3.lname;
+		p3.lname = "OtherSurname";
+		sys->refresh(p3);
+		
+		assert_ex(p3.lname == p3OrigName);
 	}
 	
 	

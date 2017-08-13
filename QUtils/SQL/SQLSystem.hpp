@@ -48,5 +48,17 @@ namespace SQL
 		}
 		model->save(this, obj, includeReferenced);
 	}
+	
+	
+	template <class Object>
+	void SQLSystem::refresh(Object& obj, bool includeReferenced)
+	{
+		auto model = models->getModel<Object>();
+		if (model == NULL)
+		{
+			throw SQLModelConfigException().Msg("Could not find model").Function(__func__);
+		}
+		model->load(this, obj, includeReferenced);
+	}
 }
 }
