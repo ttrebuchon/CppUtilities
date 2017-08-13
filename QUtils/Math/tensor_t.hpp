@@ -11,6 +11,7 @@ namespace QUtils
 {
 namespace Math
 {
+	QUTILS_CUSTOM_EXCEPTION(TensorException,);
 	//Internal Functions
 	template <int Dims, typename Elem, typename Index>
 	tensor_t<Dims, Elem, Index>& tensor_t<Dims, Elem, Index>::ptr()
@@ -335,7 +336,11 @@ namespace Math
 	template <int Dims, typename Elem, typename Index>
 	tensor_t<2, Elem, Index> tensor_t<Dims, Elem, Index>::inv() const
 	{
-		static_assert(Dims == 2 || Dims == 1, "Can only find inverses of matrices and vectors");
+		//static_assert(Dims == 2 || Dims == 1, "Can only find inverses of matrices and vectors");
+		if (!(Dims == 2 || Dims == 1))
+		{
+			throw TensorException().Function(__func__).Msg("Can only find inverses of matrices and vectors");
+		}
 		return ptr()->inv();
 	}
 

@@ -2,10 +2,20 @@
 #include <QUtils/Math/tensor_t.h>
 #include <initializer_list>
 #include <cmath>
+
+#ifdef USE_BOOST_NUMBERS
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
 using boost::multiprecision::cpp_dec_float;
 using boost::multiprecision::number;
+
+//typedef number<cpp_dec_float<14368>> Num;
+//typedef number<cpp_dec_float<0>> Num;
+#else
+
+//typedef float Num;
+typedef double Num;
+#endif
 
 
 using namespace QUtils;
@@ -17,9 +27,7 @@ using namespace Math;
 assert_ex(x < TOL && x > -1*TOL); \
 dout << #x << ": " << x << std::endl
 
-//typedef number<cpp_dec_float<14368>> Num;
-//typedef number<cpp_dec_float<0>> Num;
-typedef float Num;
+
 
 Num invStdDev(std::function<Num(int, int)>, int h, int w);
 
