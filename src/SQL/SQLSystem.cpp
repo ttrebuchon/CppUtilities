@@ -1,4 +1,5 @@
 #include <QUtils/SQL/SQLSystem.h>
+#include <QUtils/SQL/SQLConnection.h>
 
 
 #include <QUtils/Exception/NotImplemented.h>
@@ -11,6 +12,10 @@ namespace SQL
 	
 	SQLSystem::SQLSystem(SQLConnection* _con, bool withDefaultModels) : con(_con), models(new SQLModels()), connection(con)
 	{
+		if (!con->isOpen())
+		{
+			con->open();
+		}
 		if (withDefaultModels)
 		{
 			initDefaultModels();
@@ -28,7 +33,6 @@ namespace SQL
 	void SQLSystem::buildModels(bool dropIfConflict)
 	{
 		models->build(this);
-		throw NotImp();
 	}
 }
 }

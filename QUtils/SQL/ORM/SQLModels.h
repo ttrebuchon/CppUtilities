@@ -4,6 +4,7 @@
 
 #include "../ValueType.h"
 #include "SQLModel.h"
+#include "SQLType.h"
 
 namespace QUtils
 {
@@ -58,6 +59,9 @@ namespace SQL
 		void build(SQLSystem*);
 		
 		ValueType getSQLType(std::type_index);
+		
+		template <class Type>
+		ValueType getSQLType(std::function<SQLType_ptr(Type&)>&, std::function<Type(SQLType_ptr)>&);
 		
 		template <class Object>
 		SQLModel<Object>* getModel();

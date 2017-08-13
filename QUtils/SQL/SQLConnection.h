@@ -46,7 +46,7 @@ namespace SQL
 		
 		virtual std::string RIDType() const = 0;
 		
-		//virtual void buildTable(const SQLTableBuilder builder) = 0;
+		virtual void createTables(const std::vector<SQLTableBuilder>& builders) = 0;
 		
 	};
 }

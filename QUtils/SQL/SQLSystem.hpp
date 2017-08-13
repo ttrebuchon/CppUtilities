@@ -39,7 +39,7 @@ namespace SQL
 	
 	
 	template <class Object>
-	void SQLSystem::checkIn(const Object& obj, bool includeReferenced)
+	void SQLSystem::checkIn(Object& obj, bool includeReferenced)
 	{
 		auto model = models->getModel<Object>();
 		if (model == NULL)

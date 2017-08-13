@@ -29,12 +29,14 @@ namespace SQL
 	
 	
 	
+	class SQLModels;
 	
 	template <class Object>
 	class SQLModelBuilder
 	{
 		private:
 		std::string currentCol;
+		SQLModels* models;
 		
 		protected:
 		std::string name;
@@ -42,6 +44,9 @@ namespace SQL
 		std::shared_ptr<SQLEntity<Object>> idEnt;
 		
 		public:
+		
+		SQLModelBuilder(SQLModels* models) : models(models), name()
+		{}
 		
 		template <class F>
 		SQLEntityBuilder<Object, Internal::Result_t<F, Object>>& property(F);

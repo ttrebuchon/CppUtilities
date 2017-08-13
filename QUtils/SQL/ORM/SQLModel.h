@@ -2,6 +2,7 @@
 #include <memory>
 
 #include "../SQLTableBuilder.h"
+#include "SQLType.h"
 
 namespace QUtils
 {
@@ -42,6 +43,8 @@ namespace SQL
 		
 		std::function<void(Object&, SQLQuery*)> loader;
 		
+		std::function<std::unordered_map<std::string, SQLType_ptr>(Object&)> serializer;
+		
 		protected:
 		virtual void buildModel(SQLModelBuilder<Object>&) = 0;
 		
@@ -54,7 +57,7 @@ namespace SQL
 		virtual ~SQLModel() {}
 		
 		
-		void save(SQLSystem*, const Object&, bool includeReferenced = true);
+		void save(SQLSystem*, Object&, bool includeReferenced = true);
 		void load(SQLSystem*, Object&, bool includeReferenced = true);
 		
 		friend class SQLModels;

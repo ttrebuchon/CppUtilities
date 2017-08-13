@@ -1,11 +1,16 @@
 #pragma once
 
 #include "../ValueType.h"
+#include "../SQLQuery.h"
+
+#include <iostream>
 
 namespace QUtils
 {
 namespace SQL
 {
+	class SQLQuery;
+	
 	class SQLType
 	{
 		protected:
@@ -21,6 +26,9 @@ namespace SQL
 		
 		
 		virtual ValueType type() const = 0;
+		virtual void bind(const std::string, SQLQuery*) const = 0;
+		
+		virtual std::string to_string() const = 0;
 	};
 	
 	
@@ -40,6 +48,22 @@ namespace SQL
 			return SQL_ValueType<Type>::type;
 		}
 		
+		virtual void bind(const std::string slot, SQLQuery* q) const override
+		{
+			q->bind(slot, val);
+		}
+		
+		virtual std::string to_string() const override
+		{
+			return std::to_string(val);
+		}
+		
+		template <class rType>
+		rType get() const
+		{
+			return static_cast<rType>(val);
+		}
+		
 		Type get() const
 		{
 			return val;
@@ -54,5 +78,7 @@ namespace SQL
 	using SQLInteger64Type = SQLType_Value<long>;
 	
 	using SQLDoubleType = SQLType_Value<double>;
+	
+	typedef std::shared_ptr<SQLType> SQLType_ptr;
 }
 }

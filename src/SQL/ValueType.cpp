@@ -105,7 +105,19 @@ namespace SQL
 	
 	std::string to_string(const ValueType t)
 	{
+		#ifdef DEBUG
+		try
+		{
+		#endif
 		return Internal::ValueType_String_Mappings.at(t);
+		#ifdef DEBUG
+		}
+		catch (std::exception& ex)
+		{
+			throw SQLErrorException(std::current_exception()).Line(__LINE__).File(__FILE__).Msg("Could not find string name for ValueType " + std::to_string((int)t));
+		}
+		#endif
+		
 	}
 	
 	

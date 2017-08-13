@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SQLPrimitiveModel.h"
+#include "MetaTypeHelpers.h"
 
 namespace QUtils
 {
@@ -39,6 +40,30 @@ namespace SQL
 		std::type_index tIndex(typeid(Object));
 		auto ptr = models.at(tIndex);
 		return (SQLModel<Object>*)ptr;
+	}
+	
+	
+	template <class Type>
+	ValueType SQLModels::getSQLType(std::function<SQLType_ptr(Type&)>& toSQL, std::function<Type(SQLType_ptr)>& toType)
+	{
+		auto vType = Helpers::SQLTypeFromType<Type>::call(toSQL, toType);
+		if (vType != Null)
+		{
+			return vType;
+		}
+		std::type_index tIndex(typeid(Type));
+		
+		if (primitiveModels.count(tIndex) > 0)
+		{
+			auto pModel = (SQLPrimitiveModel<Type>*)primitiveModels.at(tIndex);
+			toSQL = pModel->convert();
+			toType = pModel->convertFrom();
+			return pModel->dbType();
+		}
+		
+		
+		
+		throw NotImp();
 	}
 }
 }

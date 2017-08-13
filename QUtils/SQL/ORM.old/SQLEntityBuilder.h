@@ -38,6 +38,7 @@ namespace SQL
 			this->_unique = value;
 			return *this;
 		}
+		
 	};
 }
 }

@@ -261,6 +261,21 @@ namespace SQL
 		return "INTEGER";
 	}
 	
+	void SQLiteConnection::createTables(const std::vector<SQLTableBuilder>& builders)
+	{
+		vQuery("BEGIN;");
+		
+		std::string text;
+		for (auto& builder : builders)
+		{
+			text = "CREATE TABLE " + builder.to_string() + ";";
+			vQuery(text);
+		}
+		
+		
+		vQuery("COMMIT;");
+	}
+	
 	
 	
 	

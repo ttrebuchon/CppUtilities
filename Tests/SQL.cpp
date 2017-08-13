@@ -453,6 +453,33 @@ bool Test_SQL()
 		auto sys = SQL::SQLSystem::Create(con);
 		
 		
+		auto dropQuery = con->tablesQuery();
+		std::vector<std::string> dropTableNames;
+		while (dropQuery->next())
+		{
+			if (dropQuery->column<std::string>(0) != "sqlite_sequence")
+			{
+				dropTableNames.push_back(dropQuery->column<std::string>(0));
+			}
+		}
+		delete dropQuery;
+		
+		for (auto name : dropTableNames)
+		{
+			try
+			{
+				//dout << "DROP TABLE [" << dropQuery->column<std::string>(0) << "];" << std::endl;
+				dout << "Dropping [" << name + "]\n";
+				con->vQuery("DROP TABLE [" + name + "];");
+			}
+			catch (std::exception& e)
+			{
+				dout << "Caught " << e.what() << std::endl;
+			}
+		}
+		
+		
+		
 		#define GUID_t
 		class Person
 		{

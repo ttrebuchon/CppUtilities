@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SQLEntityBuilder.h"
+#include "SQLModels.h"
 
 namespace QUtils
 {
@@ -49,6 +50,22 @@ namespace SQL
 		typedef Internal::Result_t<F, Object> Type;
 		auto fAccess = std::function<Type&(Object&)>([access](auto& obj) -> Type& { return access(obj); });
 		auto ptr = std::make_shared<SQLEntityBuilder<Object, Type>>(name, fAccess);
+		
+		std::function<SQLType_ptr(Type&)> toSQL;
+		std::function<Type(SQLType_ptr)> fromSQL;
+		ValueType vType = models->getSQLType<Type>(toSQL, fromSQL);
+		std::function<SQLType_ptr(Object&)> serialize([fAccess, toSQL] (Object& obj)
+		{
+			return toSQL(fAccess(obj));
+		});
+		
+		Helpers::SetSQL_t<Object> deserialize([fAccess, fromSQL] (Object& obj, SQLType_ptr ptr)
+		{
+			fAccess(obj) = fromSQL(ptr);
+		});
+		
+		ptr->serialize = serialize;
+		ptr->deserialize = deserialize;
 		entities.push_back(std::static_pointer_cast<SQLEntity<Object>>(ptr));
 		return *ptr;
 	}
@@ -74,14 +91,25 @@ namespace SQL
 	template <class Object>
 	void SQLModelBuilder<Object>::resolveTypes(SQLModels* models)
 	{
-		throw NotImp();
+		if (idEnt->dbType == Null)
+		{
+			idEnt->resolveType(models);
+		}
+		
+		for (auto ent : entities)
+		{
+			if (ent->dbType == Null)
+			{
+				ent->resolveType(models);
+			}
+		}
 	}
 	
 	
 	template <class Object>
 	SQLTableBuilder SQLModelBuilder<Object>::buildTableDec()
 	{
-		/*SQLTableBuilder builder;
+		SQLTableBuilder builder;
 		
 		auto idEnt = idEntity();
 		SQLColumnBuilder idCol;
@@ -101,8 +129,7 @@ namespace SQL
 			
 		}
 		
-		return builder;*/
-		throw NotImp();
+		return builder;
 	}
 }
 }
