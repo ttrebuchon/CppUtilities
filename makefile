@@ -1,8 +1,6 @@
 HAS_CURL = TRUE
 HAS_BOOST = TRUE
 NEEDS_PTHREAD = FALSE
-QT_PATH = $(C4DROID_QTLIBPATH)
-QT_INC_PATH = $(C4DROID_QT_INC_PATH)
 
 
 SRC = src
@@ -87,12 +85,12 @@ Guid_cpp = $(wildcard $(SRC)/GUID/**/*.cpp) $(wildcard $(SRC)/GUID/*.cpp)
 Guid = $(Guid_cpp:.cpp=.o)
 #*/
 
-GUI_Qt_cpp = $(wildcard $(SRC)/GUI/QT/**/*.cpp) $(wildcard $(SRC)/GUI/QT/*.cpp)
-GUI_Qt = $(GUI_Qt_cpp:.cpp=.o)
+GUI_SDL_cpp = $(wildcard $(SRC)/GUI/SDL/**/*.cpp) $(wildcard $(SRC)/GUI/SDL/*.cpp)
+GUI_SDL = $(GUI_SDL_cpp:.cpp=.o)
 #*/
 
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI_Qt)
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI_SDL)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
@@ -145,9 +143,7 @@ Deps_D = Deps
 CLIPS_Dep = $(Deps_D)/CLIPS
 Curlpp_Dep = -I $(Deps_D)/curlpp/include -L $(Deps_D)/curlpp
 
-Qt_Dep = -L $(QT_PATH) -I $(QT_INC_PATH) -I $(QT_INC_PATH)/QtGui -I $(QT_INC_PATH)/QtCore -I $(QT_INC_PATH)/QtWidgets
-
-DEPS = -I $(Deps_D)/Castor -I ../ -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(Deps_D)/sqlite3 -L $(CLIPS_Dep) $(Qt_Dep)
+DEPS = -I $(Deps_D)/Castor -I ../ -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(Deps_D)/sqlite3 -L $(CLIPS_Dep)
 
 ifeq ($(HAS_CURL), TRUE)
 DEPS := $(DEPS) $(Curlpp_Dep)
@@ -162,7 +158,6 @@ endif
 ifeq ($(NEEDS_PTHREAD), TRUE)
 LINKING := $(LINKING) -lpthread
 endif
-
 
 
 
