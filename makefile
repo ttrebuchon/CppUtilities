@@ -1,6 +1,7 @@
 HAS_CURL = TRUE
 HAS_BOOST = TRUE
 NEEDS_PTHREAD = FALSE
+#HAS_SDL2 = TRUE
 
 
 SRC = src
@@ -127,6 +128,10 @@ ifeq ($(HAS_BOOST), TRUE)
 PREPROC_FLAGS := $(PREPROC_FLAGS) -DQUTILS_HAS_BOOST
 endif
 
+ifeq ($(HAS_SDL2), TRUE)
+PREPROC_FLAGS := $(PREPROC_FLAGS) -DQUTILS_HAS_SDL2
+endif
+
 
 
 
@@ -157,6 +162,10 @@ endif
 
 ifeq ($(NEEDS_PTHREAD), TRUE)
 LINKING := $(LINKING) -lpthread
+endif
+
+ifeq ($(HAS_SDL2), TRUE)
+LINKING := $(LINKING) -lSDL2
 endif
 
 

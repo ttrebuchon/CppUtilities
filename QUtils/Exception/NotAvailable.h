@@ -4,6 +4,6 @@
 
 UTIL_CUSTOM_EXCEPTION(FeatureNotAvailableException, This feature is not available);
 
-#define NotImp() NotImplementedException("", __func__)
+#define NotAvail() FeatureNotAvailableException("", __func__)
 
 using NotAvailableException = FeatureNotAvailableException;

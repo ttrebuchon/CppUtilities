@@ -5,7 +5,8 @@ using namespace QUtils::SDL;
 
 bool Test_SDL_GUI()
 {
-	SDLApp app;
+	dout << "Creating app...\n";
+	SDLApp app("", 0, 0, 640, 480);
 	
 	app.execute();
 	return true;
