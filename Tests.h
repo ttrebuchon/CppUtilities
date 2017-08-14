@@ -62,6 +62,7 @@ DEF_TEST(SymbolicList);
 DEF_TEST(English_Analysis);
 DEF_TEST(Network);
 DEF_TEST(GUID);
+DEF_TEST(QT_GUI);
 
 
 

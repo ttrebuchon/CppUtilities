@@ -63,7 +63,7 @@ void Testing::run()
 	dout << LINE_BR << testBr << std::endl;
 	try
 	{
-	
+	RUN(QT_GUI());
 	RUN(Multi());
 	RUN(Network());
 	RUN(Raytrace());
