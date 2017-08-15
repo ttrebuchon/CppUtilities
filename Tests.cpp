@@ -1,8 +1,10 @@
 #include <iostream>
 
 #include "QUtils/DebugOut/DebugOut.h"
+#include "QUtils/Output/MultiStream.h"
 #include "Tests.h"
 #include <time.h>
+#include <ctime>
 #include <fstream>
 #include <utility>
 #include <vector>
@@ -18,7 +20,31 @@ int main(int argc, char**argv)
 	#endif
 	
 	std::ios::sync_with_stdio(false);
+	auto multibuf = new QUtils::Output::MultiBuf();
+	//multibuf->push(std::cerr.rdbuf());
+	multibuf->push(std::cout.rdbuf());
+	auto cerrBuf = std::cerr.rdbuf(multibuf);
+	auto coutBuf = std::cout.rdbuf(multibuf);
+	
+	
+	
+	std::ofstream log("Log.txt");
+	log << "\n\n\n\n\n\n\n\n\n\n\n\n";
+	time_t rawTime;
+	time(&rawTime);
+	auto timeinfo = localtime(&rawTime);
+	char timeStr[80];
+	strftime(timeStr, 80, "%Y-%m-%d %T", timeinfo);
+	log << timeStr << "\n\n";
+	multibuf->push(log.rdbuf());
+	
+	
+	
+	
 	Testing::run();
+	std::cerr.rdbuf(cerrBuf);
+	std::cout.rdbuf(coutBuf);
+	log.close();
 	return 0;
 }
 #define TEST_FAILS test_fails
@@ -63,7 +89,9 @@ void Testing::run()
 	dout << LINE_BR << testBr << std::endl;
 	try
 	{
+	#ifdef QUTILS_HAS_SDL2
 	RUN(SDL_GUI());
+	#endif
 	RUN(Multi());
 	RUN(Network());
 	RUN(Raytrace());

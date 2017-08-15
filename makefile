@@ -1,7 +1,7 @@
 HAS_CURL = TRUE
 HAS_BOOST = TRUE
 NEEDS_PTHREAD = FALSE
-#HAS_SDL2 = TRUE
+HAS_SDL2 = TRUE
 
 
 SRC = src
@@ -90,8 +90,12 @@ GUI_SDL_cpp = $(wildcard $(SRC)/GUI/SDL/**/*.cpp) $(wildcard $(SRC)/GUI/SDL/*.cp
 GUI_SDL = $(GUI_SDL_cpp:.cpp=.o)
 #*/
 
+Output_cpp = $(wildcard $(SRC)/Output/**/*.cpp) $(wildcard $(SRC)/Output/*.cpp)
+Output = $(Output_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI_SDL)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI_SDL) $(Output)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
