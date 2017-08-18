@@ -90,6 +90,7 @@ void Testing::run()
 	try
 	{
 	#ifdef QUTILS_HAS_SDL2
+	RUN(SDL_Drawing());
 	RUN(SDL_GUI());
 	#endif
 	RUN(Multi());

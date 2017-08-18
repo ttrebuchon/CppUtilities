@@ -63,6 +63,7 @@ DEF_TEST(English_Analysis);
 DEF_TEST(Network);
 DEF_TEST(GUID);
 DEF_TEST(SDL_GUI);
+DEF_TEST(SDL_Drawing);
 
 
 

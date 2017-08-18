@@ -1,16 +1,16 @@
 #pragma once
 
 
-class SDL_Renderer;
+class SDL_Surface;
 
 
 namespace QUtils::Drawing::SDL
 {
-	class Renderer
+	class Surface
 	{
 		protected:
-		SDL_Renderer* ptr;
-		Renderer();
+		SDL_Surface* ptr;
+		Surface();
 		
 		public:
 		

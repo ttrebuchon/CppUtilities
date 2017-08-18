@@ -201,15 +201,11 @@ clean:
 	rm -f $(libobjects:.o=.d)
 
 
-$(stLibTarget).a: $(libobjects) objs
+$(stLibTarget).a: $(libobjects)
 	[[ -d objs ]] || mkdir objs
 	cd objs ; ar -xv ../$(Deps_D)/sqlite3/libsqlite3.a ; ar -xv ../$(Deps_D)/curlpp/libcurlpp.a
 	ar rvs $(stLibTarget).a $(libobjects) $(wildcard objs/*.o)
 #*/
-
-
-objs: 
-	[[ -d objs ]] || mkdir objs
 	
 Tests.o: makefile Tests.cpp
 	$(CXX) $(CXXFLAGS) -c Tests.cpp

@@ -1,4 +1,5 @@
 #include <QUtils/Drawing/SDL/Window.h>
+#include <QUtils/Drawing/SDL/Errors.h>
 #include <QUtils/Exception/NotImplemented.h>
 
 #include "IfSDL.h"
@@ -13,14 +14,14 @@ namespace QUtils::Drawing::SDL
 	
 	
 	
-	Window::Window(const std::string title, int x, int y, int w, int h, unsigned int flags) : ptr(NULL)
+	Window::Window(const std::string title, int x, int y, int w, int h, WindowFlags flags) : ptr(NULL)
 	{
-		ptr = SDL_CreateWindow(title.c_str(), x, y, w, h, flags);
+		SDL_ERRORIF(ptr = SDL_CreateWindow(title.c_str(), x, y, w, h, SDL_RawWindowFlags(flags)), NULL);
 	}
 	
 	Window::Window(const void* data) : ptr(NULL)
 	{
-		ptr = SDL_CreateWindowFrom(data);
+		SDL_ERRORIF(ptr = SDL_CreateWindowFrom(data), NULL);
 	}
 	
 	Window::~Window()

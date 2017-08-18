@@ -1,11 +1,13 @@
 #pragma once
 #include <string>
+#include "WindowFlags.h"
 
 class SDL_Window;
 
 namespace QUtils::Drawing::SDL
 {
 	class Surface;
+	class Renderer;
 	
 	class Window
 	{
@@ -14,7 +16,7 @@ namespace QUtils::Drawing::SDL
 		Window();
 		
 		public:
-		Window(const std::string title, int x, int y, int w, int h, unsigned int flags);
+		Window(const std::string title, int x, int y, int w, int h, WindowFlags flags);
 		Window(const void* data);
 		virtual ~Window();
 		
@@ -39,6 +41,7 @@ namespace QUtils::Drawing::SDL
 		unsigned int pixelFormat() const;
 		void position(int* x, int* y) const;
 		void size(int* w, int* h) const;
+		Surface* surface() const;
 		std::string title() const;
 		
 		
