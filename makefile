@@ -94,8 +94,12 @@ Output_cpp = $(wildcard $(SRC)/Output/**/*.cpp) $(wildcard $(SRC)/Output/*.cpp)
 Output = $(Output_cpp:.cpp=.o)
 #*/
 
+Drawing_SDL_cpp = $(wildcard $(SRC)/Drawing/SDL/**/*.cpp) $(wildcard $(SRC)/Drawing/SDL/*.cpp)
+Drawing_SDL = $(Drawing_SDL_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI_SDL) $(Output)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI_SDL) $(Output) $(Drawing_SDL)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
@@ -141,7 +145,7 @@ endif
 
 WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -ftemplate-backtrace-limit=0
 
-WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wno-unused-local-typedefs #-Wno-unused-variable -Wno-unused-but-set-variable 
+WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wno-unused-local-typedefs -Wno-unused-variable -Wno-unused-but-set-variable 
 
 WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wfatal-errors 
 
@@ -152,16 +156,17 @@ Deps_D = Deps
 CLIPS_Dep = $(Deps_D)/CLIPS
 Curlpp_Dep = -I $(Deps_D)/curlpp/include -L $(Deps_D)/curlpp
 
-DEPS = -I $(Deps_D)/Castor -I ../ -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(Deps_D)/sqlite3 -L $(CLIPS_Dep)
+DEPS = -I $(Deps_D)/Castor -I ../ -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(CLIPS_Dep)
 
 ifeq ($(HAS_CURL), TRUE)
 DEPS := $(DEPS) $(Curlpp_Dep)
 endif
 
-LINKING = -lclips++ -lsqlite3 -lz -ljpeg -ldl
+LINKING = -lclips++ -lz -ljpeg -ldl
 
 ifeq ($(HAS_CURL), TRUE)
-LINKING := $(LINKING) -lcurlpp -lcurl
+LINKING := $(LINKING) #-lcurlpp
+LINKING := $(LINKING) -lcurl
 endif
 
 ifeq ($(NEEDS_PTHREAD), TRUE)
@@ -196,11 +201,21 @@ clean:
 	rm -f $(libobjects:.o=.d)
 
 
-$(stLibTarget).a: $(libobjects)
-	ar rvs $(stLibTarget).a $(libobjects)
+$(stLibTarget).a: $(libobjects) objs
+	[[ -d objs ]] || mkdir objs
+	cd objs ; ar -xv ../$(Deps_D)/sqlite3/libsqlite3.a ; ar -xv ../$(Deps_D)/curlpp/libcurlpp.a
+	ar rvs $(stLibTarget).a $(libobjects) $(wildcard objs/*.o)
+#*/
+
+
+objs: 
+	[[ -d objs ]] || mkdir objs
 	
 Tests.o: makefile Tests.cpp
 	$(CXX) $(CXXFLAGS) -c Tests.cpp
+
+#*.cpp.o: 
+#	$(CXX) $(CXXFLAGS) $< -L. $PREPROC_FLAGS) $(LINKING)
 
 -include $(libdeps)
 -include $(testdeps)
