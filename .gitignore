@@ -4,6 +4,8 @@
 *.o
 *.obj
 *.d
+objs/*
+# */
 
 #Generated Assembly Files
 *.s
