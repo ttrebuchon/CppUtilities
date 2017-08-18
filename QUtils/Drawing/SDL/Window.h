@@ -1,19 +1,23 @@
 #pragma once
 #include <string>
 #include "WindowFlags.h"
+#include "SDLObject.h"
 
 class SDL_Window;
+struct SDL_Rect;
 
 namespace QUtils::Drawing::SDL
 {
 	class Surface;
 	class Renderer;
 	
-	class Window
+	class Window : public Internal::SDLObject<SDL_Window, Window>
 	{
+		typedef Internal::SDLObject<SDL_Window, Window> Base;
+		friend Base;
 		protected:
-		SDL_Window* ptr;
 		Window();
+		Window(SDL_Window*);
 		
 		public:
 		Window(const std::string title, int x, int y, int w, int h, WindowFlags flags);
@@ -37,13 +41,41 @@ namespace QUtils::Drawing::SDL
 		void minimumSize(int* w, int* h) const;
 		void minSize(int* w, int* h) const
 		{ minimumSize(w, h); }
+		void setMaximumSize(int w, int h);
+		void setMaxSize(int w, int h)
+		{ setMaximumSize(w, h); }
+		
+		void setMinimumSize(int w, int h);
+		void setMinSize(int w, int h)
+		{ setMinimumSize(w, h); }
 		float opacity() const;
 		unsigned int pixelFormat() const;
 		void position(int* x, int* y) const;
+		void setPosition(int x, int y);
 		void size(int* w, int* h) const;
+		void setSize(int w, int h);
 		Surface* surface() const;
 		std::string title() const;
+		void title(const std::string);
+		bool visible() const;
+		void show();
+		void hide();
+		void maximize();
+		void minimize();
+		void raise();
+		void restore();
+		bool fullscreen() const;
+		void fullscreen(bool);
+		bool fullscreenDesktop() const;
+		void fullscreenDesktop(bool);
+		bool grabbed() const;
+		void grabbed(bool);
+		void setIcon(Surface*);
+		void updateSurface();
+		void updateSurface(int x, int y, int w, int h);
+		void updateSurfaceRects(const SDL_Rect*, int count);
 		
+		Renderer* renderer() const;
 		
 		
 		

@@ -4,8 +4,6 @@
 
 #include <SDL2/SDL.h>
 
-#else
+#endif
 
 #include <QUtils/Exception/NotAvailable.h>
-
-#endif

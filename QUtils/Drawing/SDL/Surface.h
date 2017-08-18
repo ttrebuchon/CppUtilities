@@ -1,4 +1,5 @@
 #pragma once
+#include "SDLObject.h"
 
 
 class SDL_Surface;
@@ -6,13 +7,24 @@ class SDL_Surface;
 
 namespace QUtils::Drawing::SDL
 {
-	class Surface
+	class Texture;
+	class Renderer;
+	
+	class Surface : public Internal::SDLObject<SDL_Surface, Surface>
 	{
+		typedef Internal::SDLObject<SDL_Surface, Surface> Base;
+		friend Base;
 		protected:
-		SDL_Surface* ptr;
 		Surface();
+		Surface(SDL_Surface*);
 		
 		public:
 		
+		
+		
+		virtual ~Surface();
+		
+		
+		Texture* createTexture(Renderer*) const;
 	};
 }
