@@ -2,20 +2,19 @@
 
 #include <string>
 
-class SDL_Window;
-namespace QUtils
+
+namespace QUtils::GUI::SDL
 {
-namespace SDL
-{
+	class SDLWindow;
 	
 	class SDLApp
 	{
 		private:
-		SDL_Window* window;
+		SDLWindow* window;
 		public:
-		SDLApp(const std::string title, int x, int y, int w, int h);
+		SDLApp(const std::string title, const int x, const int y, const int w, const int h);
+		~SDLApp();
 		
-		virtual int execute();
+		
 	};
-}
 }
