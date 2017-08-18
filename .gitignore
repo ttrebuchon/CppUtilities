@@ -44,6 +44,7 @@ objs/*
 *.jpeg
 *.obj.txt
 English_Out.txt
+Log.txt
 
 #Environment files
 .vscode*
