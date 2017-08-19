@@ -75,6 +75,7 @@ namespace QUtils::Drawing::SDL
 		void updateSurface(int x, int y, int w, int h);
 		void updateSurfaceRects(const SDL_Rect*, int count);
 		
+		
 		Renderer* renderer() const;
 		
 		

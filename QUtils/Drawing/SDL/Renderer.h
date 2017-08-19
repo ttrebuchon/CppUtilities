@@ -2,6 +2,9 @@
 #include "SDLObject.h"
 #include "BlendMode.h"
 #include "RendererFlags.h"
+#include "Rect.h"
+#include "Point.h"
+#include "RendererFlip.h"
 
 
 class SDL_Renderer;
@@ -35,9 +38,47 @@ namespace QUtils::Drawing::SDL
 		
 		void clear();
 		void copy(Texture*, const SDL_Rect* src, const SDL_Rect* dst);
+		void copy(Texture*, const Rect src, const Rect dst);
+		void copy(Texture*, const Rect* src, const Rect dst);
+		void copy(Texture*, const Rect src, const Rect* dst);
 		void copy(Texture*, int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh);
 		void copy(Texture*);
+		
+		void copyEx(Texture*, const SDL_Rect* src, const SDL_Rect* dst, const double angle, const SDL_Point* center, RendererFlip flip);
+		void copy(Texture*, const Rect* src, const Rect* dst, const double angle, const Point* center, RendererFlip flip);
+		inline void copy(Texture* tex, const SDL_Rect* src, const SDL_Rect* dst, const double angle, const SDL_Point* center, RendererFlip flip)
+		{
+			copyEx(tex, src, dst, angle, center, flip);
+		}
+		inline void copy(Texture* tex, const Rect src, const Rect dst, const double angle, const Point center, RendererFlip flip = NoFlip)
+		{
+			copy(tex, &src, &dst, angle, &center, flip);
+		}
+		inline void copy(Texture* tex, const Rect* src, const Rect dst, const double angle, const Point center, RendererFlip flip = NoFlip)
+		{
+			copy(tex, src, &dst, angle, &center, flip);
+		}
+		inline void copy(Texture* tex, const Rect src, const Rect* dst, const double angle, const Point center, RendererFlip flip = NoFlip)
+		{
+			copy(tex, &src, dst, angle, &center, flip);
+		}
+		
+		inline void copy(Texture* tex, const Rect src, const Rect dst, const double angle, const Point* center = NULL, RendererFlip flip = NoFlip)
+		{
+			copy(tex, &src, &dst, angle, center, flip);
+		}
+		void copy(Texture* tex, const Rect* src, const Rect dst, const double angle, const Point* center = NULL, RendererFlip flip = NoFlip)
+		{
+			copy(tex, src, &dst, angle, center, flip);
+		}
+		inline void copy(Texture* tex, const Rect src, const Rect* dst, const double angle, const Point* center = NULL, RendererFlip flip = NoFlip)
+		{
+			copy(tex, &src, dst, angle, center, flip);
+		}
+		
+		
 		void drawLine(int x1, int y1, int x2, int y2);
+		void drawLine(const Point p1, const Point p2);
 		void drawLines(const SDL_Point*, int count);
 		void drawPoint(int x, int y);
 		void drawPoints(const SDL_Point*, int count);
@@ -45,6 +86,7 @@ namespace QUtils::Drawing::SDL
 		void drawRect(int x, int y, int w, int h);
 		void drawRects(const SDL_Rect*, int count);
 		void fillRect(const SDL_Rect*);
+		void fillRect(const Rect);
 		void fillRect(int x, int y, int w, int h);
 		void fillRects(const SDL_Rect*, int count);
 		
@@ -66,5 +108,6 @@ namespace QUtils::Drawing::SDL
 		bool targetSupported() const;
 		BlendMode blendMode() const;
 		void blendMode(BlendMode);
+		void renderPresent();
 	};
 }

@@ -58,6 +58,21 @@ namespace QUtils::Drawing::SDL
 		SDL_CHECKERROR(SDL_RenderCopy(ptr, **tex, src, dst), 0);
 	}
 	
+	void Renderer::copy(Texture* tex, const Rect src, const Rect dst)
+	{
+		SDL_CHECKERROR(SDL_RenderCopy(ptr, **tex, (const SDL_Rect*)&src, (const SDL_Rect*)&dst), 0);
+	}
+	
+	void Renderer::copy(Texture* tex, const Rect* src, const Rect dst)
+	{
+		SDL_CHECKERROR(SDL_RenderCopy(ptr, **tex, (const SDL_Rect*)src, (const SDL_Rect*)&dst), 0);
+	}
+	
+	void Renderer::copy(Texture* tex, const Rect src, const Rect* dst)
+	{
+		SDL_CHECKERROR(SDL_RenderCopy(ptr, **tex, (const SDL_Rect*)&src, (const SDL_Rect*)dst), 0);
+	}
+	
 	void Renderer::copy(Texture* tex, int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh)
 	{
 		SDL_Rect src = { sx, sy, sw, sh };
@@ -70,9 +85,24 @@ namespace QUtils::Drawing::SDL
 		copy(tex, NULL, NULL);
 	}
 	
+	void Renderer::copyEx(Texture* tex, const SDL_Rect* src, const SDL_Rect* dst, const double angle, const SDL_Point* center, RendererFlip flip)
+	{
+		SDL_CHECKERROR(SDL_RenderCopyEx(ptr, **tex, src, dst, angle, center, (SDL_RendererFlip)SDL_RawRendererFlip(flip)), 0);
+	}
+	
+	void Renderer::copy(Texture* tex, const Rect* src, const Rect* dst, const double angle, const Point* center, RendererFlip flip)
+	{
+		SDL_CHECKERROR(SDL_RenderCopyEx(ptr, **tex, (const SDL_Rect*)src, (const SDL_Rect*)dst, angle, (const SDL_Point*)center, (SDL_RendererFlip)SDL_RawRendererFlip(flip)), 0);
+	}
+	
 	void Renderer::drawLine(int x1, int y1, int x2, int y2)
 	{
 		SDL_CHECKERROR(SDL_RenderDrawLine(ptr, x1, y1, x2, y2), 0);
+	}
+	
+	void Renderer::drawLine(const Point p1, const Point p2)
+	{
+		SDL_CHECKERROR(SDL_RenderDrawLine(ptr, p1.x, p1.y, p2.x, p2.y), 0);
 	}
 	
 	void Renderer::drawLines(const SDL_Point* points, int count)
@@ -110,6 +140,11 @@ namespace QUtils::Drawing::SDL
 	void Renderer::fillRect(const SDL_Rect* rect)
 	{
 		SDL_CHECKERROR(SDL_RenderFillRect(ptr, rect), 0);
+	}
+	
+	void Renderer::fillRect(const Rect rect)
+	{
+		this->fillRect((const SDL_Rect*)&rect);
 	}
 	
 	void Renderer::fillRect(int x, int y, int w, int h)
@@ -230,5 +265,10 @@ namespace QUtils::Drawing::SDL
 	{
 		SDL_BlendMode mode = (SDL_BlendMode)SDL_RawBlendMode(eMode);
 		SDL_CHECKERROR(SDL_SetRenderDrawBlendMode(ptr, mode), 0);
+	}
+	
+	void Renderer::renderPresent()
+	{
+		SDL_RenderPresent(ptr);
 	}
 }
