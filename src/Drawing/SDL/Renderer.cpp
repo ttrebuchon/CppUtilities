@@ -271,4 +271,14 @@ namespace QUtils::Drawing::SDL
 	{
 		SDL_RenderPresent(ptr);
 	}
+	
+	void Renderer::readPixels(const SDL_Rect* area, PixelFormat format, void* pixels, int rowLen) const
+	{
+		SDL_CHECKERROR(SDL_RenderReadPixels(ptr, area, format, pixels, rowLen), 0);
+	}
+	
+	void Renderer::readPixels(const Rect* area, PixelFormat format, void* pixels, int rowLen) const
+	{
+		SDL_CHECKERROR(SDL_RenderReadPixels(ptr, (const SDL_Rect*)area, format, pixels, rowLen), 0);
+	}
 }

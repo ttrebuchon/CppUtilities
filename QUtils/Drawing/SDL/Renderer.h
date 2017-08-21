@@ -5,6 +5,7 @@
 #include "Rect.h"
 #include "Point.h"
 #include "RendererFlip.h"
+#include "PixelFormat.h"
 
 
 class SDL_Renderer;
@@ -109,5 +110,11 @@ namespace QUtils::Drawing::SDL
 		BlendMode blendMode() const;
 		void blendMode(BlendMode);
 		void renderPresent();
+		void readPixels(const SDL_Rect*, PixelFormat, void*, int) const;
+		void readPixels(const Rect*, PixelFormat, void*, int) const;
+		inline void readPixels(const Rect area, PixelFormat format, void* pixels, int rowLen) const
+		{
+			readPixels(&area, format, pixels, rowLen);
+		}
 	};
 }
