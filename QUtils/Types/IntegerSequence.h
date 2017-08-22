@@ -5,8 +5,68 @@ namespace QUtils
 {
 namespace Types
 {
-	template <int...>
-	struct Sequence {};
+	namespace MinMax_Helper
+	{
+		
+		template <int N1, int... N>
+		struct Max : public Max<N1, Max<N...>::value>
+		{
+			
+		};
+		
+		template <int N1, int N2>
+		struct Max<N1, N2>
+		{
+			static constexpr int value = std::max(N1, N2);
+		};
+		
+		template <int N1>
+		struct Max<N1>
+		{
+			static constexpr int value = N1;
+		};
+		
+		
+		
+		
+		
+		
+		
+		template <int N1, int... N>
+		struct Min : public Min<N1, Min<N...>::value>
+		{
+			
+		};
+		
+		template <int N1, int N2>
+		struct Min<N1, N2>
+		{
+			static constexpr int value = std::min(N1, N2);
+		};
+		
+		template <int N1>
+		struct Min<N1>
+		{
+			static constexpr int value = N1;
+		};
+		
+		
+	}
+	
+	
+	template <int... N>
+	struct Sequence
+	{
+		constexpr static int Max()
+		{
+			return MinMax_Helper::Max<N...>::value;
+		}
+		
+		constexpr static int Min()
+		{
+			return MinMax_Helper::Min<N...>::value;
+		}
+	};
 	
 	
 	template <int N, int... M>
@@ -24,6 +84,8 @@ namespace Types
 	{
 		typedef Sequence<M...> type;
 	};
+	
+	
 	
 	
 	

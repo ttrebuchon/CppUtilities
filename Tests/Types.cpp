@@ -1,7 +1,6 @@
 #include "../Tests_Helpers.h"
 
-#include <QUtils/Types/HasMethod.h>
-#include <QUtils/Types/Functions.h>
+#include <QUtils/Types/Types.h>
 #include <string>
 class H
 {
@@ -84,6 +83,57 @@ bool Test_Types()
 		assert_ex((QUtils::Types::CallWithOptional<Invokeable, int, int>::call(inv, 3, 4) == "void"));
 		
 		assert_ex((QUtils::Types::CallWithOptional<Invokeable>::call(inv) == "void"));
+		
+	}
+	
+	
+	
+	{
+		typedef std::tuple<int, char, int, double, char> types;
+		
+		auto max = std::max({sizeof(int), sizeof(char), sizeof(int), sizeof(double), sizeof(char)});
+		auto min = std::min({sizeof(int), sizeof(char), sizeof(int), sizeof(double), sizeof(char)});
+		
+		dout << QUtils::Types::PrintTypes<typename QUtils::Types::TypeSizes<types>::type>() << "\n";
+		assert_ex((std::is_same<typename QUtils::Types::TypeSizes<types>::type, QUtils::Types::Sequence<sizeof(int), sizeof(char), sizeof(int), sizeof(double), sizeof(char)>>::value));
+		assert_ex(QUtils::Types::MaxTypeSize<types>::Max == max);
+		assert_ex(QUtils::Types::MaxTypeSize<types>::value == max);
+		
+		assert_ex(QUtils::Types::MinTypeSize<types>::Min == min);
+		assert_ex(QUtils::Types::MinTypeSize<types>::value == min);
+	}
+	
+	{
+		//dout << sizeof(QUtils::Types::TypeWithSize<1>) << "\n";
+		assert_ex(sizeof(QUtils::Types::TypeWithSize<1>) == 1);
+		assert_ex(sizeof(QUtils::Types::TypeWithSize<2>) == 2);
+		assert_ex(sizeof(QUtils::Types::TypeWithSize<3>) == 3);
+		assert_ex(sizeof(QUtils::Types::TypeWithSize<4>) == 4);
+		
+		#define CHECK_SIZE(x) assert_ex(sizeof(QUtils::Types::TypeWithSize<x>) == x)
+		
+		CHECK_SIZE(5);
+		CHECK_SIZE(6);
+		CHECK_SIZE(7);
+		CHECK_SIZE(8);
+		CHECK_SIZE(9);
+		CHECK_SIZE(10);
+		
+		CHECK_SIZE(64);
+		CHECK_SIZE(128);
+		CHECK_SIZE(256);
+		CHECK_SIZE(512);
+		CHECK_SIZE(1024);
+		
+		
+		CHECK_SIZE(2048);
+		CHECK_SIZE(3072);
+		CHECK_SIZE(4096);
+		
+		CHECK_SIZE(1024*1024);
+		
+		CHECK_SIZE(1024*1024*1024);
+		
 		
 	}
 	

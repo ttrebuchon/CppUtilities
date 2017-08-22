@@ -6,6 +6,8 @@ namespace QUtils
 {
 namespace Types
 {
+	
+	
 	template <int... N, class ...T>
 	std::string PrintTypes()
 	{
