@@ -2,9 +2,11 @@
 #include <string>
 #include "WindowFlags.h"
 #include "SDLObject.h"
+#include "Event.h"
 
 class SDL_Window;
 struct SDL_Rect;
+union SDL_Event;
 
 namespace QUtils::Drawing::SDL
 {
@@ -74,10 +76,11 @@ namespace QUtils::Drawing::SDL
 		void updateSurface();
 		void updateSurface(int x, int y, int w, int h);
 		void updateSurfaceRects(const SDL_Rect*, int count);
-		
-		
 		Renderer* renderer() const;
-		
+		static Event* pollEvent();
+		static bool pollEvent(SDL_Event*);
+		//Event* pollEvent();
+		//bool pollEvent(SDL_Event*);
 		
 		
 	};

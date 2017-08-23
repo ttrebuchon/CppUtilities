@@ -12,6 +12,8 @@ namespace QUtils::Drawing::SDL
 		public:
 		Event(EventType type) : type(type)
 		{}
+		Event(int type) : type(SDL_EnumEventType(type))
+		{}
 		const EventType type;
 		
 		static Event* pollEvent();
