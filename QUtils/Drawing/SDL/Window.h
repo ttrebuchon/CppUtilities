@@ -79,8 +79,7 @@ namespace QUtils::Drawing::SDL
 		Renderer* renderer() const;
 		static Event* pollEvent();
 		static bool pollEvent(SDL_Event*);
-		//Event* pollEvent();
-		//bool pollEvent(SDL_Event*);
+		
 		
 		
 	};

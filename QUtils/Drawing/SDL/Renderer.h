@@ -51,28 +51,28 @@ namespace QUtils::Drawing::SDL
 		{
 			copyEx(tex, src, dst, angle, center, flip);
 		}
-		inline void copy(Texture* tex, const Rect src, const Rect dst, const double angle, const Point center, RendererFlip flip = NoFlip)
+		inline void copy(Texture* tex, const Rect src, const Rect dst, const double angle, const Point center, RendererFlip flip = RendererFlip::None)
 		{
 			copy(tex, &src, &dst, angle, &center, flip);
 		}
-		inline void copy(Texture* tex, const Rect* src, const Rect dst, const double angle, const Point center, RendererFlip flip = NoFlip)
+		inline void copy(Texture* tex, const Rect* src, const Rect dst, const double angle, const Point center, RendererFlip flip = RendererFlip::None)
 		{
 			copy(tex, src, &dst, angle, &center, flip);
 		}
-		inline void copy(Texture* tex, const Rect src, const Rect* dst, const double angle, const Point center, RendererFlip flip = NoFlip)
+		inline void copy(Texture* tex, const Rect src, const Rect* dst, const double angle, const Point center, RendererFlip flip = RendererFlip::None)
 		{
 			copy(tex, &src, dst, angle, &center, flip);
 		}
 		
-		inline void copy(Texture* tex, const Rect src, const Rect dst, const double angle, const Point* center = NULL, RendererFlip flip = NoFlip)
+		inline void copy(Texture* tex, const Rect src, const Rect dst, const double angle, const Point* center = NULL, RendererFlip flip = RendererFlip::None)
 		{
 			copy(tex, &src, &dst, angle, center, flip);
 		}
-		void copy(Texture* tex, const Rect* src, const Rect dst, const double angle, const Point* center = NULL, RendererFlip flip = NoFlip)
+		void copy(Texture* tex, const Rect* src, const Rect dst, const double angle, const Point* center = NULL, RendererFlip flip = RendererFlip::None)
 		{
 			copy(tex, src, &dst, angle, center, flip);
 		}
-		inline void copy(Texture* tex, const Rect src, const Rect* dst, const double angle, const Point* center = NULL, RendererFlip flip = NoFlip)
+		inline void copy(Texture* tex, const Rect src, const Rect* dst, const double angle, const Point* center = NULL, RendererFlip flip = RendererFlip::None)
 		{
 			copy(tex, &src, dst, angle, center, flip);
 		}

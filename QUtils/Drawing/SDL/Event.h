@@ -11,11 +11,12 @@ namespace QUtils::Drawing::SDL
 		private:
 		
 		public:
-		Event(EventType type) : type(type)
+		Event(EventType type, unsigned int timestamp) : type(type), timestamp(timestamp)
 		{}
-		Event(int type) : type(SDL_EnumEventType(type))
+		Event(int type, unsigned int timestamp) : type(SDL_EnumEventType(type)), timestamp(timestamp)
 		{}
 		const EventType type;
+		unsigned int timestamp;
 		
 		
 		static void AddEventWatch(int (filter)(void*, SDL_Event*), void* userData);
