@@ -3,12 +3,15 @@
 
 #include "../src/Drawing/SDL/IfSDL.h"
 
+#include <QUtils/Types/CompilerPrint.h>
+
+
 using namespace QUtils::Drawing::SDL;
 bool Test_SDL_Drawing()
 {
 	const int w = 1080;
 	const int h = 1920;
-	auto win = new Window("Window1", 0, 0, w, h, Shown | OpenGL);
+	auto win = new Window("Window1", 0, 0, w, h, WindowFlags::Shown | WindowFlags::OpenGL);
 	
 	
 	win->hide();
@@ -16,16 +19,16 @@ bool Test_SDL_Drawing()
 	win->show();
 	assert_ex(win->visible());
 	
-	auto ren = new Renderer(win, -1, Accelerated | TargetTexture);
+	auto ren = new Renderer(win, -1, RendererFlags::Accelerated | RendererFlags::TargetTexture);
 	dout << "Renderer Created\n";
 	//auto winsurf = win->surface();
 	win->updateSurface();
 	
 	
-	auto tex = new Texture(ren, SDL_PIXELFORMAT_RGB555, Target, w, h);
-	auto tex2 = new Texture(ren, SDL_PIXELFORMAT_RGB555, Target, w, h);
+	auto tex = new Texture(ren, PixelFormat::RGB555, TextureAccess::Target, w, h);
+	auto tex2 = new Texture(ren, PixelFormat::RGB555, TextureAccess::Target, w, h);
 	assert_ex(tex->blendMode() == tex2->blendMode());
-	assert_ex(tex->blendMode() == None);
+	assert_ex(tex->blendMode() == BlendMode::None);
 	
 	//Set window to pure aqua
 	ren->target(NULL);
@@ -58,7 +61,7 @@ bool Test_SDL_Drawing()
 	ren->target(tex2);
 	ren->setDrawColor(0, 255, 255, 255);
 	ren->clear();
-	tex->blendMode(Blend);
+	tex->blendMode(BlendMode::Blend);
 	tex->alphaMod(150);
 	ren->copy(tex, NULL, {0, h/2, w, h/2 });
 	ren->renderPresent();
@@ -70,25 +73,25 @@ bool Test_SDL_Drawing()
 	//flipped, to the center
 	//of tex
 	ren->target(tex);
-	ren->blendMode(None);
+	ren->blendMode(BlendMode::None);
 	ren->setDrawColor(255, 0, 0, 0);
 	ren->clear();
 	tex->alphaMod(255);
 	tex2->alphaMod(255);
 	tex->colorMod(255, 255, 255);
 	tex2->colorMod(255, 255, 255);
-	tex->blendMode(None);
-	tex2->blendMode(None);
+	tex->blendMode(BlendMode::None);
+	tex2->blendMode(BlendMode::None);
 	ren->copy(tex2);
 	tex2->alphaMod(100);
-	tex2->blendMode(Blend);
-	ren->copy(tex2, NULL, {w/4, h/4, w/2, h/2}, 0, NULL, Horizontal | Vertical);
+	tex2->blendMode(BlendMode::Blend);
+	ren->copy(tex2, NULL, {w/4, h/4, w/2, h/2}, 0, NULL, RendererFlip::Horizontal | RendererFlip::Vertical);
 	ren->renderPresent();
 	
-	#define FORMAT SDL_PIXELFORMAT_RGB888
+	//#define FORMAT SDL_PIXELFORMAT_RGB888
+	#define FORMAT PixelFormat::RGB888
 	
-	unsigned char* pixels = (unsigned char*)malloc(SDL_BYTESPERPIXEL(FORMAT)*w*h*sizeof(char));
-	
+	unsigned char* pixels = (unsigned char*)malloc(SDL_BYTESPERPIXEL(SDL_RawPixelFormat(FORMAT))*w*h*sizeof(char));
 	
 	
 	
@@ -126,7 +129,7 @@ bool Test_SDL_Drawing()
 	};
 	
 	
-	const int size = SDL_BYTESPERPIXEL(FORMAT);
+	const int size = SDL_BYTESPERPIXEL(SDL_RawPixelFormat(FORMAT));
 	for (int i = 0; i < w/2*h/2; ++i)
 	{
 		//assert_ex(pixels[i*size+3] == 0);
@@ -209,7 +212,7 @@ bool Test_SDL_Drawing()
 	
 	surf2->blitTo(surf, {0, 0, surf2->w(), surf2->h()}, {0, 0, w, h});
 	
-	sren->blendMode(Blend);
+	sren->blendMode(BlendMode::Blend);
 	sren->setDrawColor(255, 0, 0, 200);
 	sren->fillRect({0, 0, w/2, h/2});
 	sren->renderPresent();
@@ -258,6 +261,19 @@ bool Test_SDL_Drawing()
 		
 		
 	}
+	
+	
+	{
+		SDL_Event ev;
+		ev.type = SDL_WINDOWEVENT;
+		ev.window.event = SDL_WINDOWEVENT_RESIZED;
+		
+		auto wev = new typename QUtils::Drawing::SDL::WindowEvent(&ev.window);
+		
+		
+		delete wev;
+	}
+	
 	
 	
 	
