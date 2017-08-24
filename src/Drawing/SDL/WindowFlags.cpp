@@ -83,34 +83,34 @@ namespace QUtils::Drawing::SDL
 			rFlags |= SDL_WINDOW_MOUSE_CAPTURE;
 		}
 		
-		#ifdef SDL_WINDOW_ALWAYS_ON_TOP
+		#if SDL_VERSION_MIN(2, 0, 5)
 		if ((int)(flags & WindowFlags::AlwaysOnTop) > 0)
 		{
 			rFlags |= SDL_WINDOW_ALWAYS_ON_TOP;
 		}
 		#endif
 		
-		#ifdef SDL_WINDOW_SKIP_TASKBAR
+		#if SDL_VERSION_MIN(2, 0, 5)
 		if ((int)(flags & WindowFlags::SkipTaskbar) > 0)
 		{
 			rFlags |= SDL_WINDOW_SKIP_TASKBAR;
 		#endif
 		
-		#ifdef SDL_WINDOW_UTILITY
+		#if SDL_VERSION_MIN(2, 0, 5)
 		if ((int)(flags & WindowFlags::Utility) > 0)
 		{
 			rFlags |= SDL_WINDOW_UTILITY;
 		}
 		#endif
 		
-		#ifdef SDL_WINDOW_TOOLTIP
+		#if SDL_VERSION_MIN(2, 0, 5)
 		if ((int)(flags & WindowFlags::Tooltip) > 0)
 		{
 			rFlags |= SDL_WINDOW_TOOLTIP;
 		}
 		#endif
 		
-		#ifdef SDL_WINDOW_POPUP_MENU
+		#if SDL_VERSION_MIN(2, 0, 5)
 		if ((int)(flags & WindowFlags::PopupMenu) > 0)
 		{
 			rFlags |= SDL_WINDOW_POPUP_MENU;

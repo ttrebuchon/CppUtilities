@@ -61,7 +61,7 @@ namespace QUtils::Drawing::SDL
 		DEFTYPE(MultiGesture, MULTIGESTURE),
 		DEFTYPE(ClipboardUpdate, CLIPBOARDUPDATE),
 		DEFTYPE(DropFile, DROPFILE),
-		#ifdef SDL_2_0_5
+		#if SDL_VERSION_MIN(2, 0, 5)
 		DEFTYPE(DropText, DROPTEXT),
 		DEFTYPE(DropBegin, DROPBEGIN),
 		DEFTYPE(DropComplete, DROPCOMPLETE),

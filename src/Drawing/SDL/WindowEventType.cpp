@@ -34,7 +34,7 @@ namespace QUtils::Drawing::SDL
 		DEFTYPE(FocusGained, FOCUS_GAINED),
 		DEFTYPE(FocusLost, FOCUS_LOST),
 		DEFTYPE(Close, CLOSE),
-		#ifdef SDL_2_0_5
+		#if SDL_VERSION_MIN(2,0,5)
 		DEFTYPE(TakeFocus, TAKE_FOCUS),
 		DEFTYPE(HitTest, HIT_TEST),
 		#endif
