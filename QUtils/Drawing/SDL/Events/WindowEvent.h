@@ -11,7 +11,6 @@ namespace QUtils::Drawing::SDL
 		private:
 		
 		public:
-		unsigned int timestamp;
 		unsigned int windowID;
 		WindowEventType event;
 		int data1;
