@@ -7,6 +7,12 @@ namespace QUtils::Drawing::SDL
 {
 	DollarGestureEvent::DollarGestureEvent(const SDL_DollarGestureEvent* ev) : Event(ev->type, ev->timestamp)
 	{
+		INIT_MEMBER(touchId);
+		INIT_MEMBER(gestureId);
+		INIT_MEMBER(numFingers);
+		INIT_MEMBER(error);
+		INIT_MEMBER(x);
+		INIT_MEMBER(y);
 		
 	}
 	

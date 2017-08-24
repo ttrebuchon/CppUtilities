@@ -7,7 +7,10 @@ namespace QUtils::Drawing::SDL
 {
 	DropEvent::DropEvent(const SDL_DropEvent* ev) : Event(ev->type, ev->timestamp)
 	{
-		
+		INIT_MEMBER(file);
+		#if SDL_VERSION_MIN(2,0,5)
+		INIT_MEMBER(windowID);
+		#endif
 	}
 	
 	DropEvent::DropEvent(const SDL_DropEvent& ev) : DropEvent(&ev)

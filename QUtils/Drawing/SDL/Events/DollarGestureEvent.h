@@ -8,7 +8,7 @@ namespace QUtils::Drawing::SDL
 {
 	struct DollarGestureEvent : public Event
 	{
-		int touchId;
+		long touchId;
 		int gestureId;
 		unsigned int numFingers;
 		float error;

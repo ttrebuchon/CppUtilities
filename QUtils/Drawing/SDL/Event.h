@@ -1,4 +1,5 @@
 #pragma once
+#include "Version.h"
 #include "EventType.h"
 #include <functional>
 

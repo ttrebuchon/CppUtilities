@@ -8,7 +8,7 @@ namespace QUtils::Drawing::SDL
 {
 	struct MultiGestureEvent : public Event
 	{
-		/*SDL_TouchID touchId;*/
+		long touchId;
 		float dTheta;
 		float dDist;
 		float x;

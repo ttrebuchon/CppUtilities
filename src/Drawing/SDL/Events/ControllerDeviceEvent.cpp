@@ -7,7 +7,7 @@ namespace QUtils::Drawing::SDL
 {
 	ControllerDeviceEvent::ControllerDeviceEvent(const SDL_ControllerDeviceEvent* ev) : Event(ev->type, ev->timestamp)
 	{
-		
+		INIT_MEMBER(which);
 	}
 	
 	ControllerDeviceEvent::ControllerDeviceEvent(const SDL_ControllerDeviceEvent& ev) : ControllerDeviceEvent(&ev)

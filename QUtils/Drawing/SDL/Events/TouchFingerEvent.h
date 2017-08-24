@@ -10,8 +10,8 @@ namespace QUtils::Drawing::SDL
 	
 	struct TouchFingerEvent : public Event
 	{
-		int touchId;
-		int fingerId;
+		long touchId;
+		long fingerId;
 		float x;
 		float y;
 		float dx;

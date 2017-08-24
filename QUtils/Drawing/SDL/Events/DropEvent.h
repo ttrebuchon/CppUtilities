@@ -10,7 +10,9 @@ namespace QUtils::Drawing::SDL
 	struct DropEvent : public Event
 	{
 		std::string file;
+		#if SDL_VERSION_MIN(2,0,5)
 		unsigned int windowID;
+		#endif
 		
 		
 		
