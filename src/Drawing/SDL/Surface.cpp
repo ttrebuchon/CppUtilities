@@ -35,7 +35,7 @@ namespace QUtils::Drawing::SDL
 	{
 		unsigned int Rmask, Gmask, Bmask, Amask;
 		int depth;
-		SDL_CHECKERROR(SDL_PixelFormatEnumToMasks(format, &depth, &Rmask, &Gmask, &Bmask, &Amask), SDL_TRUE);
+		SDL_CHECKERROR(SDL_PixelFormatEnumToMasks(SDL_RawPixelFormat(format), &depth, &Rmask, &Gmask, &Bmask, &Amask), SDL_TRUE);
 		SDL_ERRORIF(ptr = SDL_CreateRGBSurface(0, w, h, depth, Rmask, Gmask, Bmask, Amask), NULL);
 		setInstance(ptr, this);
 	}

@@ -24,7 +24,7 @@ namespace QUtils::Drawing::SDL
 	
 	Texture::Texture(Renderer* ren, PixelFormat pixelFormat, TextureAccess access, int w, int h) : Base(NULL)
 	{
-		SDL_ERRORIF(ptr = SDL_CreateTexture(**ren, pixelFormat, SDL_RawTextureAccess(access), w, h), NULL);
+		SDL_ERRORIF(ptr = SDL_CreateTexture(**ren, SDL_RawPixelFormat(pixelFormat), SDL_RawTextureAccess(access), w, h), NULL);
 		setInstance(ptr, this);
 	}
 	
