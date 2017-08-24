@@ -2,7 +2,7 @@
 
 namespace QUtils::Drawing::SDL
 {
-	enum EventType
+	enum struct EventType
 	{
 		FirstEvent,
 		Quit,
@@ -44,9 +44,11 @@ namespace QUtils::Drawing::SDL
 		MultiGesture,
 		ClipboardUpdate,
 		DropFile,
-		//DropText,
-		//DropBegin,
-		//DropComplete,
+		#ifdef SDL_2_0_5
+		DropText,
+		DropBegin,
+		DropComplete,
+		#endif
 		AudioDeviceAdded,
 		AudioDeviceRemoved,
 		Render_Targets_Reset,

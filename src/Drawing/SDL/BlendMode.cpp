@@ -18,12 +18,13 @@ namespace QUtils::Drawing::SDL
 		}
 	}
 	
+	#define DEFTYPE(x, y) { BlendMode::x, SDL_BLENDMODE_##y }
 	
 	static std::map<BlendMode, SDL_BlendMode> modes = {
-		{ None, SDL_BLENDMODE_NONE },
-		{ Blend, SDL_BLENDMODE_BLEND },
-		{ Add, SDL_BLENDMODE_ADD },
-		{ Mod, SDL_BLENDMODE_MOD }
+		DEFTYPE(None, NONE),
+		DEFTYPE(Blend, BLEND),
+		DEFTYPE(Add, ADD),
+		DEFTYPE(Mod, MOD),
 	};
 	
 	static std::map<SDL_BlendMode, BlendMode> revModes = Helpers::reverseMap(modes);

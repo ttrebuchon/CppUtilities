@@ -2,7 +2,7 @@
 
 namespace QUtils::Drawing::SDL
 {
-	enum BlendMode
+	enum struct BlendMode
 	{
 		None = 1,
 		Blend = 2,

@@ -18,7 +18,7 @@ namespace QUtils::Drawing::SDL
 		}
 	}
 	
-	#define DEFTYPE(x, y) { Window##x, SDL_WINDOWEVENT_##y, }
+	#define DEFTYPE(x, y) { WindowEventType::x, SDL_WINDOWEVENT_##y, }
 	
 	static std::map<WindowEventType, SDL_WindowEventID> types = {
 		DEFTYPE(Hidden, HIDDEN),

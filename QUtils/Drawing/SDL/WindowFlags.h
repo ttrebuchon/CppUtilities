@@ -3,7 +3,7 @@
 
 namespace QUtils::Drawing::SDL
 {
-	enum WindowFlags
+	enum struct WindowFlags
 	{
 		Fullscreen = 1,
 		FullscreenDesktop = 2,

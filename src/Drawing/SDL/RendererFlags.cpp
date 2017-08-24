@@ -18,12 +18,13 @@ namespace QUtils::Drawing::SDL
 		}
 	}
 	
+	#define DEFENUM(x, y) { RendererFlags::x, SDL_RENDERER_##y }
 	
 	static std::map<RendererFlags, unsigned int> flags = {
-		{ Software, SDL_RENDERER_SOFTWARE },
-		{ Accelerated, SDL_RENDERER_ACCELERATED },
-		{ PresentVsync, SDL_RENDERER_PRESENTVSYNC },
-		{ TargetTexture, SDL_RENDERER_TARGETTEXTURE }
+		DEFENUM(Software, SOFTWARE),
+		DEFENUM(Accelerated, ACCELERATED),
+		DEFENUM(PresentVsync, PRESENTVSYNC),
+		DEFENUM(TargetTexture, TARGETTEXTURE),
 	};
 	
 	static std::map<unsigned int, RendererFlags> revFlags = Helpers::reverseMap(flags);
@@ -34,7 +35,7 @@ namespace QUtils::Drawing::SDL
 		unsigned int i = 0;
 		for (const auto& pair : flags)
 		{
-			if ((fl & pair.first) > 0)
+			if ((int)(fl & pair.first) > 0)
 			{
 				i |= pair.second;
 			}

@@ -3,7 +3,7 @@
 
 namespace QUtils::Drawing::SDL
 {
-	enum RendererFlags
+	enum struct RendererFlags
 	{
 		Software = 1,
 		Accelerated = 2,

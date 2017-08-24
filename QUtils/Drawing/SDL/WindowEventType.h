@@ -2,24 +2,24 @@
 
 namespace QUtils::Drawing::SDL
 {
-	enum WindowEventType
+	enum struct WindowEventType
 	{
-		WindowHidden,
-		WindowExposed,
-		WindowMoved,
-		WindowResized,
-		WindowSizeChanged,
-		WindowMinimized,
-		WindowMaximized,
-		WindowRestored,
-		WindowEnter,
-		WindowLeave,
-		WindowFocusGained,
-		WindowFocusLost,
-		WindowClose,
+		Hidden,
+		Exposed,
+		Moved,
+		Resized,
+		SizeChanged,
+		Minimized,
+		Maximized,
+		Restored,
+		Enter,
+		Leave,
+		FocusGained,
+		FocusLost,
+		Close,
 		#ifdef SDL_2_0_5
-		WindowTakeFocus,
-		WindowHitTest,
+		TakeFocus,
+		HitTest,
 		#endif
 	};
 	

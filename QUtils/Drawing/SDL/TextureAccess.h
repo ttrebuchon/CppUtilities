@@ -2,7 +2,7 @@
 
 namespace QUtils::Drawing::SDL
 {
-	enum TextureAccess
+	enum struct TextureAccess
 	{
 		Static = 1,
 		Streaming = 2,

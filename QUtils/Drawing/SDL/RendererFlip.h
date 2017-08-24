@@ -3,9 +3,9 @@
 
 namespace QUtils::Drawing::SDL
 {
-	enum RendererFlip
+	enum struct RendererFlip
 	{
-		NoFlip = 1,
+		None = 1,
 		Horizontal = 2,
 		Vertical = 4,
 	};

@@ -18,11 +18,12 @@ namespace QUtils::Drawing::SDL
 		}
 	}
 	
+	#define DEFENUM(x, y) { RendererFlip::x, SDL_FLIP_##y }
 	
 	static std::map<RendererFlip, unsigned int> flips = {
-		{ NoFlip, SDL_FLIP_NONE },
-		{ Horizontal, SDL_FLIP_HORIZONTAL },
-		{ Vertical, SDL_FLIP_VERTICAL }
+		DEFENUM(None, NONE),
+		DEFENUM(Horizontal, HORIZONTAL),
+		DEFENUM(Vertical, VERTICAL),
 	};
 	
 	static std::map<unsigned int, RendererFlip> revFlips = Helpers::reverseMap(flips);
@@ -33,7 +34,7 @@ namespace QUtils::Drawing::SDL
 		unsigned int i = 0;
 		for (const auto& pair : flips)
 		{
-			if ((fl & pair.first) > 0)
+			if ((int)(fl & pair.first) > 0)
 			{
 				i |= pair.second;
 			}

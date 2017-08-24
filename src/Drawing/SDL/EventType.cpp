@@ -18,7 +18,7 @@ namespace QUtils::Drawing::SDL
 		}
 	}
 	
-	#define DEFTYPE(x, y) { x, SDL_##y, }
+	#define DEFTYPE(x, y) { EventType::x, SDL_##y, }
 	
 	static std::map<EventType, SDL_EventType> types = {
 		DEFTYPE(FirstEvent, FIRSTEVENT),
@@ -61,9 +61,11 @@ namespace QUtils::Drawing::SDL
 		DEFTYPE(MultiGesture, MULTIGESTURE),
 		DEFTYPE(ClipboardUpdate, CLIPBOARDUPDATE),
 		DEFTYPE(DropFile, DROPFILE),
-		//DEFTYPE(DropText, DROPTEXT),
-		//DEFTYPE(DropBegin, DROPBEGIN),
-		//DEFTYPE(DropComplete, DROPCOMPLETE),
+		#ifdef SDL_2_0_5
+		DEFTYPE(DropText, DROPTEXT),
+		DEFTYPE(DropBegin, DROPBEGIN),
+		DEFTYPE(DropComplete, DROPCOMPLETE),
+		#endif
 		DEFTYPE(AudioDeviceAdded, AUDIODEVICEADDED),
 		DEFTYPE(AudioDeviceRemoved, AUDIODEVICEREMOVED),
 		DEFTYPE(Render_Targets_Reset, RENDER_TARGETS_RESET),

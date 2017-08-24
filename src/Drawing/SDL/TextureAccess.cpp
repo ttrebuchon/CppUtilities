@@ -18,11 +18,12 @@ namespace QUtils::Drawing::SDL
 		}
 	}
 	
+	#define DEFENUM(x, y) { TextureAccess::x, SDL_TEXTUREACCESS_##y }
 	
 	static std::map<TextureAccess, SDL_TextureAccess> accesses = {
-		{ Static, SDL_TEXTUREACCESS_STATIC },
-		{ Streaming, SDL_TEXTUREACCESS_STREAMING },
-		{ Target, SDL_TEXTUREACCESS_TARGET }
+		DEFENUM(Static, STATIC),
+		DEFENUM(Streaming, STREAMING),
+		DEFENUM(Target, TARGET),
 	};
 	
 	static std::map<SDL_TextureAccess, TextureAccess> revAccesses = Helpers::reverseMap(accesses);
