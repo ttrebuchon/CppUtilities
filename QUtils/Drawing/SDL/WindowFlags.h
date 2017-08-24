@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Version.h"
 
 namespace QUtils::Drawing::SDL
 {
@@ -20,11 +20,13 @@ namespace QUtils::Drawing::SDL
 		Foreign = 4096,
 		AllowHighDPI = 8192,
 		MouseCapture = 16384,
+		#if SDL_VERSION_MIN(2, 0, 5)
 		AlwaysOnTop = 32768,
 		SkipTaskbar = 65536,
 		Utility = 131072,
 		Tooltip = 262144,
 		PopupMenu = 524288
+		#endif
 	};
 	
 	inline WindowFlags operator|(WindowFlags a, WindowFlags b)

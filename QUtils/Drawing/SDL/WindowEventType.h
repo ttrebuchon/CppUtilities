@@ -1,4 +1,5 @@
 #pragma once
+#include "Version.h"
 
 namespace QUtils::Drawing::SDL
 {
@@ -17,7 +18,7 @@ namespace QUtils::Drawing::SDL
 		FocusGained,
 		FocusLost,
 		Close,
-		#ifdef SDL_2_0_5
+		#if SDL_VERSION_MIN(2, 0, 5)
 		TakeFocus,
 		HitTest,
 		#endif
