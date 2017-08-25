@@ -2,6 +2,10 @@
 #include "IfSDL.h"
 #include <map>
 
+#ifdef DEBUG
+#include <iostream>
+#endif
+
 
 namespace QUtils::Drawing::SDL
 {
@@ -77,14 +81,37 @@ namespace QUtils::Drawing::SDL
 	static std::map<SDL_EventType, EventType> revTypes = Helpers::reverseMap(types);
 	
 	
-	
 	int SDL_RawEventType(EventType type)
 	{
+		#ifdef DEBUG
+		try
+		{
+		#endif
 		return types.at(type);
+		#ifdef DEBUG
+		}
+		catch (std::exception& ex)
+		{
+			std::cout << "\nCould not find raw equivalent for " << (int)type << "\n";
+			throw;
+		}
+		#endif
 	}
 	
 	EventType SDL_EnumEventType(int type)
 	{
+		#ifdef DEBUG
+		try
+		{
+		#endif
 		return revTypes.at((SDL_EventType)type);
+		#ifdef DEBUG
+		}
+		catch (std::exception& ex)
+		{
+			std::cout << "\nCould not find enum equivalent for " << (int)type << "\n";
+			throw;
+		}
+		#endif
 	}
 }
