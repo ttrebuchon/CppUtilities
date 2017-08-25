@@ -50,7 +50,7 @@ namespace QUtils::Drawing::SDL
 		static void FlushEvent(EventType);
 		static void FlushEvents(EventType min, EventType max);
 		
-		static bool GetEventFilter(int (*filter)(void*, SDL_Event*), void** userData);
+		static bool GetEventFilter(int (**filter)(void*, SDL_Event*), void** userData);
 		static bool GetEventFilter(std::function<int(void*, SDL_Event*)>*, void**);
 		
 		static unsigned char GetEventState(EventType);
@@ -66,7 +66,7 @@ namespace QUtils::Drawing::SDL
 		static bool pollEvent(SDL_Event*);
 		static bool QuitRequested();
 		static void RecordGesture(/*SDL_TouchID*/int);
-		EventType RegisterEvents(int);
+		static EventType RegisterEvents(int);
 		
 		
 		static void SetEventFilter(int (filter)(void*, SDL_Event*), void* userData);
@@ -93,6 +93,8 @@ namespace QUtils::Drawing::SDL
 		}
 		static void WaitEventTimeout(SDL_Event*, int);
 		static Event* WaitEventTimeout(int);
+		
+		static Event* FromSDLEvent(SDL_Event*);
 		
 		
 	};
