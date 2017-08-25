@@ -62,8 +62,8 @@ namespace QUtils::Drawing::SDL
 		static void PumpEvents();
 		static bool PushEvent(SDL_Event*);
 		static bool PushEvent(Event*);
-		static Event* pollEvent();
-		static bool pollEvent(SDL_Event*);
+		static Event* PollEvent();
+		static bool PollEvent(SDL_Event*);
 		static bool QuitRequested();
 		static void RecordGesture(/*SDL_TouchID*/int);
 		static EventType RegisterEvents(int);
