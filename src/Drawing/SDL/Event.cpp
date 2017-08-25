@@ -1,7 +1,12 @@
 #include <QUtils/Drawing/SDL/Event.h>
 #include <QUtils/Drawing/SDL/Errors.h>
+#include <QUtils/Drawing/SDL/Events/Events.h>
+#include <QUtils/Drawing/SDL/EventEnumMappings.h>
 #include "IfSDL.h"
 #include <QUtils/Exception/NotImplemented.h>
+
+
+using namespace QUtils::Drawing::SDL::EventMappings;
 
 namespace QUtils::Drawing::SDL
 {
@@ -116,12 +121,17 @@ namespace QUtils::Drawing::SDL
 		throw NotImp();
 	}
 	
-	Event* Event::pollEvent()
+	Event* Event::PollEvent()
 	{
-		throw NotImp();
+		SDL_Event ev;
+		if (!PollEvent(&ev))
+		{
+			return NULL;
+		}
+		return FromSDLEvent(&ev);
 	}
 	
-	bool Event::pollEvent(SDL_Event* ev)
+	bool Event::PollEvent(SDL_Event* ev)
 	{
 		return (SDL_PollEvent(ev) == 1);
 	}
@@ -159,7 +169,9 @@ namespace QUtils::Drawing::SDL
 	
 	Event* Event::WaitEvent()
 	{
-		throw NotImp();
+		SDL_Event ev;
+		WaitEvent(&ev);
+		return FromSDLEvent(&ev);
 	}
 	
 	void Event::WaitEventTimeout(SDL_Event* ev, int t)
@@ -167,13 +179,114 @@ namespace QUtils::Drawing::SDL
 		SDL_WaitEventTimeout(ev, t);
 	}
 	
-	Event* Event::WaitEventTimeout(int)
+	Event* Event::WaitEventTimeout(int t)
 	{
-		throw NotImp();
+		SDL_Event ev;
+		WaitEventTimeout(&ev, t);
+		return FromSDLEvent(&ev);
 	}
 	
-	Event* Event::FromSDLEvent(SDL_Event*)
+	Event* Event::FromSDLEvent(SDL_Event* ev)
 	{
+		EventType type = SDL_EnumEventType(ev->type);
+		switch (type)
+		{
+			case EventType::Quit:
+			return new QuitEvent(ev->quit);
+			
+			case EventType::WindowEvent:
+			return new WindowEvent(ev->window);
+			
+			case EventType::SysWMEvent:
+			return new SysWMEvent(ev->syswm);
+			
+			case EventType::KeyDown:
+			case EventType::KeyUp:
+			/*{
+				const EventType v = EventType::KeyDown;
+				typedef typename Event_t<v>::type Type;
+				return new Type(Enum_t<Type>::get(ev));
+			}*/
+			return new KeyboardEvent(ev->key);
+			
+			case EventType::TextEditing:
+			return new TextEditingEvent(ev->edit);
+			
+			case EventType::TextInput:
+			return new TextInputEvent(ev->text);
+			
+			case EventType::MouseMotion:
+			return new MouseMotionEvent(ev->motion);
+			
+			case EventType::MouseButtonDown:
+			case EventType::MouseButtonUp:
+			return new MouseButtonEvent(ev->button);
+			
+			case EventType::MouseWheel:
+			return new MouseWheelEvent(ev->wheel);
+			
+			case EventType::JoyAxisMotion:
+			return new JoyAxisEvent(ev->jaxis);
+			
+			case EventType::JoyBallMotion:
+			return new JoyBallEvent(ev->jball);
+			
+			case EventType::JoyHatMotion:
+			return new JoyHatEvent(ev->jhat);
+			
+			case EventType::JoyButtonDown:
+			case EventType::JoyButtonUp:
+			return new JoyButtonEvent(ev->jbutton);
+			
+			case EventType::JoyDeviceAdded:
+			case EventType::JoyDeviceRemoved:
+			return new JoyDeviceEvent(ev->jdevice);
+			
+			case EventType::ControllerAxisMotion:
+			return new ControllerAxisEvent(ev->caxis);
+			
+			case EventType::ControllerButtonDown:
+			case EventType::ControllerButtonUp:
+			return new ControllerButtonEvent(ev->cbutton);
+			
+			case EventType::ControllerDeviceAdded:
+			case EventType::ControllerDeviceRemoved:
+			case EventType::ControllerDeviceRemapped:
+			return new ControllerDeviceEvent(ev->cdevice);
+			
+			case EventType::FingerDown:
+			case EventType::FingerUp:
+			case EventType::FingerMotion:
+			return new TouchFingerEvent(ev->tfinger);
+			
+			case EventType::DollarGesture:
+			case EventType::DollarRecord:
+			return new DollarGestureEvent(ev->dgesture);
+			
+			case EventType::MultiGesture:
+			return new MultiGestureEvent(ev->mgesture);
+			
+			case EventType::ClipboardUpdate:
+			return NULL;
+			
+			case EventType::DropFile:
+			#if SDL_VERSION_MIN(2,0,5)
+			case EventType::DropText:
+			case EventType::DropBegin:
+			case EventType::DropComplete:
+			#endif
+			return new DropEvent(ev->drop);
+			
+			case EventType::AudioDeviceAdded:
+			case EventType::AudioDeviceRemoved:
+			return new AudioDeviceEvent(ev->adevice);
+			
+			case EventType::UserEvent:
+			return new UserEvent(ev->user);
+			
+			default:
+			break;
+		}
 		throw NotImp();
 	}
 }
