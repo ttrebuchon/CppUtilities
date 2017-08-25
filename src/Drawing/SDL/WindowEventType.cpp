@@ -2,6 +2,10 @@
 #include "IfSDL.h"
 #include <map>
 
+#ifdef DEBUG
+#include <iostream>
+#endif
+
 
 namespace QUtils::Drawing::SDL
 {
@@ -21,6 +25,8 @@ namespace QUtils::Drawing::SDL
 	#define DEFTYPE(x, y) { WindowEventType::x, SDL_WINDOWEVENT_##y, }
 	
 	static std::map<WindowEventType, SDL_WindowEventID> types = {
+		DEFTYPE(None, NONE),
+		DEFTYPE(Shown, SHOWN),
 		DEFTYPE(Hidden, HIDDEN),
 		DEFTYPE(Exposed, EXPOSED),
 		DEFTYPE(Moved, MOVED),
@@ -46,11 +52,36 @@ namespace QUtils::Drawing::SDL
 	
 	int SDL_RawWindowEventType(WindowEventType access)
 	{
+		#ifdef DEBUG
+		try
+		{
+		#endif
 		return types.at(access);
+		#ifdef DEBUG
+		}
+		catch (std::exception& ex)
+		{
+			std::cout << "\nCould not find WindowEventID raw equivalent for " << (int)access << "\n";
+			throw;
+		}
+		#endif
 	}
 	
 	WindowEventType SDL_EnumWindowEventType(int access)
 	{
+		#ifdef DEBUG
+		try
+		{
+		#endif
 		return revTypes.at((SDL_WindowEventID)access);
+		#ifdef DEBUG
+		}
+		catch (std::exception& ex)
+		{
+			std::cout << "\nCould not find WindowEventID enum equivalent for " << (int)access << "\n";
+			std::cout << SDL_WINDOWEVENT_NONE << ", " << SDL_WINDOWEVENT_SHOWN << "\n";
+			throw;
+		}
+		#endif
 	}
 }

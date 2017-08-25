@@ -3,8 +3,10 @@
 
 namespace QUtils::Drawing::SDL
 {
-	enum struct WindowEventType
+	enum struct WindowEventType : unsigned char
 	{
+		None = 0,
+		Shown,
 		Hidden,
 		Exposed,
 		Moved,
