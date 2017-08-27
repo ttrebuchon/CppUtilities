@@ -1,3 +1,5 @@
 #pragma once
 
-#include "Window.h"
+#include "AppWindow.h"
+#include "ViewComponent.h"
+#include "View.h"
