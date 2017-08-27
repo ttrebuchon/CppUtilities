@@ -2,6 +2,7 @@
 #include <QUtils/Drawing/SDL/Errors.h>
 #include <QUtils/Drawing/SDL/Events/Events.h>
 #include <QUtils/Drawing/SDL/EventEnumMappings.h>
+#include <map>
 #include "IfSDL.h"
 #include <QUtils/Exception/NotImplemented.h>
 
@@ -10,6 +11,21 @@ using namespace QUtils::Drawing::SDL::EventMappings;
 
 namespace QUtils::Drawing::SDL
 {
+	Event::~Event()
+	{
+		
+	}
+	
+	std::string Event::eventName() const
+	{
+		return SDL_EventTypeName(this->type);
+	}
+	
+	
+	
+	
+	
+	
 	namespace Helpers
 	{
 		template <class F>
@@ -17,19 +33,62 @@ namespace QUtils::Drawing::SDL
 		{
 			return (*(F*)data)(ev);
 		}
+		
+		static unsigned int EventWatchersCounter = 1;
+		static std::map<unsigned int, std::tuple<int(*)(void*, SDL_Event*), void*>> EventWatchers;
 	}
 	
 	
 	
-	void AddEventWatch(int (filter)(void*, SDL_Event*), void* userData)
+	void Event::AddEventWatch(int (filter)(void*, SDL_Event*), void* userData)
 	{
 		SDL_AddEventWatch(filter, userData);
 	}
 	
-	void Event::AddEventWatch(std::function<int(SDL_Event*)> filter)
+	unsigned int Event::AddEventWatch(std::function<int(SDL_Event*)> filter)
 	{
 		typedef std::function<int(SDL_Event*)> Func_t;
-		SDL_AddEventWatch(Helpers::EventWatch<Func_t>, (void*)(new Func_t(filter)));
+		auto lambda = new Func_t(filter);
+		SDL_AddEventWatch(Helpers::EventWatch<Func_t>, (void*)lambda);
+		unsigned int index;
+		Helpers::EventWatchers[index = Helpers::EventWatchersCounter++] = std::make_tuple(Helpers::EventWatch<Func_t>, (void*)lambda);
+		return index;
+	}
+	
+	void Event::AppendEventFilter(std::function<int(SDL_Event*)> filter)
+	{
+		std::function<int(SDL_Event*)> oldFilter;
+		bool hasOldFilter = GetEventFilter(&oldFilter);
+			
+		if (!hasOldFilter)
+		{
+			SetEventFilter(filter);
+		}
+		else
+		{
+			SetEventFilter(std::function<int(SDL_Event*)>([oldFilter, filter](SDL_Event* ev) -> int
+			{
+				auto r1 = oldFilter(ev);
+				auto r2 = filter(ev);
+				return r1 & r2;
+			}));
+		}
+	}
+	
+	void Event::DelEventWatch(int (filter)(void*, SDL_Event*), void* userData)
+	{
+		SDL_DelEventWatch(filter, userData);
+	}
+	
+	void Event::DelEventWatch(unsigned int index)
+	{
+		if (index >= Helpers::EventWatchersCounter)
+		{
+			throw SDLErrorException().Function(__func__).Line(__LINE__).Msg("Index (" + std::to_string(index) + ") is out of bounds [Current Counter: " + std::to_string(Helpers::EventWatchersCounter) + "]");
+		}
+		auto funcTuple = Helpers::EventWatchers.at(index);
+		Helpers::EventWatchers.erase(index);
+		SDL_DelEventWatch(std::get<0>(funcTuple), std::get<1>(funcTuple));
 	}
 	
 	
@@ -64,16 +123,16 @@ namespace QUtils::Drawing::SDL
 		return SDL_GetEventFilter(filter, userData) == SDL_TRUE;
 	}
 	
-	bool Event::GetEventFilter(std::function<int(void*, SDL_Event*)>* filter, void** data)
+	bool Event::GetEventFilter(std::function<int(SDL_Event*)>* filter)
 	{
-		
+		void* data;
 		typedef int (Filter_t)(void*, SDL_Event*);
 		Filter_t* filterPtr;
-		if (SDL_GetEventFilter(&filterPtr, data) == SDL_TRUE)
+		if (SDL_GetEventFilter(&filterPtr, &data) == SDL_TRUE)
 		{
 			if (filter != NULL)
 			{
-				*filter = std::function<int(void*, SDL_Event*)>([=](void* data, SDL_Event* ev) -> int
+				*filter = std::function<int(SDL_Event*)>([=](SDL_Event* ev) -> int
 				{
 					return (*filterPtr)(data, ev);
 				});
@@ -151,15 +210,16 @@ namespace QUtils::Drawing::SDL
 		return (EventType)SDL_RegisterEvents(x);
 	}
 	
-	
 	void Event::SetEventFilter(int (filter)(void*, SDL_Event*), void* userData)
 	{
-		throw NotImp();
+		SDL_SetEventFilter(filter, userData);
 	}
 	
 	void Event::SetEventFilter(std::function<int(SDL_Event*)> filter)
 	{
-		throw NotImp();
+		typedef std::function<int(SDL_Event*)> Func_t;
+		auto lambda = new Func_t(filter);
+		SDL_SetEventFilter(Helpers::EventWatch<Func_t>, (void*)lambda);
 	}
 	
 	void Event::WaitEvent(SDL_Event* ev)
@@ -267,6 +327,7 @@ namespace QUtils::Drawing::SDL
 			return new MultiGestureEvent(ev->mgesture);
 			
 			case EventType::ClipboardUpdate:
+			throw NotImp();
 			return NULL;
 			
 			case EventType::DropFile:

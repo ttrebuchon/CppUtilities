@@ -7,6 +7,18 @@ union SDL_Event;
 
 namespace QUtils::Drawing::SDL
 {
+	namespace Helpers
+	{
+		template <class F, class = void>
+		struct InvokeWhichEventType
+		{
+			static void call(const F f)
+			{
+				
+			}
+		};
+	}
+	
 	class Event
 	{
 		private:
@@ -16,25 +28,81 @@ namespace QUtils::Drawing::SDL
 		{}
 		Event(int type, unsigned int timestamp) : type(SDL_EnumEventType(type)), timestamp(timestamp)
 		{}
+		virtual ~Event();
 		const EventType type;
 		unsigned int timestamp;
 		
+		virtual std::string eventName() const;
+		
 		
 		static void AddEventWatch(int (filter)(void*, SDL_Event*), void* userData);
-		static void AddEventWatch(std::function<int(SDL_Event*)> filter);
+		static unsigned int AddEventWatch(std::function<int(SDL_Event*)> filter);
 		
 		template <class F, class Obj>
-		inline static void AddEventWatch(const F f, Obj* userData)
+		inline static unsigned int AddEventWatch(const F f, Obj* userData)
 		{
-			AddEventWatch(std::function<int(SDL_Event*)>([=](SDL_Event* ev) -> int
+			return AddEventWatch(std::function<int(SDL_Event*)>([=](SDL_Event* ev) -> int
 			{
 				return f(userData, ev);
 			}));
 		}
 		
+		inline static unsigned int AddEventWatch(std::function<int(Event*)> filter)
+		{
+			return AddEventWatch(std::function<int(SDL_Event*)>([=](SDL_Event* ev) -> int
+			{
+				auto ev2 = Event::FromSDLEvent(ev);
+				auto ret = filter(ev2);
+				delete ev2;
+				return ret;
+			}));
+		}
 		
+		inline static void AppendEventFilter(int (filter)(void*, SDL_Event*), void* userData)
+		{
+			std::function<int(SDL_Event*)> oldFilter;
+			bool hasOldFilter = GetEventFilter(&oldFilter);
+			
+			if (!hasOldFilter)
+			{
+				SetEventFilter(filter, userData);
+			}
+			else
+			{
+				SetEventFilter(std::function<int(SDL_Event*)>([oldFilter, filter, userData](SDL_Event* ev) -> int
+				{
+					auto r1 = oldFilter(ev);
+					auto r2 = filter(userData, ev);
+					return r1 & r2;
+				}));
+			}
+		}
+		
+		static void AppendEventFilter(std::function<int(SDL_Event*)> filter);
+		
+		template <class F, class Obj>
+		inline static void AppendEventFilter(const F f, Obj* userData)
+		{
+			AppendEventFilter(std::function<int(SDL_Event*)>([=](SDL_Event* ev) -> int
+			{
+				return f(userData, ev);
+			}));
+		}
+		
+		inline static void AppendEventFilter(std::function<int(Event*)> filter)
+		{
+			AppendEventFilter(std::function<int(SDL_Event*)>([=](SDL_Event* ev) -> int
+			{
+				auto ev2 = Event::FromSDLEvent(ev);
+				auto ret = filter(ev2);
+				delete ev2;
+				return ret;
+			}));
+		}
+		
+		static void DelEventWatch(int (filter)(void*, SDL_Event*), void* userData);
+		static void DelEventWatch(unsigned int index);
 		static unsigned char EventState(EventType, int state);
-		
 		static void FilterEvents(int (filter)(void*, SDL_Event*), void* userData);
 		static void FilterEvents(std::function<int(SDL_Event*)> filter);
 		
@@ -51,7 +119,7 @@ namespace QUtils::Drawing::SDL
 		static void FlushEvents(EventType min, EventType max);
 		
 		static bool GetEventFilter(int (**filter)(void*, SDL_Event*), void** userData);
-		static bool GetEventFilter(std::function<int(void*, SDL_Event*)>*, void**);
+		static bool GetEventFilter(std::function<int(SDL_Event*)>*);
 		
 		static unsigned char GetEventState(EventType);
 		
@@ -67,8 +135,6 @@ namespace QUtils::Drawing::SDL
 		static bool QuitRequested();
 		static void RecordGesture(/*SDL_TouchID*/int);
 		static EventType RegisterEvents(int);
-		
-		
 		static void SetEventFilter(int (filter)(void*, SDL_Event*), void* userData);
 		static void SetEventFilter(std::function<int(SDL_Event*)> filter);
 		
@@ -78,6 +144,16 @@ namespace QUtils::Drawing::SDL
 			SetEventFilter(std::function<int(SDL_Event*)>([=](SDL_Event* ev) -> int
 			{
 				return f(userData, ev);
+			}));
+		}
+		inline static void SetEventFilter(std::function<int(Event*)> filter)
+		{
+			SetEventFilter(std::function<int(SDL_Event*)>([=](SDL_Event* ev) -> int
+			{
+				auto ev2 = Event::FromSDLEvent(ev);
+				auto ret = filter(ev2);
+				delete ev2;
+				return ret;
 			}));
 		}
 		
