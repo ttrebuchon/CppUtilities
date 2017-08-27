@@ -26,23 +26,8 @@ namespace QUtils::GUI::SDL
 			int w = window->width();
 			std::cout << "(" << x << ", " << w << ") - " << ev->eventName();
 			std::cout << "\n";
-			return (int)(x >= w);
-		});
-		
-		Drawing::SDL::Event::AppendEventFilter([window] (Drawing::SDL::Event* ev) -> int
-		{
-			std::cout << ev->eventName();
-			std::cout << "\n";
 			return 1;
 		});
-		
-		
-		
-		Drawing::SDL::Event* ev;
-		while ((ev = Drawing::SDL::Event::PollEvent()) != NULL)
-		{
-			delete ev;
-		}
 	}
 	
 	SDLAppWindow::~SDLAppWindow()
