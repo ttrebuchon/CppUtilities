@@ -72,6 +72,16 @@ bool Test_SDL_GUI()
 		printArgs(x...);
 	};
 	
+	window->onClose += [](auto...)
+	{
+		dout << "Window Closed!\n";
+	};
+	
+	window->onFocus += [](auto...)
+	{
+		dout << "Window Focused\n";
+	};
+	
 	
 	
 	

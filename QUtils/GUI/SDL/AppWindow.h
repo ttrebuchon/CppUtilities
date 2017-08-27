@@ -8,6 +8,7 @@ namespace QUtils::Drawing::SDL
 {
 	class Window;
 	class Renderer;
+	class Event;
 }
 
 
@@ -23,6 +24,8 @@ namespace QUtils::GUI::SDL
 		Drawing::SDL::Renderer* ren;
 		
 		//std::map<SDLTexture*, std::list<SDL_Rect>> textures;
+		
+		virtual int handleEvent(Drawing::SDL::Event*);
 		
 		public:
 		SDLAppWindow(const std::string name, const int x, const int y, const int w, const int h, bool touch = false);

@@ -9,32 +9,53 @@
 #include <QUtils/Output/HexObject.h>
 
 #include <QUtils/Exception/NotImplemented.h>
-#include <assert.h>
 
 namespace QUtils::GUI::SDL
 {
 	SDLAppWindow::SDLAppWindow(const std::string title, const int x, const int y, const int w, const int h, bool touch) : AppWindow(touch), win(new Drawing::SDL::Window(title, x, y, w, h, Drawing::SDL::WindowFlags::Shown)), ren(NULL)
 	{
-		assert((unsigned int)Drawing::SDL::EventType::MouseMotion == 15);
 		ren = new Drawing::SDL::Renderer(win, -1, Drawing::SDL::RendererFlags::TargetTexture);
 		ren->target(NULL);
 		ren->setDrawColor(0, 0, 0, 0);
 		ren->clear();
 		ren->renderPresent();
 		
-		#define ECASE(x) case Drawing::SDL::EventType::x
 		
-		Drawing::SDL::Event::AppendEventFilter([&] (Drawing::SDL::Event* ev) -> int
+		Drawing::SDL::Event::AppendEventFilter([&](Drawing::SDL::Event* ev) ->int
 		{
-			using namespace Drawing::SDL;
-			switch (ev->type)
+			return this->handleEvent(ev);
+		});
+		
+		Drawing::SDL::Event::FlushEvents(0, 0xFFFFFFFF);
+	}
+	
+	SDLAppWindow::~SDLAppWindow()
+	{
+		if (ren != NULL)
+		{
+			delete ren;
+		}
+		if (win != NULL)
+		{
+			delete win;
+			Drawing::SDL::Event::SetEventFilter(NULL, NULL);
+		}
+	}
+	
+	
+	#define ECASE(x) case Drawing::SDL::EventType::x
+	
+	int SDLAppWindow::handleEvent(Drawing::SDL::Event* ev)
+	{
+		using namespace Drawing::SDL;
+		switch (ev->type)
+		{
+			ECASE(Quit):
+			this->onQuit();
+			return 0;
+			
+			ECASE(FingerDown):
 			{
-				ECASE(Quit):
-				this->onQuit();
-				return 0;
-				
-				ECASE(FingerDown):
-				{
 				auto fEv = (TouchFingerEvent*)ev;
 				onFingerDown(this, fEv->timestamp, fEv->touchId, fEv->fingerId, fEv->x, fEv->y, fEv->dx, fEv->dy, fEv->pressure);
 				}
@@ -171,25 +192,14 @@ namespace QUtils::GUI::SDL
 			}
 			std::cout << "No Handler for " << ev->eventName() << " (" << (int)ev->type << ")\n";
 			return 1;
-		});
+		}
 		#undef ECASE
-		
-		
-		Drawing::SDL::Event::FlushEvents(0, 0xFFFFFFFF);
-	}
 	
-	SDLAppWindow::~SDLAppWindow()
-	{
-		if (ren != NULL)
-		{
-			delete ren;
-		}
-		if (win != NULL)
-		{
-			delete win;
-			Drawing::SDL::Event::SetEventFilter(NULL, NULL);
-		}
-	}
+	
+	
+	
+	
+	
 	
 	int SDLAppWindow::width() const
 	{
@@ -231,12 +241,15 @@ namespace QUtils::GUI::SDL
 		while ((ev = Drawing::SDL::Event::PollEvent()) != NULL)
 		{
 			std::cout << ev->eventName() << " (" << (int)ev->type << ")\n";
+			if (handleEvent(ev) != 0)
+			{
 			switch (ev->type)
 			{
 				
 				default:
 				std::cout << "Throwing because of " << ev->eventName() << " (" << (int)ev->type << ") [" << ev->timestamp << "]\n";
 				throw NotImp();
+			}
 			}
 		}
 	}
