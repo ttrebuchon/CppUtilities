@@ -1,13 +1,9 @@
 #include <QUtils/Drawing/SDL/Event.h>
 #include <QUtils/Drawing/SDL/Errors.h>
 #include <QUtils/Drawing/SDL/Events/Events.h>
-#include <QUtils/Drawing/SDL/EventEnumMappings.h>
 #include <map>
 #include "IfSDL.h"
 #include <QUtils/Exception/NotImplemented.h>
-
-
-using namespace QUtils::Drawing::SDL::EventMappings;
 
 namespace QUtils::Drawing::SDL
 {
