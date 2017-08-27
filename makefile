@@ -174,13 +174,13 @@ LINKING := $(LINKING) -lpthread
 endif
 
 ifeq ($(HAS_SDL2), TRUE)
-LINKING := $(LINKING) -lSDL2
+LINKING := $(LINKING) -lSDL2 -ltiff -lSDL2_ttf
 endif
 
 
 
 CXX = g++
-CXXFLAGS = -std=c++17 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -O0 $(DEPS)
+CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -O0 $(DEPS)
 CXXFLAGS := $(CXXFLAGS) -Wall
 libdeps = $(libobjects:.o=.d)
 testdeps = $(testobjects:.o=.d)
