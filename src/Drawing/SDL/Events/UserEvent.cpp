@@ -7,7 +7,10 @@ namespace QUtils::Drawing::SDL
 {
 	UserEvent::UserEvent(const SDL_UserEvent* ev) : Event(ev->type, ev->timestamp)
 	{
-		
+		INIT_MEMBER(windowID);
+		INIT_MEMBER(code);
+		INIT_MEMBER(data1);
+		INIT_MEMBER(data2);
 	}
 	
 	UserEvent::UserEvent(const SDL_UserEvent& ev) : UserEvent(&ev)
