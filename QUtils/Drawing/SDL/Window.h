@@ -77,8 +77,11 @@ namespace QUtils::Drawing::SDL
 		void updateSurface(int x, int y, int w, int h);
 		void updateSurfaceRects(const SDL_Rect*, int count);
 		Renderer* renderer() const;
-		static Event* pollEvent();
-		static bool pollEvent(SDL_Event*);
+		
+		int width() const;
+		int height() const;
+		int x() const;
+		int y() const;
 		
 		
 		

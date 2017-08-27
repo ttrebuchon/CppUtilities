@@ -76,13 +76,7 @@ namespace QUtils::Drawing::SDL
 	Window* Window::GetFromID(unsigned int id)
 	{
 		auto ptr = SDL_GetWindowFromID(id);
-		if (ptr == NULL)
-		{
-			return NULL;
-		}
-		auto win = new Window();
-		win->ptr = ptr;
-		return win;
+		return Window::getObject(ptr);
 	}
 	
 	
@@ -254,6 +248,34 @@ namespace QUtils::Drawing::SDL
 		SDL_Renderer* renPtr;
 		SDL_ERRORIF(renPtr = SDL_GetRenderer(ptr), NULL);
 		return Renderer::getObject(renPtr);
+	}
+	
+	int Window::width() const
+	{
+		int w;
+		SDL_GetWindowSize(ptr, &w, NULL);
+		return w;
+	}
+	
+	int Window::height() const
+	{
+		int h;
+		SDL_GetWindowSize(ptr, NULL, &h);
+		return h;
+	}
+	
+	int Window::x() const
+	{
+		int x;
+		SDL_GetWindowPosition(ptr, &x, NULL);
+		return x;
+	}
+	
+	int Window::y() const
+	{
+		int y;
+		SDL_GetWindowPosition(ptr, NULL, &y);
+		return y;
 	}
 	
 	
