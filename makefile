@@ -86,8 +86,8 @@ Guid_cpp = $(wildcard $(SRC)/GUID/**/*.cpp) $(wildcard $(SRC)/GUID/*.cpp)
 Guid = $(Guid_cpp:.cpp=.o)
 #*/
 
-GUI_SDL_cpp = $(wildcard $(SRC)/GUI/SDL/**/*.cpp) $(wildcard $(SRC)/GUI/SDL/*.cpp)
-GUI_SDL = $(GUI_SDL_cpp:.cpp=.o)
+GUI_cpp = $(wildcard $(SRC)/GUI/**/*.cpp) $(wildcard $(SRC)/GUI/*.cpp)
+GUI = $(GUI_cpp:.cpp=.o)
 #*/
 
 Output_cpp = $(wildcard $(SRC)/Output/**/*.cpp) $(wildcard $(SRC)/Output/*.cpp)
@@ -99,7 +99,7 @@ Drawing_SDL = $(Drawing_SDL_cpp:.cpp=.o)
 #*/
 
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI_SDL) $(Output) $(Drawing_SDL)
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
