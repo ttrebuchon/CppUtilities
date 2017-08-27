@@ -1,5 +1,6 @@
 #pragma once
 #include "Version.h"
+#include <string>
 
 namespace QUtils::Drawing::SDL
 {
@@ -60,6 +61,11 @@ namespace QUtils::Drawing::SDL
 	
 	int SDL_RawEventType(EventType);
 	EventType SDL_EnumEventType(int);
+	std::string SDL_EventTypeName(EventType);
+	inline std::string SDL_EventTypeName(int type)
+	{
+		return SDL_EventTypeName(SDL_EnumEventType(type));
+	}
 	
 	
 }

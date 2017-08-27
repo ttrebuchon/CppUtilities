@@ -11,20 +11,20 @@ namespace QUtils::Drawing::SDL
 {
 	namespace Helpers
 	{
-		std::map<SDL_EventType, EventType> reverseMap(const std::map<EventType, SDL_EventType>& map)
+		std::map<SDL_EventType, EventType> reverseMap(const std::map<EventType, std::tuple<SDL_EventType, std::string>>& map)
 		{
 			std::map<SDL_EventType, EventType> nMap;
 			for (auto& pair : map)
 			{
-				nMap[pair.second] = pair.first;
+				nMap[std::get<0>(pair.second)] = pair.first;
 			}
 			return nMap;
 		}
 	}
 	
-	#define DEFTYPE(x, y) { EventType::x, SDL_##y, }
+	#define DEFTYPE(x, y) { EventType::x, std::make_tuple(SDL_##y, #x), }
 	
-	static std::map<EventType, SDL_EventType> types = {
+	static std::map<EventType, std::tuple<SDL_EventType, std::string>> types = {
 		DEFTYPE(FirstEvent, FIRSTEVENT),
 		DEFTYPE(Quit, QUIT),
 		DEFTYPE(App_Terminating, APP_TERMINATING),
@@ -87,7 +87,7 @@ namespace QUtils::Drawing::SDL
 		try
 		{
 		#endif
-		return types.at(type);
+		return std::get<0>(types.at(type));
 		#ifdef DEBUG
 		}
 		catch (std::exception& ex)
@@ -113,5 +113,10 @@ namespace QUtils::Drawing::SDL
 			throw;
 		}
 		#endif
+	}
+	
+	std::string SDL_EventTypeName(EventType type)
+	{
+		return std::get<1>(types.at(type));
 	}
 }
