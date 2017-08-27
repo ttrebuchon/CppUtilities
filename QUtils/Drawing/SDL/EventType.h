@@ -4,7 +4,7 @@
 
 namespace QUtils::Drawing::SDL
 {
-	enum struct EventType
+	enum struct EventType : unsigned int
 	{
 		FirstEvent,
 		Quit,
@@ -59,10 +59,10 @@ namespace QUtils::Drawing::SDL
 		LastEvent
 	};
 	
-	int SDL_RawEventType(EventType);
-	EventType SDL_EnumEventType(int);
+	unsigned int SDL_RawEventType(EventType);
+	EventType SDL_EnumEventType(unsigned int);
 	std::string SDL_EventTypeName(EventType);
-	inline std::string SDL_EventTypeName(int type)
+	inline std::string SDL_EventTypeName(unsigned int type)
 	{
 		return SDL_EventTypeName(SDL_EnumEventType(type));
 	}

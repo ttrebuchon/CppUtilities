@@ -81,7 +81,7 @@ namespace QUtils::Drawing::SDL
 	static std::map<SDL_EventType, EventType> revTypes = Helpers::reverseMap(types);
 	
 	
-	int SDL_RawEventType(EventType type)
+	unsigned int SDL_RawEventType(EventType type)
 	{
 		#ifdef DEBUG
 		try
@@ -98,7 +98,7 @@ namespace QUtils::Drawing::SDL
 		#endif
 	}
 	
-	EventType SDL_EnumEventType(int type)
+	EventType SDL_EnumEventType(unsigned int type)
 	{
 		#ifdef DEBUG
 		try

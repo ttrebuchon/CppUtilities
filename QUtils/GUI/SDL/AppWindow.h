@@ -25,7 +25,7 @@ namespace QUtils::GUI::SDL
 		//std::map<SDLTexture*, std::list<SDL_Rect>> textures;
 		
 		public:
-		SDLAppWindow(const std::string name, const int x, const int y, const int w, const int h);
+		SDLAppWindow(const std::string name, const int x, const int y, const int w, const int h, bool touch = false);
 		virtual ~SDLAppWindow();
 		
 		virtual int width() const override;

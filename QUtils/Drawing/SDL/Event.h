@@ -117,6 +117,7 @@ namespace QUtils::Drawing::SDL
 		
 		static void FlushEvent(EventType);
 		static void FlushEvents(EventType min, EventType max);
+		static void FlushEvents(unsigned int min, unsigned int max);
 		
 		static bool GetEventFilter(int (**filter)(void*, SDL_Event*), void** userData);
 		static bool GetEventFilter(std::function<int(SDL_Event*)>*);

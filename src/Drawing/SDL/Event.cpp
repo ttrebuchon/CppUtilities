@@ -114,6 +114,11 @@ namespace QUtils::Drawing::SDL
 		SDL_FlushEvents(SDL_RawEventType(min), SDL_RawEventType(max));
 	}
 	
+	void Event::FlushEvents(unsigned int min, unsigned int max)
+	{
+		SDL_FlushEvents(min, max);
+	}
+	
 	bool Event::GetEventFilter(int (**filter)(void*, SDL_Event*), void** userData)
 	{
 		return SDL_GetEventFilter(filter, userData) == SDL_TRUE;

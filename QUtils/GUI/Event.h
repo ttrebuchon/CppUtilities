@@ -9,14 +9,21 @@ namespace QUtils::GUI
 	{
 		protected:
 		std::list<std::function<void(T...)>> handlers;
+		bool _enabled;
 		
 		public:
 		
+		Event() : Event(true) {}
+		Event(bool _enabled) : handlers(), _enabled(_enabled) {}
+		
 		void operator()(T... t) const
 		{
-			for (const auto& callback : handlers)
+			if (_enabled)
 			{
-				callback(t...);
+				for (const auto& callback : handlers)
+				{
+					callback(t...);
+				}
 			}
 		}
 		
@@ -34,6 +41,21 @@ namespace QUtils::GUI
 		{
 			handlers.push_back(f);
 			return *this;
+		}
+		
+		void enable()
+		{
+			_enabled = true;
+		}
+		
+		void disable()
+		{
+			_enabled = false;
+		}
+		
+		bool enabled() const
+		{
+			return _enabled;
 		}
 		
 	};
