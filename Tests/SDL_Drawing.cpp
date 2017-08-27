@@ -5,6 +5,13 @@
 
 #include <QUtils/Types/CompilerPrint.h>
 
+template <int N, class... T>
+int EventCB(T...)
+{
+	dout << "EventCB Called\n";
+	return N;
+}
+
 
 using namespace QUtils::Drawing::SDL;
 bool Test_SDL_Drawing()
@@ -274,7 +281,87 @@ bool Test_SDL_Drawing()
 		delete wev;
 	}
 	
+	Event::SetEventFilter(EventCB<1, void*, SDL_Event*>, NULL);
 	
+	std::function<int(SDL_Event*)> ef;
+	assert_ex(Event::GetEventFilter(&ef));
+	
+	Event* ev = NULL;
+	while ((ev = Event::PollEvent()) != NULL)
+	{
+		dout << ev->eventName() << ", ";
+		delete ev;
+	}
+	dout << "\n";
+	
+	dout << "Testing EF...";
+	ef(NULL);
+	dout << "...\n";
+	
+	Event::SetEventFilter([=](SDL_Event* ev) -> int {
+		dout << "Lambda Filter - ";
+		return ef(ev) & 1;
+	});
+	
+	std::function<int(SDL_Event*)> ef2;
+	Event::GetEventFilter(&ef2);
+	dout << "Testing...";
+	ef2(NULL);
+	dout << "...\n";
+	
+	Event::SetEventFilter(NULL, NULL);
+	
+	
+	dout << "Adding Event Watch...\n";
+	auto watchIndex = Event::AddEventWatch([&win](Event* x) -> int
+	{
+		dout << "Event Watcher: [" << (x != NULL ? (std::to_string((int)x->type) + ": " + x->eventName()) : "") << "]\n";
+		if (x != NULL)
+		{
+			if (x->type == EventType::WindowEvent)
+			{
+				auto ev = (WindowEvent*)x;
+				dout << (int)ev->event << "\n";
+				dout << ev->windowID << "\n";
+				auto evWin = Window::GetFromID(ev->windowID);
+				assert_ex(win->ID() == evWin->ID());
+				assert_ex(evWin == win);
+				//return 0;
+			}
+		}
+		return 1;
+	});
+	
+	win->setSize(w/2, h);
+	
+	while ((ev = Event::PollEvent()) != NULL)
+	{
+		dout << ev->eventName() << ", ";
+		delete ev;
+	}
+	dout << "\n";
+	
+	
+	win->setSize(w, h);
+	
+	{
+		SDL_Delay(1000);
+		/*SDL_Event ev;
+		while (SDL_PollEvent(&ev) != 0)
+		{
+			dout << "Event: " << ev.type << "\n";
+		}*/
+		while ((ev = Event::PollEvent()) != NULL)
+		{
+			dout << ev->eventName() << ", ";
+			delete ev;
+		}
+		dout << "\n";
+		
+	}
+	
+	dout << "Removing Event Watch...\n";
+	Event::DelEventWatch(watchIndex);
 	
 	
 	
@@ -282,6 +369,8 @@ bool Test_SDL_Drawing()
 	{
 		delete winsurf;
 	}*/
+	
+	Event::SetEventFilter(NULL, NULL);
 	
 	if (tex3 != NULL)
 	{
