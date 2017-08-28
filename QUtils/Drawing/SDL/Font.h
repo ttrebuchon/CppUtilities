@@ -26,6 +26,8 @@ namespace QUtils::Drawing::SDL
 		
 		public:
 		
+		virtual ~Font();
+		
 		static Font* Open(const std::string file, int size);
 		static Font* OpenFont(const std::string file, int size);
 		
@@ -104,6 +106,11 @@ namespace QUtils::Drawing::SDL
 		Surface* surfaceUnicodeBlended(const std::basic_string<char16_t>, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha) const;
 		Surface* surfaceGlyphBlended(unsigned short glyph, const Color) const;
 		Surface* surfaceGlyphBlended(unsigned short glyph, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha) const;
+		
+		Surface* surfaceBlendedWrapped(const std::string, const Color, const int wrapLen) const;
+		Surface* surfaceBlendedWrapped(const std::string, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha, const int wrapLen) const;
+		Surface* surfaceBlendedWrappedWithRatio(const std::string, const Color, const double) const;
+		Surface* surfaceBlendedWrappedWithRatio(const std::string, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha, const double) const;
 		
 		
 	};

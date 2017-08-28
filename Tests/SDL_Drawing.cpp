@@ -376,77 +376,52 @@ bool Test_SDL_Drawing()
 		Font* font1 = Font::Open("font1.ttf", ptSize);
 		assert_ex(font1 != NULL);
 		dout << "FontData: \n\n";
-		dout << "Height: " << font1->height() << "\n";
+		dout << "Font Height: " << font1->height() << "\n";
 		assert_ex(font1->height() == 921);
 		font1->hinting(FontHinting::Mono);
 		assert_ex(font1->hinting() == FontHinting::Mono);
 		assert_ex(!font1->isFixedWidth());
 		
-		const std::string testStr = "Hello, world!";
-		int adv, minx, maxx;
-		for (char c : testStr)
-		{
-			assert_ex(c != '\0');
-			font1->glyphMetrics(c, &minx, &maxx, NULL, NULL, &adv);
-			dout << c << ": (" << minx << ", " << maxx << ", " << adv << ")\n";
-		}
-		
-		std::string testStr2 = "";
-		int _w;
-		for (auto c : testStr)
-		{
-			testStr2 += c;
-			font1->textSize(testStr2, &_w, NULL);
-			dout << "Width: [" << _w << "] \t(" << testStr2 << ")\n";
-		}
-		
-		testStr2 = "";
-		font1->textSize(testStr2.c_str(), &_w, NULL);
-		dout << "Zero Length String Width: " << _w << "\n";
+		const std::string testStr = "Hello, world!\nThis is a Test";
 		
 		
-		std::string testStr3;
-		testStr2 = testStr;
-		testStr3 = "";
-		int w2;
-		int w3;
 		
-		while (testStr2.length() > 0)
-		{
-			font1->textSize(testStr2.c_str(), &_w, NULL);
-			font1->textSize(testStr3.c_str(), &w2, NULL);
-			font1->textSize((testStr2 + testStr3).c_str(), &w3, NULL);
-			dout << "(" << _w << ", " << w2 << ") [" << w3 << "]\n";
-			
-			testStr3 = testStr2[testStr2.length()-1] + testStr3;
-			testStr2 = testStr2.substr(0, testStr2.length()-1);
-			
-		}
-		font1->textSize(testStr2.c_str(), &_w, NULL);
-		font1->textSize(testStr3.c_str(), &w2, NULL);
-		font1->textSize((testStr2 + testStr3).c_str(), &w3, NULL);
-		dout << "(" << _w << ", " << w2 << ") [" << w3 << "]\n";
 		
-		int _h;
-		font1->textSize(testStr, &_w, &_h);
-		dout << "\n\n\n\nSurface Size: (" << _w << ", " << _h << ")\n";
 		
-		auto stringSurf = font1->surfaceBlended(testStr, {255, 255, 255, 255});
+		
+		Surface* stringSurf = NULL;
+		
+		stringSurf = font1->surfaceBlendedWrappedWithRatio(testStr, {255, 255, 255, 255}, ((double)w)/153);
+		dout << "Surface Size: (" << stringSurf->width() << ", " << stringSurf->height() << ")\n";
+		
+		
 		auto stringTex = stringSurf->createTexture(ren);
-		delete stringSurf;
 		
-		int renderWidth = w;
-		int renderHeight = static_cast<double>(w)/_w * _h;
+		int renderWidth, renderHeight;
+		if (stringSurf->width() > stringSurf->height())
+		{
+			renderWidth = w;
+			renderHeight = static_cast<double>(w)/stringSurf->width() * stringSurf->height();
+		}
+		else
+		{
+			renderWidth = static_cast<double>(h/2)/stringSurf->height() * stringSurf->width();
+			renderHeight = h/2;
+		}
+		
+		dout << "Surface Render Size: (" << renderWidth << ", " << renderHeight << ")\n";
 		
 		ren->target(NULL);
 		ren->setDrawColor(0, 0, 0, 255);
 		ren->clear();
 		ren->copy(tex3);
 		ren->copy(stringTex, NULL, {0, h/2, renderWidth, renderHeight});
+		ren->copy(stringTex, NULL, {0, h/2 + renderHeight, renderWidth/2, renderHeight/2});
 		ren->renderPresent();
 		
 		SDL_Delay(2000);
 		
+		delete stringSurf;
 		delete font1;
 		delete stringTex;
 	}

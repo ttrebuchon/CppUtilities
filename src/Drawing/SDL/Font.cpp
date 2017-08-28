@@ -26,7 +26,13 @@ namespace QUtils::Drawing::SDL
 	
 	
 	
-	
+	Font::~Font()
+	{
+		if (ptr != NULL)
+		{
+			TTF_CloseFont(ptr);
+		}
+	}
 	
 	Font* Font::Open(const std::string file, int size)
 	{
@@ -433,6 +439,34 @@ namespace QUtils::Drawing::SDL
 	{
 		SDL_Surface* surfPtr;
 		TTF_ERRORIF(surfPtr = TTF_RenderGlyph_Blended(ptr, glyph, SDL_Color{r, g, b, alpha}), NULL);
+		return Surface::getObject(surfPtr);
+	}
+	
+	Surface* Font::surfaceBlendedWrapped(const std::string text, const Color color, const int wrapLen) const
+	{
+		SDL_Surface* surfPtr;
+		TTF_ERRORIF(surfPtr = TTF_RenderText_Blended_Wrapped(ptr, text.c_str(), *((SDL_Color*)&color), wrapLen), NULL);
+		return Surface::getObject(surfPtr);
+	}
+	
+	Surface* Font::surfaceBlendedWrapped(const std::string text, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha, const int wrapLen) const
+	{
+		SDL_Surface* surfPtr;
+		TTF_ERRORIF(surfPtr = TTF_RenderText_Blended_Wrapped(ptr, text.c_str(), SDL_Color{r, g, b, alpha}, wrapLen), NULL);
+		return Surface::getObject(surfPtr);
+	}
+	
+	Surface* Font::surfaceBlendedWrappedWithRatio(const std::string text, const Color color, const double ratio) const
+	{
+		SDL_Surface* surfPtr;
+		TTF_ERRORIF(surfPtr = TTF_RenderText_Blended_Wrapped(ptr, text.c_str(), *((SDL_Color*)&color), ratio*this->height()), NULL);
+		return Surface::getObject(surfPtr);
+	}
+	
+	Surface* Font::surfaceBlendedWrappedWithRatio(const std::string text, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha, const double ratio) const
+	{
+		SDL_Surface* surfPtr;
+		TTF_ERRORIF(surfPtr = TTF_RenderText_Blended_Wrapped(ptr, text.c_str(), SDL_Color{r, g, b, alpha}, ratio*this->height()), NULL);
 		return Surface::getObject(surfPtr);
 	}
 	
