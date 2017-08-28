@@ -7,7 +7,7 @@
 
 namespace QUtils::Drawing::SDL
 {
-	Surface::Surface() : Base(NULL)
+	Surface::Surface() : Base(NULL), windowSurface(false)
 	{
 		
 	}
@@ -15,9 +15,15 @@ namespace QUtils::Drawing::SDL
 	
 	
 	
-	Surface::Surface(SDL_Surface* ptr) : Base(ptr)
+	Surface::Surface(SDL_Surface* ptr) : Base(ptr), windowSurface(false)
 	{
 		
+	}
+	
+	
+	void Surface::setWindowSurface(bool val)
+	{
+		windowSurface = val;
 	}
 	
 	
@@ -42,7 +48,7 @@ namespace QUtils::Drawing::SDL
 	
 	Surface::~Surface()
 	{
-		if (ptr != NULL)
+		if (ptr != NULL && !windowSurface)
 		{
 			SDL_FreeSurface(ptr);
 		}

@@ -17,9 +17,13 @@ namespace QUtils::Drawing::SDL
 	{
 		typedef Internal::SDLObject<SDL_Surface, Surface> Base;
 		friend Base;
+		friend class Window;
 		protected:
+		bool windowSurface;
 		Surface();
 		Surface(SDL_Surface*);
+		
+		void setWindowSurface(bool);
 		
 		public:
 		Surface(int w, int h, int depth, unsigned int Rmask, unsigned int Gmask, unsigned int Bmask, unsigned int Amask);

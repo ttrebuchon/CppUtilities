@@ -4,6 +4,7 @@
 #include "../src/Drawing/SDL/IfSDL.h"
 
 #include <QUtils/Types/CompilerPrint.h>
+#include <QUtils/Stopwatch/Stopwatch.h>
 
 template <int N, class... T>
 int EventCB(T...)
@@ -11,6 +12,8 @@ int EventCB(T...)
 	dout << "EventCB Called\n";
 	return N;
 }
+
+bool SurfaceTesting(const int w, const int h);
 
 
 using namespace QUtils::Drawing::SDL;
@@ -418,12 +421,17 @@ bool Test_SDL_Drawing()
 		ren->copy(stringTex, NULL, {0, h/2, renderWidth, renderHeight});
 		ren->copy(stringTex, NULL, {0, h/2 + renderHeight, renderWidth/2, renderHeight/2});
 		ren->renderPresent();
+		auto font2 = Font::Open("font1.ttf", ptSize);
 		
 		SDL_Delay(2000);
 		
 		delete stringSurf;
 		delete font1;
 		delete stringTex;
+		delete font2;
+		
+		
+		
 	}
 	
 	
@@ -490,12 +498,90 @@ bool Test_SDL_Drawing()
 		delete win;
 		win = NULL;
 	}
+	
+	return SurfaceTesting(w, h);
+	
 	}
 	catch (...)
 	{
 		if (win != NULL)
 		{
 			delete win;
+		}
+		throw;
+	}
+	
+	return true;
+}
+
+
+
+
+
+
+bool SurfaceTesting(const int w, const int h)
+{
+	dout << "\n\n\nTesting Surface-Based Window...\n\n";
+	Window* win = NULL;
+	try
+	{
+		win = new Window("SurfaceTesting", 0, 0, w, h, WindowFlags::Shown);
+		auto surf = win->surface();
+		auto sren = surf->softRenderer();
+		
+		sren->setDrawColor(255, 255, 255, 255);
+		sren->clear();
+		sren->renderPresent();
+		win->updateSurface();
+		
+		sren->clear();
+		win->updateSurface();
+		SDL_Delay(1000);
+		sren->setDrawColor(0, 0, 255, 255);
+		
+		QUtils::Stopwatch::Stopwatch sw;
+		sw.start();
+		for (int i = 0; i <= w; i += 10)
+		{
+			sren->fillRect({i, 0, 10, h});
+			//win->updateSurface(i, 0, 2, h);
+			win->updateSurface();
+			SDL_Delay(1);
+		}
+		sw.stop();
+		dout << "Time: " << sw.value() << "\n";
+		
+		//win->updateSurface();
+		
+		
+		
+		
+		
+		
+		if (sren != NULL)
+		{
+			delete sren;
+			sren = NULL;
+		}
+		
+		if (surf != NULL)
+		{
+			delete surf;
+			surf = NULL;
+		}
+		
+		if (win != NULL)
+		{
+			delete win;
+			win = NULL;
+		}
+	}
+	catch (...)
+	{
+		if (win != NULL)
+		{
+			delete win;
+			win = NULL;
 		}
 		throw;
 	}

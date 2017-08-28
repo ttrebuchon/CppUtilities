@@ -143,7 +143,13 @@ namespace QUtils::Drawing::SDL
 	{
 		SDL_Surface* surfPtr;
 		SDL_ERRORIF(surfPtr = SDL_GetWindowSurface(ptr), NULL);
-		return Surface::getObject(surfPtr);
+		auto surf = Surface::getObject(surfPtr);
+		if (surf != NULL)
+		{
+			surf->setWindowSurface(true);
+		}
+		return surf;
+		
 	}
 	
 	std::string Window::title() const
