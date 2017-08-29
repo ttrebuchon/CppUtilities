@@ -1,4 +1,5 @@
 #include <QUtils/GUI/AppWindow.h>
+#include <QUtils/GUI/ViewComponent.h>
 
 namespace QUtils::GUI
 {
@@ -13,10 +14,18 @@ namespace QUtils::GUI
 	}
 	
 	
-	View* AppWindow::replaceView(View* v)
+	ViewComponent* AppWindow::replaceView(ViewComponent* v)
 	{
 		auto vOld = mainView;
 		mainView = v;
+		if (vOld != NULL)
+		{
+			vOld->setWindow(NULL);
+		}
+		if (v != NULL)
+		{
+			v->setWindow(this);
+		}
 		return vOld;
 	}
 }

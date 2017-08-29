@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ViewComponent.h"
+#include "RenderTarget.h"
 
 
 

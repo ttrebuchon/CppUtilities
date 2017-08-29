@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../AppWindow.h"
+#include "RenderTarget.h"
 
 #include <string>
 
@@ -15,7 +16,7 @@ namespace QUtils::Drawing::SDL
 namespace QUtils::GUI::SDL
 {
 	
-	class SDLAppWindow : public AppWindow
+	class SDLAppWindow : public virtual AppWindow, public virtual SDLRenderTarget
 	{
 		private:
 		
@@ -28,6 +29,8 @@ namespace QUtils::GUI::SDL
 		public:
 		SDLAppWindow(const std::string name, const int x, const int y, const int w, const int h, bool touch = false);
 		virtual ~SDLAppWindow();
+		virtual RenderType renderType() const override
+		{ return RenderType::Window; }
 		
 		virtual int width() const override;
 		virtual int height() const override;

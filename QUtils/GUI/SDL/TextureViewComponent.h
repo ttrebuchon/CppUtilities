@@ -9,7 +9,7 @@ namespace QUtils::Drawing::SDL
 
 namespace QUtils::GUI::SDL
 {
-	class SDLTextureViewComponent : public SDLViewComponent
+	class SDLTextureViewComponent : public virtual SDLViewComponent
 	{
 		protected:
 		Drawing::SDL::Texture* texture;
@@ -19,6 +19,13 @@ namespace QUtils::GUI::SDL
 		virtual ~SDLTextureViewComponent();
 		virtual void update()
 		{}
+		
+		virtual void render(RenderTarget*, int x, int y, int w, int h) override;
+		virtual void render(RenderTarget*, int x, int y) override;
+		virtual void render(RenderTarget*) override;
+		
+		virtual double width() const override;
+		virtual double height() const override;
 		
 	};
 }

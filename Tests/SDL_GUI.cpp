@@ -1,6 +1,6 @@
 #include "../Tests_Helpers.h"
 #include <QUtils/GUI/SDL/SDL.h>
-#include <QUtils/GUI/ComponentView.h>
+#include <QUtils/GUI/SDL/AbsoluteTextureView.h>
 #include <QUtils/Sleep/Sleep.h>
 #include <QUtils/Drawing/SDL/SDL.h>
 
@@ -107,22 +107,56 @@ bool Test_SDL_GUI()
 	ren->setDrawColor(0, 0, 0, 255);
 	ren->clear();
 	ren->setDrawColor(255, 255, 255, 255);
-	ren->fillRect({0, 0, w/2, h/2});
+	ren->fillRect({0, 0, w, h});
 	ren->renderPresent();
 	ren->target(NULL);
 	
 	auto texComp = new SDLTextureViewComponent(tex);
 	assert_ex(texComp->parent == NULL);
+	assert_ex(texComp->window == NULL);
 	
-	auto testView = new GUI::ComponentView(texComp);
-	assert_ex(texComp->parent == testView);
-	
-	assert_ex(window->replaceView(testView) == NULL);
+	assert_ex(window->replaceView(texComp) == NULL);
+	assert_ex(texComp->parent == NULL);
+	assert_ex(texComp->window == window);
 	
 	window->update();
 	
-	assert_ex(window->replaceView(NULL) == testView);
-	delete testView;
+	assert_ex(window->replaceView(NULL) == texComp);
+	assert_ex(texComp->parent == NULL);
+	assert_ex(texComp->window == NULL);
+	
+	
+	dout << "First Render Success\n";
+	sleep(1000);
+	
+	
+	auto texView = new SDLAbsoluteTextureView(w, h);
+	dout << "TexView Created\n";
+	
+	texView->addChild(texComp, 0, 0, 1, 0.5);
+	dout << "First child added\n";
+	
+	auto tex2 = new Drawing::SDL::Texture(ren, Drawing::SDL::PixelFormat::RGBA8888, Drawing::SDL::TextureAccess::Target, w, h);
+	ren->target(tex2);
+	ren->setDrawColor(0, 100, 255, 255);
+	ren->clear();
+	ren->fillRect(0, 0, w, h);
+	ren->renderPresent();
+	
+	auto texComp2 = new SDLTextureViewComponent(tex2);
+	dout << "Second child created\n";
+	texView->addChild(texComp2, 0.5, 0.5, 0.5, 0.5);
+	dout << "Second child added\n";
+	
+	
+	
+	window->replaceView(texView);
+	dout << "Window view set\n";
+	window->update();
+	dout << "Window updated\n";
+	
+	sleep(1000);
+	
 	
 	
 	
@@ -130,6 +164,12 @@ bool Test_SDL_GUI()
 	dout << "Handling Events...\n";
 	window->handleEvents();
 	delete window;
+	
+	if (texComp != NULL)
+	{
+		delete texComp;
+		texComp = NULL;
+	}
 	}
 	catch (...)
 	{

@@ -1,9 +1,10 @@
 #include <QUtils/GUI/ViewComponent.h>
+#include <QUtils/GUI/View.h>
 #include <QUtils/GUI/Errors.h>
 
 namespace QUtils::GUI
 {
-	ViewComponent::ViewComponent() : _parent(nullptr), parent(_parent)
+	ViewComponent::ViewComponent() : _parent(nullptr), _window(nullptr), _w(0), _h(0), _changed(false), parent(_parent), window(_window)
 	{
 		
 	}
@@ -21,6 +22,7 @@ namespace QUtils::GUI
 			throw ParentChildException().Msg("This component is already a child of a different view");
 		}
 		_parent = view;
+		setWindow(view->window);
 	}
 	
 	void ViewComponent::removeFromView()
@@ -30,6 +32,7 @@ namespace QUtils::GUI
 			throw ParentChildException().Msg("This component cannot be removed from it's parent view because it has none");
 		}
 		_parent = NULL;
+		setWindow(NULL);
 	}
 	
 	

@@ -6,7 +6,7 @@
 
 namespace QUtils::GUI::SDL
 {
-	class SDLView : public View, public SDLViewComponent
+	class SDLView : public virtual View, public virtual SDLViewComponent
 	{
 		private:
 		

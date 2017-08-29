@@ -1,4 +1,5 @@
 #include <QUtils/GUI/SDL/AppWindow.h>
+#include <QUtils/GUI/ViewComponent.h>
 #include <QUtils/GUI/Errors.h>
 #include <QUtils/GUI/SDL/Common.h>
 #include <QUtils/Drawing/SDL/Renderer.h>
@@ -231,7 +232,18 @@ namespace QUtils::GUI::SDL
 	
 	void SDLAppWindow::update()
 	{
-		throw NotImp();
+		if (mainView != NULL)
+		{
+			mainView->update();
+		}
+		ren->target(NULL);
+		ren->setDrawColor(0, 0, 0, 0);
+		ren->clear();
+		if (mainView != NULL)
+		{
+			mainView->render(this);
+		}
+		ren->renderPresent();
 	}
 	
 	void SDLAppWindow::handleEvents()

@@ -1,15 +1,16 @@
 #pragma once
 
 #include "Event.h"
+#include "RenderTarget.h"
 
 namespace QUtils::GUI
 {
-	class View;
+	class ViewComponent;
 	
-	class AppWindow
+	class AppWindow : public virtual RenderTarget
 	{
 		protected:
-		View* mainView;
+		ViewComponent* mainView;
 		
 		public:
 		AppWindow(bool touch);
@@ -51,6 +52,6 @@ namespace QUtils::GUI
 		virtual void update() = 0;
 		
 		virtual void handleEvents() = 0;
-		virtual View* replaceView(View*);
+		virtual ViewComponent* replaceView(ViewComponent*);
 	};
 }
