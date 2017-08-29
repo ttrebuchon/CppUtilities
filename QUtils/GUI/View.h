@@ -12,12 +12,14 @@ namespace QUtils::GUI
 		
 		protected:
 		
+		virtual void addChild(ViewComponent*);
+		
 		public:
+		View();
+		virtual ~View();
 		
-		virtual ~View() {}
-		
-		virtual void update() override
-		{}
+		virtual void update() = 0;
+		virtual void removeChildren() = 0;
 		
 	};
 }

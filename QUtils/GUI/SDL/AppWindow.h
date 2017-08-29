@@ -23,8 +23,6 @@ namespace QUtils::GUI::SDL
 		Drawing::SDL::Window* win;
 		Drawing::SDL::Renderer* ren;
 		
-		//std::map<SDLTexture*, std::list<SDL_Rect>> textures;
-		
 		virtual int handleEvent(Drawing::SDL::Event*);
 		
 		public:
@@ -38,6 +36,16 @@ namespace QUtils::GUI::SDL
 		
 		virtual void update() override;
 		virtual void handleEvents() override;
+		
+		virtual Drawing::SDL::Renderer* getRenderer()
+		{
+			return ren;
+		}
+		
+		virtual const Drawing::SDL::Renderer* getRenderer() const
+		{
+			return ren;
+		}
 		
 		
 	};

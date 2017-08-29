@@ -1,6 +1,8 @@
 #include "../Tests_Helpers.h"
 #include <QUtils/GUI/SDL/SDL.h>
+#include <QUtils/GUI/ComponentView.h>
 #include <QUtils/Sleep/Sleep.h>
+#include <QUtils/Drawing/SDL/SDL.h>
 
 #include <vector>
 
@@ -44,7 +46,7 @@ bool Test_SDL_GUI()
 	//window->update();
 	
 	window->onQuit += []() {
-		*((int*)NULL) = 4;
+		dout << "Quitting!\n";
 	};
 	
 	window->onFingerDown += [](auto... x) {
@@ -96,12 +98,33 @@ bool Test_SDL_GUI()
 	sleep(1000);
 	
 	
-	auto x = new SDLView();
 	
-	assert_ex(window->replaceView(x) == NULL);
 	
-	assert_ex(window->replaceView(NULL) == x);
-	delete x;
+	
+	auto tex = new Drawing::SDL::Texture(window->getRenderer(), Drawing::SDL::PixelFormat::RGBA8888, Drawing::SDL::TextureAccess::Target, w, h);
+	auto ren = window->getRenderer();
+	ren->target(tex);
+	ren->setDrawColor(0, 0, 0, 255);
+	ren->clear();
+	ren->setDrawColor(255, 255, 255, 255);
+	ren->fillRect({0, 0, w/2, h/2});
+	ren->renderPresent();
+	ren->target(NULL);
+	
+	auto texComp = new SDLTextureViewComponent(tex);
+	assert_ex(texComp->parent == NULL);
+	
+	auto testView = new GUI::ComponentView(texComp);
+	assert_ex(texComp->parent == testView);
+	
+	assert_ex(window->replaceView(testView) == NULL);
+	
+	window->update();
+	
+	assert_ex(window->replaceView(NULL) == testView);
+	delete testView;
+	
+	
 	
 	
 	dout << "Handling Events...\n";
