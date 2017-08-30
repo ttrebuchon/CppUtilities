@@ -11,7 +11,7 @@ namespace QUtils::GUI::SDL
 		private:
 		
 		protected:
-		std::vector<std::tuple<ViewComponent*, double, double, double, double>> children;
+		std::vector<std::tuple<ViewComponent*, double, double>> children;
 		
 		virtual void updateTexture() override;
 		

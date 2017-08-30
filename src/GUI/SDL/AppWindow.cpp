@@ -241,7 +241,9 @@ namespace QUtils::GUI::SDL
 		ren->clear();
 		if (mainView != NULL)
 		{
-			mainView->render(this);
+			int w, h;
+			win->size(&w, &h);
+			mainView->render(this, 0, 0, w, h);
 		}
 		ren->renderPresent();
 	}

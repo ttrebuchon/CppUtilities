@@ -21,16 +21,9 @@ namespace QUtils::GUI::SDL
 		{
 			std::get<0>(child)->update();
 		}
-		auto h = height();
-		auto w = width();
-		if (texW <= 100 || texH <= 100)
-		{
-			throw std::exception();
-		}
 		for (auto child : children)
 		{
-			std::get<0>(child)->render(this, std::get<1>(child)*texW, std::get<2>(child)*texH, std::get<3>(child)*texW, std::get<4>(child)*texH);
-			std::cout << "(" << std::get<1>(child)*texW << ", " << std::get<2>(child)*texH << ", " << std::get<3>(child)*texW << ", " << std::get<4>(child)*texH << ")\n";
+			std::get<0>(child)->render(this, std::get<1>(child)*texW, std::get<2>(child)*texH, texW, texH);
 		}
 	}
 	
@@ -63,7 +56,10 @@ namespace QUtils::GUI::SDL
 	
 	void SDLAbsoluteTextureView::addChild(ViewComponent* comp, double x, double y, double w, double h)
 	{
-		children.emplace_back(comp, x, y, w, h);
+		this->View::addChild(comp);
+		children.emplace_back(comp, x, y);
+		comp->width(w);
+		comp->height(h);
 		_changed = true;
 	}
 }

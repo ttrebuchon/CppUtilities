@@ -21,11 +21,12 @@ namespace QUtils::GUI::SDL
 		{}
 		
 		virtual void render(RenderTarget*, int x, int y, int w, int h) override;
-		virtual void render(RenderTarget*, int x, int y) override;
-		virtual void render(RenderTarget*) override;
 		
-		virtual double width() const override;
-		virtual double height() const override;
+		virtual void textureChanged()
+		{ _changed = true; }
+		
+		virtual int nativeWidth() const override;
+		virtual int nativeHeight() const override;
 		
 	};
 }

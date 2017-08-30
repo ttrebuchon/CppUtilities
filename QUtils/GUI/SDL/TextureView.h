@@ -32,12 +32,13 @@ namespace QUtils::GUI::SDL
 		virtual void update() override;
 		
 		virtual void render(RenderTarget*, int x, int y, int w, int h) override;
-		virtual void render(RenderTarget*, int x, int y) override;
-		virtual void render(RenderTarget*) override;
 		
 		virtual RenderType renderType() const
 		{ return RenderType::Texture; }
 		
 		virtual Drawing::SDL::Renderer* getRenderer() override;
+		
+		virtual int nativeWidth() const override;
+		virtual int nativeHeight() const override;
 	};
 }

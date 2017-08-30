@@ -157,7 +157,48 @@ bool Test_SDL_GUI()
 	
 	sleep(1000);
 	
+	ren->target(tex);
+	ren->setDrawColor(255, 0, 0, 255);
+	ren->clear();
+	ren->renderPresent();
+	texComp->textureChanged();
 	
+	window->update();
+	
+	for (int i = 0; i < 100; ++i)
+	{
+		if (i % 2 == 0)
+		{
+			ren->target(tex);
+			texComp->textureChanged();
+		}
+		else
+		{
+			ren->target(tex2);
+			texComp2->textureChanged();
+		}
+		
+		switch (i % 3)
+		{
+			case 0:
+			ren->setDrawColor(255, 0, 0, 255);
+			break;
+			
+			case 1:
+			ren->setDrawColor(0, 255, 0, 255);
+			break;
+			
+			case 2:
+			ren->setDrawColor(0, 0, 255, 255);
+			break;
+			default:
+			break;
+		}
+		
+		ren->clear();
+		ren->renderPresent();
+		window->update();
+	}
 	
 	
 	

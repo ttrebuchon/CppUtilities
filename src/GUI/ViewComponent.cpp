@@ -4,7 +4,7 @@
 
 namespace QUtils::GUI
 {
-	ViewComponent::ViewComponent() : _parent(nullptr), _window(nullptr), _w(0), _h(0), _changed(false), parent(_parent), window(_window)
+	ViewComponent::ViewComponent() : _parent(nullptr), _window(nullptr), _w(1), _h(1), _changed(false), parent(_parent), window(_window)
 	{
 		
 	}
@@ -17,9 +17,9 @@ namespace QUtils::GUI
 	
 	void ViewComponent::addToView(View* view)
 	{
-		if (_parent != NULL && _parent != view)
+		if (_parent != NULL/* && _parent != view*/)
 		{
-			throw ParentChildException().Msg("This component is already a child of a different view");
+			throw ParentChildException().Msg("This component is already a child of a view");
 		}
 		_parent = view;
 		setWindow(view->window);

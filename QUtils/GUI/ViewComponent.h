@@ -40,8 +40,6 @@ namespace QUtils::GUI
 		virtual void update() = 0;
 		
 		virtual void render(RenderTarget*, int x, int y, int w, int h) = 0;
-		virtual void render(RenderTarget*, int x, int y) = 0;
-		virtual void render(RenderTarget*) = 0;
 		
 		
 		
@@ -61,5 +59,8 @@ namespace QUtils::GUI
 		
 		virtual bool changed() const
 		{ return _changed; }
+		
+		virtual int nativeWidth() const = 0;
+		virtual int nativeHeight() const = 0;
 	};
 }

@@ -55,21 +55,41 @@ namespace QUtils::GUI::SDL
 			throw IncompatibleGUI_TypeException().Msg("RenderTarget isn't an SDLRenderTarget").File(__FILE__).Function(__func__);
 		}
 		auto ren = sdlTarget->getRenderer();
+		
+		
+		if (w < 0)
+		{
+			w = nativeWidth();
+		}
+		else
+		{
+			w = static_cast<int>(width()*w);
+		}
+		if (h < 0)
+		{
+			h = nativeHeight();
+		}
+		else
+		{
+			h = static_cast<int>(height()*h);
+		}
+		
+		
 		ren->copy(texture, NULL, {x, y, w, h});
-	}
-	
-	void SDLTextureView::render(RenderTarget* target, int x, int y)
-	{
-		render(target, x, y, texW, texH);
-	}
-	
-	void SDLTextureView::render(RenderTarget* target)
-	{
-		render(target, 0, 0, texW, texH);
 	}
 	
 	Drawing::SDL::Renderer* SDLTextureView::getRenderer()
 	{
 		return tmpRen;
+	}
+	
+	int SDLTextureView::nativeWidth() const
+	{
+		return texW;
+	}
+	
+	int SDLTextureView::nativeHeight() const
+	{
+		return texH;
 	}
 }

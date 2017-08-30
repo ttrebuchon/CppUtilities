@@ -27,26 +27,32 @@ namespace QUtils::GUI::SDL
 		}
 		
 		auto ren = sdlTarget->getRenderer();
+		if (w < 0)
+		{
+			w = nativeWidth();
+		}
+		else
+		{
+			w = static_cast<int>(width()*w);
+		}
+		if (h < 0)
+		{
+			h = nativeHeight();
+		}
+		else
+		{
+			h = static_cast<int>(height()*h);
+		}
+		
 		ren->copy(texture, NULL, {x, y, w, h});
-		std::cout << "\t(" << x << ", " << y << ", " << w << ", " << h << ")\n";
 	}
 	
-	void SDLTextureViewComponent::render(RenderTarget* target, int x, int y)
-	{
-		render(target, x, y, width(), height());
-	}
-	
-	void SDLTextureViewComponent::render(RenderTarget* target)
-	{
-		render(target, 0, 0, width(), height());
-	}
-	
-	double SDLTextureViewComponent::width() const
+	int SDLTextureViewComponent::nativeWidth() const
 	{
 		return texture->width();
 	}
 	
-	double SDLTextureViewComponent::height() const
+	int SDLTextureViewComponent::nativeHeight() const
 	{
 		return texture->height();
 	}
