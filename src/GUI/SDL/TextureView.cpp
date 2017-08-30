@@ -74,7 +74,8 @@ namespace QUtils::GUI::SDL
 			h = static_cast<int>(height()*h);
 		}
 		
-		
+		texture->alphaMod(static_cast<unsigned char>(255*opacity()));
+		texture->blendMode(Drawing::SDL::BlendMode::Blend);
 		ren->copy(texture, NULL, {x, y, w, h});
 	}
 	

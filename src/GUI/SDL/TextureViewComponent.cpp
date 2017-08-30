@@ -44,6 +44,7 @@ namespace QUtils::GUI::SDL
 			h = static_cast<int>(height()*h);
 		}
 		
+		texture->blendMode(Drawing::SDL::BlendMode::Blend);
 		ren->copy(texture, NULL, {x, y, w, h});
 	}
 	
@@ -55,5 +56,15 @@ namespace QUtils::GUI::SDL
 	int SDLTextureViewComponent::nativeHeight() const
 	{
 		return texture->height();
+	}
+	
+	double SDLTextureViewComponent::opacity() const
+	{
+		return static_cast<double>(texture->alphaMod())/255;
+	}
+	
+	void SDLTextureViewComponent::opacity(double value)
+	{
+		texture->alphaMod(value*255);
 	}
 }

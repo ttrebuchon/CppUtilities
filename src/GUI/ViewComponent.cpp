@@ -1,10 +1,11 @@
 #include <QUtils/GUI/ViewComponent.h>
 #include <QUtils/GUI/View.h>
 #include <QUtils/GUI/Errors.h>
+#include <algorithm>
 
 namespace QUtils::GUI
 {
-	ViewComponent::ViewComponent() : _parent(nullptr), _window(nullptr), _w(1), _h(1), _changed(false), parent(_parent), window(_window)
+	ViewComponent::ViewComponent() : _parent(nullptr), _window(nullptr), _w(1), _h(1), _opacity(1), _changed(false), parent(_parent), window(_window)
 	{
 		
 	}
@@ -55,5 +56,15 @@ namespace QUtils::GUI
 	void ViewComponent::height(double h)
 	{
 		_h = h;
+	}
+	
+	double ViewComponent::opacity() const
+	{
+		return std::max<double>(std::min<double>(1, _opacity), 0);
+	}
+	
+	void ViewComponent::opacity(double value)
+	{
+		_opacity = std::max<double>(std::min<double>(1, value), 0);
 	}
 }

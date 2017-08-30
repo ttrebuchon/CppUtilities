@@ -18,6 +18,7 @@ namespace QUtils::GUI
 		View* _parent;
 		AppWindow* _window;
 		double _w, _h;
+		double _opacity;
 		bool _changed;
 		
 		virtual void addToView(View*);
@@ -62,5 +63,7 @@ namespace QUtils::GUI
 		
 		virtual int nativeWidth() const = 0;
 		virtual int nativeHeight() const = 0;
+		virtual double opacity() const;
+		virtual void opacity(double v);
 	};
 }

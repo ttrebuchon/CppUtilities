@@ -28,5 +28,8 @@ namespace QUtils::GUI::SDL
 		virtual int nativeWidth() const override;
 		virtual int nativeHeight() const override;
 		
+		virtual double opacity() const override;
+		virtual void opacity(double) override;
+		
 	};
 }
