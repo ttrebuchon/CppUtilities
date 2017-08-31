@@ -15,7 +15,7 @@ namespace QUtils::GUI::SDL
 {
 	SDLAppWindow::SDLAppWindow(const std::string title, const int x, const int y, const int w, const int h, bool touch) : AppWindow(touch), win(new Drawing::SDL::Window(title, x, y, w, h, Drawing::SDL::WindowFlags::Shown)), ren(NULL)
 	{
-		ren = new Drawing::SDL::Renderer(win, -1, Drawing::SDL::RendererFlags::TargetTexture);
+		ren = new Drawing::SDL::Renderer(win, -1, Drawing::SDL::RendererFlags::TargetTexture | Drawing::SDL::RendererFlags::PresentVsync | Drawing::SDL::RendererFlags::Accelerated);
 		ren->target(NULL);
 		ren->setDrawColor(0, 0, 0, 0);
 		ren->clear();
