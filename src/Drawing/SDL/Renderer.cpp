@@ -241,7 +241,7 @@ namespace QUtils::Drawing::SDL
 	void Renderer::setViewport(int x, int y, int w, int h)
 	{
 		SDL_Rect rect = { x, y, w, h };
-		setViewport(&rect);
+		SDL_CHECKERROR(SDL_RenderSetViewport(ptr, &rect), 0);
 	}
 	
 	void Renderer::resetViewport()

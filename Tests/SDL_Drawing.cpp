@@ -32,7 +32,7 @@ bool Test_SDL_Drawing()
 	win->show();
 	assert_ex(win->visible());
 	
-	auto ren = new Renderer(win, -1, RendererFlags::Accelerated | RendererFlags::TargetTexture);
+	auto ren = new Renderer(win, -1, RendererFlags::Accelerated | RendererFlags::TargetTexture | RendererFlags::PresentVsync);
 	dout << "Renderer Created\n";
 	//auto winsurf = win->surface();
 	win->updateSurface();
@@ -435,7 +435,17 @@ bool Test_SDL_Drawing()
 	}
 	
 	
+	ren->target(NULL);
+	ren->setDrawColor(0, 0, 0, 255);
+	ren->clear();
+	ren->copy(tex3, NULL, NULL);
+	ren->renderPresent();
+	SDL_Delay(300);
 	
+	ren->setViewport(w/4, h/4, w/2, h/2);
+	ren->fillRect({0, 0, w, h});
+	ren->renderPresent();
+	SDL_Delay(500);
 	
 	
 	
