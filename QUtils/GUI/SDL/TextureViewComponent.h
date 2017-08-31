@@ -18,7 +18,7 @@ namespace QUtils::GUI::SDL
 		SDLTextureViewComponent(Drawing::SDL::Texture*);
 		virtual ~SDLTextureViewComponent();
 		virtual void update()
-		{}
+		{_changed = false;}
 		
 		virtual void render(RenderTarget*, int x, int y, int w, int h) override;
 		
@@ -27,9 +27,6 @@ namespace QUtils::GUI::SDL
 		
 		virtual int nativeWidth() const override;
 		virtual int nativeHeight() const override;
-		
-		virtual double opacity() const override;
-		virtual void opacity(double) override;
 		
 	};
 }

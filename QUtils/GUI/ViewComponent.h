@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace QUtils::GUI
 {
 	class RenderTarget;
@@ -8,6 +10,7 @@ namespace QUtils::GUI
 	
 	class ViewComponent
 	{
+		static int idCounter;
 		typedef View* ViewPtr_t;
 		typedef AppWindow* AppWinPtr_t;
 		friend class View;
@@ -15,6 +18,7 @@ namespace QUtils::GUI
 		private:
 		
 		protected:
+		std::string _id;
 		View* _parent;
 		AppWindow* _window;
 		double _w, _h;
@@ -28,12 +32,14 @@ namespace QUtils::GUI
 			_window = win;
 		}
 		
-		
+		virtual void calcRenderDimensions(int& width, int& height);
 		
 		public:
+		const std::string& id;
 		const ViewPtr_t& parent;
 		const AppWinPtr_t& window;
 		
+		ViewComponent(const std::string id);
 		ViewComponent();
 		virtual ~ViewComponent();
 		

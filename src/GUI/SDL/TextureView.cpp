@@ -57,22 +57,7 @@ namespace QUtils::GUI::SDL
 		auto ren = sdlTarget->getRenderer();
 		
 		
-		if (w < 0)
-		{
-			w = nativeWidth();
-		}
-		else
-		{
-			w = static_cast<int>(width()*w);
-		}
-		if (h < 0)
-		{
-			h = nativeHeight();
-		}
-		else
-		{
-			h = static_cast<int>(height()*h);
-		}
+		calcRenderDimensions(w, h);
 		
 		texture->alphaMod(static_cast<unsigned char>(255*opacity()));
 		texture->blendMode(Drawing::SDL::BlendMode::Blend);

@@ -6,4 +6,10 @@
 #include "View.h"
 #include "TextureView.h"
 
+#include "AbsoluteTextureView.h"
+
 #include "TextureViewComponent.h"
+#include "LabelViewComponent.h"
+
+#include "SurfaceResource.h"
+#include "TextureResource.h"

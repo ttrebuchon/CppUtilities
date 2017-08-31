@@ -27,25 +27,16 @@ namespace QUtils::GUI::SDL
 		}
 		
 		auto ren = sdlTarget->getRenderer();
-		if (w < 0)
-		{
-			w = nativeWidth();
-		}
-		else
-		{
-			w = static_cast<int>(width()*w);
-		}
-		if (h < 0)
-		{
-			h = nativeHeight();
-		}
-		else
-		{
-			h = static_cast<int>(height()*h);
-		}
 		
+		calcRenderDimensions(w, h);
+		
+		auto oldAMod = texture->alphaMod();
+		auto oldMode = texture->blendMode();
+		texture->alphaMod(static_cast<unsigned char>(opacity()*255));
 		texture->blendMode(Drawing::SDL::BlendMode::Blend);
 		ren->copy(texture, NULL, {x, y, w, h});
+		texture->alphaMod(oldAMod);
+		texture->blendMode(oldMode);
 	}
 	
 	int SDLTextureViewComponent::nativeWidth() const
@@ -56,15 +47,5 @@ namespace QUtils::GUI::SDL
 	int SDLTextureViewComponent::nativeHeight() const
 	{
 		return texture->height();
-	}
-	
-	double SDLTextureViewComponent::opacity() const
-	{
-		return static_cast<double>(texture->alphaMod())/255;
-	}
-	
-	void SDLTextureViewComponent::opacity(double value)
-	{
-		texture->alphaMod(value*255);
 	}
 }

@@ -1,4 +1,5 @@
 #include <QUtils/GUI/SDL/AbsoluteTextureView.h>
+#include <QUtils/GUI/Errors.h>
 
 #include <iostream>
 
@@ -61,5 +62,20 @@ namespace QUtils::GUI::SDL
 		comp->width(w);
 		comp->height(h);
 		_changed = true;
+	}
+	
+	void SDLAbsoluteTextureView::removeChild(ViewComponent* comp)
+	{
+		this->View::removeChild(comp);
+		for (auto it = children.begin(); it != children.end(); ++it)
+		{
+			if (std::get<0>(*it) == comp)
+			{
+				children.erase(it);
+				return;
+			}
+		}
+		
+		throw ParentChildException().Msg("Child " + comp->id + " could not be found under parent " + this->id).Line(__LINE__).Function(__func__).File(__FILE__);
 	}
 }

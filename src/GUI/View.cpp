@@ -17,4 +17,9 @@ namespace QUtils::GUI
 	{
 		comp->addToView(this);
 	}
+	
+	void View::removeChild(ViewComponent* comp)
+	{
+		comp->removeFromView();
+	}
 }

@@ -5,7 +5,15 @@
 
 namespace QUtils::GUI
 {
-	ViewComponent::ViewComponent() : _parent(nullptr), _window(nullptr), _w(1), _h(1), _opacity(1), _changed(false), parent(_parent), window(_window)
+	int ViewComponent::idCounter = 1;
+	
+	
+	ViewComponent::ViewComponent(const std::string id) : _id(id), _parent(nullptr), _window(nullptr), _w(1), _h(1), _opacity(1), _changed(false), id(_id), parent(_parent), window(_window)
+	{
+		
+	}
+	
+	ViewComponent::ViewComponent() : ViewComponent(std::to_string(idCounter++))
 	{
 		
 	}
@@ -24,6 +32,7 @@ namespace QUtils::GUI
 		}
 		_parent = view;
 		setWindow(view->window);
+		_changed = true;
 	}
 	
 	void ViewComponent::removeFromView()
@@ -34,6 +43,49 @@ namespace QUtils::GUI
 		}
 		_parent = NULL;
 		setWindow(NULL);
+		_changed = true;
+	}
+	
+	void ViewComponent::calcRenderDimensions(int& w, int& h)
+	{
+		auto tmpW = width();
+		auto tmpH = height();
+		
+		if (tmpW == -2 && tmpH == -2)
+		{
+			tmpW = tmpH = -1;
+		}
+		
+		if (tmpW >= 0)
+		{
+			w = static_cast<int>(tmpW*w);
+		}
+		else if (tmpW == -1)
+		{
+			w = nativeWidth();
+		}
+		
+		
+		if (tmpH >= 0)
+		{
+			h = static_cast<int>(tmpH*h);
+		}
+		else if (tmpH == -1)
+		{
+			h = nativeHeight();
+		}
+		
+		if (tmpW == -2)
+		{
+			w = (static_cast<double>(nativeWidth())/nativeHeight())*h;
+		}
+		
+		if (tmpH == -2)
+		{
+			h = (static_cast<double>(nativeHeight())/nativeWidth())*w;
+		}
+		
+		
 	}
 	
 	
@@ -51,11 +103,13 @@ namespace QUtils::GUI
 	void ViewComponent::width(double w)
 	{
 		_w = w;
+		_changed = true;
 	}
 	
 	void ViewComponent::height(double h)
 	{
 		_h = h;
+		_changed = true;
 	}
 	
 	double ViewComponent::opacity() const
@@ -66,5 +120,6 @@ namespace QUtils::GUI
 	void ViewComponent::opacity(double value)
 	{
 		_opacity = std::max<double>(std::min<double>(1, value), 0);
+		_changed = true;
 	}
 }

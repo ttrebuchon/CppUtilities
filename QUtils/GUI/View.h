@@ -21,6 +21,7 @@ namespace QUtils::GUI
 		
 		virtual void update() = 0;
 		virtual void removeChildren() = 0;
+		virtual void removeChild(ViewComponent*);
 		
 	};
 }

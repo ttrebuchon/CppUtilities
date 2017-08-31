@@ -147,15 +147,17 @@ bool Test_SDL_GUI()
 	dout << "Second child created\n";
 	texView->addChild(texComp2, 0.5, 0, 0.5, 1);
 	dout << "Second child added\n";
-	texComp2->opacity(0.5);
-	auto halfOpacity = static_cast<unsigned char>(0.5*255);
-	auto halfOpacity_d = static_cast<double>(halfOpacity)/255;
-	assert_ex(texComp2->opacity() == halfOpacity_d);
-	assert_ex(tex2->alphaMod() == halfOpacity);
+	
+	
+	texComp2->opacity(0.2);
+	auto partialOpacity = static_cast<unsigned char>(0.2*255);
+	auto partialOpacity_d = static_cast<double>(partialOpacity)/255;
+	
+	
+	assert_ex(texComp2->opacity() == partialOpacity_d);
 	
 	texComp2->opacity(1);
 	assert_ex(texComp2->opacity() == 1);
-	assert_ex(tex2->alphaMod() == 255);
 	
 	
 	window->replaceView(texView);
@@ -179,13 +181,13 @@ bool Test_SDL_GUI()
 		{
 			ren->target(tex);
 			texComp->textureChanged();
-			texComp->opacity(((double)i)/100);
+			texComp->opacity(static_cast<double>(i)/100);
 		}
 		else
 		{
 			ren->target(tex2);
 			texComp2->textureChanged();
-			texComp2->opacity(((double)i)/100);
+			texComp2->opacity(static_cast<double>(i)/100);
 		}
 		
 		switch (i % 3)
@@ -210,6 +212,24 @@ bool Test_SDL_GUI()
 		window->update();
 	}
 	
+	auto font1Loader = new SDLFontFileResourceLoader("font1", "font1.ttf");
+	font1Loader->assign();
+	font1Loader = NULL;
+	
+	
+	auto labelComp = new SDLLabelViewComponent("Hello", "font1", 400);
+	labelComp->color({255, 255, 255, 255});
+	dout << "Native Label Height: " << labelComp->nativeHeight() << "\n";
+	dout << "Native Label Width: " << labelComp->nativeWidth() << "\n";
+	
+	texView->addChild(labelComp, 0, 0, -1, -1);
+	
+	window->update();
+	sleep(200);
+	texView->removeChild(labelComp);
+	
+	texView->addChild(labelComp, 0, 0.5, 1, -2);
+	window->update();
 	
 	
 	dout << "Handling Events...\n";

@@ -24,5 +24,6 @@ namespace QUtils::GUI::SDL
 		bool changed() const override;
 		
 		virtual void addChild(ViewComponent*, double x, double y, double w, double h);
+		virtual void removeChild(ViewComponent*) override;
 	};
 }
