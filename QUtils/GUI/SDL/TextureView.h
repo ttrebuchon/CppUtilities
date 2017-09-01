@@ -1,6 +1,6 @@
 #pragma once
 
-#include "View.h"
+#include "../View.h"
 #include "RenderTarget.h"
 
 namespace QUtils::Drawing::SDL
@@ -11,7 +11,7 @@ namespace QUtils::Drawing::SDL
 
 namespace QUtils::GUI::SDL
 {
-	class SDLTextureView : public virtual SDLView, public virtual SDLRenderTarget
+	class SDLTextureView : public View, public SDLRenderTarget
 	{
 		private:
 		

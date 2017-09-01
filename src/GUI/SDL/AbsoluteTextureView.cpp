@@ -6,6 +6,21 @@
 
 namespace QUtils::GUI::SDL
 {
+	SDLAbsoluteTextureView::SDLAbsoluteTextureView(const std::string id, bool touch, int w, int h) : SDLTextureView(id, touch, w, h), children()
+	{
+		registerEvents();
+	}
+	
+	SDLAbsoluteTextureView::SDLAbsoluteTextureView(bool touch, int w, int h) : SDLTextureView(touch, w, h), children()
+	{
+		registerEvents();
+	}
+	
+	SDLAbsoluteTextureView::SDLAbsoluteTextureView(const std::string id, int w, int h) : SDLTextureView(id, w, h), children()
+	{
+		registerEvents();
+	}
+	
 	SDLAbsoluteTextureView::SDLAbsoluteTextureView(int w, int h) : SDLTextureView(w, h), children()
 	{
 		registerEvents();
@@ -90,12 +105,9 @@ namespace QUtils::GUI::SDL
 			auto rdx = static_cast<double>(dx)/texW;
 			auto rdy = static_cast<double>(dy)/texH;
 			
-			std::cout << "<" << x << ", " << y << ", " << dx << ", " << dy << ">\n";
-			std::cout << "[" << x << ", " << y << ", " << rdx << ", " << rdy << "]\n";
-			
-			for (auto i = children.size()-1; i >= 0; --i)
+			for (int i = static_cast<int>(children.size())-1; i >= 0; --i)
 			{
-				const auto& child = std::get<0>(children[i]);
+				const auto& child = std::get<0>(children.at(i));
 				double cw = child->width();
 				double ch = child->height();
 				
@@ -122,13 +134,10 @@ namespace QUtils::GUI::SDL
 					ch = static_cast<double>(child->nativeHeight())/child->nativeWidth()*cw;
 				}
 				
-				std::cout << "(" << std::get<1>(children[i]) << ", " << std::get<2>(children[i]) << ", " << cw << ", " << ch << ")\n";
-				
 				if (x >= std::get<1>(children[i]) && y >= std::get<2>(children[i]))
 				{
 					if (x <= std::get<1>(children[i]) + cw && y <= std::get<2>(children[i]) + ch)
 					{
-						std::cout << "Calling Child Event! [Child: '" << child->id << "']\n";
 						child->onFingerDown(win, timestamp, touchId, fingerId, x - std::get<1>(children[i]), y - std::get<2>(children[i]), rdx, rdy, pressure);
 						return;
 					}

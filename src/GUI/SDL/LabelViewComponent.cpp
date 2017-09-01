@@ -8,7 +8,21 @@
 
 namespace QUtils::GUI::SDL
 {
-	SDLLabelViewComponent::SDLLabelViewComponent(const std::string text, const std::string font, unsigned int fontSize) : SDLViewComponent(), lastW(-1), lastH(-1), _text(text), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font)
+	SDLLabelViewComponent::SDLLabelViewComponent(const std::string id, bool touch, const std::string text, const std::string font, unsigned int fontSize) : ViewComponent(id, touch), lastW(-1), lastH(-1), _text(text), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font)
+	{
+		_changed = true;
+	}
+	
+	SDLLabelViewComponent::SDLLabelViewComponent(bool touch, const std::string text, const std::string font, unsigned int fontSize) : ViewComponent(touch), lastW(-1), lastH(-1), _text(text), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font)
+	{
+		_changed = true;
+	}
+	
+	SDLLabelViewComponent::SDLLabelViewComponent(const std::string id, const std::string text, const std::string font, unsigned int fontSize) : ViewComponent(id), lastW(-1), lastH(-1), _text(text), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font)
+	{
+		_changed = true;
+	}
+	SDLLabelViewComponent::SDLLabelViewComponent(const std::string text, const std::string font, unsigned int fontSize) : ViewComponent(), lastW(-1), lastH(-1), _text(text), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font)
 	{
 		_changed = true;
 	}

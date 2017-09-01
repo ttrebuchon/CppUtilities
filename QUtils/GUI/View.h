@@ -7,7 +7,7 @@
 
 namespace QUtils::GUI
 {
-	class View : public virtual ViewComponent
+	class View : public ViewComponent
 	{
 		private:
 		

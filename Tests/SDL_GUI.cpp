@@ -41,13 +41,17 @@ bool Test_SDL_GUI()
 	try
 	{
 	
+	#define TOUCH true
+	window = new SDLAppWindow("Window1", 0, 0, w, h, TOUCH);
 	
-	window = new SDLAppWindow("Window1", 0, 0, w, h, true);
-	//window->update();
 	
 	window->onQuit += []() {
 		dout << "Quitting!\n";
 	};
+	
+	//#define PRINT_PRESSES
+	
+	#ifdef PRINT_PRESSES
 	
 	window->onFingerDown += [](auto... x) {
 		dout << "Finger Down!\n";
@@ -73,6 +77,13 @@ bool Test_SDL_GUI()
 		dout << "Mouse Motion!\n";
 		printArgs(x...);
 	};
+	
+	window->onMouseWheel += [](auto... x) {
+		dout << "Mouse Wheel!\n";
+		printArgs(x...);
+	};
+	
+	#endif
 	
 	window->onClose += [](auto...)
 	{
@@ -111,9 +122,13 @@ bool Test_SDL_GUI()
 	ren->renderPresent();
 	ren->target(NULL);
 	
-	auto texComp = new SDLTextureViewComponent(tex);
+	
+	#define TEXCOMP "TexComp"
+	auto texComp = new SDLTextureViewComponent(TEXCOMP, TOUCH, tex);
+	dout << "TexComp id: '" << texComp->id << "'\n";
 	assert_ex(texComp->parent == NULL);
 	assert_ex(texComp->window == NULL);
+	assert_ex(texComp->id == TEXCOMP);
 	
 	assert_ex(window->replaceView(texComp) == NULL);
 	assert_ex(texComp->parent == NULL);
@@ -130,7 +145,7 @@ bool Test_SDL_GUI()
 	sleep(1000);
 	
 	
-	auto texView = new SDLAbsoluteTextureView(w, h);
+	auto texView = new SDLAbsoluteTextureView("AbsTextureView", TOUCH, w, h);
 	dout << "TexView Created\n";
 	
 	texView->addChild(texComp, 0, 0, 1, 0.5);
@@ -143,11 +158,25 @@ bool Test_SDL_GUI()
 	ren->fillRect(0, 0, w, h);
 	ren->renderPresent();
 	
-	auto texComp2 = new SDLTextureViewComponent(tex2);
+	auto texComp2 = new SDLTextureViewComponent("TexComp2", TOUCH, tex2);
 	dout << "Second child created\n";
 	texView->addChild(texComp2, 0.5, 0, 0.5, 1);
 	dout << "Second child added\n";
 	
+	texComp2->onFingerDown += [](auto...x)
+	{
+		dout << "\nTex Comp 2 Clicked!\n\n";
+	};
+	
+	texComp->onFingerDown += [](auto...x)
+	{
+		dout << "\nTex Comp Clicked!\n\n";
+	};
+	
+	texView->onFingerDown += [](auto...x)
+	{
+		dout << "\nTex View Clicked!\n\n";
+	};
 	
 	texComp2->opacity(0.2);
 	auto partialOpacity = static_cast<unsigned char>(0.2*255);
@@ -217,10 +246,8 @@ bool Test_SDL_GUI()
 	font1Loader = NULL;
 	
 	
-	auto labelComp = new SDLLabelViewComponent("Hello", "font1", 400);
+	auto labelComp = new SDLLabelViewComponent("LabelComp", TOUCH, "Hello", "font1", 400);
 	labelComp->color({255, 255, 255, 255});
-	dout << "Native Label Height: " << labelComp->nativeHeight() << "\n";
-	dout << "Native Label Width: " << labelComp->nativeWidth() << "\n";
 	
 	texView->addChild(labelComp, 0, 0, -1, -1);
 	

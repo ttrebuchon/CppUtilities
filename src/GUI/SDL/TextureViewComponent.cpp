@@ -8,7 +8,22 @@
 
 namespace QUtils::GUI::SDL
 {
-	SDLTextureViewComponent::SDLTextureViewComponent(Drawing::SDL::Texture* tex) : SDLViewComponent(), texture(tex)
+	SDLTextureViewComponent::SDLTextureViewComponent(const std::string id, bool touch, Drawing::SDL::Texture* tex) : ViewComponent(id, touch), texture(tex)
+	{
+		
+	}
+	
+	SDLTextureViewComponent::SDLTextureViewComponent(bool touch, Drawing::SDL::Texture* tex) : ViewComponent(touch), texture(tex)
+	{
+		
+	}
+	
+	SDLTextureViewComponent::SDLTextureViewComponent(const std::string id, Drawing::SDL::Texture* tex) : ViewComponent(id), texture(tex)
+	{
+		
+	}
+	
+	SDLTextureViewComponent::SDLTextureViewComponent(Drawing::SDL::Texture* tex) : ViewComponent(), texture(tex)
 	{
 		
 	}

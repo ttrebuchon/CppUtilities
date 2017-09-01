@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewComponent.h"
+#include "../ViewComponent.h"
 
 namespace QUtils::Drawing::SDL
 {
@@ -9,7 +9,7 @@ namespace QUtils::Drawing::SDL
 
 namespace QUtils::GUI::SDL
 {
-	class SDLTextureViewComponent : public virtual SDLViewComponent
+	class SDLTextureViewComponent : public ViewComponent
 	{
 		protected:
 		Drawing::SDL::Texture* texture;

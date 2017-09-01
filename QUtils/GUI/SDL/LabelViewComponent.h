@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewComponent.h"
+#include "../ViewComponent.h"
 
 
 
@@ -17,7 +17,7 @@ namespace QUtils::Drawing::SDL
 
 namespace QUtils::GUI::SDL
 {
-	class SDLLabelViewComponent : public SDLViewComponent
+	class SDLLabelViewComponent : public ViewComponent
 	{
 		private:
 		int lastW, lastH;
@@ -31,6 +31,9 @@ namespace QUtils::GUI::SDL
 		std::string _fontName;
 		
 		public:
+		SDLLabelViewComponent(const std::string id, bool touch, const std::string text, const std::string font, unsigned int fontSize);
+		SDLLabelViewComponent(bool touch, const std::string text, const std::string font, unsigned int fontSize);
+		SDLLabelViewComponent(const std::string id, const std::string text, const std::string font, unsigned int fontSize);
 		SDLLabelViewComponent(const std::string text, const std::string font, unsigned int fontSize);
 		virtual ~SDLLabelViewComponent();
 		

@@ -16,7 +16,7 @@ namespace QUtils::Drawing::SDL
 namespace QUtils::GUI::SDL
 {
 	
-	class SDLAppWindow : public virtual AppWindow, public virtual SDLRenderTarget
+	class SDLAppWindow : public AppWindow, public SDLRenderTarget
 	{
 		private:
 		

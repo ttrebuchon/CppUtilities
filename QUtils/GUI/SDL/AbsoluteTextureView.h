@@ -17,6 +17,9 @@ namespace QUtils::GUI::SDL
 		virtual void updateTexture() override;
 		
 		public:
+		SDLAbsoluteTextureView(const std::string id, bool touch, int w, int h);
+		SDLAbsoluteTextureView(bool touch, int w, int h);
+		SDLAbsoluteTextureView(const std::string id, int w, int h);
 		SDLAbsoluteTextureView(int w, int h);
 		
 		virtual ~SDLAbsoluteTextureView();

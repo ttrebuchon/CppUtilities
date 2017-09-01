@@ -7,22 +7,22 @@
 
 namespace QUtils::GUI::SDL
 {
-	SDLTextureView::SDLTextureView(const std::string id, bool touch, int w, int h) : SDLView(id, touch), SDLRenderTarget(), texture(NULL), tmpRen(NULL), texW(w), texH(h)
+	SDLTextureView::SDLTextureView(const std::string id, bool touch, int w, int h) : RenderTarget(), View(id, touch), SDLRenderTarget(), texture(NULL), tmpRen(NULL), texW(w), texH(h)
 	{
 		
 	}
 	
-	SDLTextureView::SDLTextureView(bool touch, int w, int h) : SDLView(touch), SDLRenderTarget(), texture(NULL), tmpRen(NULL), texW(w), texH(h)
+	SDLTextureView::SDLTextureView(bool touch, int w, int h) : RenderTarget(), View(touch), SDLRenderTarget(), texture(NULL), tmpRen(NULL), texW(w), texH(h)
 	{
 		
 	}
 	
-	SDLTextureView::SDLTextureView(const std::string id, int w, int h) : SDLView(id), SDLRenderTarget(), texture(NULL), tmpRen(NULL), texW(w), texH(h)
+	SDLTextureView::SDLTextureView(const std::string id, int w, int h) : RenderTarget(), View(id), SDLRenderTarget(), texture(NULL), tmpRen(NULL), texW(w), texH(h)
 	{
 		
 	}
 	
-	SDLTextureView::SDLTextureView(int w, int h) : SDLView(), SDLRenderTarget(), texture(NULL), tmpRen(NULL), texW(w), texH(h)
+	SDLTextureView::SDLTextureView(int w, int h) : RenderTarget(), View(), SDLRenderTarget(), texture(NULL), tmpRen(NULL), texW(w), texH(h)
 	{
 		
 	}
@@ -38,7 +38,7 @@ namespace QUtils::GUI::SDL
 	
 	void SDLTextureView::setWindow(AppWindow* win)
 	{
-		SDLView::setWindow(win);
+		View::setWindow(win);
 		auto sdlWin = dynamic_cast<SDLAppWindow*>(win);
 		texture = new Drawing::SDL::Texture(sdlWin->getRenderer(), Drawing::SDL::PixelFormat::RGBA8888, Drawing::SDL::TextureAccess::Target, texW, texH);
 	}
