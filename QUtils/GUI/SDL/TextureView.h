@@ -15,6 +15,7 @@ namespace QUtils::GUI::SDL
 	{
 		private:
 		
+		
 		protected:
 		Drawing::SDL::Texture* texture;
 		Drawing::SDL::Renderer* tmpRen;
@@ -25,6 +26,9 @@ namespace QUtils::GUI::SDL
 		virtual void updateTexture() = 0;
 		
 		public:
+		SDLTextureView(const std::string id, bool touch, int w, int h);
+		SDLTextureView(bool touch, int w, int h);
+		SDLTextureView(const std::string id, int w, int h);
 		SDLTextureView(int w, int h);
 		virtual ~SDLTextureView();
 		

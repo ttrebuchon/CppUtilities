@@ -14,7 +14,9 @@ namespace QUtils::GUI::SDL
 		protected:
 		Drawing::SDL::Texture* texture;
 		public:
-		
+		SDLTextureViewComponent(const std::string id, bool touch, Drawing::SDL::Texture*);
+		SDLTextureViewComponent(bool touch, Drawing::SDL::Texture*);
+		SDLTextureViewComponent(const std::string id, Drawing::SDL::Texture*);
 		SDLTextureViewComponent(Drawing::SDL::Texture*);
 		virtual ~SDLTextureViewComponent();
 		virtual void update()

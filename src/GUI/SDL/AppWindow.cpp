@@ -59,7 +59,7 @@ namespace QUtils::GUI::SDL
 			{
 				auto fEv = (TouchFingerEvent*)ev;
 				onFingerDown(this, fEv->timestamp, fEv->touchId, fEv->fingerId, fEv->x, fEv->y, fEv->dx, fEv->dy, fEv->pressure);
-				}
+			}
 				return 0;
 				
 				ECASE(FingerUp):
@@ -106,6 +106,17 @@ namespace QUtils::GUI::SDL
 					return 1;
 				}
 				onMouseMotion(this, mbEv->timestamp, mbEv->which, mbEv->state, mbEv->x, mbEv->y, mbEv->xrel, mbEv->yrel);
+				}
+				return 0;
+				
+				ECASE(MouseWheel):
+				{
+				auto mwEv = (MouseWheelEvent*)ev;
+				if (mwEv->windowID != win->ID())
+				{
+					return 1;
+				}
+				onMouseWheel(this, mwEv->timestamp, mwEv->which, mwEv->x, mwEv->y, mwEv->direction);
 				}
 				return 0;
 				

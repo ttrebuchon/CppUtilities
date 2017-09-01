@@ -9,6 +9,7 @@ namespace QUtils::GUI::SDL
 	class SDLAbsoluteTextureView : public SDLTextureView
 	{
 		private:
+		void registerEvents();
 		
 		protected:
 		std::vector<std::tuple<ViewComponent*, double, double>> children;

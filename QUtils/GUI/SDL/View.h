@@ -13,7 +13,10 @@ namespace QUtils::GUI::SDL
 		protected:
 		
 		public:
-		
+		SDLView(const std::string id, bool touch);
+		SDLView(bool touch);
+		SDLView(const std::string id);
+		SDLView();
 		virtual ~SDLView();
 		
 	};

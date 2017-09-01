@@ -8,12 +8,12 @@ namespace QUtils::GUI::SDL
 {
 	SDLAbsoluteTextureView::SDLAbsoluteTextureView(int w, int h) : SDLTextureView(w, h), children()
 	{
-		
+		registerEvents();
 	}
 	
 	SDLAbsoluteTextureView::~SDLAbsoluteTextureView()
 	{
-		
+		removeChildren();
 	}
 	
 	void SDLAbsoluteTextureView::updateTexture()
@@ -72,10 +72,68 @@ namespace QUtils::GUI::SDL
 			if (std::get<0>(*it) == comp)
 			{
 				children.erase(it);
+				_changed = true;
 				return;
 			}
 		}
 		
 		throw ParentChildException().Msg("Child " + comp->id + " could not be found under parent " + this->id).Line(__LINE__).Function(__func__).File(__FILE__);
+	}
+	
+	
+	
+	void SDLAbsoluteTextureView::registerEvents()
+	{
+		onFingerDown += [&](auto win, auto timestamp, auto touchId, auto fingerId, auto x, auto y, auto dx, auto dy, auto pressure)
+		{
+			
+			auto rdx = static_cast<double>(dx)/texW;
+			auto rdy = static_cast<double>(dy)/texH;
+			
+			std::cout << "<" << x << ", " << y << ", " << dx << ", " << dy << ">\n";
+			std::cout << "[" << x << ", " << y << ", " << rdx << ", " << rdy << "]\n";
+			
+			for (auto i = children.size()-1; i >= 0; --i)
+			{
+				const auto& child = std::get<0>(children[i]);
+				double cw = child->width();
+				double ch = child->height();
+				
+				if (ch == -2 && cw == -2)
+				{
+					ch = cw = -1;
+				}
+				
+				if (cw == -1)
+				{
+					cw = child->nativeWidth();
+				}
+				if (ch == -1)
+				{
+					ch = child->nativeHeight();
+				}
+				
+				if (cw == -2)
+				{
+					cw = static_cast<double>(child->nativeWidth())/child->nativeHeight()*ch;
+				}
+				if (ch == -2)
+				{
+					ch = static_cast<double>(child->nativeHeight())/child->nativeWidth()*cw;
+				}
+				
+				std::cout << "(" << std::get<1>(children[i]) << ", " << std::get<2>(children[i]) << ", " << cw << ", " << ch << ")\n";
+				
+				if (x >= std::get<1>(children[i]) && y >= std::get<2>(children[i]))
+				{
+					if (x <= std::get<1>(children[i]) + cw && y <= std::get<2>(children[i]) + ch)
+					{
+						std::cout << "Calling Child Event! [Child: '" << child->id << "']\n";
+						child->onFingerDown(win, timestamp, touchId, fingerId, x - std::get<1>(children[i]), y - std::get<2>(children[i]), rdx, rdy, pressure);
+						return;
+					}
+				}
+			}
+		};
 	}
 }

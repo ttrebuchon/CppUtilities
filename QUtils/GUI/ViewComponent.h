@@ -2,13 +2,15 @@
 
 #include <string>
 
+#include "Clickable.h"
+
 namespace QUtils::GUI
 {
 	class RenderTarget;
 	class View;
 	class AppWindow;
 	
-	class ViewComponent
+	class ViewComponent : public Clickable
 	{
 		static int idCounter;
 		typedef View* ViewPtr_t;
@@ -39,6 +41,8 @@ namespace QUtils::GUI
 		const ViewPtr_t& parent;
 		const AppWinPtr_t& window;
 		
+		ViewComponent(const std::string id, bool touch);
+		ViewComponent(bool touch);
 		ViewComponent(const std::string id);
 		ViewComponent();
 		virtual ~ViewComponent();

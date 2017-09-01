@@ -3,7 +3,22 @@
 
 namespace QUtils::GUI
 {
-	View::View()
+	View::View(const std::string id, bool touch) : ViewComponent(id, touch)
+	{
+		
+	}
+	
+	View::View(bool touch) : ViewComponent(touch)
+	{
+		
+	}
+	
+	View::View(const std::string id) : ViewComponent(id)
+	{
+		
+	}
+	
+	View::View() : ViewComponent()
 	{
 		
 	}

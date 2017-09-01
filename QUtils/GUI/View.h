@@ -16,6 +16,9 @@ namespace QUtils::GUI
 		virtual void addChild(ViewComponent*);
 		
 		public:
+		View(const std::string id, bool touch);
+		View(bool touch);
+		View(const std::string id);
 		View();
 		virtual ~View();
 		

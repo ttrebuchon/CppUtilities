@@ -7,7 +7,22 @@
 
 namespace QUtils::GUI::SDL
 {
-	SDLTextureView::SDLTextureView(int w, int h) : SDLView(), texture(NULL), tmpRen(NULL), texW(w), texH(h)
+	SDLTextureView::SDLTextureView(const std::string id, bool touch, int w, int h) : SDLView(id, touch), SDLRenderTarget(), texture(NULL), tmpRen(NULL), texW(w), texH(h)
+	{
+		
+	}
+	
+	SDLTextureView::SDLTextureView(bool touch, int w, int h) : SDLView(touch), SDLRenderTarget(), texture(NULL), tmpRen(NULL), texW(w), texH(h)
+	{
+		
+	}
+	
+	SDLTextureView::SDLTextureView(const std::string id, int w, int h) : SDLView(id), SDLRenderTarget(), texture(NULL), tmpRen(NULL), texW(w), texH(h)
+	{
+		
+	}
+	
+	SDLTextureView::SDLTextureView(int w, int h) : SDLView(), SDLRenderTarget(), texture(NULL), tmpRen(NULL), texW(w), texH(h)
 	{
 		
 	}
