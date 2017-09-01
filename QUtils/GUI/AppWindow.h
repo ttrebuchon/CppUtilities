@@ -3,11 +3,13 @@
 #include "Event.h"
 #include "RenderTarget.h"
 
+#include "Clickable.h"
+
 namespace QUtils::GUI
 {
 	class ViewComponent;
 	
-	class AppWindow : public virtual RenderTarget
+	class AppWindow : public virtual RenderTarget, public Clickable
 	{
 		protected:
 		ViewComponent* mainView;
@@ -17,14 +19,6 @@ namespace QUtils::GUI
 		virtual ~AppWindow();
 		Event<> onQuit;
 		Event<> onKeyDown;
-		
-		Event<AppWindow*, unsigned int, long, long, float, float, float, float, float> onFingerDown;
-		Event<AppWindow*, unsigned int, long, long, float, float, float, float, float> onFingerUp;
-		Event<AppWindow*, unsigned int, long, long, float, float, float, float, float> onFingerMotion;
-		
-		Event<AppWindow*, unsigned int, unsigned int, unsigned char, unsigned char, unsigned char, int, int> onMouseButtonDown;
-		Event<AppWindow*, unsigned int, unsigned int, unsigned char, unsigned char, unsigned char, int, int> onMouseButtonUp;
-		Event<AppWindow*, unsigned int, unsigned int, unsigned int, int, int, int, int> onMouseMotion;
 		
 		Event<AppWindow*> onShow;
 		Event<AppWindow*> onHide;

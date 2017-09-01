@@ -3,9 +3,11 @@
 
 namespace QUtils::GUI
 {
-	AppWindow::AppWindow(bool touch) : mainView(NULL), onQuit(), onKeyDown(!touch), onFingerDown(touch), onFingerUp(touch), onFingerMotion(touch), onMouseButtonDown(!touch), onMouseButtonUp(!touch), onMouseMotion(!touch)
+	AppWindow::AppWindow(bool touch) : RenderTarget(), Clickable(touch), mainView(NULL), onQuit(), onKeyDown(!touch)
 	{
-		
+		relayEvents([](auto _this) {
+			return ((AppWindow*)_this)->mainView;
+		});
 	}
 	
 	AppWindow::~AppWindow()
