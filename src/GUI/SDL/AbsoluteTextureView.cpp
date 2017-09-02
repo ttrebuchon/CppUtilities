@@ -108,10 +108,14 @@ namespace QUtils::GUI::SDL
 			for (int i = static_cast<int>(children.size())-1; i >= 0; --i)
 			{
 				const auto& child = std::get<0>(children.at(i));
-				double cw = child->width();
-				double ch = child->height();
+				/*double cw = child->width();
+				double ch = child->height();*/
 				
-				if (ch == -2 && cw == -2)
+				double cw = texW;
+				double ch = texH;
+				child->calcRelativeDims(cw, ch);
+				
+				/*if (ch == -2 && cw == -2)
 				{
 					ch = cw = -1;
 				}
@@ -132,7 +136,7 @@ namespace QUtils::GUI::SDL
 				if (ch == -2)
 				{
 					ch = static_cast<double>(child->nativeHeight())/child->nativeWidth()*cw;
-				}
+				}*/
 				
 				if (x >= std::get<1>(children[i]) && y >= std::get<2>(children[i]))
 				{

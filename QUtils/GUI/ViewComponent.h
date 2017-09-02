@@ -34,7 +34,7 @@ namespace QUtils::GUI
 			_window = win;
 		}
 		
-		virtual void calcRenderDimensions(int& width, int& height);
+		
 		
 		public:
 		const std::string& id;
@@ -46,6 +46,15 @@ namespace QUtils::GUI
 		ViewComponent(const std::string id);
 		ViewComponent();
 		virtual ~ViewComponent();
+		
+		
+		virtual void calcRenderDimensions(int& width, int& height);
+		
+		virtual void calcRelativeDimensions(double& width, double& height) const;
+		inline void calcRelativeDims(double& w, double &h) const
+		{
+			calcRelativeDimensions(w, h);
+		}
 		
 		
 		virtual void update() = 0;

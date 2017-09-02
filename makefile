@@ -147,7 +147,7 @@ WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -ftemplate-backtrace-limit=0
 
 WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wno-unused-local-typedefs -Wno-unused-variable -Wno-unused-but-set-variable 
 
-WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wfatal-errors 
+WARNINGS_ERRORS := $(WARNINGS_ERRORS) #-Wfatal-errors 
 
 FLAGS = -I .
 
@@ -201,10 +201,11 @@ clean:
 	rm -f $(libobjects:.o=.d)
 
 
-$(stLibTarget).a: $(libobjects)
+$(stLibTarget).a: $(libobjects) makefile
 	[[ -d objs ]] || mkdir objs
 	cd objs ; ar -xv ../$(Deps_D)/sqlite3/libsqlite3.a ; ar -xv ../$(Deps_D)/curlpp/libcurlpp.a
 	ar rvs $(stLibTarget).a $(libobjects) $(wildcard objs/*.o)
+	echo $(libobjects) $(wildcard objs/*.o)
 #*/
 	
 Tests.o: makefile Tests.cpp

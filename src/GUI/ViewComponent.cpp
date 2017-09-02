@@ -33,29 +33,6 @@ namespace QUtils::GUI
 		
 	}
 	
-	
-	void ViewComponent::addToView(View* view)
-	{
-		if (_parent != NULL/* && _parent != view*/)
-		{
-			throw ParentChildException().Msg("This component is already a child of a view");
-		}
-		_parent = view;
-		setWindow(view->window);
-		_changed = true;
-	}
-	
-	void ViewComponent::removeFromView()
-	{
-		if (_parent == NULL)
-		{
-			throw ParentChildException().Msg("This component cannot be removed from it's parent view because it has none");
-		}
-		_parent = NULL;
-		setWindow(NULL);
-		_changed = true;
-	}
-	
 	void ViewComponent::calcRenderDimensions(int& w, int& h)
 	{
 		auto tmpW = width();
@@ -98,6 +75,69 @@ namespace QUtils::GUI
 		
 	}
 	
+	void ViewComponent::calcRelativeDimensions(double& outW, double& outH) const
+	{
+		auto tmpW = width();
+		auto tmpH = height();
+		
+		if (tmpW == -2 && tmpH == -2)
+		{
+			tmpW = tmpH = -1;
+		}
+		
+		if (tmpW >= 0)
+		{
+			outW = tmpW;
+		}
+		else if (tmpW == -1)
+		{
+			outW = (static_cast<double>(nativeWidth())/outW);
+		}
+		
+		if (tmpH >= 0)
+		{
+			outH = tmpH;
+		}
+		else if (tmpH == -1)
+		{
+			outH = (static_cast<double>(nativeHeight())/outH);
+		}
+		
+		
+		
+		if (tmpW == -2)
+		{
+			outW *= (static_cast<double>(nativeWidth())/nativeHeight());
+		}
+		
+		if (tmpH == -2)
+		{
+			outH *= (static_cast<double>(nativeHeight())/nativeWidth());
+		}
+	}
+	
+	void ViewComponent::addToView(View* view)
+	{
+		if (_parent != NULL/* && _parent != view*/)
+		{
+			throw ParentChildException().Msg("This component is already a child of a view");
+		}
+		_parent = view;
+		setWindow(view->window);
+		_changed = true;
+	}
+	
+	void ViewComponent::removeFromView()
+	{
+		if (_parent == NULL)
+		{
+			throw ParentChildException().Msg("This component cannot be removed from it's parent view because it has none");
+		}
+		_parent = NULL;
+		setWindow(NULL);
+		_changed = true;
+	}
+	
 	
 	double ViewComponent::width() const
 	{
@@ -132,4 +172,6 @@ namespace QUtils::GUI
 		_opacity = std::max<double>(std::min<double>(1, value), 0);
 		_changed = true;
 	}
+	
+	
 }

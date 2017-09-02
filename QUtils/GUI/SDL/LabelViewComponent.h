@@ -1,10 +1,7 @@
 #pragma once
 
-#include "../ViewComponent.h"
+#include "../TextViewComponent.h"
 
-
-
-#include <QUtils/Drawing/SDL/Color.h>
 #include "FontResource.h"
 
 #include <string>
@@ -17,7 +14,7 @@ namespace QUtils::Drawing::SDL
 
 namespace QUtils::GUI::SDL
 {
-	class SDLLabelViewComponent : public ViewComponent
+	class SDLLabelViewComponent : public TextViewComponent
 	{
 		private:
 		int lastW, lastH;
@@ -26,9 +23,11 @@ namespace QUtils::GUI::SDL
 		std::string _text;
 		std::shared_ptr<Drawing::SDL::Font> _font;
 		Drawing::SDL::Texture* texture;
-		Drawing::SDL::Color _color;
+		Color _color;
 		int _fontSize;
 		std::string _fontName;
+		double _wrapWidth;
+		
 		
 		public:
 		SDLLabelViewComponent(const std::string id, bool touch, const std::string text, const std::string font, unsigned int fontSize);
@@ -37,16 +36,22 @@ namespace QUtils::GUI::SDL
 		SDLLabelViewComponent(const std::string text, const std::string font, unsigned int fontSize);
 		virtual ~SDLLabelViewComponent();
 		
-		virtual std::string text() const;
-		virtual void text(const std::string);
+		virtual std::string text() const override;
+		virtual void text(const std::string) override;
 		
 		virtual void update() override;
 		virtual void render(RenderTarget*, int, int, int, int) override;
+		
 		virtual int nativeWidth() const override;
 		virtual int nativeHeight() const override;
 		
-		virtual const Drawing::SDL::Color& color() const
+		virtual double wrapWidth() const override;
+		virtual void wrapWidth(const double) override;
+		
+		virtual const Color color() const override
 		{ return _color; }
-		virtual void color(const Drawing::SDL::Color v) {_color = v; _changed = true;}
+		virtual void color(const Color& v) override
+		{_color = v; _changed = true;}
+		
 	};
 }

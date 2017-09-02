@@ -255,8 +255,11 @@ bool Test_SDL_GUI()
 	sleep(200);
 	texView->removeChild(labelComp);
 	
+	
 	texView->addChild(labelComp, 0, 0.5, 1, -2);
+	//labelComp->wrapWidth(1);
 	window->update();
+	
 	
 	
 	dout << "Handling Events...\n";
