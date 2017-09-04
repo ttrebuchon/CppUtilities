@@ -82,16 +82,17 @@ namespace QUtils::GUI::SDL
 			Drawing::SDL::Surface* surf = NULL;
 			auto wrapW = wrapWidth();
 			
-			if (wrapW >= 0)
+			//surf = _font->surfaceBlendedWrapped(text(), (Drawing::SDL::Color)color(), wrapW*w);
+			surf = _font->surfaceBlended(text(), (Drawing::SDL::Color)color());
+			if (height() == -2)
 			{
-				surf = _font->surfaceBlendedWrapped(text(), (Drawing::SDL::Color)color(), wrapW*w);
-			}
-			else
-			{
-				surf = _font->surfaceBlendedWrappedWithRatio(text(), (Drawing::SDL::Color)color(), static_cast<double>(h)/w);
+				h = (int)(static_cast<double>(surf->height())/surf->width()*w);
 			}
 			
+			
 			texture = surf->createTexture(ren);
+			
+			delete surf;
 			
 			
 			lastW = w;

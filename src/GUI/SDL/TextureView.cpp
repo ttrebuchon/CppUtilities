@@ -4,6 +4,8 @@
 #include <QUtils/GUI/SDL/AppWindow.h>
 #include <QUtils/GUI/Errors.h>
 
+#include <iostream>
+
 
 namespace QUtils::GUI::SDL
 {
@@ -45,7 +47,8 @@ namespace QUtils::GUI::SDL
 	
 	void SDLTextureView::update()
 	{
-		if (changed())
+		bool hasChanged = changed();
+		if (hasChanged)
 		{
 			auto sdlWin = dynamic_cast<SDLAppWindow*>(window);
 			if (sdlWin == NULL)

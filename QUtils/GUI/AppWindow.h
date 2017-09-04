@@ -1,5 +1,7 @@
 #pragma once
 
+#include <list>
+
 #include "Event.h"
 #include "RenderTarget.h"
 
@@ -13,6 +15,7 @@ namespace QUtils::GUI
 	{
 		protected:
 		ViewComponent* mainView;
+		std::list<std::exception_ptr> eventExceptions;
 		
 		public:
 		AppWindow(bool touch);

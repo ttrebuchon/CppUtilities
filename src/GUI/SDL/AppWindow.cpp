@@ -22,9 +22,17 @@ namespace QUtils::GUI::SDL
 		ren->renderPresent();
 		
 		
-		Drawing::SDL::Event::AppendEventFilter([&](Drawing::SDL::Event* ev) ->int
+		Drawing::SDL::Event::AppendEventFilter([&](Drawing::SDL::Event* ev) -> int
 		{
+			try
+			{
 			return this->handleEvent(ev);
+			}
+			catch (...)
+			{
+				eventExceptions.push_back(std::current_exception());
+			return 0;
+			}
 		});
 		
 		Drawing::SDL::Event::FlushEvents(0, 0xFFFFFFFF);
@@ -261,6 +269,12 @@ namespace QUtils::GUI::SDL
 	
 	void SDLAppWindow::handleEvents()
 	{
+		if (eventExceptions.size() > 0)
+		{
+			auto exs = eventExceptions;
+			eventExceptions.clear();
+			throw AggregateException(exs);
+		}
 		using namespace Drawing::SDL;
 		Drawing::SDL::Event* ev;
 		while ((ev = Drawing::SDL::Event::PollEvent()) != NULL)

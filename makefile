@@ -211,8 +211,5 @@ $(stLibTarget).a: $(libobjects) makefile
 Tests.o: makefile Tests.cpp
 	$(CXX) $(CXXFLAGS) -c Tests.cpp
 
-#*.cpp.o: 
-#	$(CXX) $(CXXFLAGS) $< -L. $PREPROC_FLAGS) $(LINKING)
-
 -include $(libdeps)
 -include $(testdeps)

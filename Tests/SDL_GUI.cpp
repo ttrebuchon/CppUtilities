@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include <thread>
+
 using namespace QUtils;
 using namespace GUI::SDL;
 
@@ -204,19 +206,22 @@ bool Test_SDL_GUI()
 	
 	window->update();
 	
-	for (int i = 0; i < 100; ++i)
+	{
+	int max = 30;
+	
+	for (int i = 0; i < max; i += 1)
 	{
 		if (i % 2 == 0)
 		{
 			ren->target(tex);
 			texComp->textureChanged();
-			texComp->opacity(static_cast<double>(i)/100);
+			texComp->opacity(static_cast<double>(i)/max);
 		}
 		else
 		{
 			ren->target(tex2);
 			texComp2->textureChanged();
-			texComp2->opacity(static_cast<double>(i)/100);
+			texComp2->opacity(static_cast<double>(i)/max);
 		}
 		
 		switch (i % 3)
@@ -240,6 +245,7 @@ bool Test_SDL_GUI()
 		ren->renderPresent();
 		window->update();
 	}
+	}
 	
 	auto font1Loader = new SDLFontFileResourceLoader("font1", "font1.ttf");
 	font1Loader->assign();
@@ -257,20 +263,65 @@ bool Test_SDL_GUI()
 	
 	
 	texView->addChild(labelComp, 0, 0.5, 1, -2);
-	//labelComp->wrapWidth(1);
+	labelComp->text("Hello, world!");
+	//labelComp->wrapWidth(0.5);
 	window->update();
 	
+	
+	auto tex3 = new Drawing::SDL::Texture(window->getRenderer(), Drawing::SDL::PixelFormat::RGBA8888, Drawing::SDL::TextureAccess::Target, w, h);
+	
+	auto texComp3 = new SDLTextureViewComponent(tex3);
+	
+	ren->target(tex3);
+	ren->setDrawColor(255, 0, 255, 255);
+	ren->clear();
+	ren->renderPresent();
+	
+	texView->addChild(texComp3, 0, 0, 1, 0);
+	
+	window->update();
+	
+	auto mainThreadID = std::this_thread::get_id();
+	
+	dout << "ThreadID: " << mainThreadID << "\n";
+	
+	texView->onFingerMotion += [&, mainThreadID](auto win, auto time, auto, auto, auto x, auto y, auto dx, auto dy, auto pressure)
+	{
+		dout << "Handler ThreadID: " << std::this_thread::get_id() << "\n";
+		dout << "Drawing...\n";
+		assert_ex(texComp3 != NULL);
+		texComp3->height(y);
+		dout << "Height updated\n";
+		assert_ex(window != NULL);
+		dout << "Updating window...\n";
+		window->update();
+		dout << "Window updated\n";
+	};
+	
+	sleep(3000);
 	
 	
 	dout << "Handling Events...\n";
 	window->handleEvents();
-	delete window;
 	
-	if (texComp != NULL)
+	auto cleanup = [](auto& ptr)
 	{
-		delete texComp;
-		texComp = NULL;
-	}
+		if (ptr != NULL)
+		{
+			delete ptr;
+			ptr = NULL;
+		}
+	};
+	
+	cleanup(window);
+	cleanup(texView);
+	cleanup(texComp);
+	cleanup(texComp2);
+	cleanup(labelComp);
+	cleanup(tex);
+	cleanup(tex2);
+	cleanup(tex3);
+	
 	}
 	catch (...)
 	{

@@ -2,6 +2,8 @@
 #include <functional>
 #include <list>
 
+#include <QUtils/Exception/Aggregate.h>
+
 namespace QUtils::GUI
 {
 	template <class... T>
@@ -9,6 +11,7 @@ namespace QUtils::GUI
 	{
 		protected:
 		std::list<std::function<void(T...)>> handlers;
+		
 		bool _enabled;
 		
 		public:
@@ -20,9 +23,28 @@ namespace QUtils::GUI
 		{
 			if (_enabled)
 			{
+				std::list<std::exception_ptr> exceptions;
 				for (const auto& callback : handlers)
 				{
+					try
+					{
 					callback(t...);
+					}
+					catch (...)
+					{
+						exceptions.push_back(std::current_exception());
+					}
+				}
+				
+				
+				if (exceptions.size() > 1)
+				{
+					throw QUtils::AggregateException(exceptions);
+				}
+				
+				if (exceptions.size() > 0)
+				{
+					std::rethrow_exception(exceptions.front());
 				}
 			}
 		}

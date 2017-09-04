@@ -33,8 +33,8 @@ namespace QUtils::GUI
 	{
 		/*if (wrapWidth() == -1)
 		{
-			*/ViewComponent::calcRenderDimensions(w, h);/*
-			return;
+			*/ViewComponent::calcRenderDimensions(w, h);
+			/*return;
 		}
 		
 		auto tmpW = width();
@@ -51,7 +51,7 @@ namespace QUtils::GUI
 		}
 		else if (tmpW == -1)
 		{
-			w = -1;
+			w = nativeWidth();
 		}
 		
 		
@@ -61,31 +61,60 @@ namespace QUtils::GUI
 		}
 		else if (tmpH == -1)
 		{
-			h = -1;
+			h = nativeHeight();
 		}
 		
 		if (tmpW == -2)
 		{
-			if (h > 0)
-			{
-				w = (static_cast<double>(nativeWidth())/nativeHeight())*h;
-			}
-			else
-			{
-				w = -2;
-			}
+			w = (static_cast<double>(nativeWidth())/nativeHeight())*h;
 		}
 		
 		if (tmpH == -2)
 		{
-			if (w > 0)
-			{
-				h = (static_cast<double>(nativeHeight())/nativeWidth())*w;
-			}
-			else
-			{
-				h = -2;
-			}
+			h = (static_cast<double>(nativeHeight())/nativeWidth())*w;
 		}*/
+		
+		
 	}
+	
+	/*void ViewComponent::calcRelativeDimensions(double& outW, double& outH) const
+	{
+		auto tmpW = width();
+		auto tmpH = height();
+		
+		if (tmpW == -2 && tmpH == -2)
+		{
+			tmpW = tmpH = -1;
+		}
+		
+		if (tmpW >= 0)
+		{
+			outW = tmpW;
+		}
+		else if (tmpW == -1)
+		{
+			outW = (static_cast<double>(nativeWidth())/outW);
+		}
+		
+		if (tmpH >= 0)
+		{
+			outH = tmpH;
+		}
+		else if (tmpH == -1)
+		{
+			outH = (static_cast<double>(nativeHeight())/outH);
+		}
+		
+		
+		
+		if (tmpW == -2)
+		{
+			outW *= (static_cast<double>(nativeWidth())/nativeHeight());
+		}
+		
+		if (tmpH == -2)
+		{
+			outH *= (static_cast<double>(nativeHeight())/nativeWidth());
+		}
+	}*/
 }
