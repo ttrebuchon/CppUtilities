@@ -6,6 +6,7 @@
 
 
 	#define QUTILS_CUSTOM_EXCEPTION(name, msg) class name : public std::exception { \
+	protected: \
 	std::string file; \
 	int line; \
 	std::string func; \
@@ -50,7 +51,7 @@
 	    return _whatC; \
 	}\
 	\
-	void build() { \
+	virtual void build() { \
 	if (_what == "") \
 	{ \
 	    _what = #msg; \
@@ -131,6 +132,7 @@
 	}
 	
 	#define UTIL_CUSTOM_EXCEPTION(name, msg) QUTILS_CUSTOM_EXCEPTION(name, msg)
+
 
 #endif
 	
