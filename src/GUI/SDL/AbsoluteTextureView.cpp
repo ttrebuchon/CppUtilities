@@ -108,41 +108,42 @@ namespace QUtils::GUI::SDL
 			for (int i = static_cast<int>(children.size())-1; i >= 0; --i)
 			{
 				const auto& child = std::get<0>(children.at(i));
-				/*double cw = child->width();
-				double ch = child->height();*/
 				
 				double cw = texW;
 				double ch = texH;
 				child->calcRelativeDims(cw, ch);
-				
-				/*if (ch == -2 && cw == -2)
-				{
-					ch = cw = -1;
-				}
-				
-				if (cw == -1)
-				{
-					cw = child->nativeWidth();
-				}
-				if (ch == -1)
-				{
-					ch = child->nativeHeight();
-				}
-				
-				if (cw == -2)
-				{
-					cw = static_cast<double>(child->nativeWidth())/child->nativeHeight()*ch;
-				}
-				if (ch == -2)
-				{
-					ch = static_cast<double>(child->nativeHeight())/child->nativeWidth()*cw;
-				}*/
 				
 				if (x >= std::get<1>(children[i]) && y >= std::get<2>(children[i]))
 				{
 					if (x <= std::get<1>(children[i]) + cw && y <= std::get<2>(children[i]) + ch)
 					{
 						child->onFingerDown(win, timestamp, touchId, fingerId, x - std::get<1>(children[i]), y - std::get<2>(children[i]), rdx, rdy, pressure);
+						return;
+					}
+				}
+			}
+		};
+		
+		
+		onFingerUp += [&](auto win, auto timestamp, auto touchId, auto fingerId, auto x, auto y, auto dx, auto dy, auto pressure)
+		{
+			
+			auto rdx = static_cast<double>(dx)/texW;
+			auto rdy = static_cast<double>(dy)/texH;
+			
+			for (int i = static_cast<int>(children.size())-1; i >= 0; --i)
+			{
+				const auto& child = std::get<0>(children.at(i));
+				
+				double cw = texW;
+				double ch = texH;
+				child->calcRelativeDims(cw, ch);
+				
+				if (x >= std::get<1>(children[i]) && y >= std::get<2>(children[i]))
+				{
+					if (x <= std::get<1>(children[i]) + cw && y <= std::get<2>(children[i]) + ch)
+					{
+						child->onFingerUp(win, timestamp, touchId, fingerId, x - std::get<1>(children[i]), y - std::get<2>(children[i]), rdx, rdy, pressure);
 						return;
 					}
 				}

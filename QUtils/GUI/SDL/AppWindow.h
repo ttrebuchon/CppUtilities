@@ -20,11 +20,18 @@ namespace QUtils::GUI::SDL
 	{
 		private:
 		
+		std::function<Drawing::SDL::Window*()> windowInitializer;
+		
 		protected:
 		Drawing::SDL::Window* win;
 		Drawing::SDL::Renderer* ren;
 		
+		virtual void initializeUIThread() override;
+		
 		virtual int handleEvent(Drawing::SDL::Event*);
+		
+		virtual void update() override;
+		
 		
 		public:
 		SDLAppWindow(const std::string name, const int x, const int y, const int w, const int h, bool touch = false);
@@ -37,7 +44,7 @@ namespace QUtils::GUI::SDL
 		virtual int x() const override;
 		virtual int y() const override;
 		
-		virtual void update() override;
+		
 		virtual void handleEvents() override;
 		
 		virtual Drawing::SDL::Renderer* getRenderer()

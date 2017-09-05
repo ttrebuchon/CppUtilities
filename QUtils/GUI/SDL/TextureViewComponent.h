@@ -20,7 +20,10 @@ namespace QUtils::GUI::SDL
 		SDLTextureViewComponent(Drawing::SDL::Texture*);
 		virtual ~SDLTextureViewComponent();
 		virtual void update()
-		{_changed = false;}
+		{
+			onUpdate(this);
+			_changed = false;
+		}
 		
 		virtual void render(RenderTarget*, int x, int y, int w, int h) override;
 		

@@ -13,9 +13,37 @@
 
 namespace QUtils::GUI::SDL
 {
-	SDLAppWindow::SDLAppWindow(const std::string title, const int x, const int y, const int w, const int h, bool touch) : AppWindow(touch), win(new Drawing::SDL::Window(title, x, y, w, h, Drawing::SDL::WindowFlags::Shown)), ren(NULL)
+	SDLAppWindow::SDLAppWindow(const std::string title, const int x, const int y, const int w, const int h, bool touch) : AppWindow(touch),
+	windowInitializer([=]()
 	{
-		ren = new Drawing::SDL::Renderer(win, -1, Drawing::SDL::RendererFlags::TargetTexture | Drawing::SDL::RendererFlags::PresentVsync | Drawing::SDL::RendererFlags::Accelerated);
+		return new Drawing::SDL::Window(title, x, y, w, h, Drawing::SDL::WindowFlags::Shown);
+	}),
+	win(NULL),
+	ren(NULL)
+	{
+		
+	}
+	
+	SDLAppWindow::~SDLAppWindow()
+	{
+		if (ren != NULL)
+		{
+			delete ren;
+		}
+		if (win != NULL)
+		{
+			delete win;
+			Drawing::SDL::Event::SetEventFilter(NULL, NULL);
+		}
+	}
+	
+	void SDLAppWindow::initializeUIThread()
+	{
+		//TODO
+		//std::cout << __func__ << std::endl << std::flush;
+		win = windowInitializer();
+		windowInitializer = std::function<Drawing::SDL::Window*()>();
+		ren = new Drawing::SDL::Renderer(win, -1, Drawing::SDL::RendererFlags::TargetTexture |/* Drawing::SDL::RendererFlags::PresentVsync |*/ Drawing::SDL::RendererFlags::Accelerated);
 		ren->target(NULL);
 		ren->setDrawColor(0, 0, 0, 0);
 		ren->clear();
@@ -30,25 +58,13 @@ namespace QUtils::GUI::SDL
 			}
 			catch (...)
 			{
-				eventExceptions.push_back(std::current_exception());
+				addEventException(std::current_exception());
+				//eventExceptions.push_back(std::current_exception());
 			return 0;
 			}
 		});
 		
 		Drawing::SDL::Event::FlushEvents(0, 0xFFFFFFFF);
-	}
-	
-	SDLAppWindow::~SDLAppWindow()
-	{
-		if (ren != NULL)
-		{
-			delete ren;
-		}
-		if (win != NULL)
-		{
-			delete win;
-			Drawing::SDL::Event::SetEventFilter(NULL, NULL);
-		}
 	}
 	
 	
@@ -269,11 +285,20 @@ namespace QUtils::GUI::SDL
 	
 	void SDLAppWindow::handleEvents()
 	{
-		if (eventExceptions.size() > 0)
+		{
+		std::lock_guard<std::mutex> lock(eventExceptions_m);
+		if (eventExceptions.size() > 1)
 		{
 			auto exs = eventExceptions;
 			eventExceptions.clear();
 			throw AggregateException(exs);
+		}
+		if (eventExceptions.size() > 0)
+		{
+			auto ex = eventExceptions.front();
+			eventExceptions.clear();
+			std::rethrow_exception(ex);
+		}
 		}
 		using namespace Drawing::SDL;
 		Drawing::SDL::Event* ev;

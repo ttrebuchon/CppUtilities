@@ -45,6 +45,16 @@ bool Test_SDL_GUI()
 	
 	#define TOUCH true
 	window = new SDLAppWindow("Window1", 0, 0, w, h, TOUCH);
+	window->blockUpdate();
+	window->init();
+	sleep(1000);
+	window->handleEvents();
+	
+	window->invokeUI([]() -> int
+	{
+		dout << "ThreadID: " << std::this_thread::get_id() << "\n";
+		return 0;
+	}).wait();
 	
 	
 	window->onQuit += []() {
@@ -104,25 +114,28 @@ bool Test_SDL_GUI()
 	dout << "Handling Events...\n";
 	window->handleEvents();
 	dout << "Updating...\n";
-	//window->update();
+	////window->update();
 	dout << "Handling Events...\n";
 	window->handleEvents();
 	dout << "Sleeping for 1000...\n";
 	sleep(1000);
 	
+	//Drawing::SDL::Texture* tex;
+	Drawing::SDL::Renderer* ren;
 	
-	
-	
-	
-	auto tex = new Drawing::SDL::Texture(window->getRenderer(), Drawing::SDL::PixelFormat::RGBA8888, Drawing::SDL::TextureAccess::Target, w, h);
-	auto ren = window->getRenderer();
-	ren->target(tex);
+	auto tex = window->invokeUI([=, &ren]() -> Drawing::SDL::Texture*
+	{
+	auto tmp = new Drawing::SDL::Texture(window->getRenderer(), Drawing::SDL::PixelFormat::RGBA8888, Drawing::SDL::TextureAccess::Target, w, h);
+	ren = window->getRenderer();
+	ren->target(tmp);
 	ren->setDrawColor(0, 0, 0, 255);
 	ren->clear();
 	ren->setDrawColor(255, 255, 255, 255);
 	ren->fillRect({0, 0, w, h});
 	ren->renderPresent();
 	ren->target(NULL);
+	return tmp;
+	}).get();
 	
 	
 	#define TEXCOMP "TexComp"
@@ -136,8 +149,8 @@ bool Test_SDL_GUI()
 	assert_ex(texComp->parent == NULL);
 	assert_ex(texComp->window == window);
 	
-	window->update();
-	
+	window->unblockUpdate();
+	//window->update();
 	assert_ex(window->replaceView(NULL) == texComp);
 	assert_ex(texComp->parent == NULL);
 	assert_ex(texComp->window == NULL);
@@ -153,12 +166,18 @@ bool Test_SDL_GUI()
 	texView->addChild(texComp, 0, 0, 1, 0.5);
 	dout << "First child added\n";
 	
-	auto tex2 = new Drawing::SDL::Texture(ren, Drawing::SDL::PixelFormat::RGBA8888, Drawing::SDL::TextureAccess::Target, w, h);
+	
+	auto tex2 = window->invokeUI([=]()
+	{
+		auto tex2 = new Drawing::SDL::Texture(ren, Drawing::SDL::PixelFormat::RGBA8888, Drawing::SDL::TextureAccess::Target, w, h);
+	window->blockUpdate();
 	ren->target(tex2);
 	ren->setDrawColor(0, 100, 255, 255);
 	ren->clear();
 	ren->fillRect(0, 0, w, h);
 	ren->renderPresent();
+	return tex2;
+	}).get();
 	
 	auto texComp2 = new SDLTextureViewComponent("TexComp2", TOUCH, tex2);
 	dout << "Second child created\n";
@@ -193,24 +212,37 @@ bool Test_SDL_GUI()
 	
 	window->replaceView(texView);
 	dout << "Window view set\n";
-	window->update();
+	assert_ex(window->updateBlocked());
+	window->unblockUpdate();
+	//window->update();
 	dout << "Window updated\n";
+	assert_ex(!window->updateBlocked());
+	window->handleEvents();
 	
-	sleep(1000);
 	
-	ren->target(tex);
-	ren->setDrawColor(255, 0, 0, 255);
-	ren->clear();
-	ren->renderPresent();
+	
+	window->blockUpdate();
+	window->invokeUI([&]
+	{
+		ren->target(tex);
+		ren->setDrawColor(255, 0, 0, 255);
+		ren->clear();
+		ren->renderPresent();
+		return 0;
+	}).wait();
+	
 	texComp->textureChanged();
-	
-	window->update();
+	window->unblockUpdate();
+	//window->update();
 	
 	{
 	int max = 30;
 	
 	for (int i = 0; i < max; i += 1)
 	{
+		//window->blockUpdate();
+		window->invokeUI([&]
+		{
 		if (i % 2 == 0)
 		{
 			ren->target(tex);
@@ -243,9 +275,14 @@ bool Test_SDL_GUI()
 		
 		ren->clear();
 		ren->renderPresent();
-		window->update();
+		return 0;
+		}).get();
+		//window->update();
+		//window->unblockUpdate();
+		//window->invokeUpdate().get();
 	}
 	}
+	
 	
 	auto font1Loader = new SDLFontFileResourceLoader("font1", "font1.ttf");
 	font1Loader->assign();
@@ -255,9 +292,10 @@ bool Test_SDL_GUI()
 	auto labelComp = new SDLLabelViewComponent("LabelComp", TOUCH, "Hello", "font1", 400);
 	labelComp->color({255, 255, 255, 255});
 	
+	
 	texView->addChild(labelComp, 0, 0, -1, -1);
 	
-	window->update();
+	//window->update();
 	sleep(200);
 	texView->removeChild(labelComp);
 	
@@ -265,40 +303,36 @@ bool Test_SDL_GUI()
 	texView->addChild(labelComp, 0, 0.5, 1, -2);
 	labelComp->text("Hello, world!");
 	//labelComp->wrapWidth(0.5);
-	window->update();
+	//window->update();
 	
+	//window->blockUpdate();
+	auto tex3 = window->invokeUI([window, w, h, ren]
+	{
+		auto tex3 = new Drawing::SDL::Texture(window->getRenderer(), Drawing::SDL::PixelFormat::RGBA8888, Drawing::SDL::TextureAccess::Target, w, h);
+		ren->target(tex3);
+		ren->setDrawColor(255, 0, 255, 255);
+		ren->clear();
+		ren->renderPresent();
+		return tex3;
+	}).get();
 	
-	auto tex3 = new Drawing::SDL::Texture(window->getRenderer(), Drawing::SDL::PixelFormat::RGBA8888, Drawing::SDL::TextureAccess::Target, w, h);
 	
 	auto texComp3 = new SDLTextureViewComponent(tex3);
-	
-	ren->target(tex3);
-	ren->setDrawColor(255, 0, 255, 255);
-	ren->clear();
-	ren->renderPresent();
+	//window->unblockUpdate();
 	
 	texView->addChild(texComp3, 0, 0, 1, 0);
 	
-	window->update();
+	//window->update();
 	
-	auto mainThreadID = std::this_thread::get_id();
 	
-	dout << "ThreadID: " << mainThreadID << "\n";
 	
-	texView->onFingerMotion += [&, mainThreadID](auto win, auto time, auto, auto, auto x, auto y, auto dx, auto dy, auto pressure)
+	texView->onFingerMotion += [&](auto win, auto time, auto, auto, auto x, auto y, auto dx, auto dy, auto pressure)
 	{
-		dout << "Handler ThreadID: " << std::this_thread::get_id() << "\n";
-		dout << "Drawing...\n";
-		assert_ex(texComp3 != NULL);
-		texComp3->height(y);
-		dout << "Height updated\n";
-		assert_ex(window != NULL);
-		dout << "Updating window...\n";
-		window->update();
-		dout << "Window updated\n";
+		//texComp3->height(y+dy);
+		texComp3->height(pressure);
 	};
 	
-	sleep(3000);
+	sleep(10000);
 	
 	
 	dout << "Handling Events...\n";
@@ -312,15 +346,17 @@ bool Test_SDL_GUI()
 			ptr = NULL;
 		}
 	};
+	window->blockUpdate();
 	
+	dout << "Cleaning up..." << std::endl << std::flush;
 	cleanup(window);
-	cleanup(texView);
+	/*cleanup(texView);
 	cleanup(texComp);
 	cleanup(texComp2);
 	cleanup(labelComp);
 	cleanup(tex);
 	cleanup(tex2);
-	cleanup(tex3);
+	cleanup(tex3);*/
 	
 	}
 	catch (...)

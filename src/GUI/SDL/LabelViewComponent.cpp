@@ -47,6 +47,7 @@ namespace QUtils::GUI::SDL
 	{
 		if (changed())
 		{
+			onUpdate(this);
 			_font = SDLFontResourceLoader::get(_fontName, _fontSize);
 			if (texture != NULL)
 			{

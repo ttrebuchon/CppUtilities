@@ -8,7 +8,7 @@ namespace QUtils::GUI
 	int ViewComponent::idCounter = 1;
 	
 	
-	ViewComponent::ViewComponent(const std::string id, bool touch) : Clickable(touch), _id(id), _parent(nullptr), _window(nullptr), _w(1), _h(1), _opacity(1), _changed(false), id(_id), parent(_parent), window(_window)
+	ViewComponent::ViewComponent(const std::string id, bool touch) : Clickable(touch), _id(id), _parent(nullptr), _window(nullptr), _w(1), _h(1), _opacity(1), _changed(false), id(_id), parent(_parent), window(_window), onUpdate()
 	{
 		
 	}
@@ -18,7 +18,7 @@ namespace QUtils::GUI
 		
 	}
 	
-	ViewComponent::ViewComponent(const std::string id) : Clickable(), _id(id), _parent(nullptr), _window(nullptr), _w(1), _h(1), _opacity(1), _changed(false), id(_id), parent(_parent), window(_window)
+	ViewComponent::ViewComponent(const std::string id) : Clickable(), _id(id), _parent(nullptr), _window(nullptr), _w(1), _h(1), _opacity(1), _changed(false), id(_id), parent(_parent), window(_window), onUpdate()
 	{
 		
 	}

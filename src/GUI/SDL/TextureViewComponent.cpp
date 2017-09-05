@@ -41,6 +41,7 @@ namespace QUtils::GUI::SDL
 			throw IncompatibleGUI_TypeException().Msg("RenderTarget isn't an SDLRenderTarget").File(__FILE__).Function(__func__);
 		}
 		
+		
 		auto ren = sdlTarget->getRenderer();
 		
 		calcRenderDimensions(w, h);

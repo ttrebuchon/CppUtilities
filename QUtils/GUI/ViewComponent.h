@@ -40,6 +40,7 @@ namespace QUtils::GUI
 		const std::string& id;
 		const ViewPtr_t& parent;
 		const AppWinPtr_t& window;
+		Event<ViewComponent*> onUpdate;
 		
 		ViewComponent(const std::string id, bool touch);
 		ViewComponent(bool touch);

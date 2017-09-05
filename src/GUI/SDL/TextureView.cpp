@@ -42,7 +42,11 @@ namespace QUtils::GUI::SDL
 	{
 		View::setWindow(win);
 		auto sdlWin = dynamic_cast<SDLAppWindow*>(win);
-		texture = new Drawing::SDL::Texture(sdlWin->getRenderer(), Drawing::SDL::PixelFormat::RGBA8888, Drawing::SDL::TextureAccess::Target, texW, texH);
+		if (texture != NULL)
+		{
+			delete texture;
+			texture = NULL;
+		}
 	}
 	
 	void SDLTextureView::update()
@@ -50,18 +54,24 @@ namespace QUtils::GUI::SDL
 		bool hasChanged = changed();
 		if (hasChanged)
 		{
+			onUpdate(this);
 			auto sdlWin = dynamic_cast<SDLAppWindow*>(window);
 			if (sdlWin == NULL)
 			{
 				throw IncompatibleGUI_TypeException().Msg("Window isn't an SDLAppWindow").File(__FILE__).Function(__func__);
 			}
 			tmpRen = sdlWin->getRenderer();
+			if (texture == NULL)
+			{
+				texture = new Drawing::SDL::Texture(tmpRen, Drawing::SDL::PixelFormat::RGBA8888, Drawing::SDL::TextureAccess::Target, texW, texH);
+			}
 			tmpRen->target(texture);
 			tmpRen->setDrawColor(0, 0, 0, 255);
 			tmpRen->clear();
 			updateTexture();
 			tmpRen->renderPresent();
 			tmpRen = NULL;
+			_changed = false;
 		}
 	}
 	
