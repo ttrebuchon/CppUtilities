@@ -33,11 +33,19 @@ namespace QUtils::Drawing::SDL
 		
 		virtual ~Renderer();
 		
-		void drawColor(unsigned char* r, unsigned char* g, unsigned char* b, unsigned char* alpha) const;
+		BlendMode blendMode() const;
+		void blendMode(BlendMode);
 		
-		void setDrawColor(unsigned char r, unsigned char g, unsigned char b, unsigned char alpha);
+		
 		
 		void clear();
+		
+		Rect clipRect() const;
+		void clipRect(Rect*) const;
+		void clipRect(SDL_Rect*) const;
+		void clipRect(const Rect&);
+		
+		
 		void copy(Texture*, const SDL_Rect* src, const SDL_Rect* dst);
 		void copy(Texture*, const Rect src, const Rect dst);
 		void copy(Texture*, const Rect* src, const Rect dst);
@@ -77,6 +85,10 @@ namespace QUtils::Drawing::SDL
 			copy(tex, &src, dst, angle, center, flip);
 		}
 		
+		void drawColor(unsigned char* r, unsigned char* g, unsigned char* b, unsigned char* alpha) const;
+		
+		void setDrawColor(unsigned char r, unsigned char g, unsigned char b, unsigned char alpha);
+		
 		
 		void drawLine(int x1, int y1, int x2, int y2);
 		void drawLine(const Point p1, const Point p2);
@@ -91,24 +103,14 @@ namespace QUtils::Drawing::SDL
 		void fillRect(int x, int y, int w, int h);
 		void fillRects(const SDL_Rect*, int count);
 		
-		Texture* target() const;
-		void target(Texture*);
-		
-		void scale(float* x, float* y) const;
-		void setScale(float x, float y);
-		void logicalSize(int* w, int* h) const;
-		void setLogicalSize(int w, int h);
 		bool integerScale() const;
 		void integerScale(bool);
 		
-		void viewport(SDL_Rect*) const;
-		void viewport(int* x, int* y, int* w, int* h) const;
-		void setViewport(const SDL_Rect*);
-		void setViewport(int x, int y, int w, int h);
-		void resetViewport();
-		bool targetSupported() const;
-		BlendMode blendMode() const;
-		void blendMode(BlendMode);
+		bool isClipEnabled() const;
+		
+		void logicalSize(int* w, int* h) const;
+		void setLogicalSize(int w, int h);
+		
 		void renderPresent();
 		void readPixels(const SDL_Rect*, PixelFormat, void*, int) const;
 		void readPixels(const Rect*, PixelFormat, void*, int) const;
@@ -116,5 +118,22 @@ namespace QUtils::Drawing::SDL
 		{
 			readPixels(&area, format, pixels, rowLen);
 		}
+		
+		void scale(float* x, float* y) const;
+		void setScale(float x, float y);
+		Texture* target() const;
+		void target(Texture*);
+		
+		
+		bool targetSupported() const;
+		
+		
+		
+		void viewport(SDL_Rect*) const;
+		void viewport(int* x, int* y, int* w, int* h) const;
+		void setViewport(const SDL_Rect*);
+		void setViewport(int x, int y, int w, int h);
+		void resetViewport();
+		
 	};
 }

@@ -2,6 +2,7 @@
 #include <QUtils/Drawing/SDL/Texture.h>
 #include <QUtils/Drawing/SDL/Window.h>
 #include <QUtils/Drawing/SDL/Errors.h>
+#include <QUtils/Drawing/SDL/Version.h>
 #include "IfSDL.h"
 
 
@@ -51,6 +52,44 @@ namespace QUtils::Drawing::SDL
 	void Renderer::clear()
 	{
 		SDL_CHECKERROR(SDL_RenderClear(ptr), 0);
+	}
+	
+	Rect Renderer::clipRect() const
+	{
+		#if SDL_VERSION_MIN(2,0,4)
+		SDL_Rect r;
+		SDL_RenderGetClipRect(ptr, &r);
+		return { r.x, r.y, r.w, r.h };
+		#else
+		throw NotAvail();
+		#endif
+	}
+	
+	void Renderer::clipRect(Rect* r) const
+	{
+		#if SDL_VERSION_MIN(2,0,4)
+		SDL_RenderGetClipRect(ptr, (SDL_Rect*)r);
+		#else
+		throw NotAvail();
+		#endif
+	}
+	
+	void Renderer::clipRect(SDL_Rect* r) const
+	{
+		#if SDL_VERSION_MIN(2,0,4)
+		SDL_RenderGetClipRect(ptr, r);
+		#else
+		throw NotAvail();
+		#endif
+	}
+	
+	void Renderer::clipRect(const Rect& r)
+	{
+		#if SDL_VERSION_MIN(2,0,4)
+		SDL_RenderSetClipRect(ptr, (const SDL_Rect*)&r);
+		#else
+		throw NotAvail();
+		#endif
 	}
 	
 	void Renderer::copy(Texture* tex, const SDL_Rect* src, const SDL_Rect* dst)
@@ -196,14 +235,29 @@ namespace QUtils::Drawing::SDL
 	
 	bool Renderer::integerScale() const
 	{
+		#if SDL_VERSION_MIN(2,0,5)
+		return SDL_RenderGetIntegerScale(ptr) == SDL_TRUE;
+		#else
 		throw NotAvail();
-		//return SDL_RenderGetIntegerScale(ptr) == SDL_TRUE;
+		#endif
 	}
 	
 	void Renderer::integerScale(bool value)
 	{
+		#if SDL_VERSION_MIN(2, 0, 5)
+		SDL_RenderSetIntegerScale(ptr, (value ? SDL_TRUE : SDL_FALSE));
+		#else
 		throw NotAvail();
-		//SDL_RenderSetIntegerScale(ptr, (value ? SDL_TRUE : SDL_FALSE));
+		#endif
+	}
+	
+	bool Renderer::isClipEnabled() const
+	{
+		#if SDL_VERSION_MIN(2,0,4)
+		return SDL_RenderIsClipEnabled(ptr) == SDL_TRUE;
+		#else
+		throw NotAvail();
+		#endif
 	}
 	
 	void Renderer::viewport(SDL_Rect* rect) const
