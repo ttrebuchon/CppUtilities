@@ -446,13 +446,29 @@ bool Test_SDL_Drawing()
 	ren->fillRect({0, 0, w, h});
 	ren->renderPresent();
 	SDL_Delay(500);
+	ren->setViewport(NULL);
 	
 	
+	auto tex4 = new Texture(ren, PixelFormat::RGBA8888, TextureAccess::Target, w, h);
 	
+	ren->target(tex4);
 	
+	ren->setDrawColor(255, 255, 255, 255);
+	ren->clear();
+	ren->setDrawColor(0, 255, 255, 255);
+	//ren->fillRect({0, 0, w/2, h/2});
+	ren->renderPresent();
 	
+	ren->target(NULL);
+	ren->setDrawColor(0, 0, 0, 255);
+	ren->clear();
+	ren->copy(tex3, NULL, {0, 0, w, h});
+	ren->setClipRect({0, 0, w, h/2});
+	ren->copy(tex4);
+	ren->clearClipRect();
+	ren->renderPresent();
 	
-	
+	SDL_Delay(1000);
 	
 	
 	
@@ -462,6 +478,11 @@ bool Test_SDL_Drawing()
 	}*/
 	
 	Event::SetEventFilter(NULL, NULL);
+	
+	if (tex4 != NULL)
+	{
+		delete tex4;
+	}
 	
 	if (tex3 != NULL)
 	{

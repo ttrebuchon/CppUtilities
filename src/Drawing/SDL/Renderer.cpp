@@ -54,7 +54,7 @@ namespace QUtils::Drawing::SDL
 		SDL_CHECKERROR(SDL_RenderClear(ptr), 0);
 	}
 	
-	Rect Renderer::clipRect() const
+	Rect Renderer::getClipRect() const
 	{
 		#if SDL_VERSION_MIN(2,0,4)
 		SDL_Rect r;
@@ -83,10 +83,28 @@ namespace QUtils::Drawing::SDL
 		#endif
 	}
 	
-	void Renderer::clipRect(const Rect& r)
+	void Renderer::setClipRect(const Rect& r)
 	{
 		#if SDL_VERSION_MIN(2,0,4)
 		SDL_RenderSetClipRect(ptr, (const SDL_Rect*)&r);
+		#else
+		throw NotAvail();
+		#endif
+	}
+	
+	void Renderer::setClipRect(const Rect* r)
+	{
+		#if SDL_VERSION_MIN(2,0,4)
+		SDL_RenderSetClipRect(ptr, (const SDL_Rect*)r);
+		#else
+		throw NotAvail();
+		#endif
+	}
+	
+	void Renderer::setClipRect(const SDL_Rect* r)
+	{
+		#if SDL_VERSION_MIN(2,0,4)
+		SDL_RenderSetClipRect(ptr, r);
 		#else
 		throw NotAvail();
 		#endif

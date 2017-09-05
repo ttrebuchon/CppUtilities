@@ -40,10 +40,19 @@ namespace QUtils::Drawing::SDL
 		
 		void clear();
 		
-		Rect clipRect() const;
+		Rect getClipRect() const;
+		inline Rect clipRect() const
+		{ return getClipRect(); }
 		void clipRect(Rect*) const;
 		void clipRect(SDL_Rect*) const;
-		void clipRect(const Rect&);
+		inline void clipRect(const Rect& r)
+		{ setClipRect(r); }
+		void setClipRect(const Rect&);
+		void setClipRect(const Rect*);
+		void setClipRect(const SDL_Rect*);
+		inline void clearClipRect()
+		{ setClipRect((const SDL_Rect*)NULL); }
+		
 		
 		
 		void copy(Texture*, const SDL_Rect* src, const SDL_Rect* dst);
