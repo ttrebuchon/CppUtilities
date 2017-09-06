@@ -13,8 +13,8 @@ using boost::multiprecision::number;
 //typedef number<cpp_dec_float<0>> Num;
 #else
 
-//typedef float Num;
-typedef double Num;
+typedef float Num;
+//typedef double Num;
 #endif
 
 
