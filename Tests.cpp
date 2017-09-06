@@ -90,7 +90,6 @@ void Testing::run()
 	try
 	{
 	#ifdef QUTILS_HAS_SDL2
-	RUN(SDL_Drawing());
 	RUN(SDL_GUI());
 	#endif
 	RUN(Multi());
@@ -99,6 +98,9 @@ void Testing::run()
 	RUN(SQL());
 	RUN(GUID());
 	#ifndef SHORT_TEST
+	#ifdef QUTILS_HAS_SDL2
+	RUN(SDL_Drawing());
+	#endif
 	RUN(TravellingSalesman());
 	RUN(GameOfLifeExtended());
 	RUN(Types());
