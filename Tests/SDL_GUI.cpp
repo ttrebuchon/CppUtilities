@@ -194,10 +194,10 @@ bool Test_SDL_GUI()
 		dout << "\nTex Comp Clicked!\n\n";
 	};
 	
-	texView->onFingerDown += [](auto...x)
+	/*texView->onFingerDown += [](auto...x)
 	{
 		dout << "\nTex View Clicked!\n\n";
-	};
+	};*/
 	
 	texComp2->opacity(0.2);
 	auto partialOpacity = static_cast<unsigned char>(0.2*255);
@@ -326,13 +326,61 @@ bool Test_SDL_GUI()
 	
 	
 	
-	texView->onFingerMotion += [&](auto win, auto time, auto, auto, auto x, auto y, auto dx, auto dy, auto pressure)
+	auto tex3HandlerID = texView->onFingerMotion += [&](auto win, auto time, auto, auto, auto x, auto y, auto dx, auto dy, auto pressure)
 	{
 		//texComp3->height(y+dy);
 		texComp3->height(pressure);
 	};
 	
+	sleep(3000);
+	
+	texView->onFingerMotion -= tex3HandlerID;
+	texComp3->height(0);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	auto tex4 = window->invokeUI([window, ren]{
+		auto tex4 = new Drawing::SDL::Texture(ren, Drawing::SDL::PixelFormat::RGBA8888, Drawing::SDL::TextureAccess::Target, w, 4*h);
+		ren->target(tex4);
+		ren->setDrawColor(255, 255, 255, 255);
+		ren->clear();
+		for (int i = 0; i < 4*h; ++i)
+		{
+			ren->setDrawColor((255 - static_cast<double>(i)/(4*h-1)*255), 255, 255, 255);
+			ren->fillRect({0, i, w, 1});
+		}
+		ren->setDrawColor(255, 0, 0, 255);
+		ren->fillRect({0, 0, w, 30});
+		ren->setDrawColor(0, 0, 0, 255);
+		for (int i = 2*h/3; i < 4*h; i += 4*h/6)
+		{
+			ren->drawLine(0, i, w, i);
+		}
+		ren->renderPresent();
+		
+		return tex4;
+	}).get();
+	
+	auto texComp4 = new SDLTextureViewComponent(tex4);
+	
+	auto scrollView = new SDLScrollView(TOUCH);
+	
+	scrollView->setChild(texComp4);
+	scrollView->childWidth(-1);
+	scrollView->childHeight(-1);
+	
+	texView->addChild(scrollView, 0.125, 0.125, 0.75, 0.75);
 	sleep(10000);
+	window->invokeUpdate().get();
+	
+	
+	
 	
 	
 	dout << "Handling Events...\n";
@@ -350,13 +398,16 @@ bool Test_SDL_GUI()
 	
 	dout << "Cleaning up..." << std::endl << std::flush;
 	cleanup(window);
-	/*cleanup(texView);
+	cleanup(texView);
 	cleanup(texComp);
 	cleanup(texComp2);
 	cleanup(labelComp);
+	cleanup(scrollView);
 	cleanup(tex);
 	cleanup(tex2);
-	cleanup(tex3);*/
+	cleanup(tex3);
+	cleanup(tex4);
+	
 	
 	}
 	catch (...)
