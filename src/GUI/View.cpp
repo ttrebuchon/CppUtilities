@@ -35,6 +35,9 @@ namespace QUtils::GUI
 	
 	void View::removeChild(ViewComponent* comp)
 	{
-		comp->removeFromView();
+		if (comp != NULL)
+		{
+			comp->removeFromView();
+		}
 	}
 }
