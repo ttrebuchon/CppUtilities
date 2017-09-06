@@ -149,5 +149,30 @@ namespace QUtils::GUI::SDL
 				}
 			}
 		};
+		
+		onFingerMotion += [&](auto win, auto timestamp, auto touchId, auto fingerId, auto x, auto y, auto dx, auto dy, auto pressure)
+		{
+			
+			auto rdx = static_cast<double>(dx)/texW;
+			auto rdy = static_cast<double>(dy)/texH;
+			
+			for (int i = static_cast<int>(children.size())-1; i >= 0; --i)
+			{
+				const auto& child = std::get<0>(children.at(i));
+				
+				double cw = texW;
+				double ch = texH;
+				child->calcRelativeDims(cw, ch);
+				
+				if (x >= std::get<1>(children[i]) && y >= std::get<2>(children[i]))
+				{
+					if (x <= std::get<1>(children[i]) + cw && y <= std::get<2>(children[i]) + ch)
+					{
+						child->onFingerMotion(win, timestamp, touchId, fingerId, x - std::get<1>(children[i]), y - std::get<2>(children[i]), dx, dy, pressure);
+						return;
+					}
+				}
+			}
+		};
 	}
 }
