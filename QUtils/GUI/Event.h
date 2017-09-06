@@ -1,6 +1,6 @@
 #pragma once
 #include <functional>
-#include <list>
+#include <map>
 
 #include <QUtils/Exception/Aggregate.h>
 
@@ -10,7 +10,15 @@ namespace QUtils::GUI
 	class Event
 	{
 		protected:
-		std::list<std::function<void(T...)>> handlers;
+		typedef unsigned long long ID_t;
+		
+		
+		
+		private:
+		ID_t counter = 0;
+		
+		protected:
+		std::map<ID_t, std::function<void(T...)>> handlers;
 		
 		bool _enabled;
 		
@@ -28,7 +36,7 @@ namespace QUtils::GUI
 				{
 					try
 					{
-					callback(t...);
+					callback.second(t...);
 					}
 					catch (...)
 					{
@@ -50,7 +58,7 @@ namespace QUtils::GUI
 		}
 		
 		template <class F>
-		Event<T...>& operator+=(const F f)
+		ID_t operator+=(const F f)
 		{
 			return (*this) += std::function<void(T...)>(
 			[f](auto... x)
@@ -59,11 +67,20 @@ namespace QUtils::GUI
 			});
 		}
 		template <class Ret, class... Args>
-		Event<T...>& operator+=(const std::function<Ret(Args...)> f)
+		ID_t operator+=(const std::function<Ret(Args...)> f)
 		{
-			handlers.push_back(f);
-			return *this;
+			handlers[counter] = f;
+			return counter++;
 		}
+		
+		
+		std::function<void(T...)> operator-=(const ID_t id)
+		{
+			auto func = handlers[id];
+			handlers.erase(id);
+			return func;
+		}
+		
 		
 		void enable()
 		{
