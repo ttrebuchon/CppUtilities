@@ -82,12 +82,16 @@ namespace QUtils::GUI::SDL
 	
 	void SDLScrollView::update()
 	{
-		if (child->width() != childW || child->height() != childH)
+		if (child != NULL)
 		{
-			child->width(-1);
-			child->height(-1);
+			if (child->width() != childW || child->height() != childH)
+			{
+				child->width(childW);
+				child->height(childH);
+			}
+			child->update();
 		}
-		child->update();
+		
 		if (background != NULL)
 		{
 			background->update();
@@ -97,12 +101,25 @@ namespace QUtils::GUI::SDL
 	
 	void SDLScrollView::removeChildren()
 	{
-		removeChild(child);
-		child = NULL;
+		if (child != NULL)
+		{
+			removeChild(child);
+			child = NULL;
+		}
+		
+		if (background != NULL)
+		{
+			removeChild(background);
+			background = NULL;
+		}
 	}
 	
 	void SDLScrollView::render(RenderTarget* genericTarget, int x, int y, int w, int h)
 	{
+		if (child == NULL)
+		{
+			return;
+		}
 		auto sdlTarget = dynamic_cast<SDLRenderTarget*>(genericTarget);
 		if (sdlTarget == NULL)
 		{
@@ -178,7 +195,7 @@ namespace QUtils::GUI::SDL
 	
 	bool SDLScrollView::changed() const
 	{
-		return (child->changed() || _changed || (background != NULL ? background->changed() : false));
+		return ((child != NULL ? child->changed() : false) || _changed || (background != NULL ? background->changed() : false));
 	}
 	
 	double SDLScrollView::childWidth() const
