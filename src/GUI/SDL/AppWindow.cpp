@@ -312,7 +312,7 @@ namespace QUtils::GUI::SDL
 				
 				default:
 				std::cout << "Throwing because of " << ev->eventName() << " (" << (int)ev->type << ") [" << ev->timestamp << "]\n";
-				throw NotImp();
+				//throw NotImp();
 			}
 			}
 		}
