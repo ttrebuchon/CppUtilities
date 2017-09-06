@@ -5,6 +5,7 @@
 #include "TextureView.h"
 
 #include "AbsoluteTextureView.h"
+#include "ScrollView.h"
 
 #include "TextureViewComponent.h"
 #include "LabelViewComponent.h"
