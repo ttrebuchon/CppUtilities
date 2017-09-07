@@ -8,6 +8,9 @@
 #include <fstream>
 #include <utility>
 #include <vector>
+#include "Tests_Helpers.h"
+
+std::stringstream dout_ss;
 
 
 
@@ -28,6 +31,7 @@ int main(int argc, char**argv)
 	
 	
 	
+	
 	std::ofstream log("Log.txt");
 	log << "\n\n\n\n\n\n\n\n\n\n\n\n";
 	time_t rawTime;
@@ -37,6 +41,9 @@ int main(int argc, char**argv)
 	strftime(timeStr, 80, "%Y-%m-%d %T", timeinfo);
 	log << timeStr << "\n\n";
 	multibuf->push(log.rdbuf());
+	
+	
+	multibuf->push(dout_ss.rdbuf());
 	
 	
 	

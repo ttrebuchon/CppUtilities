@@ -429,7 +429,7 @@ bool Test_SDL_GUI()
 	
 	auto textScroll = new SDLScrollView("TextScrollView", TOUCH);
 	
-	auto text = new SDLStringLabelViewComponent("TextScroll_TextComp", TOUCH, "Hello!!!! World, this issss AWDDTF a test", "font1", 50);
+	auto text = new SDLStringLabelViewComponent("TextScroll_TextComp", TOUCH, dout_ss.str(), "font1", 50);
 	text->color({255, 255, 255, 255});
 	text->wrapWidth(1080);
 	
@@ -438,7 +438,13 @@ bool Test_SDL_GUI()
 	texView->removeChildren();
 	texView->addChild(textScroll, 0, 0, 1, 1);
 	
-	sleep(5000);
+	dout << "\n\n\nSleeping...\n";
+	for (int i = 0; i < 10; ++i)
+	{
+		dout << "i = " << i << "\n";
+		text->text(dout_ss.str());
+		sleep(10000);
+	}
 	
 	
 	
@@ -446,7 +452,7 @@ bool Test_SDL_GUI()
 	dout << "Handling Events...\n";
 	window->handleEvents();
 	
-	auto cleanup = [](auto& ptr)
+	/*auto cleanup = [](auto& ptr)
 	{
 		if (ptr != NULL)
 		{
@@ -466,7 +472,7 @@ bool Test_SDL_GUI()
 	cleanup(tex);
 	cleanup(tex2);
 	cleanup(tex3);
-	cleanup(tex4);
+	cleanup(tex4);*/
 	
 	
 	}

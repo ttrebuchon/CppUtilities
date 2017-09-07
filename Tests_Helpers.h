@@ -96,3 +96,5 @@ class DebugOut
 };
 
 #define dout DebugOut::Out()
+
+extern std::stringstream dout_ss;
