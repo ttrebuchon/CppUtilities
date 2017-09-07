@@ -46,7 +46,11 @@ namespace QUtils::GUI::SDL
 	
 	void SDLAbsoluteTextureView::removeChildren()
 	{
-		children.clear();
+		while (children.size() > 0)
+		{
+			removeChild(std::get<0>(children.front()));
+			
+		}
 		_changed = true;
 	}
 	
@@ -152,9 +156,6 @@ namespace QUtils::GUI::SDL
 		
 		onFingerMotion += [&](auto win, auto timestamp, auto touchId, auto fingerId, auto x, auto y, auto dx, auto dy, auto pressure)
 		{
-			
-			auto rdx = static_cast<double>(dx)/texW;
-			auto rdy = static_cast<double>(dy)/texH;
 			
 			for (int i = static_cast<int>(children.size())-1; i >= 0; --i)
 			{

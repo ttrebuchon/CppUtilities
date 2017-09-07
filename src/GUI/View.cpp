@@ -30,7 +30,10 @@ namespace QUtils::GUI
 	
 	void View::addChild(ViewComponent* comp)
 	{
-		comp->addToView(this);
+		if (comp != NULL)
+		{
+			comp->addToView(this);
+		}
 	}
 	
 	void View::removeChild(ViewComponent* comp)
