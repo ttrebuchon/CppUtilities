@@ -35,6 +35,7 @@ namespace QUtils::GUI::SDL
 	
 	void SDLTextureViewComponent::render(RenderTarget* genericTarget, int x, int y, int w, int h)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		auto sdlTarget = dynamic_cast<SDLRenderTarget*>(genericTarget);
 		if (sdlTarget == NULL)
 		{

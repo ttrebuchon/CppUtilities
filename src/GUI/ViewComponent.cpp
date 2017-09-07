@@ -8,7 +8,7 @@ namespace QUtils::GUI
 	int ViewComponent::idCounter = 1;
 	
 	
-	ViewComponent::ViewComponent(const std::string id, bool touch) : Clickable(touch), _id(id), _parent(nullptr), _window(nullptr), _w(1), _h(1), _opacity(1), _changed(false), id(_id), parent(_parent), window(_window), onUpdate()
+	ViewComponent::ViewComponent(const std::string id, bool touch) : Clickable(touch), this_m(), _id(id), _parent(nullptr), _window(nullptr), _w(1), _h(1), _opacity(1), _changed(false), id(_id), parent(_parent), window(_window), onUpdate()
 	{
 		
 	}
@@ -18,7 +18,7 @@ namespace QUtils::GUI
 		
 	}
 	
-	ViewComponent::ViewComponent(const std::string id) : Clickable(), _id(id), _parent(nullptr), _window(nullptr), _w(1), _h(1), _opacity(1), _changed(false), id(_id), parent(_parent), window(_window), onUpdate()
+	ViewComponent::ViewComponent(const std::string id) : Clickable(), this_m(), _id(id), _parent(nullptr), _window(nullptr), _w(1), _h(1), _opacity(1), _changed(false), id(_id), parent(_parent), window(_window), onUpdate()
 	{
 		
 	}
@@ -35,6 +35,7 @@ namespace QUtils::GUI
 	
 	void ViewComponent::calcRenderDimensions(int& w, int& h)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		auto tmpW = width();
 		auto tmpH = height();
 		
@@ -77,6 +78,7 @@ namespace QUtils::GUI
 	
 	void ViewComponent::calcRelativeDimensions(double& outW, double& outH) const
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		auto tmpW = width();
 		auto tmpH = height();
 		
@@ -118,6 +120,7 @@ namespace QUtils::GUI
 	
 	void ViewComponent::addToView(View* view)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		if (_parent != NULL/* && _parent != view*/)
 		{
 			throw ParentChildException().Msg("This component is already a child of a view");
@@ -129,6 +132,7 @@ namespace QUtils::GUI
 	
 	void ViewComponent::removeFromView()
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		if (_parent == NULL)
 		{
 			throw ParentChildException().Msg("This component cannot be removed from it's parent view because it has none");
@@ -152,12 +156,14 @@ namespace QUtils::GUI
 	
 	void ViewComponent::width(double w)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		_w = w;
 		_changed = true;
 	}
 	
 	void ViewComponent::height(double h)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		_h = h;
 		_changed = true;
 	}
@@ -169,8 +175,14 @@ namespace QUtils::GUI
 	
 	void ViewComponent::opacity(double value)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		_opacity = std::max<double>(std::min<double>(1, value), 0);
 		_changed = true;
+	}
+	
+	std::recursive_mutex& ViewComponent::getMutex() const
+	{
+		return this_m;
 	}
 	
 	

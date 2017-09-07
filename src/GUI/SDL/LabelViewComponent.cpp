@@ -39,12 +39,14 @@ namespace QUtils::GUI::SDL
 	
 	void SDLLabelViewComponent::text(const std::string value)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		_text = value;
 		_changed = true;
 	}
 		
 	void SDLLabelViewComponent::update()
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		if (changed())
 		{
 			onUpdate(this);
@@ -60,6 +62,7 @@ namespace QUtils::GUI::SDL
 	
 	void SDLLabelViewComponent::render(RenderTarget* genericTarget, int x, int y, int w, int h)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		auto sdlTarget = dynamic_cast<SDLRenderTarget*>(genericTarget);
 		if (sdlTarget == NULL)
 		{
@@ -107,6 +110,7 @@ namespace QUtils::GUI::SDL
 	
 	int SDLLabelViewComponent::nativeWidth() const
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		int w;
 		if (_font == NULL)
 		{
@@ -118,6 +122,7 @@ namespace QUtils::GUI::SDL
 	
 	int SDLLabelViewComponent::nativeHeight() const
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		int h;
 		if (_font == NULL)
 		{
@@ -134,6 +139,7 @@ namespace QUtils::GUI::SDL
 	
 	void SDLLabelViewComponent::wrapWidth(const double value)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		if (value != _wrapWidth)
 		{
 			_changed = true;

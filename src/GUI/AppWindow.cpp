@@ -126,14 +126,31 @@ namespace QUtils::GUI
 	ViewComponent* AppWindow::replaceView(ViewComponent* v)
 	{
 		auto vOld = mainView;
-		mainView = v;
-		if (vOld != NULL)
-		{
-			vOld->setWindow(NULL);
-		}
 		if (v != NULL)
 		{
+			std::unique_lock<std::mutex> this_lock(update_m, std::defer_lock);
+			
+			std::unique_lock<std::recursive_mutex> comp_lock(v->getMutex(), std::defer_lock);
+			
+			std::lock(this_lock, comp_lock);
+			vOld = mainView;
+			mainView = v;
+			if (vOld != NULL)
+			{
+				vOld->setWindow(NULL);
+			}
 			v->setWindow(this);
+		}
+		else
+		{
+			std::lock_guard<std::mutex> this_lock(update_m);
+			
+			vOld = mainView;
+			mainView = v;
+			if (vOld != NULL)
+			{
+				vOld->setWindow(NULL);
+			}
 		}
 		return vOld;
 	}

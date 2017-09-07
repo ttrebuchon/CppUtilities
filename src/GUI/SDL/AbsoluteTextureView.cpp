@@ -33,6 +33,7 @@ namespace QUtils::GUI::SDL
 	
 	void SDLAbsoluteTextureView::updateTexture()
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		for (auto child : children)
 		{
 			std::get<0>(child)->update();
@@ -46,6 +47,7 @@ namespace QUtils::GUI::SDL
 	
 	void SDLAbsoluteTextureView::removeChildren()
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		while (children.size() > 0)
 		{
 			removeChild(std::get<0>(children.front()));
@@ -56,6 +58,7 @@ namespace QUtils::GUI::SDL
 	
 	bool SDLAbsoluteTextureView::changed() const
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		if (_changed)
 		{
 			return true;
@@ -76,6 +79,7 @@ namespace QUtils::GUI::SDL
 	
 	void SDLAbsoluteTextureView::addChild(ViewComponent* comp, double x, double y, double w, double h)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		this->View::addChild(comp);
 		children.emplace_back(comp, x, y);
 		comp->width(w);
@@ -85,6 +89,7 @@ namespace QUtils::GUI::SDL
 	
 	void SDLAbsoluteTextureView::removeChild(ViewComponent* comp)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		this->View::removeChild(comp);
 		for (auto it = children.begin(); it != children.end(); ++it)
 		{
@@ -103,12 +108,9 @@ namespace QUtils::GUI::SDL
 	
 	void SDLAbsoluteTextureView::registerEvents()
 	{
-		onFingerDown += [&](auto win, auto timestamp, auto touchId, auto fingerId, auto x, auto y, auto dx, auto dy, auto pressure)
+		onFingerDown += [&](auto win, auto timestamp, auto touchId, auto fingerId, auto x, auto y, auto pressure)
 		{
-			
-			auto rdx = static_cast<double>(dx)/texW;
-			auto rdy = static_cast<double>(dy)/texH;
-			
+			std::lock_guard<std::recursive_mutex> lock(this_m);
 			for (int i = static_cast<int>(children.size())-1; i >= 0; --i)
 			{
 				const auto& child = std::get<0>(children.at(i));
@@ -121,7 +123,7 @@ namespace QUtils::GUI::SDL
 				{
 					if (x <= std::get<1>(children[i]) + cw && y <= std::get<2>(children[i]) + ch)
 					{
-						child->onFingerDown(win, timestamp, touchId, fingerId, x - std::get<1>(children[i]), y - std::get<2>(children[i]), rdx, rdy, pressure);
+						child->onFingerDown(win, timestamp, touchId, fingerId, x - std::get<1>(children[i]), y - std::get<2>(children[i]), pressure);
 						return;
 					}
 				}
@@ -129,11 +131,9 @@ namespace QUtils::GUI::SDL
 		};
 		
 		
-		onFingerUp += [&](auto win, auto timestamp, auto touchId, auto fingerId, auto x, auto y, auto dx, auto dy, auto pressure)
+		onFingerUp += [&](auto win, auto timestamp, auto touchId, auto fingerId, auto x, auto y, auto pressure)
 		{
-			
-			auto rdx = static_cast<double>(dx)/texW;
-			auto rdy = static_cast<double>(dy)/texH;
+			std::lock_guard<std::recursive_mutex> lock(this_m);
 			
 			for (int i = static_cast<int>(children.size())-1; i >= 0; --i)
 			{
@@ -147,7 +147,7 @@ namespace QUtils::GUI::SDL
 				{
 					if (x <= std::get<1>(children[i]) + cw && y <= std::get<2>(children[i]) + ch)
 					{
-						child->onFingerUp(win, timestamp, touchId, fingerId, x - std::get<1>(children[i]), y - std::get<2>(children[i]), rdx, rdy, pressure);
+						child->onFingerUp(win, timestamp, touchId, fingerId, x - std::get<1>(children[i]), y - std::get<2>(children[i]), pressure);
 						return;
 					}
 				}
@@ -156,7 +156,7 @@ namespace QUtils::GUI::SDL
 		
 		onFingerMotion += [&](auto win, auto timestamp, auto touchId, auto fingerId, auto x, auto y, auto dx, auto dy, double rdx, double rdy, auto pressure)
 		{
-			
+			std::lock_guard<std::recursive_mutex> lock(this_m);
 			for (int i = static_cast<int>(children.size())-1; i >= 0; --i)
 			{
 				const auto& child = std::get<0>(children.at(i));

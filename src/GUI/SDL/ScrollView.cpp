@@ -12,22 +12,22 @@
 
 namespace QUtils::GUI::SDL
 {
-	SDLScrollView::SDLScrollView(const std::string id, bool touch) : View(id, touch), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1)
+	SDLScrollView::SDLScrollView(const std::string id, bool touch) : View(id, touch), pos_m(), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1)
 	{
 		registerEvents();
 	}
 	
-	SDLScrollView::SDLScrollView(bool touch) : View(touch), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1)
+	SDLScrollView::SDLScrollView(bool touch) : View(touch), pos_m(), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1)
 	{
 		registerEvents();
 	}
 	
-	SDLScrollView::SDLScrollView(const std::string id) : View(id), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1)
+	SDLScrollView::SDLScrollView(const std::string id) : View(id), pos_m(), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1)
 	{
 		registerEvents();
 	}
 	
-	SDLScrollView::SDLScrollView() : View(), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1)
+	SDLScrollView::SDLScrollView() : View(), pos_m(), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1)
 	{
 		registerEvents();
 	}
@@ -41,6 +41,7 @@ namespace QUtils::GUI::SDL
 	{
 		onFingerMotion += [&](auto win, auto time, auto touch, auto finger, auto x, auto y, auto dx, auto dy, auto rdx, auto rdy, auto pressure)
 		{
+			std::lock_guard<std::recursive_mutex> pos_lock(pos_m);
 			if (dx != 0 || dy != 0)
 			{
 				_changed = true;
@@ -62,6 +63,7 @@ namespace QUtils::GUI::SDL
 	
 	ViewComponent* SDLScrollView::setChild(ViewComponent* newComp)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		_changed = true;
 		auto old = child;
 		removeChild(old);
@@ -72,6 +74,7 @@ namespace QUtils::GUI::SDL
 	
 	ViewComponent* SDLScrollView::setBackground(ViewComponent* newBG)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		_changed = true;
 		auto old = background;
 		removeChild(old);
@@ -82,6 +85,7 @@ namespace QUtils::GUI::SDL
 	
 	void SDLScrollView::update()
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		if (child != NULL)
 		{
 			if (child->width() != childW || child->height() != childH)
@@ -101,6 +105,7 @@ namespace QUtils::GUI::SDL
 	
 	void SDLScrollView::removeChildren()
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		if (child != NULL)
 		{
 			removeChild(child);
@@ -116,6 +121,7 @@ namespace QUtils::GUI::SDL
 	
 	void SDLScrollView::render(RenderTarget* genericTarget, int x, int y, int w, int h)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		if (child == NULL)
 		{
 			return;
@@ -147,6 +153,14 @@ namespace QUtils::GUI::SDL
 		child->calcRelativeDimensions(cw, ch);
 		cw *= w;
 		ch *= h;
+		
+		double posx, posy;
+		
+		{
+			std::lock_guard<std::recursive_mutex> pos_lock(pos_m);
+			posx = this->posx;
+			posy = this->posy;
+		}
 		
 		double childRenX, childRenY;
 		

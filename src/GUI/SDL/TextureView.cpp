@@ -40,6 +40,7 @@ namespace QUtils::GUI::SDL
 	
 	void SDLTextureView::setWindow(AppWindow* win)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		View::setWindow(win);
 		auto sdlWin = dynamic_cast<SDLAppWindow*>(win);
 		if (texture != NULL)
@@ -51,6 +52,7 @@ namespace QUtils::GUI::SDL
 	
 	void SDLTextureView::update()
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		bool hasChanged = changed();
 		if (hasChanged)
 		{
@@ -77,6 +79,7 @@ namespace QUtils::GUI::SDL
 	
 	void SDLTextureView::render(RenderTarget* genericTarget, int x, int y, int w, int h)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		auto sdlTarget = dynamic_cast<SDLRenderTarget*>(genericTarget);
 		if (sdlTarget == NULL)
 		{

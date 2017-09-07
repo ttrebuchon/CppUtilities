@@ -82,14 +82,14 @@ namespace QUtils::GUI::SDL
 			ECASE(FingerDown):
 			{
 				auto fEv = (TouchFingerEvent*)ev;
-				onFingerDown(this, fEv->timestamp, fEv->touchId, fEv->fingerId, fEv->x, fEv->y, fEv->dx, fEv->dy, fEv->pressure);
+				onFingerDown(this, fEv->timestamp, fEv->touchId, fEv->fingerId, fEv->x, fEv->y, fEv->pressure);
 			}
 				return 0;
 				
 				ECASE(FingerUp):
 				{
 				auto fEv = (TouchFingerEvent*)ev;
-				onFingerUp(this, fEv->timestamp, fEv->touchId, fEv->fingerId, fEv->x, fEv->y, fEv->dx, fEv->dy, fEv->pressure);
+				onFingerUp(this, fEv->timestamp, fEv->touchId, fEv->fingerId, fEv->x, fEv->y, fEv->pressure);
 				}
 				return 0;
 				

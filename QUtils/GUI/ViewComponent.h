@@ -12,14 +12,16 @@ namespace QUtils::GUI
 	
 	class ViewComponent : public Clickable
 	{
+		private:
 		static int idCounter;
 		typedef View* ViewPtr_t;
 		typedef AppWindow* AppWinPtr_t;
 		friend class View;
 		friend class AppWindow;
-		private:
+		
 		
 		protected:
+		mutable std::recursive_mutex this_m;
 		std::string _id;
 		View* _parent;
 		AppWindow* _window;
@@ -85,5 +87,7 @@ namespace QUtils::GUI
 		virtual int nativeHeight() const = 0;
 		virtual double opacity() const;
 		virtual void opacity(double v);
+		
+		std::recursive_mutex& getMutex() const;
 	};
 }
