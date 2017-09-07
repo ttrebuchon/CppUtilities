@@ -10,7 +10,7 @@ namespace QUtils::GUI::SDL
 		void registerEvents();
 		
 		protected:
-		std::recursive_mutex pos_m;
+		mutable std::recursive_mutex pos_m;
 		ViewComponent* child;
 		ViewComponent* background;
 		long double posx, posy;
