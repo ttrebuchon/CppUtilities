@@ -79,7 +79,6 @@ namespace QUtils::GUI::SDL
 			Drawing::SDL::Surface* surf = NULL;
 			auto wrapW = wrapWidth();
 			
-			std::cout << "Creating text surface for rendering...\n";
 			if (wrapW > 0)
 			{
 			
@@ -215,7 +214,6 @@ namespace QUtils::GUI::SDL
 		}
 		else
 		{
-			std::cout << "Creating text surface for update native dims...\n";
 			auto surf = _font->surfaceBlendedWrapped(text(), (Drawing::SDL::Color)color(), wrapWidth());
 			lastNativeH = surf->height();
 			lastNativeW = surf->width();
