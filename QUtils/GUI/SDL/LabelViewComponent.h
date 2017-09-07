@@ -18,6 +18,7 @@ namespace QUtils::GUI::SDL
 	{
 		private:
 		int lastW, lastH;
+		mutable int lastNativeW, lastNativeH;
 		
 		protected:
 		bool _textChanged;
@@ -27,6 +28,8 @@ namespace QUtils::GUI::SDL
 		int _fontSize;
 		std::string _fontName;
 		double _wrapWidth;
+		
+		void updateNativeDims() const;
 		
 		
 		public:

@@ -8,7 +8,7 @@
 
 namespace QUtils::GUI::SDL
 {
-	SDLLabelViewComponent::SDLLabelViewComponent(const std::string id, bool touch, const std::string font, unsigned int fontSize) : TextViewComponent(id, touch), lastW(-1), lastH(-1), _textChanged(true), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1)
+	SDLLabelViewComponent::SDLLabelViewComponent(const std::string id, bool touch, const std::string font, unsigned int fontSize) : TextViewComponent(id, touch), lastW(-1), lastH(-1), lastNativeW(-1), lastNativeH(-1), _textChanged(true), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1)
 	{
 		_changed = true;
 	}
@@ -45,6 +45,8 @@ namespace QUtils::GUI::SDL
 				texture = NULL;
 			}
 			_changed = false;
+			lastNativeW = lastNativeH = -1;
+			_textChanged = false;
 		}
 	}
 	
@@ -63,7 +65,7 @@ namespace QUtils::GUI::SDL
 		calcRenderDimensions(tmpW, tmpH);
 		w = tmpW;
 		h = tmpH;
-		if (w != lastW || h != lastH || texture == NULL)
+		if (w != lastW || h != lastH || texture == NULL || _textChanged)
 		{
 			lastW = w;
 			lastH = h;
@@ -72,20 +74,24 @@ namespace QUtils::GUI::SDL
 				delete texture;
 				texture = NULL;
 			}
+			_textChanged = false;
 			
 			Drawing::SDL::Surface* surf = NULL;
 			auto wrapW = wrapWidth();
 			
+			std::cout << "Creating text surface for rendering...\n";
 			if (wrapW > 0)
 			{
 			
 			surf = _font->surfaceBlendedWrapped(text(), (Drawing::SDL::Color)color(), wrapW);
-			w = surf->width();
-			h = surf->height();
+			w = lastNativeW = surf->width();
+			h = lastNativeH = surf->height();
 			}
 			else
 			{
 			surf = _font->surfaceBlended(text(), (Drawing::SDL::Color)color());
+			lastNativeW = surf->width();
+			lastNativeH = surf->height();
 			}
 			
 			if (height() == -2)
@@ -110,48 +116,21 @@ namespace QUtils::GUI::SDL
 	int SDLLabelViewComponent::nativeWidth() const
 	{
 		std::lock_guard<std::recursive_mutex> lock(this_m);
-		int w;
-		if (_font == NULL || changed())
+		if (lastNativeW < 0 || lastNativeH < 0)
 		{
-			const_cast<SDLLabelViewComponent*>(this)->update();
+			updateNativeDims();
 		}
-		
-		if (wrapWidth() <= 0)
-		{
-		
-		_font->sizeText(text(), &w, NULL);
-		
-		}
-		else
-		{
-			auto surf = _font->surfaceBlendedWrapped(text(), (Drawing::SDL::Color)color(), wrapWidth());
-			w = surf->width();
-			delete surf;
-		}
-		return w;
+		return lastNativeW;
 	}
 	
 	int SDLLabelViewComponent::nativeHeight() const
 	{
 		std::lock_guard<std::recursive_mutex> lock(this_m);
-		int h;
-		if (_font == NULL || changed())
+		if (lastNativeW < 0 || lastNativeH < 0)
 		{
-			const_cast<SDLLabelViewComponent*>(this)->update();
+			updateNativeDims();
 		}
-		if (wrapWidth() <= 0)
-		{
-		
-		_font->sizeText(text(), NULL, &h);
-		
-		}
-		else
-		{
-			auto surf = _font->surfaceBlendedWrapped(text(), (Drawing::SDL::Color)color(), wrapWidth());
-			h = surf->height();
-			delete surf;
-		}
-		return h;
+		return lastNativeH;
 	}
 	
 	double SDLLabelViewComponent::wrapWidth() const
@@ -184,24 +163,12 @@ namespace QUtils::GUI::SDL
 		
 		if (tmpW < 0 || tmpH < 0)
 		{
-			if (_font == NULL || changed())
+			if (lastNativeW < 0 || lastNativeH < 0)
 			{
-				const_cast<SDLLabelViewComponent*>(this)->update();
+				updateNativeDims();
 			}
-			if (wrapWidth() <= 0)
-			{
-				int intW, intH;
-				_font->sizeText(text(), &intW, &intH);
-				nativeW = intW;
-				nativeH = intH;
-			}
-			else
-			{
-				auto surf = _font->surfaceBlendedWrapped(text(), (Drawing::SDL::Color)color(), wrapWidth());
-				nativeH = surf->height();
-				nativeW = surf->width();
-				delete surf;
-			}
+			nativeW = lastNativeW;
+			nativeH = lastNativeH;
 		}
 		
 		if (tmpW >= 0)
@@ -232,6 +199,27 @@ namespace QUtils::GUI::SDL
 		if (tmpH == -2)
 		{
 			outH *= nativeH/nativeW;
+		}
+	}
+	
+	void SDLLabelViewComponent::updateNativeDims() const
+	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
+		if (_font == NULL || changed())
+		{
+			const_cast<SDLLabelViewComponent*>(this)->update();
+		}
+		if (wrapWidth() <= 0)
+		{
+			_font->sizeText(text(), &lastNativeW, &lastNativeH);
+		}
+		else
+		{
+			std::cout << "Creating text surface for update native dims...\n";
+			auto surf = _font->surfaceBlendedWrapped(text(), (Drawing::SDL::Color)color(), wrapWidth());
+			lastNativeH = surf->height();
+			lastNativeW = surf->width();
+			delete surf;
 		}
 	}
 	
