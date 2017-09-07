@@ -443,7 +443,7 @@ bool Test_SDL_GUI()
 	{
 		dout << "i = " << i << "\n";
 		text->text(dout_ss.str());
-		sleep(10000);
+		sleep(1000);
 	}
 	
 	
