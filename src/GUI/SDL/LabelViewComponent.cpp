@@ -77,6 +77,8 @@ namespace QUtils::GUI::SDL
 		h = tmpH;
 		if (w != lastW || h != lastH || texture == NULL)
 		{
+			lastW = w;
+			lastH = h;
 			if (texture != NULL)
 			{
 				delete texture;
@@ -86,8 +88,18 @@ namespace QUtils::GUI::SDL
 			Drawing::SDL::Surface* surf = NULL;
 			auto wrapW = wrapWidth();
 			
-			//surf = _font->surfaceBlendedWrapped(text(), (Drawing::SDL::Color)color(), wrapW*w);
+			if (wrapW > 0)
+			{
+			
+			surf = _font->surfaceBlendedWrapped(text(), (Drawing::SDL::Color)color(), wrapW);
+			w = surf->width();
+			h = surf->height();
+			}
+			else
+			{
 			surf = _font->surfaceBlended(text(), (Drawing::SDL::Color)color());
+			}
+			
 			if (height() == -2)
 			{
 				h = (int)(static_cast<double>(surf->height())/surf->width()*w);
@@ -99,8 +111,7 @@ namespace QUtils::GUI::SDL
 			delete surf;
 			
 			
-			lastW = w;
-			lastH = h;
+			
 		}
 		
 		texture->alphaMod(static_cast<unsigned char>(255*opacity()));
@@ -112,11 +123,23 @@ namespace QUtils::GUI::SDL
 	{
 		std::lock_guard<std::recursive_mutex> lock(this_m);
 		int w;
-		if (_font == NULL)
+		if (_font == NULL || changed())
 		{
 			const_cast<SDLLabelViewComponent*>(this)->update();
 		}
+		
+		if (wrapWidth() <= 0)
+		{
+		
 		_font->sizeText(_text, &w, NULL);
+		
+		}
+		else
+		{
+			auto surf = _font->surfaceBlendedWrapped(text(), (Drawing::SDL::Color)color(), wrapWidth());
+			w = surf->width();
+			delete surf;
+		}
 		return w;
 	}
 	
@@ -124,11 +147,22 @@ namespace QUtils::GUI::SDL
 	{
 		std::lock_guard<std::recursive_mutex> lock(this_m);
 		int h;
-		if (_font == NULL)
+		if (_font == NULL || changed())
 		{
 			const_cast<SDLLabelViewComponent*>(this)->update();
 		}
+		if (wrapWidth() <= 0)
+		{
+		
 		_font->sizeText(_text, NULL, &h);
+		
+		}
+		else
+		{
+			auto surf = _font->surfaceBlendedWrapped(text(), (Drawing::SDL::Color)color(), wrapWidth());
+			h = surf->height();
+			delete surf;
+		}
 		return h;
 	}
 	
@@ -144,6 +178,72 @@ namespace QUtils::GUI::SDL
 		{
 			_changed = true;
 			_wrapWidth = value;
+		}
+	}
+	
+	void SDLLabelViewComponent::calcRelativeDimensions(double& outW, double& outH) const
+	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
+		auto tmpW = width();
+		auto tmpH = height();
+		
+		if (tmpW == -2 && tmpH == -2)
+		{
+			tmpW = tmpH = -1;
+		}
+		
+		double nativeW, nativeH;
+		
+		if (tmpW < 0 || tmpH < 0)
+		{
+			if (_font == NULL || changed())
+			{
+				const_cast<SDLLabelViewComponent*>(this)->update();
+			}
+			if (wrapWidth() <= 0)
+			{
+				int intW, intH;
+				_font->sizeText(_text, &intW, &intH);
+				nativeW = intW;
+				nativeH = intH;
+			}
+			else
+			{
+				auto surf = _font->surfaceBlendedWrapped(text(), (Drawing::SDL::Color)color(), wrapWidth());
+				nativeH = surf->height();
+				nativeW = surf->width();
+				delete surf;
+			}
+		}
+		
+		if (tmpW >= 0)
+		{
+			outW = tmpW;
+		}
+		else if (tmpW == -1)
+		{
+			outW = nativeW/outW;
+		}
+		
+		if (tmpH >= 0)
+		{
+			outH = tmpH;
+		}
+		else if (tmpH == -1)
+		{
+			outH = nativeH/outH;
+		}
+		
+		
+		
+		if (tmpW == -2)
+		{
+			outW *= nativeW/nativeH;
+		}
+		
+		if (tmpH == -2)
+		{
+			outH *= nativeH/nativeW;
 		}
 	}
 	

@@ -53,5 +53,6 @@ namespace QUtils::GUI::SDL
 		virtual void color(const Color& v) override
 		{_color = v; _changed = true;}
 		
+		virtual void calcRelativeDimensions(double& width, double& height) const override;
 	};
 }
