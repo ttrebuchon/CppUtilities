@@ -402,7 +402,7 @@ bool Test_SDL_GUI()
 	window->invokeUpdate().get();
 	
 	
-	auto fingerPaintHandler = texComp2->onFingerDown += [ren, tex2, window, texComp2](auto win, auto time, auto touchID, auto fingerID, auto x, auto y, auto dx, auto dy, auto pressure)
+	auto fingerPaintHandler = texComp2->onFingerDown += [ren, tex2, window, texComp2](auto win, auto time, auto touchID, auto fingerID, auto x, auto y, auto pressure)
 	{
 		window->invokeUI([x, y, ren, tex2, texComp2]()
 		{
