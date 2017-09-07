@@ -41,6 +41,9 @@ namespace QUtils::GUI::SDL
 	{
 		onFingerMotion += [&](auto win, auto time, auto touch, auto finger, auto x, auto y, auto dx, auto dy, auto rdx, auto rdy, auto pressure)
 		{
+			std::async(std::launch::async, 
+			[&]()
+			{
 			std::lock_guard<std::recursive_mutex> pos_lock(pos_m);
 			if (dx != 0 || dy != 0)
 			{
@@ -58,6 +61,8 @@ namespace QUtils::GUI::SDL
 					posx = 0;
 				}
 			}
+			
+			});
 		};
 	}
 	
@@ -156,19 +161,23 @@ namespace QUtils::GUI::SDL
 		
 		double posx, posy;
 		
+		
+		double childRenX, childRenY;
+		
 		{
 			std::lock_guard<std::recursive_mutex> pos_lock(pos_m);
 			posx = this->posx;
 			posy = this->posy;
-		}
 		
-		double childRenX, childRenY;
+		
+		
 		
 		childRenX = x+(posx*w);
 		
 		if (childRenX < w + x - cw)
 		{
 			childRenX = w + x - cw;
+			this->posx = posx = 1 - static_cast<double>(cw/w);
 		}
 		
 		if (childRenX > x)
@@ -182,6 +191,9 @@ namespace QUtils::GUI::SDL
 		if (childRenY < y + h - ch)
 		{
 			childRenY = y + h - ch;
+			this->posy = posy = 1 - static_cast<double>(ch/h);
+		}
+		
 		}
 		
 		if (childRenY > y)
