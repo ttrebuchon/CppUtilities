@@ -297,7 +297,7 @@ bool Test_SDL_GUI()
 	dout << "Font1 resource assigned\n" << std::flush;
 	
 	
-	auto labelComp = new SDLLabelViewComponent("LabelComp", TOUCH, "Hello", "font1", 400);
+	auto labelComp = new SDLStringLabelViewComponent("LabelComp", TOUCH, "Hello", "font1", 400);
 	labelComp->color({255, 255, 255, 255});
 	
 	
@@ -429,7 +429,7 @@ bool Test_SDL_GUI()
 	
 	auto textScroll = new SDLScrollView("TextScrollView", TOUCH);
 	
-	auto text = new SDLLabelViewComponent("TextScroll_TextComp", TOUCH, "Hello!!!! World, this issss AWDDTF a test", "font1", 50);
+	auto text = new SDLStringLabelViewComponent("TextScroll_TextComp", TOUCH, "Hello!!!! World, this issss AWDDTF a test", "font1", 50);
 	text->color({255, 255, 255, 255});
 	text->wrapWidth(1080);
 	

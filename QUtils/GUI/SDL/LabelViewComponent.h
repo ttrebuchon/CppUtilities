@@ -20,7 +20,7 @@ namespace QUtils::GUI::SDL
 		int lastW, lastH;
 		
 		protected:
-		std::string _text;
+		bool _textChanged;
 		std::shared_ptr<Drawing::SDL::Font> _font;
 		Drawing::SDL::Texture* texture;
 		Color _color;
@@ -30,14 +30,11 @@ namespace QUtils::GUI::SDL
 		
 		
 		public:
-		SDLLabelViewComponent(const std::string id, bool touch, const std::string text, const std::string font, unsigned int fontSize);
-		SDLLabelViewComponent(bool touch, const std::string text, const std::string font, unsigned int fontSize);
-		SDLLabelViewComponent(const std::string id, const std::string text, const std::string font, unsigned int fontSize);
-		SDLLabelViewComponent(const std::string text, const std::string font, unsigned int fontSize);
+		SDLLabelViewComponent(const std::string id, bool touch, const std::string font, unsigned int fontSize);
+		SDLLabelViewComponent(bool touch, const std::string font, unsigned int fontSize);
+		SDLLabelViewComponent(const std::string id, const std::string font, unsigned int fontSize);
+		SDLLabelViewComponent(const std::string font, unsigned int fontSize);
 		virtual ~SDLLabelViewComponent();
-		
-		virtual std::string text() const override;
-		virtual void text(const std::string) override;
 		
 		virtual void update() override;
 		virtual void render(RenderTarget*, int, int, int, int) override;

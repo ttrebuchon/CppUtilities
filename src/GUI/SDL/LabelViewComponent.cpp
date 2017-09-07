@@ -8,21 +8,21 @@
 
 namespace QUtils::GUI::SDL
 {
-	SDLLabelViewComponent::SDLLabelViewComponent(const std::string id, bool touch, const std::string text, const std::string font, unsigned int fontSize) : TextViewComponent(id, touch), lastW(-1), lastH(-1), _text(text), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1)
+	SDLLabelViewComponent::SDLLabelViewComponent(const std::string id, bool touch, const std::string font, unsigned int fontSize) : TextViewComponent(id, touch), lastW(-1), lastH(-1), _textChanged(true), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1)
 	{
 		_changed = true;
 	}
 	
-	SDLLabelViewComponent::SDLLabelViewComponent(bool touch, const std::string text, const std::string font, unsigned int fontSize) : TextViewComponent(touch), lastW(-1), lastH(-1), _text(text), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1)
+	SDLLabelViewComponent::SDLLabelViewComponent(bool touch, const std::string font, unsigned int fontSize) : TextViewComponent(touch), lastW(-1), lastH(-1), _textChanged(true), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1)
 	{
 		_changed = true;
 	}
 	
-	SDLLabelViewComponent::SDLLabelViewComponent(const std::string id, const std::string text, const std::string font, unsigned int fontSize) : TextViewComponent(id), lastW(-1), lastH(-1), _text(text), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1)
+	SDLLabelViewComponent::SDLLabelViewComponent(const std::string id, const std::string font, unsigned int fontSize) : TextViewComponent(id), lastW(-1), lastH(-1), _textChanged(true), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1)
 	{
 		_changed = true;
 	}
-	SDLLabelViewComponent::SDLLabelViewComponent(const std::string text, const std::string font, unsigned int fontSize) : TextViewComponent(), lastW(-1), lastH(-1), _text(text), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1)
+	SDLLabelViewComponent::SDLLabelViewComponent(const std::string font, unsigned int fontSize) : TextViewComponent(), lastW(-1), lastH(-1), _textChanged(true), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1)
 	{
 		_changed = true;
 	}
@@ -30,18 +30,6 @@ namespace QUtils::GUI::SDL
 	SDLLabelViewComponent::~SDLLabelViewComponent()
 	{
 		
-	}
-		
-	std::string SDLLabelViewComponent::text() const
-	{
-		return _text;
-	}
-	
-	void SDLLabelViewComponent::text(const std::string value)
-	{
-		std::lock_guard<std::recursive_mutex> lock(this_m);
-		_text = value;
-		_changed = true;
 	}
 		
 	void SDLLabelViewComponent::update()
@@ -131,7 +119,7 @@ namespace QUtils::GUI::SDL
 		if (wrapWidth() <= 0)
 		{
 		
-		_font->sizeText(_text, &w, NULL);
+		_font->sizeText(text(), &w, NULL);
 		
 		}
 		else
@@ -154,7 +142,7 @@ namespace QUtils::GUI::SDL
 		if (wrapWidth() <= 0)
 		{
 		
-		_font->sizeText(_text, NULL, &h);
+		_font->sizeText(text(), NULL, &h);
 		
 		}
 		else
@@ -203,7 +191,7 @@ namespace QUtils::GUI::SDL
 			if (wrapWidth() <= 0)
 			{
 				int intW, intH;
-				_font->sizeText(_text, &intW, &intH);
+				_font->sizeText(text(), &intW, &intH);
 				nativeW = intW;
 				nativeH = intH;
 			}
