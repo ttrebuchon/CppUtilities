@@ -341,7 +341,7 @@ bool Test_SDL_GUI()
 		texComp3->height(pressure);
 	};
 	
-	sleep(3000);
+	sleep(1000);
 	
 	texView->onFingerMotion -= tex3HandlerID;
 	texComp3->height(0);
@@ -388,7 +388,7 @@ bool Test_SDL_GUI()
 	
 	//texView->addChild(scrollView, 0.125, 0.125, 0.75, 0.75);
 	texView->addChild(scrollView, 0, 0, 0.5, 0.5);
-	sleep(10000);
+	sleep(2000);
 	window->invokeUpdate().get();
 	
 	
@@ -420,12 +420,29 @@ bool Test_SDL_GUI()
 	};
 	
 	
-	sleep(5000);
+	sleep(1000);
 	
 	window->invokeUpdate().get();
 	
-	
 	texComp2->onFingerDown -= fingerPaintHandler;
+	
+	
+	auto textScroll = new SDLScrollView("TextScrollView", TOUCH);
+	
+	auto text = new SDLLabelViewComponent("TextScroll_TextComp", TOUCH, "Hello!!!! World, this issss AWDDTF a test", "font1", 50);
+	text->color({255, 255, 255, 255});
+	text->wrapWidth(1080);
+	
+	textScroll->setChild(text);
+	
+	texView->removeChildren();
+	texView->addChild(textScroll, 0, 0, 1, 1);
+	
+	sleep(5000);
+	
+	
+	
+	
 	dout << "Handling Events...\n";
 	window->handleEvents();
 	
