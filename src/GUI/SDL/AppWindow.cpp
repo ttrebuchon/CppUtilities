@@ -96,7 +96,7 @@ namespace QUtils::GUI::SDL
 				ECASE(FingerMotion):
 				{
 				auto fEv = (TouchFingerEvent*)ev;
-				onFingerMotion(this, fEv->timestamp, fEv->touchId, fEv->fingerId, fEv->x, fEv->y, fEv->dx, fEv->dy, fEv->pressure);
+				onFingerMotion(this, fEv->timestamp, fEv->touchId, fEv->fingerId, fEv->x, fEv->y, fEv->dx, fEv->dy, fEv->dx, fEv->dy, fEv->pressure);
 				}
 				return 0;
 				

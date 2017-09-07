@@ -154,7 +154,7 @@ namespace QUtils::GUI::SDL
 			}
 		};
 		
-		onFingerMotion += [&](auto win, auto timestamp, auto touchId, auto fingerId, auto x, auto y, auto dx, auto dy, auto pressure)
+		onFingerMotion += [&](auto win, auto timestamp, auto touchId, auto fingerId, auto x, auto y, auto dx, auto dy, double rdx, double rdy, auto pressure)
 		{
 			
 			for (int i = static_cast<int>(children.size())-1; i >= 0; --i)
@@ -169,7 +169,7 @@ namespace QUtils::GUI::SDL
 				{
 					if (x <= std::get<1>(children[i]) + cw && y <= std::get<2>(children[i]) + ch)
 					{
-						child->onFingerMotion(win, timestamp, touchId, fingerId, x - std::get<1>(children[i]), y - std::get<2>(children[i]), dx, dy, pressure);
+						child->onFingerMotion(win, timestamp, touchId, fingerId, x - std::get<1>(children[i]), y - std::get<2>(children[i]), dx, dy, rdx/cw, rdy/ch, pressure);
 						return;
 					}
 				}

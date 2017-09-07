@@ -107,6 +107,11 @@ bool Test_SDL_GUI()
 		dout << "Window Focused\n";
 	};
 	
+	window->onMinimize += [](auto...)
+	{
+		dout << "\n\nMinimizing!!\n\n\n" << std::flush;
+	};
+	
 	
 	
 	
@@ -217,7 +222,9 @@ bool Test_SDL_GUI()
 	//window->update();
 	dout << "Window updated\n";
 	assert_ex(!window->updateBlocked());
+	dout << "Handling Events...\n";
 	window->handleEvents();
+	dout << "Handled" << std::endl;
 	
 	
 	
@@ -287,6 +294,7 @@ bool Test_SDL_GUI()
 	auto font1Loader = new SDLFontFileResourceLoader("font1", "font1.ttf");
 	font1Loader->assign();
 	font1Loader = NULL;
+	dout << "Font1 resource assigned\n" << std::flush;
 	
 	
 	auto labelComp = new SDLLabelViewComponent("LabelComp", TOUCH, "Hello", "font1", 400);
@@ -317,16 +325,17 @@ bool Test_SDL_GUI()
 	}).get();
 	
 	
-	auto texComp3 = new SDLTextureViewComponent(tex3);
+	auto texComp3 = new SDLTextureViewComponent("TexComp3", TOUCH, tex3);
 	//window->unblockUpdate();
 	
 	texView->addChild(texComp3, 0, 0, 1, 0);
+	dout << "TexComp3 Added\n" << std::flush;
 	
 	//window->update();
 	
 	
 	
-	auto tex3HandlerID = texView->onFingerMotion += [&](auto win, auto time, auto, auto, auto x, auto y, auto dx, auto dy, auto pressure)
+	auto tex3HandlerID = texView->onFingerMotion += [&](auto win, auto time, auto, auto, auto x, auto y, auto dx, auto dy, auto rdx, auto rdy, auto pressure)
 	{
 		//texComp3->height(y+dy);
 		texComp3->height(pressure);
@@ -367,22 +376,56 @@ bool Test_SDL_GUI()
 		return tex4;
 	}).get();
 	
-	auto texComp4 = new SDLTextureViewComponent(tex4);
+	dout << "Tex4 Defined\n" << std::flush;
 	
-	auto scrollView = new SDLScrollView(TOUCH);
+	auto texComp4 = new SDLTextureViewComponent("TexComp4", TOUCH, tex4);
+	
+	auto scrollView = new SDLScrollView("ScrollView", TOUCH);
 	
 	scrollView->setChild(texComp4);
 	scrollView->childWidth(-1);
 	scrollView->childHeight(-1);
 	
-	texView->addChild(scrollView, 0.125, 0.125, 0.75, 0.75);
+	//texView->addChild(scrollView, 0.125, 0.125, 0.75, 0.75);
+	texView->addChild(scrollView, 0, 0, 0.5, 0.5);
 	sleep(10000);
 	window->invokeUpdate().get();
 	
 	
 	
+	dout << "Removing TexView Children...\n";
+	texView->removeChildren();
+	
+	dout << "Adding TexComp2 as child...\n" << std::flush;
+	texView->addChild(texComp2, 0, 0, 1, 1);
+	dout << "Invoking Update...\n";
+	window->invokeUpdate().get();
 	
 	
+	auto fingerPaintHandler = texComp2->onFingerDown += [ren, tex2, window, texComp2](auto win, auto time, auto touchID, auto fingerID, auto x, auto y, auto dx, auto dy, auto pressure)
+	{
+		window->invokeUI([x, y, ren, tex2, texComp2]()
+		{
+			ren->target(tex2);
+			ren->setDrawColor(255, 0, 0, 255);
+			ren->setViewport(x*tex2->width()-25, y*tex2->height()-25, 50, 50);
+			ren->fillRect(NULL);
+			ren->renderPresent();
+			ren->resetViewport();
+			
+			texComp2->textureChanged();
+			
+			return 0;
+		});
+	};
+	
+	
+	sleep(5000);
+	
+	window->invokeUpdate().get();
+	
+	
+	texComp2->onFingerDown -= fingerPaintHandler;
 	dout << "Handling Events...\n";
 	window->handleEvents();
 	

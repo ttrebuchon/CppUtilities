@@ -39,13 +39,13 @@ namespace QUtils::GUI::SDL
 	
 	void SDLScrollView::registerEvents()
 	{
-		onFingerMotion += [&](auto win, auto time, auto touch, auto finger, auto x, auto y, auto dx, auto dy, auto pressure)
+		onFingerMotion += [&](auto win, auto time, auto touch, auto finger, auto x, auto y, auto dx, auto dy, auto rdx, auto rdy, auto pressure)
 		{
 			if (dx != 0 || dy != 0)
 			{
 				_changed = true;
-				posx += dx;
-				posy += dy;
+				posx += rdx;
+				posy += rdy;
 				
 				if (posy > 0)
 				{

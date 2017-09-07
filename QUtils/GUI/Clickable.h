@@ -15,7 +15,7 @@ namespace QUtils::GUI
 		public:
 		Event<AppWindow*, unsigned int, long, long, float, float, float, float, float> onFingerDown;
 		Event<AppWindow*, unsigned int, long, long, float, float, float, float, float> onFingerUp;
-		Event<AppWindow*, unsigned int, long, long, float, float, float, float, float> onFingerMotion;
+		Event<AppWindow*, unsigned int, long, long, float, float, float, float, double, double, float> onFingerMotion;
 		
 		Event<AppWindow*, unsigned int, unsigned int, unsigned char, unsigned char, unsigned char, int, int> onMouseButtonDown;
 		Event<AppWindow*, unsigned int, unsigned int, unsigned char, unsigned char, unsigned char, int, int> onMouseButtonUp;
