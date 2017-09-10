@@ -1,9 +1,4 @@
 #include <QUtils/Graphics/Images/JPG.h>
-#include <QUtils/Exception/NotImplemented.h>
-#include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/io/jpeg_dynamic_io.hpp>
-
-using namespace boost::gil;
 
 namespace QUtils
 {
@@ -11,6 +6,13 @@ namespace Graphics
 {
 namespace Images
 {
+	namespace Internal
+	{
+		bool saveJPEG(const std::string filename, const GenericPixel* map, const unsigned int w, const unsigned int h);
+		bool loadJPEG(const std::string filename, GenericPixel** mapPtr, unsigned int& w, unsigned int& h);
+	}
+	
+	
 	JPGImage::~JPGImage()
 	{
 		
@@ -18,38 +20,17 @@ namespace Images
 	
 	bool JPGImage::save(const std::string filename) const
 	{
-		rgb8_image_t img(this->w, this->h);
-		
-		rgb8_view_t v = view(img);
-		
-		GenericPixel thisPix;
-		
-		for (int y = 0; y < this->h; y++)
-		{
-			for (int x = 0; x < this->w; x++)
-			{
-				thisPix = map[w*y + x];
-				auto& pix = v(x, y);
-				
-				pix[0] = thisPix.R;
-				pix[1] = thisPix.G;
-				pix[2] = thisPix.B;
-			}
-		}
-		try
-		{
-			jpeg_write_view(filename, v);
-		}
-		catch (...)
-		{
-			return false;
-		}
-		return true;
+		return Internal::saveJPEG(filename, map, this->w, this->h);
 	}
 	
 	bool JPGImage::load(const std::string filename)
 	{
-		throw NotImp();
+		if (map != NULL)
+		{
+			delete[] map;
+			map = NULL;
+		}
+		return Internal::loadJPEG(filename, &map, w, h);
 	}
 	
 	JPGImage* JPGImage::clone() const
