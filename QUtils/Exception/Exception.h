@@ -7,39 +7,39 @@
 
 	#define QUTILS_CUSTOM_EXCEPTION(name, msg) class name : public std::exception { \
 	protected: \
-	std::string file; \
-	int line; \
-	std::string func; \
+	std::string _file; \
+	int _line; \
+	std::string _func; \
 	std::string _what; \
 	const char* _whatC; \
 	const std::string className = #name; \
-	std::string message; \
-	std::exception_ptr inner; \
+	std::string _message; \
+	std::exception_ptr _inner; \
 	\
 	public: \
-	name(std::string file, int line, std::string func) : file(file), line(line), func(func), _what(""), _whatC(NULL), message(""), inner(nullptr) \
+	name(std::string _file, int _line, std::string _func) : _file(_file), _line(_line), _func(_func), _what(""), _whatC(NULL), _message(""), _inner(nullptr) \
 	{  } \
 	\
-	name(std::string file) : name(file, -1, "") \
+	name(std::string _file) : name(_file, -1, "") \
 	{ } \
 	\
-	name(int line) : name("", line, "") \
+	name(int _line) : name("", _line, "") \
 	{ } \
 	\
-	name(std::string file, int line) : name(file, line, "") \
+	name(std::string _file, int _line) : name(_file, _line, "") \
 	{ } \
 	\
-	name(int line, std::string func) : name("", line, func) \
+	name(int _line, std::string _func) : name("", _line, _func) \
 	{ } \
 	\
-	name(std::string file, std::string func) : name(file, -1, func) \
+	name(std::string _file, std::string _func) : name(_file, -1, _func) \
 	{ } \
 	\
 	name() : name("", -1, "") \
 	{ } \
 	\
 	\
-	name(std::exception_ptr ex, std::string comment = "") : file(""), line(-1), func(""), _what(""), _whatC(NULL), message(comment), inner(ex) {} \
+	name(std::exception_ptr ex, std::string comment = "") : _file(""), _line(-1), _func(""), _what(""), _whatC(NULL), _message(comment), _inner(ex) {} \
 	\
 	\
 	\
@@ -60,40 +60,40 @@
 	    	_what = className; \
 	    } \
 		std::stringstream ss; \
-		if (file != "") \
+		if (file() != "") \
 		{ \
-			ss << "" << file; \
+			ss << "" << file(); \
 		} \
-		if (file != "" && line != -1) \
-		{ \
-			ss << ":"; \
-		} \
-		if (line != -1) \
-		{ \
-			ss << "L" << line; \
-		} \
-		if ((file != "" || line != -1) && func != "") \
+		if (file() != "" && line() != -1) \
 		{ \
 			ss << ":"; \
 		} \
-		if (func != "") \
+		if (line() != -1) \
 		{ \
-			ss << func; \
+			ss << "L" << line(); \
 		} \
-		if (file != "" || line != -1 || func != "") \
+		if ((file() != "" || line() != -1) && func() != "") \
+		{ \
+			ss << ":"; \
+		} \
+		if (func() != "") \
+		{ \
+			ss << func(); \
+		} \
+		if (file() != "" || line() != -1 || func() != "") \
 		{ \
 			ss << "::"; \
 		} \
 		ss << _what; \
-		if (message != "") \
+		if (message() != "") \
 		{ \
-			ss << "::" << message; \
+			ss << "::" << message(); \
 		} \
-		if (inner) \
+		if (inner()) \
 		{ \
 			try \
 			{ \
-				std::rethrow_exception(inner); \
+				std::rethrow_exception(inner()); \
 			} \
 			catch (const std::exception& ex) \
 			{ \
@@ -109,25 +109,50 @@
 	\
 	name & Msg(std::string s) \
 	{ \
-		this->message = s; \
+		this->_message = s; \
 		return *this; \
 	} \
 	name & File(std::string s) \
 	{ \
-		this->file = s; \
+		this->_file = s; \
 		return *this; \
 	} \
 	name & Function(std::string s) \
 	{ \
-		this->func = s; \
+		this->_func = s; \
 		return *this; \
 	} \
 	name & Line(int i) \
 	{ \
-		this->line = i; \
+		this->_line = i; \
 		return *this; \
 	} \
 	\
+	\
+	virtual std::string message() const \
+	{ \
+		return _message; \
+	} \
+	\
+	virtual const std::exception_ptr inner() const \
+	{ \
+		return _inner; \
+	} \
+	\
+	virtual int line() const \
+	{ \
+		return _line; \
+	} \
+	\
+	virtual std::string file() const \
+	{ \
+		return _file; \
+	} \
+	\
+	virtual std::string func() const \
+	{ \
+		return _func; \
+	} \
 	\
 	}
 	
