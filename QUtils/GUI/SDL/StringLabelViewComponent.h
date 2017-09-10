@@ -2,6 +2,8 @@
 
 #include "LabelViewComponent.h"
 
+
+
 namespace QUtils::GUI::SDL
 {
 	class SDLStringLabelViewComponent : public SDLLabelViewComponent

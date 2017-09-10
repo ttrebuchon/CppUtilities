@@ -30,6 +30,7 @@ namespace QUtils::GUI
 	
 	void View::addChild(ViewComponent* comp)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		if (comp != NULL)
 		{
 			comp->addToView(this);
@@ -38,6 +39,7 @@ namespace QUtils::GUI
 	
 	void View::removeChild(ViewComponent* comp)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		if (comp != NULL)
 		{
 			comp->removeFromView();

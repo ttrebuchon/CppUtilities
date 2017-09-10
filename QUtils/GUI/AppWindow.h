@@ -3,6 +3,7 @@
 #include <list>
 #include <thread>
 #include <future>
+#include <atomic>
 
 #include "Event.h"
 #include "RenderTarget.h"
@@ -25,7 +26,7 @@ namespace QUtils::GUI
 		
 		void addEventException(std::exception_ptr ptr);
 		
-		unsigned int updateHolds;
+		std::atomic<unsigned int> updateHolds;
 		mutable std::mutex update_m;
 		std::condition_variable update_c;
 		

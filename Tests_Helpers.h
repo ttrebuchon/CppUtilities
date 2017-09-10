@@ -54,7 +54,7 @@ class DebugOut
 	}
 	
 	static std::ostream*& rOut() {
-		static std::ostream* o = &std::cerr;
+		static std::ostream* o = &std::cout;
 		return o;
 	}
 	

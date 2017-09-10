@@ -34,6 +34,7 @@ namespace QUtils::GUI::SDL
 	
 	SDLScrollView::~SDLScrollView()
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		removeChildren();
 	}
 	
@@ -93,7 +94,7 @@ namespace QUtils::GUI::SDL
 		std::lock_guard<std::recursive_mutex> lock(this_m);
 		if (child != NULL)
 		{
-			if (child->width() != childW || child->height() != childH)
+			if ((child->width() != childW) || (child->height() != childH))
 			{
 				child->width(childW);
 				child->height(childH);

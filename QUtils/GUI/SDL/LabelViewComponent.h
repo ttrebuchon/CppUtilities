@@ -5,6 +5,8 @@
 #include "FontResource.h"
 
 #include <string>
+#include <atomic>
+#include <vector>
 
 namespace QUtils::Drawing::SDL
 {
@@ -20,8 +22,10 @@ namespace QUtils::GUI::SDL
 		int lastW, lastH;
 		mutable int lastNativeW, lastNativeH;
 		
+		bool _fontNameChanged, _fontSizeChanged;
+		
 		protected:
-		bool _textChanged;
+		std::atomic<bool> _textChanged;
 		std::shared_ptr<Drawing::SDL::Font> _font;
 		Drawing::SDL::Texture* texture;
 		Color _color;
@@ -31,6 +35,11 @@ namespace QUtils::GUI::SDL
 		
 		void updateNativeDims() const;
 		
+		virtual std::vector<unsigned int> splitString(std::string) const;
+		virtual void storeLastString(const std::string);
+		virtual const std::string& getLastString() const;
+		
+		unsigned long int lastStringCheckSum;
 		
 		public:
 		SDLLabelViewComponent(const std::string id, bool touch, const std::string font, unsigned int fontSize);
@@ -54,5 +63,7 @@ namespace QUtils::GUI::SDL
 		{_color = v; _changed = true;}
 		
 		virtual void calcRelativeDimensions(double& width, double& height) const override;
+		
+		virtual bool changed() const override;
 	};
 }

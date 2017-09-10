@@ -33,7 +33,7 @@ void printArgs(auto x, auto... args)
 	printArgs(args...);
 }
 
-bool Test_SDL_GUI()
+bool Test_SDL_GUI(std::ostream** GUI_out)
 {
 	
 	const int w = 1080;
@@ -46,13 +46,17 @@ bool Test_SDL_GUI()
 	#define TOUCH true
 	window = new SDLAppWindow("Window1", 0, 0, w, h, TOUCH);
 	window->blockUpdate();
+	dout << "Initializing Window...\n" << std::flush;
 	window->init();
+	dout << "Window Initialied.\n" << std::flush;
 	sleep(1000);
+	dout << "Handling Events...\n" << std::flush;
 	window->handleEvents();
+	dout << "Events Handled.\n" << std::flush;
 	
 	window->invokeUI([]() -> int
 	{
-		dout << "ThreadID: " << std::this_thread::get_id() << "\n";
+		dout << "ThreadID: " << std::flush << std::this_thread::get_id() << "\n";
 		return 0;
 	}).wait();
 	
@@ -429,30 +433,75 @@ bool Test_SDL_GUI()
 	
 	auto textScroll = new SDLScrollView("TextScrollView", TOUCH);
 	
-	auto text = new SDLStringLabelViewComponent("TextScroll_TextComp", TOUCH, dout_ss.str(), "font1", 50);
+	auto text = new SDLStreamLabelViewComponent("TextScroll_TextComp", TOUCH, "font1", 50);
+	*GUI_out = new std::ostream(text->buf());
 	text->color({255, 255, 255, 255});
 	text->wrapWidth(1080);
 	
 	textScroll->setChild(text);
 	
 	texView->removeChildren();
-	texView->addChild(textScroll, 0, 0, 1, 1);
+	//texView->addChild(textScroll, 0, 0, 1, 1);
+	window->replaceView(textScroll);
 	
+	dout << "Writing to text...\n" << std::endl;
+	dout << "Test 1...\n";
+	//GUI_out << dout_ss.str();
+	**GUI_out << "Test 1\n" << std::flush;
 	dout << "\n\n\nSleeping...\n";
-	for (int i = 0; i < 10; ++i)
+	/*for (int i = 0; i < 10; ++i)
 	{
-		dout << "i = " << i << "\n";
-		text->text(dout_ss.str());
+		dout << "i = " << i+1 << "\n";
+		//text->text(dout_ss.str());
 		sleep(1000);
-	}
+	}*/
 	
-	
+	sleep(100);
 	
 	
 	dout << "Handling Events...\n";
 	window->handleEvents();
 	
-	/*auto cleanup = [](auto& ptr)
+	dout << "Test 2...\n";
+	**GUI_out << "Test 2\n" << std::flush;
+	dout << "\n\n\nSleeping 2...\n";
+	/*for (int i = 0; i < 10; ++i)
+	{
+		dout << "i = " << i+1 << "\n";
+		//text->text(dout_ss.str());
+		sleep(1000);
+	}*/
+	
+	sleep(500);
+	
+	{
+		std::string test_str = "";
+	for (int i = 0; i < 10000; ++i)
+	{
+		test_str += std::to_string(i) + "\n";
+	}
+	window->blockUpdate();
+	dout << "Adding long string..." << std::endl;
+	
+	**GUI_out << test_str << std::flush;
+	
+	dout << "Invoking long string update..." << std::endl;
+	
+	window->invokeUpdate().get();
+	
+	dout << "Updated\n";
+	
+	sleep(10000);
+	window->unblockUpdate();
+	}
+	
+	text->text("");
+	**GUI_out << dout_ss.str();
+	
+	window->invokeUpdate().get();
+	
+	
+	auto cleanup = [](auto& ptr)
 	{
 		if (ptr != NULL)
 		{
@@ -460,11 +509,11 @@ bool Test_SDL_GUI()
 			ptr = NULL;
 		}
 	};
-	window->blockUpdate();
+	/*window->blockUpdate();
 	
 	dout << "Cleaning up..." << std::endl << std::flush;
 	cleanup(window);
-	cleanup(texView);
+	cleanup(texView);*/
 	cleanup(texComp);
 	cleanup(texComp2);
 	cleanup(labelComp);
@@ -472,17 +521,20 @@ bool Test_SDL_GUI()
 	cleanup(tex);
 	cleanup(tex2);
 	cleanup(tex3);
-	cleanup(tex4);*/
+	cleanup(tex4);
+	/*cleanup(textScroll);
+	cleanup(text);*/
+	
 	
 	
 	}
 	catch (...)
 	{
-		if (window != NULL)
+		/*if (window != NULL)
 		{
 			delete window;
 			window = NULL;
-		}
+		}*/
 		throw;
 	}
 	

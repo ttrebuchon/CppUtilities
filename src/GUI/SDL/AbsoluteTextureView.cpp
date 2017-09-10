@@ -28,6 +28,7 @@ namespace QUtils::GUI::SDL
 	
 	SDLAbsoluteTextureView::~SDLAbsoluteTextureView()
 	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 		removeChildren();
 	}
 	

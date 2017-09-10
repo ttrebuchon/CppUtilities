@@ -10,6 +10,8 @@
 #include "TextureViewComponent.h"
 #include "LabelViewComponent.h"
 #include "StringLabelViewComponent.h"
+#include "StreamLabelViewComponent.h"
+
 
 #include "SurfaceResource.h"
 #include "TextureResource.h"

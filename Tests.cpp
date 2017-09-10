@@ -10,8 +10,12 @@
 #include <vector>
 #include "Tests_Helpers.h"
 
-std::stringstream dout_ss;
+#include <QUtils/Sleep/Sleep.h>
 
+std::stringstream dout_ss;
+QUtils::Output::MultiBuf* multibuf;
+
+std::ostream* GUI_out = NULL;
 
 
 int main(int argc, char**argv)
@@ -23,10 +27,9 @@ int main(int argc, char**argv)
 	#endif
 	
 	std::ios::sync_with_stdio(false);
-	auto multibuf = new QUtils::Output::MultiBuf();
+	multibuf = new QUtils::Output::MultiBuf();
 	//multibuf->push(std::cerr.rdbuf());
 	multibuf->push(std::cout.rdbuf());
-	auto cerrBuf = std::cerr.rdbuf(multibuf);
 	auto coutBuf = std::cout.rdbuf(multibuf);
 	
 	
@@ -42,7 +45,9 @@ int main(int argc, char**argv)
 	log << timeStr << "\n\n";
 	multibuf->push(log.rdbuf());
 	
+	auto cerrBuf = std::cerr.rdbuf(log.rdbuf());
 	
+	assert_ex(dynamic_cast<std::stringbuf*>(dout_ss.rdbuf()) != NULL);
 	multibuf->push(dout_ss.rdbuf());
 	
 	
@@ -97,7 +102,11 @@ void Testing::run()
 	try
 	{
 	#ifdef QUTILS_HAS_SDL2
-	RUN(SDL_GUI());
+	RUN(SDL_GUI(&GUI_out));
+	//multibuf->push(GUI_out->rdbuf());
+	dout << "GUI buf added!\n";
+	QUtils::sleep(1000);
+	dout << "Slept!\n";
 	#endif
 	RUN(Multi());
 	RUN(Network());
@@ -106,7 +115,7 @@ void Testing::run()
 	RUN(GUID());
 	#ifndef SHORT_TEST
 	#ifdef QUTILS_HAS_SDL2
-	RUN(SDL_Drawing());
+	//RUN(SDL_Drawing());
 	#endif
 	RUN(TravellingSalesman());
 	RUN(GameOfLifeExtended());
@@ -136,6 +145,15 @@ void Testing::run()
 	RUN(String());
 	RUN(Markov());
 	RUN(NNST());
+	#endif
+	
+	
+	#ifdef QUTILS_HAS_SDL2
+	std::string final_str = dout_ss.str();
+	*GUI_out << final_str << std::flush;
+	//dout << "Screen set to \"" << final_str << "\"" << std::endl;
+	dout << "Sleeping for GUI!\n";
+	QUtils::sleep(100000);
 	#endif
 	}
 	catch (std::string& s)

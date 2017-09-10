@@ -30,7 +30,7 @@ namespace QUtils::GUI
 	
 	ViewComponent::~ViewComponent()
 	{
-		
+		std::lock_guard<std::recursive_mutex> lock(this_m);
 	}
 	
 	void ViewComponent::calcRenderDimensions(int& w, int& h)
