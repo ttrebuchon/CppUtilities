@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <functional>
 
 #include "../SQLTableBuilder.h"
 #include "SQLType.h"

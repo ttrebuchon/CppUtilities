@@ -2,6 +2,7 @@
 
 #include <QUtils/Types/Types.h>
 #include <string>
+#include <algorithm>
 class H
 {
 	public:
