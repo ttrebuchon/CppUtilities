@@ -55,7 +55,12 @@ namespace QUtils::Drawing::SDL
 		void setMinimumSize(int w, int h);
 		void setMinSize(int w, int h)
 		{ setMinimumSize(w, h); }
+		
+		#if QUTILS_SDL_VERSION_HIDE(2,0,5)
 		float opacity() const;
+		#endif
+		
+		
 		unsigned int pixelFormat() const;
 		void position(int* x, int* y) const;
 		void setPosition(int x, int y);
