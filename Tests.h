@@ -5,6 +5,17 @@
 
 #define DEF_TEST(x) bool Test_##x()
 
+namespace QUtils
+{
+namespace GUI
+{
+namespace SDL
+{
+	class SDLAppWindow;
+}
+}
+}
+
 class Testing
 {
 	public:
@@ -63,7 +74,7 @@ DEF_TEST(English_Analysis);
 DEF_TEST(Network);
 DEF_TEST(GUID);
 //DEF_TEST(SDL_GUI);
-bool Test_SDL_GUI(std::ostream**);
+bool Test_SDL_GUI(std::ostream**, QUtils::GUI::SDL::SDLAppWindow*&);
 DEF_TEST(SDL_Drawing);
 
 

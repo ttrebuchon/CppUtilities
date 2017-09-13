@@ -33,13 +33,13 @@ void printArgs(auto x, auto... args)
 	printArgs(args...);
 }
 
-bool Test_SDL_GUI(std::ostream** GUI_out)
+bool Test_SDL_GUI(std::ostream** GUI_out, QUtils::GUI::SDL::SDLAppWindow*& window)
 {
 	
 	const int w = 1080;
 	const int h = 1920;
 	
-	SDLAppWindow* window = NULL;
+	/*SDLAppWindow* */window = NULL;
 	try
 	{
 	
@@ -474,31 +474,84 @@ bool Test_SDL_GUI(std::ostream** GUI_out)
 	
 	sleep(500);
 	
+	dout << "Handling Events...\n";
+	window->handleEvents();
+	
+	//Test CheckSum
 	{
-		std::string test_str = "";
-	for (int i = 0; i < 10000; ++i)
-	{
-		test_str += std::to_string(i) + "\n";
+		using QUtils::GUI::SDL::Internal::calcCheckSum;
+		std::string str = "Hello";
+		unsigned long sum = 0;
+		for (auto i = 0; i < str.length(); ++i)
+		{
+			auto multiplier = (i % 5) + 1;
+			sum += multiplier*((int)str[i]);
+		}
+		
+		assert_ex(calcCheckSum(str) == sum);
+		assert_ex(calcCheckSum(str) == 1585);
+		assert_ex(calcCheckSum(str, 1) == 1085);
+		assert_ex(calcCheckSum(str, 0, 3) == 1030);
+		assert_ex(calcCheckSum("") == 0);
+		assert_ex(calcCheckSum("a") == (int)'a');
+		assert_ex(calcCheckSum("abc", 1, 1) == (int)'b');
 	}
-	window->blockUpdate();
+	
+	
+	{
 	dout << "Adding long string..." << std::endl;
+	window->blockUpdate();
+	sleep(100);
+	assert_ex(window->updateBlocked());
+	std::string test_str = "";
+	for (int i = 0; i < 100; ++i)
+	{
+		**GUI_out << std::to_string(i) << "\n" << std::flush;
+		//dout << "Invoking Update...\n";
+		//window->invokeUpdate();//.get();
+	}
 	
-	**GUI_out << test_str << std::flush;
 	
-	dout << "Invoking long string update..." << std::endl;
 	
-	window->invokeUpdate().get();
+	//dout << "Updated\n";
 	
-	dout << "Updated\n";
+	{
+		**GUI_out << "123";
+		for (char i = 'A'; i <= 'Z'; ++i)
+		{
+			**GUI_out << i;
+		}
+		
+		**GUI_out << ' ';
+		
+		for (char i = 'a'; i <= 'z'; ++i)
+		{
+			**GUI_out << i;
+		}
+		
+		**GUI_out << "\n" << std::flush;
+		
+		
+		
+		
+	}
 	
-	sleep(10000);
 	window->unblockUpdate();
 	}
+	
+	window->invokeUpdate().get();
+	sleep(10000);
+	
+	window->handleEvents();
 	
 	text->text("");
 	**GUI_out << dout_ss.str();
 	
-	window->invokeUpdate().get();
+	
+	
+	
+	
+	window->handleEvents();
 	
 	
 	auto cleanup = [](auto& ptr)
@@ -530,6 +583,7 @@ bool Test_SDL_GUI(std::ostream** GUI_out)
 	}
 	catch (...)
 	{
+		*GUI_out = NULL;
 		/*if (window != NULL)
 		{
 			delete window;

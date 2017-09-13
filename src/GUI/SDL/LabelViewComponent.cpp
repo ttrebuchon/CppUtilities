@@ -4,28 +4,73 @@
 #include <QUtils/Drawing/SDL/SDL.h>
 #include <QUtils/GUI/SDL/RenderTarget.h>
 #include <QUtils/GUI/Errors.h>
+#include <QUtils/String/String.h>
 
 #include <QUtils/Exception/NotImplemented.h>
 #include <iostream>
+#include <assert.h>
 
 
 namespace QUtils::GUI::SDL
 {
-	SDLLabelViewComponent::SDLLabelViewComponent(const std::string id, bool touch, const std::string font, unsigned int fontSize) : TextViewComponent(id, touch), lastW(-1), lastH(-1), lastNativeW(-1), lastNativeH(-1), _fontNameChanged(true), _fontSizeChanged(true), _textChanged(true), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1), lastStringCheckSum(0)
+	namespace Internal
+	{
+		TextSegment::TextSegment() : texture(NULL), surface(NULL), lastCheckSum(0), start(0), end(0)
+		{
+			
+		}
+		
+		TextSegment::~TextSegment()
+		{
+			if (texture != NULL)
+			{
+				delete texture;
+				texture = NULL;
+			}
+			
+			if (surface != NULL)
+			{
+				delete surface;
+				surface = NULL;
+			}
+		}
+		
+		#define CHKSUM_MULT_RANGE 5
+		
+		unsigned long int calcCheckSum(const std::string str, unsigned int start, unsigned int end)
+		{
+			if (str.length() <= 0)
+			{
+				return 0;
+			}
+			auto disp = start;
+			unsigned long sum = 0;
+			for (int i = 0; i + disp <= end; ++i)
+			{
+				sum += ((int)str[i + disp])*((i%CHKSUM_MULT_RANGE)+1);
+			}
+			return sum;
+		}
+	}
+	
+	
+	
+	
+	SDLLabelViewComponent::SDLLabelViewComponent(const std::string id, bool touch, const std::string font, unsigned int fontSize) : TextViewComponent(id, touch), lastW(-1), lastH(-1), lastNativeW(-1), lastNativeH(-1), _fontNameChanged(true), _fontSizeChanged(true), segments(), _textChanged(true), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1), lastStringCheckSum(0)
 	{
 		_changed = true;
 	}
 	
-	SDLLabelViewComponent::SDLLabelViewComponent(bool touch, const std::string font, unsigned int fontSize) : TextViewComponent(touch), lastW(-1), lastH(-1), lastNativeW(-1), lastNativeH(-1), _fontNameChanged(true), _fontSizeChanged(true), _textChanged(true), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1), lastStringCheckSum(0)
+	SDLLabelViewComponent::SDLLabelViewComponent(bool touch, const std::string font, unsigned int fontSize) : TextViewComponent(touch), lastW(-1), lastH(-1), lastNativeW(-1), lastNativeH(-1), _fontNameChanged(true), _fontSizeChanged(true), segments(), _textChanged(true), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1), lastStringCheckSum(0)
 	{
 		_changed = true;
 	}
 	
-	SDLLabelViewComponent::SDLLabelViewComponent(const std::string id, const std::string font, unsigned int fontSize) : TextViewComponent(id), lastW(-1), lastH(-1), lastNativeW(-1), lastNativeH(-1), _fontNameChanged(true), _fontSizeChanged(true), _textChanged(true), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1), lastStringCheckSum(0)
+	SDLLabelViewComponent::SDLLabelViewComponent(const std::string id, const std::string font, unsigned int fontSize) : TextViewComponent(id), lastW(-1), lastH(-1), lastNativeW(-1), lastNativeH(-1), _fontNameChanged(true), _fontSizeChanged(true), segments(), _textChanged(true), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1), lastStringCheckSum(0)
 	{
 		_changed = true;
 	}
-	SDLLabelViewComponent::SDLLabelViewComponent(const std::string font, unsigned int fontSize) : TextViewComponent(), lastW(-1), lastH(-1), lastNativeW(-1), lastNativeH(-1), _fontNameChanged(true), _fontSizeChanged(true), _textChanged(true), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1), lastStringCheckSum(0)
+	SDLLabelViewComponent::SDLLabelViewComponent(const std::string font, unsigned int fontSize) : TextViewComponent(), lastW(-1), lastH(-1), lastNativeW(-1), lastNativeH(-1), _fontNameChanged(true), _fontSizeChanged(true), segments(), _textChanged(true), _font(NULL), texture(NULL), _color({0, 0, 0, 255}), _fontSize(fontSize), _fontName(font), _wrapWidth(-1), lastStringCheckSum(0)
 	{
 		_changed = true;
 	}
@@ -37,6 +82,18 @@ namespace QUtils::GUI::SDL
 		{
 			delete texture;
 			texture = NULL;
+		}
+		
+		for (auto segment : segments)
+		{
+			delete segment;
+		}
+		segments.clear();
+		
+		if (lastString != NULL)
+		{
+			delete lastString;
+			lastString = NULL;
 		}
 	}
 		
@@ -51,6 +108,7 @@ namespace QUtils::GUI::SDL
 			{
 			_font = SDLFontResourceLoader::get(_fontName, _fontSize);
 			_fontNameChanged = _fontSizeChanged = false;
+			resetSegments();
 			}
 			if (texture != NULL)
 			{
@@ -61,6 +119,7 @@ namespace QUtils::GUI::SDL
 			_changed = false;
 			lastNativeW = lastNativeH = -1;
 			_textChanged = false;
+			updateTextures();
 		}
 	}
 	
@@ -79,7 +138,26 @@ namespace QUtils::GUI::SDL
 		calcRenderDimensions(tmpW, tmpH);
 		w = tmpW;
 		h = tmpH;
-		if (w != lastW || h != lastH || texture == NULL || _textChanged)
+		
+		for (auto segment : segments)
+		{
+			if (segment->texture == NULL && segment->surface != NULL)
+			{
+				try
+				{
+				segment->texture = segment->surface->createTexture(ren);
+				}
+				catch (Drawing::SDL::SDLErrorException& ex)
+				{
+					std::cerr << "(" << std::flush << segment->surface->width() << ", " << segment->surface->height() << ")\t[" << segment->end - segment->start << "]\n";
+					throw;
+				}
+				delete segment->surface;
+				segment->surface = NULL;
+			}
+		}
+		
+		if (w != lastW || h != lastH || (texture == NULL && wrapWidth() <= 0) || _textChanged)
 		{
 			std::cerr << "(" << w << ", " << lastW << ", " << h << ", " << lastH << ", " << texture << ", " << _textChanged << ")\n";
 			std::cerr << "Creating surface...\n" << std::flush;
@@ -95,15 +173,15 @@ namespace QUtils::GUI::SDL
 			auto wrapW = wrapWidth();
 			
 			_textChanged = false;
-			auto text = this->text();
+			auto text = QUtils::String(this->text()).replace("\r\n", "\n");
 			try
 			{
 			if (wrapW > 0)
 			{
 			
-			surf = _font->surfaceBlendedWrapped(text, (Drawing::SDL::Color)color(), wrapW);
+			/*surf = _font->surfaceBlendedWrapped(text, (Drawing::SDL::Color)color(), wrapW);
 			w = lastNativeW = surf->width();
-			h = lastNativeH = surf->height();
+			h = lastNativeH = surf->height();*/
 			}
 			else
 			{
@@ -136,18 +214,41 @@ namespace QUtils::GUI::SDL
 				h = (int)(static_cast<double>(surf->height())/surf->width()*w);
 			}
 			
+			if (surf != NULL)
+			{
 			
 			texture = surf->createTexture(ren);
 			
 			delete surf;
+			}
 			
 			
 			
 		}
 		
-		texture->alphaMod(static_cast<unsigned char>(255*opacity()));
+		if (texture == NULL)
+		{
+		
+		int dy = 0;
+		
+		for (auto s : segments)
+		{
+			s->texture->alphaMod(static_cast<unsigned char>(255*opacity()));
+			s->texture->blendMode(Drawing::SDL::BlendMode::Blend);
+			ren->copy(s->texture, NULL, {x, y+dy, static_cast<int>(static_cast<double>(s->texture->width())/lastNativeW*w), static_cast<int>(static_cast<double>(s->texture->height())/lastNativeH*h)});
+			dy += s->texture->height();
+			
+			
+		}
+		}
+		else
+		{
+			texture->alphaMod(static_cast<unsigned char>(255*opacity()));
 		texture->blendMode(Drawing::SDL::BlendMode::Blend);
 		ren->copy(texture, NULL, {x, y, w, h});
+		}
+		
+		
 	}
 	
 	int SDLLabelViewComponent::nativeWidth() const
@@ -248,14 +349,34 @@ namespace QUtils::GUI::SDL
 		}
 		if (wrapWidth() <= 0)
 		{
-			_font->sizeText(text(), &lastNativeW, &lastNativeH);
+			_font->sizeText(QUtils::String(this->text()).replace("\r\n", "\n"), &lastNativeW, &lastNativeH);
 		}
 		else
 		{
 			Drawing::SDL::Surface* surf = NULL;
+			lastNativeH = 0;
+			lastNativeW = 0;
+			int w, h;
+			for (auto segment : segments)
+			{
+				if (segment->texture == NULL)
+				{
+					w = segment->surface->width();
+					h = segment->surface->height();
+				}
+				else
+				{
+					w = segment->texture->width();
+					h = segment->texture->height();
+				}
+				
+				lastNativeW = std::max(w, lastNativeW);
+				lastNativeH += h;
+			}
+			/*
 			try
 			{
-			auto text = this->text();
+			auto text = QUtils::String(this->text()).replace("\r\n", "\n");
 			surf = _font->surfaceBlendedWrapped(text, (Drawing::SDL::Color)color(), wrapWidth());
 			lastNativeH = surf->height();
 			lastNativeW = surf->width();
@@ -283,23 +404,260 @@ namespace QUtils::GUI::SDL
 					delete surf;
 				}
 				throw RenderException(std::current_exception()).Line(__LINE__).Function(__func__);
-			}
+			}*/
 		}
 	}
 	
-	std::vector<unsigned int> SDLLabelViewComponent::splitString(std::string) const
+	std::list<unsigned int> SDLLabelViewComponent::splitString(std::string str) const
 	{
+		std::list<unsigned int> splits;
+		if (wrapWidth() <= 0)
+		{
+			return splits;
+		}
+		
+		const int divider = 30;
+		
+		/*for (int i = divider; i < str.length()-1; i += divider)
+		{
+			splits.push_back(i);
+		}
+		
+		return splits;*/
+		
+		
+		auto findClosest = [&str](std::size_t index, std::size_t last) -> long
+		{
+			std::size_t negIndex = index, posIndex = index;
+			bool hitLeft = false, hitRight = false;
+			while (!hitLeft || !hitRight)
+			{
+				if (negIndex <= last)
+				{
+					hitLeft = true;
+				}
+				else
+				{
+					if (str[negIndex] == ' ' || str[negIndex] == '\n')
+					{
+						return negIndex;
+					}
+					
+				}
+				
+				
+				
+				if (posIndex >= str.length()-1)
+				{
+					hitRight = true;
+				}
+				else
+				{
+					if (str[posIndex] == ' ' || str[posIndex] == '\n')
+					{
+						return posIndex;
+					}
+					
+				}
+				
+				negIndex--;
+				posIndex++;
+			}
+			
+			return -1;
+			
+		};
+		
+		std::size_t last = 0;
+		for (std::size_t i = 1; i < str.length()-1; ++i)
+		{
+			if (str[i] == '\n')
+			{
+				last = i;
+					splits.push_back(i);
+			}
+			else if (i - last > divider)
+			{
+				auto close = findClosest(i, last);
+				if (close > 0 && close < str.length()-1)
+				{
+					last = close;
+					splits.push_back(close);
+					if (last > i)
+					{
+						i = last;
+					}
+				}
+				else
+				{
+					break;
+					//throw std::exception();
+				}
+			}
+			
+		}
+		
+		
+		return splits;
 		throw NotImp();
 	}
 	
-	void SDLLabelViewComponent::storeLastString(const std::string)
+	void SDLLabelViewComponent::storeLastString(const std::string str)
 	{
-		throw NotImp();
+		if (lastString == NULL)
+		{
+			lastString = new std::string(str);
+		}
+		else
+		{
+			*lastString = str;
+		}
 	}
 	
 	const std::string& SDLLabelViewComponent::getLastString() const
 	{
-		throw NotImp();
+		if (lastString == NULL)
+		{
+			lastString = new std::string();
+		}
+		return *lastString;
+	}
+	
+	void SDLLabelViewComponent::updateTextures()
+	{
+		std::lock_guard<std::recursive_mutex> lock(this_m);
+		//std::cerr << __func__ << "\n\n";
+		std::string text = QUtils::String(this->text()).replace("\r\n", "\n");
+		unsigned long newSum = Internal::calcCheckSum(text);
+		
+		if (newSum == lastStringCheckSum)
+		{
+			//std::cerr << "CheckSum same\n" << std::flush;
+			return;
+		}
+		
+		auto& lastStr = getLastString();
+		typename std::vector<Segment*>::iterator* changed = NULL;
+		auto len = text.length();
+		unsigned long sum = 0;
+		unsigned long tmpSum;
+		
+		for (auto it = segments.begin(); it != segments.end(); ++it)
+		{
+			if ((*it)->end >= len)
+			{
+				changed = new typename std::vector<Segment*>::iterator(it);
+				break;
+			}
+			
+			if ((tmpSum = Internal::calcCheckSum(text, (*it)->start, (*it)->end)) != (*it)->lastCheckSum)
+			{
+				changed = new typename std::vector<Segment*>::iterator(it);
+				break;
+			}
+			sum += tmpSum;
+		}
+		
+		unsigned long start = 0;
+		if (changed == NULL)
+		{
+			if (segments.size() > 0)
+			{
+				auto back = segments.back();
+				start = back->start;
+				delete back;
+				segments.pop_back();
+			}
+		}
+		else
+		{
+			start = (**changed)->start;
+			for (auto it = *changed; it != segments.end(); ++it)
+			{
+				delete *it;
+			}
+			segments.erase(*changed, segments.end());
+			delete changed;
+			changed = NULL;
+		}
+		
+		if (text == "")
+		{
+			return;
+		}
+		
+		std::list<Segment*> newSegments;
+		{
+			auto splits = splitString(text.substr(start));
+			unsigned int splitStart = 0;
+			//std::cerr << splits.size() << " splits\n";
+			
+			for (auto split : splits)
+			{
+				auto segment = new Segment();
+				segment->start = splitStart + start;
+				segment->end = split + start;
+				if (!(split + start > splitStart + start))
+				{
+					std::cerr << "NOT TRUE\n";
+					throw std::exception();
+					
+				}
+				newSegments.push_back(segment);
+				splitStart = split;
+			}
+			
+			
+			if (splitStart+start < len - 1)
+			{
+			auto segment = new Segment();
+			segment->start = splitStart + start;
+			segment->end = len - 1;
+			newSegments.push_back(segment);
+			}
+			//std::cerr << newSegments.size() << " new segments\n";
+			
+			
+		}
+		
+		for (auto segment : newSegments)
+		{
+			segment->lastCheckSum = Internal::calcCheckSum(text, segment->start, segment->end);
+		}
+		
+		//Make surfaces
+		{
+			auto wrapW = wrapWidth();
+			int index = 1;
+			auto count = newSegments.size();
+			for (auto segment : newSegments)
+			{
+				//std::cerr << "Creating surface " << index++ << "\t/ " << count << std::endl;
+				//std::cerr << "[" << segment->start << ", " << segment->end << "]\n";
+				//std::cerr << "\"" << text.substr(segment->start, segment->end-segment->start) << "\"\n";
+				segment->surface = _font->surfaceBlendedWrapped(text.substr(segment->start, segment->end-segment->start), (Drawing::SDL::Color)color(), wrapW);
+			}
+		}
+		
+		for (auto segment : newSegments)
+		{
+			segments.push_back(segment);
+		}
+		
+		this->lastStringCheckSum = newSum;
+		storeLastString(text);
+		//std::cerr << "Textures Updated.\n";
+	}
+	
+	void SDLLabelViewComponent::resetSegments()
+	{
+		for (auto segment : segments)
+		{
+			delete segment;
+		}
+		segments.clear();
+		lastStringCheckSum = 0;
+		storeLastString("");
 	}
 	
 	bool SDLLabelViewComponent::changed() const

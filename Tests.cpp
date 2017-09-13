@@ -11,15 +11,60 @@
 #include "Tests_Helpers.h"
 
 #include <QUtils/Sleep/Sleep.h>
+#include <assert.h>
+
+#include <QUtils/GUI/SDL/AppWindow.h>
 
 std::stringstream dout_ss;
 QUtils::Output::MultiBuf* multibuf;
 
 std::ostream* GUI_out = NULL;
 
+std::ofstream* log = NULL;
+
+std::streambuf* cerrBuf = NULL;
+std::streambuf* coutBuf = NULL;
+
+void on_exit()
+{
+	std::cerr << "Exiting!\n" << std::flush;
+	
+	/*if (cerrBuf != NULL)
+	{
+		std::cerr.rdbuf(cerrBuf);
+	}*/
+	
+	/*if (coutBuf != NULL)
+	{
+		std::cout.rdbuf(coutBuf);
+	}
+	
+	if (log != NULL)
+	{
+		log->close();
+		delete log;
+		log = NULL;
+	}*/
+	
+}
+
+void on_quick_exit()
+{
+	std::cerr << "Quick Exit!\n" << std::flush;
+}
+
+void on_terminate()
+{
+	std::cerr << "Terminating!\n" << std::flush;
+	std::abort();
+}
+
 
 int main(int argc, char**argv)
 {
+	atexit(on_exit);
+	at_quick_exit(on_quick_exit);
+	std::set_terminate(on_terminate);
 	#ifdef TEST_DEBUG
 	DebugOut::enabled() = true;
 	#else
@@ -30,33 +75,33 @@ int main(int argc, char**argv)
 	multibuf = new QUtils::Output::MultiBuf();
 	//multibuf->push(std::cerr.rdbuf());
 	multibuf->push(std::cout.rdbuf());
-	auto coutBuf = std::cout.rdbuf(multibuf);
+	coutBuf = std::cout.rdbuf(multibuf);
 	
 	
 	
 	
-	std::ofstream log("Log.txt");
-	log << "\n\n\n\n\n\n\n\n\n\n\n\n";
+	log = new std::ofstream("Log.txt");
+	*log << "\n\n\n\n\n\n\n\n\n\n\n\n";
 	time_t rawTime;
 	time(&rawTime);
 	auto timeinfo = localtime(&rawTime);
 	char timeStr[80];
 	strftime(timeStr, 80, "%Y-%m-%d %T", timeinfo);
-	log << timeStr << "\n\n";
-	multibuf->push(log.rdbuf());
+	*log << timeStr << "\n\n";
+	multibuf->push(log->rdbuf());
 	
-	auto cerrBuf = std::cerr.rdbuf(log.rdbuf());
+	cerrBuf = std::cerr.rdbuf(log->rdbuf());
 	
 	assert_ex(dynamic_cast<std::stringbuf*>(dout_ss.rdbuf()) != NULL);
 	multibuf->push(dout_ss.rdbuf());
 	
-	
+	#ifdef __GNUC__
+	dout << "Using G++\n";
+	#endif
 	
 	
 	Testing::run();
-	std::cerr.rdbuf(cerrBuf);
-	std::cout.rdbuf(coutBuf);
-	log.close();
+	
 	return 0;
 }
 #define TEST_FAILS test_fails
@@ -99,11 +144,14 @@ void Testing::run()
 	srand(seed);
 	#endif
 	dout << LINE_BR << testBr << std::endl;
+	#ifdef QUTILS_HAS_SDL2
+	QUtils::GUI::SDL::SDLAppWindow* win = NULL;
+	#endif
 	try
 	{
 	#ifdef QUTILS_HAS_SDL2
-	RUN(SDL_GUI(&GUI_out));
-	//multibuf->push(GUI_out->rdbuf());
+	RUN(SDL_GUI(&GUI_out, win));
+	multibuf->push(GUI_out->rdbuf());
 	dout << "GUI buf added!\n";
 	QUtils::sleep(1000);
 	dout << "Slept!\n";
@@ -149,12 +197,48 @@ void Testing::run()
 	
 	
 	#ifdef QUTILS_HAS_SDL2
-	std::string final_str = dout_ss.str();
-	*GUI_out << final_str << std::flush;
+	if (GUI_out != NULL)
+	{
+	/*std::string final_str = dout_ss.str();
+	*GUI_out << final_str << std::flush;*/
 	//dout << "Screen set to \"" << final_str << "\"" << std::endl;
+	if (win != NULL)
+	{
+		win->handleEvents();
+	}
 	dout << "Sleeping for GUI!\n";
-	QUtils::sleep(100000);
+	QUtils::sleep(10000);
+	if (win != NULL)
+	{
+		win->handleEvents();
+	}
+	QUtils::sleep(15000);
+	if (win != NULL)
+	{
+		win->handleEvents();
+	}
+	QUtils::sleep(25000);
+	if (win != NULL)
+	{
+		win->handleEvents();
+	}
+	QUtils::sleep(50000);
+	if (win != NULL)
+	{
+		win->handleEvents();
+	}
+	if (win != NULL)
+	{
+		delete win;
+		win = NULL;
+	}
+	}
+	
 	#endif
+	}
+	catch (std::exception& ex)
+	{
+		tout << "Exception caught: " << ex.what() << std::endl;
 	}
 	catch (std::string& s)
 	{

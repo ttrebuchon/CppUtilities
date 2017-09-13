@@ -205,7 +205,6 @@ $(stLibTarget).a: $(libobjects) makefile
 	[[ -d objs ]] || mkdir objs
 	cd objs ; ar -xv ../$(Deps_D)/sqlite3/libsqlite3.a ; ar -xv ../$(Deps_D)/curlpp/libcurlpp.a
 	ar rvs $(stLibTarget).a $(libobjects) $(wildcard objs/*.o)
-	echo $(libobjects) $(wildcard objs/*.o)
 #*/
 	
 Tests.o: makefile Tests.cpp
