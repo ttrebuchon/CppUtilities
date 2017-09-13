@@ -144,27 +144,28 @@ void Testing::run()
 	srand(seed);
 	#endif
 	dout << LINE_BR << testBr << std::endl;
-	#ifdef QUTILS_HAS_SDL2
+	//#ifdef QUTILS_HAS_SDL2
 	QUtils::GUI::SDL::SDLAppWindow* win = NULL;
-	#endif
+	//#endif
 	try
 	{
-	#ifdef QUTILS_HAS_SDL2
+	//#ifdef QUTILS_HAS_SDL2
 	RUN(SDL_GUI(&GUI_out, win));
+	if (GUI_out != NULL)
+	{
 	multibuf->push(GUI_out->rdbuf());
 	dout << "GUI buf added!\n";
 	QUtils::sleep(1000);
 	dout << "Slept!\n";
-	#endif
+	}
+	//#endif
 	RUN(Multi());
 	RUN(Network());
 	RUN(Raytrace());
 	RUN(SQL());
 	RUN(GUID());
 	#ifndef SHORT_TEST
-	#ifdef QUTILS_HAS_SDL2
 	//RUN(SDL_Drawing());
-	#endif
 	RUN(TravellingSalesman());
 	RUN(GameOfLifeExtended());
 	RUN(Types());
@@ -196,7 +197,7 @@ void Testing::run()
 	#endif
 	
 	
-	#ifdef QUTILS_HAS_SDL2
+	//#ifdef QUTILS_HAS_SDL2
 	if (GUI_out != NULL)
 	{
 	/*std::string final_str = dout_ss.str();
@@ -234,7 +235,7 @@ void Testing::run()
 	}
 	}
 	
-	#endif
+	//#endif
 	}
 	catch (std::exception& ex)
 	{
