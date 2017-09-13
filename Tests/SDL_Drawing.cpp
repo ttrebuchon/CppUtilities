@@ -5,6 +5,7 @@
 
 #include <QUtils/Types/CompilerPrint.h>
 #include <QUtils/Stopwatch/Stopwatch.h>
+#include <QUtils/Sleep/Sleep.h>
 
 template <int N, class... T>
 int EventCB(T...)
@@ -103,7 +104,7 @@ bool Test_SDL_Drawing()
 	
 	//#define FORMAT SDL_PIXELFORMAT_RGB888
 	#define FORMAT PixelFormat::RGB888
-	
+	#ifdef QUTILS_HAS_SDL2
 	unsigned char* pixels = (unsigned char*)malloc(SDL_BYTESPERPIXEL(SDL_RawPixelFormat(FORMAT))*w*h*sizeof(char));
 	
 	
@@ -179,9 +180,10 @@ bool Test_SDL_Drawing()
 		
 		
 	}
+	#endif
 	
 	
-	SDL_Delay(1000);
+	QUtils::sleep(1000);
 	
 	
 	
@@ -240,8 +242,9 @@ bool Test_SDL_Drawing()
 	ren->copy(tex3);
 	ren->renderPresent();
 	
-	SDL_Delay(1000);
+	QUtils::sleep(1000);
 	
+	#ifdef QUTILS_HAS_SDL2
 	free(pixels);
 	pixels = (unsigned char*)surf->pixels();
 	
@@ -276,6 +279,7 @@ bool Test_SDL_Drawing()
 	}
 	
 	
+	
 	{
 		SDL_Event ev;
 		ev.type = SDL_WINDOWEVENT;
@@ -286,6 +290,7 @@ bool Test_SDL_Drawing()
 		
 		delete wev;
 	}
+	#endif
 	
 	Event::SetEventFilter(EventCB<1, void*, SDL_Event*>, NULL);
 	
@@ -351,7 +356,7 @@ bool Test_SDL_Drawing()
 	win->setSize(w, h);
 	
 	{
-		SDL_Delay(1000);
+		QUtils::sleep(1000);
 		/*SDL_Event ev;
 		while (SDL_PollEvent(&ev) != 0)
 		{
@@ -423,7 +428,7 @@ bool Test_SDL_Drawing()
 		ren->renderPresent();
 		auto font2 = Font::Open("font1.ttf", ptSize);
 		
-		SDL_Delay(2000);
+		QUtils::sleep(2000);
 		
 		delete stringSurf;
 		delete font1;
@@ -440,12 +445,12 @@ bool Test_SDL_Drawing()
 	ren->clear();
 	ren->copy(tex3, NULL, NULL);
 	ren->renderPresent();
-	SDL_Delay(300);
+	QUtils::sleep(300);
 	
 	ren->setViewport(w/4, h/4, w/2, h/2);
 	ren->fillRect({0, 0, w, h});
 	ren->renderPresent();
-	SDL_Delay(500);
+	QUtils::sleep(500);
 	ren->setViewport(NULL);
 	
 	
@@ -468,7 +473,7 @@ bool Test_SDL_Drawing()
 	ren->clearClipRect();
 	ren->renderPresent();
 	
-	SDL_Delay(1000);
+	QUtils::sleep(1000);
 	
 	
 	
@@ -567,7 +572,7 @@ bool SurfaceTesting(const int w, const int h)
 		
 		sren->clear();
 		win->updateSurface();
-		SDL_Delay(1000);
+		QUtils::sleep(1000);
 		sren->setDrawColor(0, 0, 255, 255);
 		
 		QUtils::Stopwatch::Stopwatch sw;
@@ -577,7 +582,7 @@ bool SurfaceTesting(const int w, const int h)
 			sren->fillRect({i, 0, 10, h});
 			//win->updateSurface(i, 0, 2, h);
 			win->updateSurface();
-			SDL_Delay(1);
+			QUtils::sleep(1);
 		}
 		sw.stop();
 		dout << "Time: " << sw.value() << "\n";
