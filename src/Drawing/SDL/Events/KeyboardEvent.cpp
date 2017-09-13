@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	KeyboardEvent::KeyboardEvent(const SDL_KeyboardEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		
@@ -12,4 +13,8 @@ namespace QUtils::Drawing::SDL
 	
 	KeyboardEvent::KeyboardEvent(const SDL_KeyboardEvent& ev) : KeyboardEvent(&ev)
 	{}
+	
+	#else
+	
+	#endif
 }

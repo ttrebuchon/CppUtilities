@@ -5,6 +5,8 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
+	
 	QuitEvent::QuitEvent(const SDL_QuitEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		
@@ -12,4 +14,8 @@ namespace QUtils::Drawing::SDL
 	
 	QuitEvent::QuitEvent(const SDL_QuitEvent& ev) : QuitEvent(&ev)
 	{}
+	
+	#else
+	
+	#endif
 }

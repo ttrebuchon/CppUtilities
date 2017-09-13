@@ -2,11 +2,15 @@
 #include "IfSDL.h"
 #include <map>
 
+#ifdef QUTILS_HAS_SDL2
 
 typedef decltype(SDL_PIXELFORMAT_UNKNOWN) PFe;
 
+#endif
+
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	namespace Helpers
 	{
 		std::map<PFe, PixelFormat> reverseMap(const std::map<PixelFormat, PFe>& map)
@@ -74,15 +78,25 @@ namespace QUtils::Drawing::SDL
 	
 	static std::map<PFe, PixelFormat> revFormats = Helpers::reverseMap(formats);
 	
+	#endif
+	
 	
 	
 	unsigned int SDL_RawPixelFormat(PixelFormat format)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		return formats.at(format);
+		#else
+		throw NotAvail();
+		#endif
 	}
 	
 	PixelFormat SDL_EnumPixelFormat(unsigned int format)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		return revFormats.at((PFe)format);
+		#else
+		throw NotAvail();
+		#endif
 	}
 }

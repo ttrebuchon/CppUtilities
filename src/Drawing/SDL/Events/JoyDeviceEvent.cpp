@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	JoyDeviceEvent::JoyDeviceEvent(const SDL_JoyDeviceEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		
@@ -12,4 +13,8 @@ namespace QUtils::Drawing::SDL
 	
 	JoyDeviceEvent::JoyDeviceEvent(const SDL_JoyDeviceEvent& ev) : JoyDeviceEvent(&ev)
 	{}
+	
+	#else
+	
+	#endif
 }

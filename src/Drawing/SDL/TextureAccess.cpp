@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	namespace Helpers
 	{
 		std::map<SDL_TextureAccess, TextureAccess> reverseMap(const std::map<TextureAccess, SDL_TextureAccess>& map)
@@ -28,15 +29,23 @@ namespace QUtils::Drawing::SDL
 	
 	static std::map<SDL_TextureAccess, TextureAccess> revAccesses = Helpers::reverseMap(accesses);
 	
-	
+	#endif
 	
 	int SDL_RawTextureAccess(TextureAccess access)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		return accesses.at(access);
+		#else
+		throw NotAvail();
+		#endif
 	}
 	
 	TextureAccess SDL_EnumTextureAccess(int access)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		return revAccesses.at((SDL_TextureAccess)access);
+		#else
+		throw NotAvail();
+		#endif
 	}
 }

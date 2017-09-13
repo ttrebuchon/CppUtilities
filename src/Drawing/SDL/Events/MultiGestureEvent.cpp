@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	MultiGestureEvent::MultiGestureEvent(const SDL_MultiGestureEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		INIT_MEMBER(touchId);
@@ -17,4 +18,8 @@ namespace QUtils::Drawing::SDL
 	
 	MultiGestureEvent::MultiGestureEvent(const SDL_MultiGestureEvent& ev) : MultiGestureEvent(&ev)
 	{}
+	
+	#else
+	
+	#endif
 }

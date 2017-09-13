@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	namespace Helpers
 	{
 		std::map<unsigned int, RendererFlags> reverseMap(const std::map<RendererFlags, unsigned int>& map)
@@ -29,9 +30,11 @@ namespace QUtils::Drawing::SDL
 	
 	static std::map<unsigned int, RendererFlags> revFlags = Helpers::reverseMap(flags);
 	
+	#endif
 	
 	unsigned int SDL_RawRendererFlags(RendererFlags fl)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		unsigned int i = 0;
 		for (const auto& pair : flags)
 		{
@@ -41,10 +44,14 @@ namespace QUtils::Drawing::SDL
 			}
 		}
 		return i;
+		#else
+		throw NotAvail();
+		#endif
 	}
 	
 	RendererFlags SDL_EnumRendererFlags(unsigned int fl)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		RendererFlags i = (RendererFlags)0;
 		for (const auto& pair : revFlags)
 		{
@@ -54,6 +61,9 @@ namespace QUtils::Drawing::SDL
 			}
 		}
 		return i;
+		#else
+		throw NotAvail();
+		#endif
 	}
 	
 	

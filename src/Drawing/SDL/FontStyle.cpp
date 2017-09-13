@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	namespace Helpers
 	{
 		std::map<int, FontStyle> reverseMap(const std::map<FontStyle, int>& map)
@@ -30,9 +31,11 @@ namespace QUtils::Drawing::SDL
 	
 	static std::map<int, FontStyle> revStyles = Helpers::reverseMap(styles);
 	
+	#endif
 	
 	int SDL_RawFontStyle(FontStyle fl)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		int i = 0;
 		for (const auto& pair : styles)
 		{
@@ -42,10 +45,14 @@ namespace QUtils::Drawing::SDL
 			}
 		}
 		return i;
+		#else
+		throw NotAvail();
+		#endif
 	}
 	
 	FontStyle SDL_EnumFontStyle(int fl)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		FontStyle i = (FontStyle)0;
 		for (const auto& pair : revStyles)
 		{
@@ -55,6 +62,9 @@ namespace QUtils::Drawing::SDL
 			}
 		}
 		return i;
+		#else
+		throw NotAvail();
+		#endif
 	}
 	
 	

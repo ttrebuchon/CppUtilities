@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	MouseWheelEvent::MouseWheelEvent(const SDL_MouseWheelEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		INIT_MEMBER(windowID);
@@ -16,4 +17,8 @@ namespace QUtils::Drawing::SDL
 	
 	MouseWheelEvent::MouseWheelEvent(const SDL_MouseWheelEvent& ev) : MouseWheelEvent(&ev)
 	{}
+	
+	#else
+	
+	#endif
 }

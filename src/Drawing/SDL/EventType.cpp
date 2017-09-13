@@ -9,6 +9,8 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
+	
 	namespace Helpers
 	{
 		std::map<SDL_EventType, EventType> reverseMap(const std::map<EventType, std::tuple<SDL_EventType, std::string>>& map)
@@ -80,9 +82,12 @@ namespace QUtils::Drawing::SDL
 	
 	static std::map<SDL_EventType, EventType> revTypes = Helpers::reverseMap(types);
 	
+	#endif
+	
 	
 	unsigned int SDL_RawEventType(EventType type)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		#ifdef DEBUG
 		try
 		{
@@ -96,10 +101,14 @@ namespace QUtils::Drawing::SDL
 			throw;
 		}
 		#endif
+		#else
+		throw NotAvail();
+		#endif
 	}
 	
 	EventType SDL_EnumEventType(unsigned int type)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		#ifdef DEBUG
 		try
 		{
@@ -113,10 +122,17 @@ namespace QUtils::Drawing::SDL
 			throw;
 		}
 		#endif
+		#else
+		throw NotAvail();
+		#endif
 	}
 	
 	std::string SDL_EventTypeName(EventType type)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		return std::get<1>(types.at(type));
+		#else
+		throw NotAvail();
+		#endif
 	}
 }

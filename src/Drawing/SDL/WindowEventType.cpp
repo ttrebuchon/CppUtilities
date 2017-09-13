@@ -9,6 +9,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	namespace Helpers
 	{
 		std::map<SDL_WindowEventID, WindowEventType> reverseMap(const std::map<WindowEventType, SDL_WindowEventID>& map)
@@ -48,10 +49,11 @@ namespace QUtils::Drawing::SDL
 	
 	static std::map<SDL_WindowEventID, WindowEventType> revTypes = Helpers::reverseMap(types);
 	
-	
+	#endif
 	
 	int SDL_RawWindowEventType(WindowEventType access)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		#ifdef DEBUG
 		try
 		{
@@ -65,10 +67,14 @@ namespace QUtils::Drawing::SDL
 			throw;
 		}
 		#endif
+		#else
+		throw NotAvail();
+		#endif
 	}
 	
 	WindowEventType SDL_EnumWindowEventType(int access)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		#ifdef DEBUG
 		try
 		{
@@ -82,6 +88,9 @@ namespace QUtils::Drawing::SDL
 			std::cout << SDL_WINDOWEVENT_NONE << ", " << SDL_WINDOWEVENT_SHOWN << "\n";
 			throw;
 		}
+		#endif
+		#else
+		throw NotAvail();
 		#endif
 	}
 }

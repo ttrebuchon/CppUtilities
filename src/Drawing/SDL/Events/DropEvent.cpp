@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	DropEvent::DropEvent(const SDL_DropEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		INIT_MEMBER(file);
@@ -15,4 +16,8 @@ namespace QUtils::Drawing::SDL
 	
 	DropEvent::DropEvent(const SDL_DropEvent& ev) : DropEvent(&ev)
 	{}
+	
+	#else
+	
+	#endif
 }

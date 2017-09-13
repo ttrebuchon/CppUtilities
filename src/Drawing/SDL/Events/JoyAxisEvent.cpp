@@ -5,6 +5,8 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
+	
 	JoyAxisEvent::JoyAxisEvent(const SDL_JoyAxisEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		
@@ -12,4 +14,8 @@ namespace QUtils::Drawing::SDL
 	
 	JoyAxisEvent::JoyAxisEvent(const SDL_JoyAxisEvent& ev) : JoyAxisEvent(&ev)
 	{}
+	
+	#else
+	
+	#endif
 }

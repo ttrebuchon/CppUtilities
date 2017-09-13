@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	ControllerAxisEvent::ControllerAxisEvent(const SDL_ControllerAxisEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		INIT_MEMBER(which);
@@ -14,4 +15,8 @@ namespace QUtils::Drawing::SDL
 	
 	ControllerAxisEvent::ControllerAxisEvent(const SDL_ControllerAxisEvent& ev) : ControllerAxisEvent(&ev)
 	{}
+	
+	#else
+	
+	#endif
 }

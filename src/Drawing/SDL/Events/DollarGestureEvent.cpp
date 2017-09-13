@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	DollarGestureEvent::DollarGestureEvent(const SDL_DollarGestureEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		INIT_MEMBER(touchId);
@@ -18,4 +19,8 @@ namespace QUtils::Drawing::SDL
 	
 	DollarGestureEvent::DollarGestureEvent(const SDL_DollarGestureEvent& ev) : DollarGestureEvent(&ev)
 	{}
+	
+	#else
+	
+	#endif
 }

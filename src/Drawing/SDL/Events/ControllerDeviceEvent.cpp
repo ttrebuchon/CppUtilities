@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	ControllerDeviceEvent::ControllerDeviceEvent(const SDL_ControllerDeviceEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		INIT_MEMBER(which);
@@ -12,4 +13,8 @@ namespace QUtils::Drawing::SDL
 	
 	ControllerDeviceEvent::ControllerDeviceEvent(const SDL_ControllerDeviceEvent& ev) : ControllerDeviceEvent(&ev)
 	{}
+	
+	#else
+	
+	#endif
 }

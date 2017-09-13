@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	ControllerButtonEvent::ControllerButtonEvent(const SDL_ControllerButtonEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		INIT_MEMBER(which);
@@ -14,4 +15,8 @@ namespace QUtils::Drawing::SDL
 	
 	ControllerButtonEvent::ControllerButtonEvent(const SDL_ControllerButtonEvent& ev) : ControllerButtonEvent(&ev)
 	{}
+	
+	#else
+	
+	#endif
 }

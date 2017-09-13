@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	TouchFingerEvent::TouchFingerEvent(const SDL_TouchFingerEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		INIT_MEMBER(touchId);
@@ -18,4 +19,8 @@ namespace QUtils::Drawing::SDL
 	
 	TouchFingerEvent::TouchFingerEvent(const SDL_TouchFingerEvent& ev) : TouchFingerEvent(&ev)
 	{}
+	
+	#else
+	
+	#endif
 }

@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	namespace Helpers
 	{
 		std::map<SDL_BlendMode, BlendMode> reverseMap(const std::map<BlendMode, SDL_BlendMode>& map)
@@ -29,15 +30,23 @@ namespace QUtils::Drawing::SDL
 	
 	static std::map<SDL_BlendMode, BlendMode> revModes = Helpers::reverseMap(modes);
 	
-	
+	#endif
 	
 	int SDL_RawBlendMode(BlendMode mode)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		return modes.at(mode);
+		#else
+		throw NotAvail();
+		#endif
 	}
 	
 	BlendMode SDL_EnumBlendMode(int mode)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		return revModes.at((SDL_BlendMode)mode);
+		#else
+		throw NotAvail();
+		#endif
 	}
 }

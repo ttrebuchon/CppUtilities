@@ -6,6 +6,7 @@ namespace QUtils::Drawing::SDL
 {
 	unsigned int SDL_RawWindowFlags(WindowFlags flags)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		unsigned int rFlags = 0;
 		
 		if ((int)(flags & WindowFlags::Fullscreen) > 0)
@@ -119,5 +120,9 @@ namespace QUtils::Drawing::SDL
 		
 		
 		return rFlags;
+		
+		#else
+		throw NotAvail();
+		#endif
 	}
 }

@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	UserEvent::UserEvent(const SDL_UserEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		INIT_MEMBER(windowID);
@@ -15,4 +16,8 @@ namespace QUtils::Drawing::SDL
 	
 	UserEvent::UserEvent(const SDL_UserEvent& ev) : UserEvent(&ev)
 	{}
+	
+	#else
+	
+	#endif
 }

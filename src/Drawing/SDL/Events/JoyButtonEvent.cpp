@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	JoyButtonEvent::JoyButtonEvent(const SDL_JoyButtonEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		
@@ -12,4 +13,16 @@ namespace QUtils::Drawing::SDL
 	
 	JoyButtonEvent::JoyButtonEvent(const SDL_JoyButtonEvent& ev) : JoyButtonEvent(&ev)
 	{}
+	#else
+	JoyButtonEvent::JoyButtonEvent(const SDL_JoyButtonEvent* ev) : Event(-1, 0)
+	{
+		throw NotAvail();
+	}
+	
+	JoyButtonEvent::JoyButtonEvent(const SDL_JoyButtonEvent& ev) : JoyButtonEvent(&ev)
+	{
+		
+	}
+	
+	#endif
 }

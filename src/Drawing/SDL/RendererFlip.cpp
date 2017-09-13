@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	namespace Helpers
 	{
 		std::map<unsigned int, RendererFlip> reverseMap(const std::map<RendererFlip, unsigned int>& map)
@@ -28,9 +29,11 @@ namespace QUtils::Drawing::SDL
 	
 	static std::map<unsigned int, RendererFlip> revFlips = Helpers::reverseMap(flips);
 	
+	#endif
 	
 	unsigned int SDL_RawRendererFlip(RendererFlip fl)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		unsigned int i = 0;
 		for (const auto& pair : flips)
 		{
@@ -40,10 +43,14 @@ namespace QUtils::Drawing::SDL
 			}
 		}
 		return i;
+		#else
+		throw NotAvail();
+		#endif
 	}
 	
 	RendererFlip SDL_EnumRendererFlip(unsigned int fl)
 	{
+		#ifdef QUTILS_HAS_SDL2
 		RendererFlip i = (RendererFlip)0;
 		for (const auto& pair : revFlips)
 		{
@@ -53,6 +60,9 @@ namespace QUtils::Drawing::SDL
 			}
 		}
 		return i;
+		#else
+		throw NotAvail();
+		#endif
 	}
 	
 	

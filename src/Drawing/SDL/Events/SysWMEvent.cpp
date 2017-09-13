@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	SysWMEvent::SysWMEvent(const SDL_SysWMEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		
@@ -12,4 +13,8 @@ namespace QUtils::Drawing::SDL
 	
 	SysWMEvent::SysWMEvent(const SDL_SysWMEvent& ev) : SysWMEvent(&ev)
 	{}
+	
+	#else
+	
+	#endif
 }

@@ -5,6 +5,7 @@
 
 namespace QUtils::Drawing::SDL
 {
+	#ifdef QUTILS_HAS_SDL2
 	AudioDeviceEvent::AudioDeviceEvent(const SDL_AudioDeviceEvent* ev) : Event(ev->type, ev->timestamp)
 	{
 		INIT_MEMBER(which);
@@ -13,4 +14,8 @@ namespace QUtils::Drawing::SDL
 	
 	AudioDeviceEvent::AudioDeviceEvent(const SDL_AudioDeviceEvent& ev) : AudioDeviceEvent(&ev)
 	{}
+	
+	#else
+	
+	#endif
 }
