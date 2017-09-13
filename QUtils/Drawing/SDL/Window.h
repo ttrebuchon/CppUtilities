@@ -3,6 +3,9 @@
 #include "WindowFlags.h"
 #include "SDLObject.h"
 #include "Event.h"
+#include "Version.h"
+
+
 
 class SDL_Window;
 struct SDL_Rect;
@@ -26,7 +29,9 @@ namespace QUtils::Drawing::SDL
 		Window(const void* data);
 		virtual ~Window();
 		
+		#if QUTILS_SDL_VERSION_HIDE(2,0,5)
 		int bordersSize(int* top, int* left, int* bottom, int* right) const;
+		#endif
 		float brightness() const;
 		void brightness(float) const;
 		void* data(const std::string name) const;
@@ -87,3 +92,5 @@ namespace QUtils::Drawing::SDL
 		
 	};
 }
+
+#include "VersionUndef.h"

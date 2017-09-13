@@ -1,0 +1,4 @@
+
+
+#undef SDL_VERSION_MIN
+#undef QUTILS_SDL_VERSION_HIDE

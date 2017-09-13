@@ -6,6 +6,7 @@
 #include "Point.h"
 #include "RendererFlip.h"
 #include "PixelFormat.h"
+#include "Version.h"
 
 
 class SDL_Renderer;
@@ -40,6 +41,7 @@ namespace QUtils::Drawing::SDL
 		
 		void clear();
 		
+		#if QUTILS_SDL_VERSION_HIDE(2,0,4)
 		Rect getClipRect() const;
 		inline Rect clipRect() const
 		{ return getClipRect(); }
@@ -52,7 +54,7 @@ namespace QUtils::Drawing::SDL
 		void setClipRect(const SDL_Rect*);
 		inline void clearClipRect()
 		{ setClipRect((const SDL_Rect*)NULL); }
-		
+		#endif
 		
 		
 		void copy(Texture*, const SDL_Rect* src, const SDL_Rect* dst);
@@ -146,3 +148,4 @@ namespace QUtils::Drawing::SDL
 		
 	};
 }
+#include "VersionUndef.h"

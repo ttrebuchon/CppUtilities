@@ -15,3 +15,9 @@
 #define SDL_VERSION_MIN(x, y, z) FALSE
 
 #endif
+
+#if QUTILS_SDL_HIDE_NOT_AVAILABLE
+#define QUTILS_SDL_VERSION_HIDE(x,y,z) SDL_VERSION_MIN(x,y,z)
+#else
+#define QUTILS_SDL_VERSION_HIDE(x,y,z) true
+#endif

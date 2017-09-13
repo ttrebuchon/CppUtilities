@@ -2,6 +2,7 @@
 #include <QUtils/Drawing/SDL/Renderer.h>
 #include <QUtils/Drawing/SDL/Surface.h>
 #include <QUtils/Drawing/SDL/Errors.h>
+#include <QUtils/Drawing/SDL/Version.h>
 #include <QUtils/Exception/NotImplemented.h>
 
 #include "IfSDL.h"
@@ -42,11 +43,17 @@ namespace QUtils::Drawing::SDL
 		}
 	}
 	
+	#if QUTILS_SDL_VERSION_HIDE(2,0,5)
 	int Window::bordersSize(int* top, int* left, int* bottom, int* right) const
 	{
-		throw NotImp();
-		//return SDL_GetWindowBordersSize(ptr, top, left, bottom, right);
+		#if SDL_VERSION_MIN(2,0,5)
+		return SDL_GetWindowBordersSize(ptr, top, left, bottom, right);
+		#else
+		throw NotAvail();
+		#endif
+		
 	}
+	#endif
 	
 	float Window::brightness() const
 	{
@@ -107,11 +114,13 @@ namespace QUtils::Drawing::SDL
 	
 	float Window::opacity() const
 	{
-		throw NotImp();
-		/*
+		#if SDL_VERSION_MIN(2,0,5)
 		float val;
 		SDL_GetWindowOpacity(ptr, &val);
-		return val;*/
+		return val;
+		#else
+		throw NotAvail();
+		#endif
 	}
 	
 	unsigned int Window::pixelFormat() const

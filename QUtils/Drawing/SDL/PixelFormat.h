@@ -56,3 +56,4 @@ namespace QUtils::Drawing::SDL
 	unsigned int SDL_RawPixelFormat(PixelFormat);
 	PixelFormat SDL_EnumPixelFormat(unsigned int);
 }
+#include "VersionUndef.h"
