@@ -33,7 +33,7 @@ namespace SQL
 		std::map<std::string, ValueType> String_ValueType_Mappings =
 		{
 			{ "TEXT", Text },
-			{ "INTEGER", Integer },
+			{ "INTEGER", Integer64 },
 			{ "INT", Integer },
 			{ "DOUBLE", Double },
 			{ "NULL", Null },

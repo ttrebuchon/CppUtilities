@@ -55,6 +55,7 @@ namespace SQL
 					"' and entity type is '" + builder.idEntity()->typeIndex().name());
 		}
 		serializers.emplace_back(builder.idEntity()->name(), builder.idEntity()->serialize);
+		idRetriever = builder.idEntity()->serialize;
 		
 		for (auto ent : builder.entities)
 		{
@@ -80,6 +81,34 @@ namespace SQL
 				values[std::get<0>(serial)] = std::get<1>(serial)(obj);
 			}
 			return values;
+		};
+		
+		
+		std::vector<std::tuple<std::string, Helpers::SetSQL_t<Object>>> deserializers;
+		
+		
+		for (auto ent : builder.entities)
+		{
+			if (!ent->deserialize)
+			{
+				throw SQLModelConfigException()
+					.Function(__func__)
+					.File(__FILE__)
+					.Line(__LINE__)
+					.Msg(std::string("Entity '") + ent->name() + "' does not have valid deserialize lambda, model is for type: '" + std::type_index(typeid(Object)).name() + 
+						"' and entity type is '" + ent->typeIndex().name());
+			}
+			deserializers.emplace_back(ent->name(), ent->deserialize);
+		}
+		
+		
+		this->loader = [deserializers](Object& obj, SQLQuery* q) -> void
+		{
+			
+			for (auto& deserial : deserializers)
+			{
+				std::get<1>(deserial)(obj, SQLType::Create(q, std::get<0>(deserial)));
+			}
 		};
 		
 		
@@ -174,7 +203,51 @@ namespace SQL
 	template <class Object>
 	void SQLModel<Object>::load(SQLSystem* sys, Object& obj, bool includeReferenced)
 	{
-		throw NotImp();
+		std::string query;
+		if (!this->loader)
+		{
+			throw SQLModelConfigException()
+				.Function(__func__)
+				.File(__FILE__)
+				.Line(__LINE__)
+				.Msg(std::string("Model does not have valid loader lambda during load() function, model is for type: '") + std::type_index(typeid(Object)).name() + "'");
+		}
+		
+		
+		
+		std::string PK_Name = "";
+		for (auto col : tableBuilder.columns)
+		{
+			if (col.PK)
+			{
+				PK_Name = col.name;
+				break;
+			}
+		}
+		if (PK_Name == "")
+		{
+			throw SQLModelConfigException().Line(__LINE__).File(__FILE__).Msg("Could not find primary key column in table builder");
+		}
+		
+		auto idVal = idRetriever(obj);
+		
+		query = "SELECT * FROM [" + tableBuilder.name + "] WHERE [" + PK_Name + "]=@" + PK_Name + ";";
+		
+		query += " WHERE [" + PK_Name + "]=@" + PK_Name + ";";
+		
+		auto q = sys->connection->query(query);
+		
+		
+		idVal->bind("@" + PK_Name, q);
+		
+		if (!q->next())
+		{
+			std::cerr << "ERR LOADING\n";
+			throw NotImp();
+		}
+		
+		this->loader(obj, q);
+		delete q;
 	}
 }
 }

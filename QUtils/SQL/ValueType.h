@@ -53,7 +53,8 @@ namespace SQL
 	template <>
 	struct SQL_ValueType<long>
 	{
-		constexpr static ValueType type = Integer;
+		//constexpr static ValueType type = Integer;
+		constexpr static ValueType type = Integer64;
 	};
 	
 	template <>
@@ -86,7 +87,8 @@ namespace SQL
 	template <>
 	struct C_ValueType<Integer>
 	{
-		typedef long type;
+		//typedef long type;
+		typedef long long type;
 	};
 	
 	template <>

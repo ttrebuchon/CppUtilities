@@ -44,7 +44,7 @@ namespace SQL
 		auto model = models->getModel<Object>();
 		if (model == NULL)
 		{
-			throw SQLModelConfigException().Msg("Could not find model").Function(__func__);
+			throw SQLModelConfigException().Msg(std::string("Could not find model for ") + typeid(Object).name()).Function(__func__);
 		}
 		model->save(this, obj, includeReferenced);
 	}

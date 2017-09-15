@@ -4,6 +4,7 @@
 
 #include "../SQLTableBuilder.h"
 #include "SQLType.h"
+#include "MetaTypeHelpers.h"
 
 namespace QUtils
 {
@@ -45,6 +46,8 @@ namespace SQL
 		std::function<void(Object&, SQLQuery*)> loader;
 		
 		std::function<std::unordered_map<std::string, SQLType_ptr>(Object&)> serializer;
+		
+		Helpers::ToSQL_t<Object&> idRetriever;
 		
 		protected:
 		virtual void buildModel(SQLModelBuilder<Object>&) = 0;

@@ -445,7 +445,7 @@ bool Test_SQL()
 	
 	
 	
-	
+	dout << "\nTesting ORM...\n\n\n";
 	
 	
 	//ORM Testing
@@ -547,11 +547,16 @@ bool Test_SQL()
 		};
 		
 		
-		
+		dout << "Registering PersonModel...\n";
 		sys->model<PersonModel>();
 		
-		
+		dout << "Building models...\n";
 		sys->buildModels(/*dropIfConflict: */true);
+		
+		/*dout << "Trying to check in invalid type...\n";
+		std::vector<int> ints = {4, 1, 1};
+		
+		sys->checkin(ints);*/
 		
 		
 		Person p1 = Person::Birth("SomePerson", "SomeSurname");
@@ -599,10 +604,32 @@ bool Test_SQL()
 		printQuery(personQ);
 		
 		auto p3OrigName = p3.lname;
-		p3.lname = "OtherSurname";
+		std::string p3NewName = "OtherSurname";
+		p3.lname = p3NewName;
 		sys->refresh(p3);
 		
 		assert_ex(p3.lname == p3OrigName);
+		
+		p3.lname = p3NewName;
+		sys->checkin(p3);
+		assert_ex(p3.lname == p3NewName);
+		sys->refresh(p3);
+		assert_ex(p3.lname == p3NewName);
+		
+		
+		auto p3Copy = p3;
+		
+		p3Copy.lname = p3OrigName;
+		assert_ex(p3Copy.lname == p3OrigName);
+		assert_ex(p3.lname == p3NewName);
+		
+		sys->checkin(p3Copy);
+		assert_ex(p3Copy.lname == p3OrigName);
+		assert_ex(p3.lname == p3NewName);
+		sys->refresh(p3);
+		assert_ex(p3.lname == p3OrigName);
+		assert_ex(p3Copy.lname == p3OrigName);
+		
 	}
 	
 	

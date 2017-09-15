@@ -91,6 +91,12 @@ namespace SQL
 		void checkIn(Object&, bool includeReferenced = true);
 		
 		template <class Object>
+		inline void checkin(Object& obj, bool includeReferenced = true)
+		{
+			checkIn(obj, includeReferenced);
+		}
+		
+		template <class Object>
 		void refresh(Object&, bool includeReferenced = true);
 		
 	};

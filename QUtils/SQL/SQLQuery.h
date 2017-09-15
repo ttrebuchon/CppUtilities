@@ -13,6 +13,7 @@ namespace SQL
 		virtual double columnDouble(int) const = 0;
 		virtual int columnInt(int) const = 0;
 		virtual long columnLong(int) const = 0;
+		virtual long long columnLongLong(int) const = 0;
 		virtual std::string columnString(int) const = 0;
 		
 		
@@ -21,6 +22,18 @@ namespace SQL
 		virtual ~SQLQuery();
 		
 		template <class T> T column(int index) const;
+		template <class T> T column(const std::string name) const
+		{
+			auto w = width();
+			for (int i = 0; i < w; ++i)
+			{
+				if (columnName(i) == name)
+				{
+					return column<T>(i);
+				}
+			}
+			throw std::exception();
+		}
 		
 		virtual int width() const = 0;
 		virtual ValueType columnType(int Index) const = 0;
@@ -39,11 +52,13 @@ namespace SQL
 		virtual void bind(std::string parameter, double value) = 0;
 		virtual void bind(std::string parameter, int value) = 0;
 		virtual void bind(std::string parameter, long value) = 0;
+		virtual void bind(std::string parameter, long long value) = 0;
 		virtual void bind(std::string parameter, std::string value) = 0;
 		
 		virtual void bind(unsigned int index, double value) = 0;
 		virtual void bind(unsigned int index, int value) = 0;
 		virtual void bind(unsigned int index, long value) = 0;
+		virtual void bind(unsigned int index, long long value) = 0;
 		virtual void bind(unsigned int index, std::string value) = 0;
 		
 		

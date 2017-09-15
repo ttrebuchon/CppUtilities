@@ -145,6 +145,11 @@ namespace SQL
 		return sqlite3_column_int64(stmt, index);
 	}
 	
+	long long SQLiteQuery::columnLongLong(int index) const
+	{
+		return sqlite3_column_int64(stmt, index);
+	}
+	
 	std::string SQLiteQuery::columnString(int index) const
 	{
 		auto cstr = sqlite3_column_text(stmt, index);
@@ -206,6 +211,17 @@ namespace SQL
 		this->bind(index, value);
 	}
 	
+	void SQLiteQuery::bind(std::string parameter, long long value)
+	{
+		auto index = sqlite3_bind_parameter_index(stmt, parameter.c_str());
+		if (index == 0)
+		{
+			throw SQLErrorException().Msg("No parameter with name '" + parameter + "' in statement");
+		}
+		
+		this->bind(index, value);
+	}
+	
 	void SQLiteQuery::bind(std::string parameter, std::string value)
 	{
 		auto index = sqlite3_bind_parameter_index(stmt, parameter.c_str());
@@ -240,6 +256,16 @@ namespace SQL
 	}
 	
 	void SQLiteQuery::bind(unsigned int index, long value)
+	{
+		auto result = sqlite3_bind_int64(stmt, index, value);
+		if (result != SQLITE_OK)
+		{
+			this->status = result;
+			throw SQLErrorException().Msg(sqlite3_errstr(result));
+		}
+	}
+	
+	void SQLiteQuery::bind(unsigned int index, long long value)
 	{
 		auto result = sqlite3_bind_int64(stmt, index, value);
 		if (result != SQLITE_OK)

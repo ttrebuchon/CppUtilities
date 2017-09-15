@@ -48,12 +48,14 @@ namespace SQL
 	SQLEntityBuilder<Object, Internal::Result_t<F, Object>>& SQLModelBuilder<Object>::property(const std::string name, F access)
 	{
 		typedef Internal::Result_t<F, Object> Type;
-		auto fAccess = std::function<Type&(Object&)>([access](auto& obj) -> Type& { return access(obj); });
+		//auto fAccess = std::function<Type&(Object&)>([access](auto& obj) -> Type& { return access(obj); });
+		auto fAccess = std::function<Type&(Object&)>(access);
 		auto ptr = std::make_shared<SQLEntityBuilder<Object, Type>>(name, fAccess);
 		
 		std::function<SQLType_ptr(Type&)> toSQL;
 		std::function<Type(SQLType_ptr)> fromSQL;
 		ValueType vType = models->getSQLType<Type>(toSQL, fromSQL);
+		
 		if (vType == Null)
 		{
 			throw SQLModelConfigException()
@@ -62,6 +64,7 @@ namespace SQL
 				.Line(__LINE__)
 				.Msg(std::string("Error retrieving ValueType for Type with Index '") + std::type_index(typeid(Type)).name() + "'");
 		}
+		
 		if (!toSQL)
 		{
 			throw SQLModelConfigException()

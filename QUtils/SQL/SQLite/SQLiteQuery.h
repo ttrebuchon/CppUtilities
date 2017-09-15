@@ -20,6 +20,7 @@ namespace SQL
 		virtual double columnDouble(int) const override;
 		virtual int columnInt(int) const override;
 		virtual long columnLong(int) const override;
+		virtual long long columnLongLong(int) const override;
 		virtual std::string columnString(int) const override;
 		
 		
@@ -50,11 +51,13 @@ namespace SQL
 		virtual void bind(std::string parameter, double value) override;
 		virtual void bind(std::string parameter, int value) override;
 		virtual void bind(std::string parameter, long value) override;
+		virtual void bind(std::string parameter, long long value) override;
 		virtual void bind(std::string parameter, std::string value) override;
 		
 		virtual void bind(unsigned int index, double value) override;
 		virtual void bind(unsigned int index, int value) override;
 		virtual void bind(unsigned int index, long value) override;
+		virtual void bind(unsigned int index, long long value) override;
 		virtual void bind(unsigned int index, std::string value) override;
 	};
 	

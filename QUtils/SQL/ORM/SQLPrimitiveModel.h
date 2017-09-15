@@ -86,6 +86,7 @@ namespace SQL
 				{
 					throw NullPointerException();
 				}
+				
 				if (val->type() != dbT)
 				{
 					//TODO

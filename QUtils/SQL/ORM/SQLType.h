@@ -24,6 +24,8 @@ namespace SQL
 		static std::shared_ptr<SQLType> Create(const long);
 		static std::shared_ptr<SQLType> Create(const long long);
 		static std::shared_ptr<SQLType> Create(const double);
+		static std::shared_ptr<SQLType> Create(SQLQuery*, const std::string col);
+		static std::shared_ptr<SQLType> Create(SQLQuery*, const int index);
 		
 		
 		virtual ValueType type() const = 0;

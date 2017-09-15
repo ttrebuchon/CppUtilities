@@ -29,14 +29,16 @@ namespace SQL
 	}
 	
 	template <> 
+	long long SQLQuery::column<long long>(int index) const
+	{
+		return columnLongLong(index);
+	}
+	
+	template <> 
 	std::string SQLQuery::column<std::string>(int index) const
 	{
 		return columnString(index);
 	}
-	
-	
-	
-	
 	
 	
 }

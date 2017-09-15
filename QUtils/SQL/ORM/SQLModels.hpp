@@ -39,7 +39,7 @@ namespace SQL
 	SQLModel<Object>* SQLModels::getModel()
 	{
 		std::type_index tIndex(typeid(Object));
-		auto ptr = models.at(tIndex);
+		auto ptr = models[tIndex];
 		return (SQLModel<Object>*)ptr;
 	}
 	
