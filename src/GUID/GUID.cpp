@@ -1,6 +1,7 @@
 #include <QUtils/GUID/GUID.h>
 #include <QUtils/Exception/NotAvailable.h>
 #include <iostream>
+#include <QUtils/Multi/Lockable.h>
 
 
 #ifdef QUTILS_HAS_BOOST
@@ -19,7 +20,37 @@ namespace GUID_NS
 	
 	#ifdef QUTILS_HAS_BOOST
 	
-	boost::uuids::random_generator guid_generator;
+	#ifdef __GNUC__
+	#define TLS __thread
+	#else
+	#define TLS thread_local
+	#endif
+	
+	namespace Internal
+	{
+		class MT_Generator : public QUtils::Multi::Lockable
+		{
+			public:
+			boost::uuids::random_generator generator;
+			boost::uuids::string_generator str_generator;
+			
+			auto operator()()
+			{
+				std::lock_guard<MT_Generator> lock(*this);
+				return generator();
+			}
+			
+			auto operator()(const std::string str)
+			{
+				std::lock_guard<MT_Generator> lock(*this);
+				return str_generator(str);
+			}
+		};
+	}
+	
+	/*TLS boost::uuids::random_generator guid_generator;*/
+	static Internal::MT_Generator guid_generator;
+	
 	
 	GUID::GUID(const boost::uuids::uuid id) : uuid(id)
 	{}
@@ -43,7 +74,11 @@ namespace GUID_NS
 	GUID GUID::Create()
 	{
 	#ifdef QUTILS_HAS_BOOST
+		/*static TLS boost::mt19937 inner;
+		static TLS boost::uuids::random_generator guid_generator(inner);*/
+		//boost::uuids::random_generator gen;
 		return GUID(guid_generator());
+		//return GUID(gen());
 	#else
 		throw FeatureNotAvailableException().Msg(NOT_AVAIL_MSG);
 	#endif
@@ -54,6 +89,18 @@ namespace GUID_NS
 	{
 	#ifdef QUTILS_HAS_BOOST
 		return uuid.is_nil();
+	#else
+		throw FeatureNotAvailableException().Msg(NOT_AVAIL_MSG);
+	#endif
+	}
+	
+	GUID GUID::FromString(const std::string value)
+	{
+	#ifdef QUTILS_HAS_BOOST
+		static TLS boost::uuids::string_generator gen;
+		GUID guid;
+		guid.uuid = gen(value);
+		return guid;
 	#else
 		throw FeatureNotAvailableException().Msg(NOT_AVAIL_MSG);
 	#endif

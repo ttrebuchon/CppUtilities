@@ -32,6 +32,8 @@ namespace GUID_NS
 		
 		bool is_nil() const;
 		
+		static GUID FromString(const std::string);
+		
 		
 		friend std::ostream& operator<<(std::ostream&, GUID const&);
 		friend std::istream& operator>>(std::istream&, GUID&);
