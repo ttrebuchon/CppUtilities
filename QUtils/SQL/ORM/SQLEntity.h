@@ -64,6 +64,8 @@ namespace SQL
 		{
 			return std::type_index(typeid(Object));
 		}
+		
+		virtual void resolve(SQLModels*) = 0;
 	};
 }
 }

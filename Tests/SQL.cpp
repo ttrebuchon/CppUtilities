@@ -508,6 +508,7 @@ bool Test_SQL()
 			std::string lname;
 			//decltype(time(NULL)) birth;
 			unsigned long birth;
+			Person* father;
 			
 			auto age() const
 			{
@@ -538,6 +539,8 @@ bool Test_SQL()
 				builder.property("birth", [](auto& obj) -> decltype(obj.birth)& { return obj.birth; }).notNull();
 				builder.id([](auto& obj) -> decltype(obj.id)& { return obj.id; });
 				
+				//builder.property("father", [](auto& obj) ->Person*& { return obj.father; });
+				
 			}
 			
 			std::string modelName() const override
@@ -546,6 +549,61 @@ bool Test_SQL()
 			}
 		};
 		
+		class Family
+		{
+			public:
+			#ifdef GUID_t
+			typedef QUtils::GUID id_t;
+			#else
+			typedef long id_t;
+			#endif
+			private:
+			id_t id;
+			
+			public:
+			Family(Person* mother, Person* father, Person* child) : mother(mother), father(father), child(child)
+			{
+				#ifdef GUID_t
+				id = QUtils::GUID::Create();
+				#else
+				id = 1;
+				#endif
+				
+				
+			}
+			
+			Person* mother;
+			Person* father;
+			Person* child;
+			
+			
+			
+			friend class FamilyModel;
+		};
+		
+		class FamilyModel : public SQL::SQLModel<Family>
+		{
+			protected:
+			
+			void buildModel(SQL::SQLModelBuilder<Family>& builder) override
+			{
+				builder.tablename("Family");
+				builder.property("mother", [](auto& obj) -> Person*& { return obj.mother; });
+				builder.property("father", [](auto& obj) -> Person*& { return obj.father; });
+				builder.property("child", [](auto& obj) -> Person*& { return obj.child; });
+				
+				builder.id([](auto& obj) -> decltype(obj.id)& { return obj.id; });
+				
+			}
+			
+			std::string modelName() const override
+			{
+				return "Family";
+			}
+		};
+		
+		dout << "Registering FamilyModel...\n";
+		sys->model<FamilyModel>();
 		
 		dout << "Registering PersonModel...\n";
 		sys->model<PersonModel>();

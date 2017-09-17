@@ -89,6 +89,51 @@ namespace SQL
 			return type;
 			
 		}
+		
+		virtual void resolve(SQLModels* models) override
+		{
+			auto fAccess = accessor;
+			std::function<SQLType_ptr(Type&)> toSQL;
+		std::function<Type(SQLType_ptr)> fromSQL;
+		ValueType vType = models->getSQLType<Type>(toSQL, fromSQL);
+		
+		if (vType == Null)
+		{
+			throw SQLModelConfigException()
+				.Function(__func__)
+				.File(__FILE__)
+				.Line(__LINE__)
+				.Msg(std::string("Error retrieving ValueType for Type with Index '") + std::type_index(typeid(Type)).name() + "'");
+		}
+		
+		if (!toSQL)
+		{
+			throw SQLModelConfigException()
+				.Function(__func__)
+				.File(__FILE__)
+				.Line(__LINE__)
+				.Msg(std::string("Error retrieving toSQL lambda for Type with Index '") + std::type_index(typeid(Type)).name() + "'");
+		}
+
+		if (!fromSQL)
+		{
+			throw SQLModelConfigException()
+				.Function(__func__)
+				.File(__FILE__)
+				.Line(__LINE__)
+				.Msg(std::string("Error retrieving fromSQL lambda for Type with Index '") + std::type_index(typeid(Type)).name() + "'");
+		}
+
+		this->serialize = std::function<SQLType_ptr(Object&)>([fAccess, toSQL] (Object& obj)
+		{
+			return toSQL(fAccess(obj));
+		});
+		
+		this->deserialize = Helpers::SetSQL_t<Object>([fAccess, fromSQL] (Object& obj, SQLType_ptr ptr)
+		{
+			fAccess(obj) = fromSQL(ptr);
+		});
+		}
 	};
 }
 }

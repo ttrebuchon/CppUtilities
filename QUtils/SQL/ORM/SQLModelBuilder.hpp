@@ -51,7 +51,7 @@ namespace SQL
 		//auto fAccess = std::function<Type&(Object&)>([access](auto& obj) -> Type& { return access(obj); });
 		auto fAccess = std::function<Type&(Object&)>(access);
 		auto ptr = std::make_shared<SQLEntityBuilder<Object, Type>>(name, fAccess);
-		
+		/*
 		std::function<SQLType_ptr(Type&)> toSQL;
 		std::function<Type(SQLType_ptr)> fromSQL;
 		ValueType vType = models->getSQLType<Type>(toSQL, fromSQL);
@@ -94,7 +94,7 @@ namespace SQL
 		});
 		
 		ptr->serialize = serialize;
-		ptr->deserialize = deserialize;
+		ptr->deserialize = deserialize;*/
 		entities.push_back(std::static_pointer_cast<SQLEntity<Object>>(ptr));
 		return *ptr;
 	}
@@ -113,6 +113,7 @@ namespace SQL
 		typedef Internal::Result_t<F, Object> Type;
 		auto fAccess = std::function<Type&(Object&)>([access](auto& obj) -> Type& { return access(obj); });
 		auto ptr = std::make_shared<SQLEntityBuilder<Object, Type>>(name, fAccess);
+		/*
 
 		std::function<SQLType_ptr(Type&)> toSQL;
 		std::function<Type(SQLType_ptr)> fromSQL;
@@ -154,7 +155,7 @@ namespace SQL
 		});
 		
 		ptr->serialize = serialize;
-		ptr->deserialize = deserialize;
+		ptr->deserialize = deserialize;*/
 		idEnt = ptr;
 		return *ptr;
 	}
@@ -162,6 +163,11 @@ namespace SQL
 	template <class Object>
 	void SQLModelBuilder<Object>::resolveTypes(SQLModels* models)
 	{
+		idEnt->resolve(models);
+		for (auto ent : entities)
+		{
+			ent->resolve(models);
+		}
 		if (idEnt->dbType == Null)
 		{
 			idEnt->resolveType(models);

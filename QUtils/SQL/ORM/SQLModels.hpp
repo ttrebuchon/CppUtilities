@@ -8,6 +8,42 @@ namespace QUtils
 {
 namespace SQL
 {
+	namespace Helpers
+	{
+		template <class T>
+		struct IsPtrType
+		{
+			constexpr static const bool value = false;
+			typedef T type;
+		};
+		
+		template <class T>
+		struct IsPtrType<T*>
+		{
+			constexpr static const bool value = true;
+			typedef T type;
+		};
+		
+		template <class T>
+		struct TryDeRef
+		{
+			constexpr static T& call(T& t)
+			{
+				return t;
+			}
+		};
+		
+		template <class T>
+		struct TryDeRef<T*>
+		{
+			constexpr static T& call(T*& t)
+			{
+				return *t;
+			}
+		};
+	}
+	
+	
 	template <class Model, class Object>
 	void SQLModels::add()
 	{
@@ -72,8 +108,66 @@ namespace SQL
 		}
 		
 		
+		if (models.count(tIndex) > 0)
+		{
+			auto model = (SQLModel<Type>*)models.at(tIndex);
+			if (model->idType == Null)
+			{
+				model->initModel(this);
+			}
+			
+			auto idEnt = model->idEntity();
+			
+			if (idEnt == NULL)
+			{
+				std::cerr << "idEnt is NULL!!!\n";
+				throw NotImp();
+			}
+			
+			toSQL = idEnt->serialize;
+			//toType = idEnt->deserialize;
+			
+			return model->idType;
+			
+			throw NotImp();
+		}
 		
-		throw NotImp();
+		
+		
+		typedef typename Helpers::IsPtrType<Type>::type NonPtr_t;
+		std::type_index nonPtrIndex(typeid(NonPtr_t));
+		
+		std::function<SQLType_ptr(NonPtr_t&)> toNonPtrSQL;
+		std::function<NonPtr_t(SQLType_ptr)> toNonPtrType;
+		
+		
+		if (Helpers::IsPtrType<Type>::value)
+		{
+		
+		auto ret = getSQLType<NonPtr_t>(toNonPtrSQL, toNonPtrType);
+		if (toNonPtrSQL)
+		{
+		toSQL = [toNonPtrSQL] (auto ptr)
+		{
+			return toNonPtrSQL(Helpers::TryDeRef<Type>::call(ptr));
+		};
+		}
+		
+		return ret;
+		}
+		else
+		{
+			throw SQLModelConfigException()
+				.Line(__LINE__)
+				.File(__FILE__)
+				.Function(__func__)
+				.Msg(
+					std::string("Unable to find model for '") + tIndex.name() + "'"
+				);
+		}
+		
+		
+		
 	}
 }
 }

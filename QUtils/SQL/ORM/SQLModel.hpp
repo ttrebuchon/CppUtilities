@@ -26,10 +26,22 @@ namespace SQL
 		SQLModelBuilder<Object> builder(models);
 		builder.tablename(this->modelName());
 		this->buildModel(builder);
+		std::cerr << "buildModel() ran for " << this->modelName() << "\n";
 		
 		if (builder.idEntity() == NULL)
 		{
 			throw SQLModelConfigException().Msg("Model does not indicate any sort of identifier");
+		}
+		
+		this->entities = builder.entities;
+		this->idEnt = builder.idEnt;
+		if (idEnt == NULL)
+		{
+			std::cerr << "Somehow builder.idEnt is null...\n";
+		}
+		else
+		{
+			std::cerr << "builder.idEnt is NOT null...\n";
 		}
 		
 		builder.resolveTypes(models);
@@ -55,7 +67,7 @@ namespace SQL
 					"' and entity type is '" + builder.idEntity()->typeIndex().name());
 		}
 		serializers.emplace_back(builder.idEntity()->name(), builder.idEntity()->serialize);
-		idRetriever = builder.idEntity()->serialize;
+		_idRetriever = builder.idEntity()->serialize;
 		
 		for (auto ent : builder.entities)
 		{
@@ -70,6 +82,8 @@ namespace SQL
 			}
 			serializers.emplace_back(ent->name(), ent->serialize);
 		}
+		
+		
 		
 		
 		

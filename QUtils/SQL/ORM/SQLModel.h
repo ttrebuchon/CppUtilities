@@ -17,6 +17,9 @@ namespace SQL
 	class SQLSystem;
 	class SQLQuery;
 	
+	template <class>
+	class SQLEntity;
+	
 	class SQLMinModel
 	{
 		protected:
@@ -45,14 +48,17 @@ namespace SQL
 		
 		std::function<void(Object&, SQLQuery*)> loader;
 		
+		std::vector<std::shared_ptr<SQLEntity<Object>>> entities;
+		std::shared_ptr<SQLEntity<Object>> idEnt;
+		
 		std::function<std::unordered_map<std::string, SQLType_ptr>(Object&)> serializer;
 		
-		Helpers::ToSQL_t<Object&> idRetriever;
+		Helpers::ToSQL_t<Object&> _idRetriever;
 		
 		protected:
 		virtual void buildModel(SQLModelBuilder<Object>&) = 0;
 		
-		SQLModel() : SQLMinModel(), loader(), serializer()
+		SQLModel() : SQLMinModel(), loader(), serializer(), idRetriever(_idRetriever)
 		{
 		}
 		
@@ -63,6 +69,11 @@ namespace SQL
 		
 		void save(SQLSystem*, Object&, bool includeReferenced = true);
 		void load(SQLSystem*, Object&, bool includeReferenced = true);
+		
+		const Helpers::ToSQL_t<Object&>& idRetriever;
+		
+		inline std::shared_ptr<const SQLEntity<Object>> idEntity() const
+		{ return idEnt; }
 		
 		friend class SQLModels;
 	};
