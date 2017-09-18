@@ -33,14 +33,10 @@ bool Test_GUID()
 	
 	
 	{
-		const int count = 100000;//000;
+		const int count = 10000;
 		std::set<QUtils::GUID> ids;
 		for (int i = 0; i < count; ++i)
 		{
-			if (i % (count/10) == 0)
-			{
-				dout << i << "/" << count << "(" << (100*i)/count << "%)\n";
-			}
 			QUtils::GUID id = QUtils::GUID::Create();
 			auto str = to_string(id);
 			assert_ex(QUtils::GUID::FromString(str) == id);
@@ -73,17 +69,15 @@ bool Test_GUID()
 			futures.push_back(std::async(std::launch::async, func, count/tCount));
 		}
 		
-		dout << "Threads launched, joining..." << std::endl;
 		for (int i = 0; i < futures.size(); ++i)
 		{
 			auto set = futures[i].get();
-			dout << (i+1) << "/" << futures.size() << "\n";
 			ids.insert(set.begin(), set.end());
 		}
 		
 		assert_ex(ids.size() == 2*count);
 		
-		dout << 2*count << " GUIDs Tested!\n";
+		dout << 2*count << " GUIDs Tested.\n";
 	}
 	
 	return true;
