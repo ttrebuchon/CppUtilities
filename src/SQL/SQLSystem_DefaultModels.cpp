@@ -23,7 +23,7 @@ namespace SQL
 			const std::function<QUtils::GUID(std::string)> fromSQL =
 			[](std::string val) -> QUtils::GUID
 			{
-				throw NotImp();
+				return GUID::FromString(val);
 			};
 		};
 	}

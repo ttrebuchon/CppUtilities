@@ -41,6 +41,24 @@ namespace SQL
 				return *t;
 			}
 		};
+		
+		template <class T>
+		struct TryCreatePtr
+		{
+			constexpr static T call(T&& t)
+			{
+				return t;
+			}
+		};
+		
+		template <class T>
+		struct TryCreatePtr<T*>
+		{
+			constexpr static T* call(T&& t)
+			{
+				return new T(t);
+			}
+		};
 	}
 	
 	
@@ -81,7 +99,7 @@ namespace SQL
 	
 	
 	template <class Type>
-	ValueType SQLModels::getSQLType(std::function<SQLType_ptr(Type&)>& toSQL, std::function<Type(SQLType_ptr)>& toType)
+	ValueType SQLModels::getSQLType(std::function<SQLType_ptr(Type&)>& toSQL, std::function<Type(SQLType_ptr, SQLSystem*, bool)>& toType)
 	{
 		auto vType = Helpers::SQLTypeFromType<Type>::call(toSQL, toType);
 		if (vType != Null)
@@ -125,7 +143,17 @@ namespace SQL
 			}
 			
 			toSQL = idEnt->serialize;
+			
+			std::function<void(Type&, SQLType_ptr, SQLSystem*, bool)> idEntFrom = idEnt->deserialize;
 			//toType = idEnt->deserialize;
+			toType = std::function<Type(SQLType_ptr, SQLSystem*, bool)>([idEntFrom](auto val, auto sys, auto includeReferenced) -> Type
+			{
+				//TODO
+				Type t;
+				idEntFrom(t, val, sys, includeReferenced);
+				return t;
+				throw NotImp();
+			});
 			
 			return model->idType;
 			
@@ -138,7 +166,7 @@ namespace SQL
 		std::type_index nonPtrIndex(typeid(NonPtr_t));
 		
 		std::function<SQLType_ptr(NonPtr_t&)> toNonPtrSQL;
-		std::function<NonPtr_t(SQLType_ptr)> toNonPtrType;
+		std::function<NonPtr_t(SQLType_ptr, SQLSystem*, bool)> toNonPtrType;
 		
 		
 		if (Helpers::IsPtrType<Type>::value)
@@ -150,6 +178,12 @@ namespace SQL
 		toSQL = [toNonPtrSQL] (auto ptr)
 		{
 			return toNonPtrSQL(Helpers::TryDeRef<Type>::call(ptr));
+		};
+		
+		toType = [toNonPtrType] (auto sql, auto sys, auto includeReferenced) -> Type
+		{
+			//TODO
+			return Helpers::TryCreatePtr<Type>::call(toNonPtrType(sql, sys, includeReferenced));
 		};
 		}
 		

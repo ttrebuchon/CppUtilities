@@ -116,12 +116,12 @@ namespace SQL
 		}
 		
 		
-		this->loader = [deserializers](Object& obj, SQLQuery* q) -> void
+		this->loader = [deserializers](Object& obj, SQLQuery* q, SQLSystem* sys, bool includeReferenced) -> void
 		{
 			
 			for (auto& deserial : deserializers)
 			{
-				std::get<1>(deserial)(obj, SQLType::Create(q, std::get<0>(deserial)));
+				std::get<1>(deserial)(obj, SQLType::Create(q, std::get<0>(deserial)), sys, includeReferenced);
 			}
 		};
 		
@@ -260,7 +260,7 @@ namespace SQL
 			throw NotImp();
 		}
 		
-		this->loader(obj, q);
+		this->loader(obj, q, sys, includeReferenced);
 		delete q;
 	}
 }

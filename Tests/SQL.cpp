@@ -480,11 +480,10 @@ bool Test_SQL()
 			}
 		}
 		
-		
-		
 		#define GUID_t
 		class Person
 		{
+			private:
 			public:
 			#ifdef GUID_t
 			typedef QUtils::GUID id_t;
@@ -502,6 +501,12 @@ bool Test_SQL()
 				#else
 				id = 1;
 				#endif
+				dout << "Creating Person (" << this << ")...\n";
+			}
+			
+			~Person()
+			{
+				dout << "Deleting Person (" << this << ")(\"" << fname << "\")...\n";
 			}
 			
 			std::string fname;
@@ -522,6 +527,11 @@ bool Test_SQL()
 				p.lname = lname;
 				p.birth = time(NULL);
 				return p;
+			}
+			
+			id_t getID() const
+			{
+				return id;
 			}
 			
 			friend class PersonModel;
@@ -687,6 +697,37 @@ bool Test_SQL()
 		sys->refresh(p3);
 		assert_ex(p3.lname == p3OrigName);
 		assert_ex(p3Copy.lname == p3OrigName);
+		
+		
+		
+		Family fam(&p1, &p2, &p3);
+		assert_ex(fam.mother == &p1);
+		assert_ex(fam.father == &p2);
+		assert_ex(fam.child == &p3);
+		
+		
+		dout << "Checking in family...\n";
+		sys->checkin(fam);
+		assert_ex(fam.mother == &p1);
+		assert_ex(fam.father == &p2);
+		assert_ex(fam.child == &p3);
+		
+		dout << "Refreshing family...\n";
+		sys->refresh(fam);
+		dout << "Refreshing family.mother...\n";
+		sys->refresh(*fam.mother);
+		dout << "p1, p2, p3:\n";
+		dout << &p1 << "\n" << &p2 << "\n" << &p3 << "\n";
+		dout << "Mother: " << fam.mother << "\n";
+		dout << "Mother Name: \"" << fam.mother->fname << "\"" << std::endl;
+		dout << "Mother ID: \"" << fam.mother->getID() << "\"" << std::endl;
+		dout << "p1 ID: \"" << p1.getID() << "\"\n";
+		
+		assert_ex(fam.mother == &p1);
+		assert_ex(fam.father == &p2);
+		assert_ex(fam.child == &p3);
+		
+		
 		
 	}
 	

@@ -7,6 +7,9 @@ namespace QUtils
 {
 namespace SQL
 {
+	class SQLSystem;
+	
+	
 	namespace Helpers
 	{
 		template <class Object, class Type, class = void>
@@ -38,10 +41,10 @@ namespace SQL
 		using ToSQL_t = std::function<SQLType_ptr(Type&)>;
 		
 		template <class Type>
-		using FromSQL_t = std::function<Type(SQLType_ptr)>;
+		using FromSQL_t = std::function<Type(SQLType_ptr, SQLSystem*, bool)>;
 		
 		template <class Object>
-		using SetSQL_t = std::function<void(Object&, SQLType_ptr)>;
+		using SetSQL_t = std::function<void(Object&, SQLType_ptr, SQLSystem*, bool)>;
 		
 		
 		template <class Type, class = void>
@@ -64,7 +67,7 @@ namespace SQL
 					return SQLType::Create(obj);
 				};
 				typedef typename C_ValueType<SQL_ValueType<Type>::type>::type SQLType_Value_Type;
-				fromSQL = [](auto ptr)
+				fromSQL = [](auto ptr, auto sys, auto includeReferenced)
 				{
 					return (std::static_pointer_cast<SQLType_Value<SQLType_Value_Type>>(ptr))->template get<Type>();
 				};

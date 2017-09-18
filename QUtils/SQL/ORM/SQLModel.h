@@ -46,7 +46,7 @@ namespace SQL
 		
 		SQLTableBuilder initModel(SQLModels*) override;
 		
-		std::function<void(Object&, SQLQuery*)> loader;
+		std::function<void(Object&, SQLQuery*, SQLSystem*, bool)> loader;
 		
 		std::vector<std::shared_ptr<SQLEntity<Object>>> entities;
 		std::shared_ptr<SQLEntity<Object>> idEnt;

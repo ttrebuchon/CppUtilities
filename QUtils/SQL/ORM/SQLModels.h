@@ -61,7 +61,7 @@ namespace SQL
 		ValueType getSQLType(std::type_index);
 		
 		template <class Type>
-		ValueType getSQLType(std::function<SQLType_ptr(Type&)>&, std::function<Type(SQLType_ptr)>&);
+		ValueType getSQLType(std::function<SQLType_ptr(Type&)>&, std::function<Type(SQLType_ptr, SQLSystem*, bool)>&);
 		
 		template <class Object>
 		SQLModel<Object>* getModel();

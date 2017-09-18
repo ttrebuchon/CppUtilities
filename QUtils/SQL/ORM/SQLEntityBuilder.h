@@ -72,7 +72,7 @@ namespace SQL
 			
 			
 			std::function<SQLType_ptr(Type&)> toSQL;
-			std::function<Type(SQLType_ptr)> toType;
+			std::function<Type(SQLType_ptr, SQLSystem*, bool)> toType;
 			
 			type = models->getSQLType<Type>(toSQL, toType);
 			if (type == Null)
@@ -94,7 +94,7 @@ namespace SQL
 		{
 			auto fAccess = accessor;
 			std::function<SQLType_ptr(Type&)> toSQL;
-		std::function<Type(SQLType_ptr)> fromSQL;
+		std::function<Type(SQLType_ptr, SQLSystem*, bool)> fromSQL;
 		ValueType vType = models->getSQLType<Type>(toSQL, fromSQL);
 		
 		if (vType == Null)
@@ -129,9 +129,9 @@ namespace SQL
 			return toSQL(fAccess(obj));
 		});
 		
-		this->deserialize = Helpers::SetSQL_t<Object>([fAccess, fromSQL] (Object& obj, SQLType_ptr ptr)
+		this->deserialize = Helpers::SetSQL_t<Object>([fAccess, fromSQL] (Object& obj, SQLType_ptr ptr, SQLSystem* sys, bool includeReferenced)
 		{
-			fAccess(obj) = fromSQL(ptr);
+			fAccess(obj) = fromSQL(ptr, sys, includeReferenced);
 		});
 		}
 	};

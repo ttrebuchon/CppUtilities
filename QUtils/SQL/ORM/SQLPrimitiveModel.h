@@ -38,7 +38,7 @@ namespace SQL
 		
 		virtual std::function<std::shared_ptr<SQLType>(Type)> convert() const = 0;
 		
-		virtual std::function<Type(std::shared_ptr<SQLType>)> convertFrom() const = 0;
+		virtual std::function<Type(std::shared_ptr<SQLType>, SQLSystem*, bool)> convertFrom() const = 0;
 	};
 	
 	template <class Type, class Equivalent>
@@ -77,11 +77,11 @@ namespace SQL
 			});
 		}
 		
-		virtual std::function<Type(std::shared_ptr<SQLType>)> convertFrom() const override
+		virtual std::function<Type(std::shared_ptr<SQLType>, SQLSystem*, bool)> convertFrom() const override
 		{
 			auto dbT = dbType();
 			auto f = toType;
-			return std::function<Type(std::shared_ptr<SQLType>)>([f, dbT](std::shared_ptr<SQLType> val) {
+			return std::function<Type(std::shared_ptr<SQLType>, SQLSystem*, bool)>([f, dbT](std::shared_ptr<SQLType> val, auto sys, auto includeReferenced) {
 				if (val == NULL)
 				{
 					throw NullPointerException();
