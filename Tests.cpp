@@ -168,9 +168,11 @@ void Testing::run()
 	RUN(Raytrace());
 	RUN(SQL());
 	RUN(GUID());
-	#ifndef SHORT_TEST
-	//RUN(SDL_Drawing());
 	RUN(TravellingSalesman());
+	RUN(CodeGen_Utility());
+	#ifndef SHORT_TEST
+	RUN(SDL_Drawing());
+	//RUN(TravellingSalesman());
 	RUN(GameOfLifeExtended());
 	RUN(Types());
 	RUN(SymbolicList());
@@ -204,9 +206,7 @@ void Testing::run()
 	//#ifdef QUTILS_HAS_SDL2
 	if (GUI_out != NULL)
 	{
-	/*std::string final_str = dout_ss.str();
-	*GUI_out << final_str << std::flush;*/
-	//dout << "Screen set to \"" << final_str << "\"" << std::endl;
+	/*
 	if (win != NULL)
 	{
 		win->handleEvents();
@@ -236,7 +236,7 @@ void Testing::run()
 	{
 		delete win;
 		win = NULL;
-	}
+	}*/
 	}
 	
 	//#endif

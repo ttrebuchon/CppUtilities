@@ -100,8 +100,12 @@ Drawing_SDL_cpp = $(wildcard $(SRC)/Drawing/SDL/**/*.cpp) $(wildcard $(SRC)/Draw
 Drawing_SDL = $(Drawing_SDL_cpp:.cpp=.o)
 #*/
 
+CodeGen_cpp = $(wildcard $(SRC)/CodeGen/**/*.cpp) $(wildcard $(SRC)/CodeGen/*.cpp)
+CodeGen = $(CodeGen_cpp:.cpp=.o)
+#*/
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL)
+
+libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen)
 
 
 Tests_cpp = $(wildcard Tests/*.cpp)
@@ -189,7 +193,7 @@ endif
 
 
 CXX = g++
-CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -O0 $(DEPS)
+CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Og $(DEPS)
 CXXFLAGS := $(CXXFLAGS) -Wall
 libdeps = $(libobjects:.o=.d)
 testdeps = $(testobjects:.o=.d)

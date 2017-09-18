@@ -76,6 +76,7 @@ DEF_TEST(GUID);
 //DEF_TEST(SDL_GUI);
 bool Test_SDL_GUI(std::ostream**, QUtils::GUI::SDL::SDLAppWindow*&);
 DEF_TEST(SDL_Drawing);
+DEF_TEST(CodeGen_Utility);
 
 
 
