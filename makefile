@@ -3,7 +3,7 @@ HAS_BOOST = TRUE
 NEEDS_PTHREAD = FALSE
 HAS_SDL2 = FALSE #TRUE
 
-HIDE_SDL_UNAVAILABLE = TRUE
+HIDE_SDL_UNAVAILABLE = FALSE #TRUE
 
 
 SRC = src
@@ -202,6 +202,7 @@ buildOC = gcc -std=c99 -c -pie
 
 $(target): $(stLibTarget).a $(testobjects) makefile $(libobjects)
 	$(CXX) -o $(target) $(CXXFLAGS) -std=c++11 $(testobjects) -L. -l$(name) $(PREPROC_FLAGS) $(LINKING)
+	 # -lstdc++
 	nm -C Tests/Nth_Poly.o >> tests.obj.txt
 	
 
@@ -210,7 +211,7 @@ clean:
 	rm -f $(libobjects:.o=.d)
 
 
-$(stLibTarget).a: $(libobjects) makefile
+$(stLibTarget).a: $(libobjects) #makefile
 	[[ -d objs ]] || mkdir objs
 	cd objs ; ar -xv ../$(Deps_D)/sqlite3/libsqlite3.a ; ar -xv ../$(Deps_D)/curlpp/libcurlpp.a
 	ar rvs $(stLibTarget).a $(libobjects) $(wildcard objs/*.o)

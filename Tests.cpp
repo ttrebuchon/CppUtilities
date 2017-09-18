@@ -90,7 +90,11 @@ int main(int argc, char**argv)
 	*log << timeStr << "\n\n";
 	multibuf->push(log->rdbuf());
 	
-	cerrBuf = std::cerr.rdbuf(log->rdbuf());
+	auto errBuf = new QUtils::Output::MultiBuf();
+	errBuf->push(std::cerr.rdbuf());
+	errBuf->push(log->rdbuf());
+	
+	cerrBuf = std::cerr.rdbuf(errBuf);
 	
 	assert_ex(dynamic_cast<std::stringbuf*>(dout_ss.rdbuf()) != NULL);
 	multibuf->push(dout_ss.rdbuf());
