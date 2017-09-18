@@ -82,9 +82,13 @@ bool Neural_Run()
 	};
 
 	
+	const int layers = 2;
+	const double multiplier = 2;
+	int cycles = 10;
 	
+	int progressInterval = 1000;
 	
-	
+	{
 	Net<long double> nn(2, 1);
 	nn.bounds.min = 0;
 	nn.bounds.max = 1;
@@ -93,11 +97,8 @@ bool Neural_Run()
 	nn.addData({1, 0}, {1});
 	nn.addData({1, 1}, {0});
 	
-	const int layers = 2;
-	const double multiplier = 2;
-	int cycles = 10;
 	
-	int progressInterval = 1000;
+	
 	
 	nn.grow(layers, multiplier, QUtils::NeuralNet::LayerType::Unique);
 	for (int i = 0; i < cycles; i++)
@@ -118,13 +119,18 @@ bool Neural_Run()
 	auto result4 = nn.go({1, 1});
 	dout << "Result for {1, 1}: " << vPrint(result4) << std::endl;
 	
+	}
+	
 	//typedef number<cpp_dec_float<10>> Precise;
 	typedef double Precise;
-	Precise x = 1;
-	x *= 4;
-	x = invSig_A(x);
-	x = invSig_D(x);
 	
+	{
+	
+	
+	
+	
+	
+	dout << "\nInitializing second neural net...\n";
 	Net<Precise> nn2(2, 1);
 	//nn2.setOutputActivation(invSig_A, invSig_D);
 	//nn2.addData({0, 0}, {0});
@@ -161,7 +167,7 @@ bool Neural_Run()
 	
 	auto result6_2 = nn2.go({1, 2});
 	dout << "Result for {1, 2}: " << vPrint(result6_2) << std::endl;
-	
+	}
 	
 	
 	return Mult_Test();
