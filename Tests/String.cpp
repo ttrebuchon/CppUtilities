@@ -231,6 +231,26 @@ bool Test_String()
 	dout << "cpp time:\t" << cppTime << "\nutil time:\t" << utilTime << std::endl;
 	assert_ex(utilTime - cppTime < 0.000015*perfcount);
 	
+	{
+		std::string cppStr = "\n\t\n\\  gh \n";
+		String str = cppStr;
+		assert_ex(cppStr == str);
+		
+		auto str2 = str.replace("\n", "abc");
+		assert_ex(str2 == "abc\tabc\\  gh abc");
+		
+		str = str.replace("\n", "abc");
+		assert_ex(str == "abc\tabc\\  gh abc");
+		assert_ex(str == str2);
+		
+		
+		str = cppStr;
+		
+		str2 = str.replace("\n", "\\n");
+		assert_ex(str2 == "\\n\t\\n\\  gh \\n");
+		
+		
+	}
 	
 	return true;
 }
