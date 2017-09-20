@@ -15,6 +15,38 @@
 
 namespace QUtils
 {
+	//Static Methods
+	void String::Replace(std::string& str, const std::string target, const std::string replacement)
+	{
+		std::string s = "";
+		//String str = this->str;
+		size_t pos;
+		while (str.length() > 0)
+		{
+			pos = str.find(target);
+			if (pos == std::string::npos)
+			{
+				s += str;
+				break;
+			}
+			s += str.substr(0, pos);
+			str = str.substr(pos+target.length());
+			s += replacement;
+		}
+		
+		str = s;
+	}
+	
+	void String::Replace(String& str, const std::string target, const std::string replacement)
+	{
+		String::Replace(str.str, target, replacement);
+	}
+	
+	
+	
+	
+	
+	
 	//Constructors
 	String::String(std::string str) : str(str)
 	{
@@ -87,28 +119,22 @@ namespace QUtils
 	
 	String String::replace(std::string target, std::string replacement) const
 	{
-		std::string s = "";
-		String str = this->str;
-		size_t pos;
-		while (str.length() > 0)
-		{
-			pos = str.find(target);
-			if (pos == std::string::npos)
-			{
-				s += str;
-				break;
-			}
-			s += str.substr(0, pos);
-			str = str.substr(pos+target.length());
-			s += replacement;
-		}
-
-
-		
-		return String(s);
+		String s = *this;
+		String::Replace(s, target, replacement);
+		return s;
 	}
 	
-	String String::substr(size_t start, size_t end) const
+	String String::substr(size_t start, size_t length) const
+	{
+		return String(str.substr(start, length));
+	}
+	
+	String String::substr(size_t start) const
+	{
+		return String(str.substr(start));
+	}
+	
+	String String::substring(size_t start, size_t end) const
 	{
 		if (end != -1)
 		{
@@ -435,39 +461,39 @@ namespace QUtils
 		return *this;
 	}
 	
-	String String::operator+(const String s) const
+	String operator+(const String s1, const String s2)
 	{
-		return str + s.str;
+		return s1.str + s2.str;
 	}
 	
-	String String::operator+(const std::string s) const
+	String operator+(const String s1, const std::string s2)
 	{
-		return str + s;
+		return s1.str + s2;
 	}
 
-	String String::operator+(const char* s) const
+	String operator+(const String s1, const char* s2)
 	{
-		return str + std::string(s);
+		return s1.str + s2;
 	}
 	
-	bool String::operator==(std::string s) const
+	bool operator==(const String s1, const std::string s2)
 	{
-		return (str == s);
+		return (s1.str == s2);
 	}
 	
-	bool String::operator==(const char* cs) const
+	bool operator==(const String s1, const char* s2)
 	{
-		return (strcmp(this->c_str(), cs) == 0);
+		return (strcmp(s1.c_str(), s2) == 0);
 	}
 	
-	bool String::operator!=(std::string s) const
+	bool operator!=(const String s1, const std::string s2)
 	{
-		return !(*this == s);
+		return s1.str != s2;
 	}
 	
-	bool String::operator!=(const char* c) const
+	bool operator!=(const String str, const char* s2)
 	{
-		return !(*this == c);
+		return str.str != s2;
 	}
 	
 	String& String::operator=(std::string s)

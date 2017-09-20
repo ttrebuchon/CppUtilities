@@ -24,6 +24,10 @@ namespace QUtils
 		protected:
 		
 		public:
+		
+		static void Replace(std::string&, const std::string target, const std::string replacement);
+		static void Replace(String&, const std::string target, const std::string replacement);
+		
 		String(std::string);
 		String(const char*);
 		String();
@@ -39,7 +43,9 @@ namespace QUtils
 		String toLower() const;
 		String toUpper() const;
 		String replace(std::string target, std::string replacement) const;
-		String substr(size_t start, size_t end = -1) const;
+		String substr(size_t start, size_t len) const;
+		String substr(size_t start) const;
+		String substring(size_t start, size_t end = -1) const;
 		bool empty() const;
 		char& at(int);
 		size_t find(const std::string, size_t start = 0) const;
@@ -95,13 +101,13 @@ namespace QUtils
 		operator std::string() const;
 		String& operator+=(std::string);
 		String& operator+=(char);
-		String operator+(const String) const;
+		/*String operator+(const String) const;
 		String operator+(const std::string) const;
 		String operator+(const char*) const;
 		bool operator==(std::string) const;
 		bool operator==(const char*) const;
 		bool operator!=(std::string) const;
-		bool operator!=(const char*) const;
+		bool operator!=(const char*) const;*/
 		String& operator=(std::string);
 		String& operator=(String&);
 		char& operator[](int);
@@ -113,6 +119,15 @@ namespace QUtils
 		//Friends
 		friend std::istream& std::getline(std::istream&, String&);
 		friend std::istream& std::getline(std::istream&, String&, char);
+		friend bool operator==(const String, const std::string);
+		friend bool operator!=(const String, const std::string);
+		
+		friend bool operator==(const String, const char* c);
+		friend bool operator!=(const String, const char* c);
+		
+		friend String operator+(const String, const String);
+		friend String operator+(const String, const std::string);
+		friend String operator+(const String, const char*);
 	};
 	
 	template <>
@@ -137,8 +152,12 @@ namespace QUtils
 	
 	
 	//Non-Member Functions
-	String operator+(const char* c, String s);
-	String operator+(std::string c, String s);
+	//String operator+(const char* c, String s);
+	//String operator+(std::string c, String s);
+	//bool operator==(const char* c, String s);
+	//bool operator==(std::string c, String s);
+	//bool operator!=(const char* c, String s);
+	//bool operator!=(std::string c, String s);
 	std::ostream& operator<<(std::ostream&, String);
 	
 }
