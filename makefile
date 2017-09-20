@@ -100,7 +100,7 @@ Drawing_SDL_cpp = $(wildcard $(SRC)/Drawing/SDL/**/*.cpp) $(wildcard $(SRC)/Draw
 Drawing_SDL = $(Drawing_SDL_cpp:.cpp=.o)
 #*/
 
-CodeGen_cpp = $(wildcard $(SRC)/CodeGen/**/*.cpp) $(wildcard $(SRC)/CodeGen/*.cpp)
+CodeGen_cpp = $(wildcard $(SRC)/CodeGen/**/*.cpp) $(wildcard $(SRC)/CodeGen/**/**/*.cpp) $(wildcard $(SRC)/CodeGen/**/**/**/*.cpp) $(wildcard $(SRC)/CodeGen/*.cpp)
 CodeGen = $(CodeGen_cpp:.cpp=.o)
 #*/
 
@@ -204,7 +204,7 @@ target = $(name)Tests.out
 buildOC = gcc -std=c99 -c -pie
 
 
-$(target): $(stLibTarget).a $(testobjects) makefile $(libobjects)
+$(target): $(stLibTarget).a $(testobjects) makefile $(libobjects) SrcTest.o
 	$(CXX) -o $(target) $(CXXFLAGS) -std=c++11 $(testobjects) -L. -l$(name) $(PREPROC_FLAGS) $(LINKING)
 	
 
