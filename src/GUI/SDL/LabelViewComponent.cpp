@@ -305,9 +305,9 @@ namespace QUtils::GUI::SDL
 			{
 				updateNativeDims();
 			}
-			nativeW = lastNativeW;
-			nativeH = lastNativeH;
 		}
+		nativeW = lastNativeW;
+		nativeH = lastNativeH;
 		
 		if (tmpW >= 0)
 		{
