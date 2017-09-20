@@ -66,4 +66,14 @@ namespace QUtils::CodeGen
 		return std::shared_ptr<FunctionDeclarationNode>(clone());
 	}
 	
+	std::shared_ptr<FunctionDeclarationNode> FunctionDeclarationNode::Create(const std::string returnType, const std::string identifier, std::vector<std::shared_ptr<Node>> arguments, std::shared_ptr<BodyNode> body)
+	{
+		return std::make_shared<FunctionDeclarationNode>(returnType, identifier, arguments, body);
+	}
+	
+	std::shared_ptr<FunctionDeclarationNode> FunctionDeclarationNode::Create(const std::string returnType, const std::string identifier, std::shared_ptr<BodyNode> body)
+	{
+		return std::make_shared<FunctionDeclarationNode>(returnType, identifier, body);
+	}
+	
 }

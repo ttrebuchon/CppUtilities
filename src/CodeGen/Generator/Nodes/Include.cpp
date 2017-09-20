@@ -52,4 +52,9 @@ namespace QUtils::CodeGen
 		return std::shared_ptr<IncludeNode>(clone());
 	}
 	
+	std::shared_ptr<IncludeNode> IncludeNode::Create(const std::string path, bool relative)
+	{
+		return std::make_shared<IncludeNode>(path, relative);
+	}
+	
 }

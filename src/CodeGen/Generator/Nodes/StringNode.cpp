@@ -37,4 +37,9 @@ namespace QUtils::CodeGen
 	{
 		return std::shared_ptr<StringNode>(clone());
 	}
+	
+	std::shared_ptr<StringNode> StringNode::Create(const std::string str)
+	{
+		return std::make_shared<StringNode>(str);
+	}
 }

@@ -39,26 +39,32 @@ bool Test_CodeGen_Utility()
 	{
 		QUtils::CodeGen::Generator gen;
 		
-		auto inc = std::make_shared<QUtils::CodeGen::IncludeNode>("string");
+		//auto inc = std::make_shared<QUtils::CodeGen::IncludeNode>("string");
+		auto inc = QUtils::CodeGen::IncludeNode::Create("string");
 		
 		dout << inc->toString(0) << "\n";
 		
-		auto ns = std::make_shared<QUtils::CodeGen::NamespaceNode>("TestNS");
-		auto ns2 = std::make_shared<QUtils::CodeGen::NamespaceNode>("TestNS2");
+		//auto ns = std::make_shared<QUtils::CodeGen::NamespaceNode>("TestNS");
+		auto ns = QUtils::CodeGen::NamespaceNode::Create("TestNS");
+		//auto ns2 = std::make_shared<QUtils::CodeGen::NamespaceNode>("TestNS2");
+		auto ns2 = QUtils::CodeGen::NamespaceNode::Create("TestNS2");
 		ns->children.push_back(ns2);
 		
 		dout << ns->toString(0) << "\n";
 		
 		gen.add(inc);
 		gen.add(ns);
-		ns2->children.push_back(std::make_shared<QUtils::CodeGen::StringNode>("//Hello\n//World!\n//This is a\n//test!\n"));
+		//ns2->children.push_back(std::make_shared<QUtils::CodeGen::StringNode>("//Hello\n//World!\n//This is a\n//test!\n"));
+		ns2->children.push_back(QUtils::CodeGen::StringNode::Create("//Hello\n//World!\n//This is a\n//test!\n"));
 		
-		auto fooBody = std::make_shared<QUtils::CodeGen::FunctionBodyNode>();
+		auto fooBody = QUtils::CodeGen::FunctionBodyNode::Create();
 		
 		const std::string fooString = "Hello world!";
-		fooBody->children.push_back(std::make_shared<QUtils::CodeGen::StringNode>("return \"" + fooString + "\";\n"));
 		
-		auto fooFunc = std::make_shared<QUtils::CodeGen::FunctionDeclarationNode>("std::string", "foo", fooBody);
+		auto fooStmtChild = QUtils::CodeGen::StringNode::Create("\"" + fooString + "\"");
+		fooBody->children.push_back(QUtils::CodeGen::ReturnStatementNode::Create(fooStmtChild));
+		
+		auto fooFunc = QUtils::CodeGen::FunctionDeclarationNode::Create("std::string", "foo", fooBody);
 		
 		ns2->children.push_back(fooFunc);
 		

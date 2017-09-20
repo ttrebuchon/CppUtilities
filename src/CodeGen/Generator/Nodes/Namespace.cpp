@@ -37,4 +37,9 @@ namespace QUtils::CodeGen
 	{
 		return std::shared_ptr<NamespaceNode>(clone());
 	}
+	
+	std::shared_ptr<NamespaceNode> NamespaceNode::Create(const std::string ns)
+	{
+		return std::make_shared<NamespaceNode>(ns);
+	}
 }

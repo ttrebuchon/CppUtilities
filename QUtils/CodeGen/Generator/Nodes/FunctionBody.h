@@ -24,5 +24,7 @@ namespace QUtils::CodeGen
 		virtual std::string toString(const unsigned int indentation, bool startIndent = false) const override;
 		
 		std::shared_ptr<FunctionBodyNode> copy() const;
+		
+		static std::shared_ptr<FunctionBodyNode> Create();
 	};
 }

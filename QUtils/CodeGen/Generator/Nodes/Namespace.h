@@ -25,5 +25,7 @@ namespace QUtils::CodeGen
 		virtual std::string toString(const unsigned int indentation, bool startIndent = false) const override;
 		
 		std::shared_ptr<NamespaceNode> copy() const;
+		
+		static std::shared_ptr<NamespaceNode> Create(const std::string);
 	};
 }

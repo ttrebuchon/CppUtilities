@@ -21,5 +21,7 @@ namespace QUtils::CodeGen
 		virtual std::string toString(const unsigned int, bool startIndent = false) const override;
 		
 		std::shared_ptr<StringNode> copy() const;
+		
+		static std::shared_ptr<StringNode> Create(const std::string);
 	};
 }

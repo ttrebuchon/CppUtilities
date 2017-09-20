@@ -31,4 +31,9 @@ namespace QUtils::CodeGen
 	{
 		return std::shared_ptr<FunctionBodyNode>(clone());
 	}
+	
+	std::shared_ptr<FunctionBodyNode> FunctionBodyNode::Create()
+	{
+		return std::make_shared<FunctionBodyNode>();
+	}
 }
