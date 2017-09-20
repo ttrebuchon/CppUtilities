@@ -11,8 +11,7 @@ namespace QUtils::CodeGen
 		protected:
 		std::string identifier;
 		std::string returnType;
-		std::vector<std::shared_ptr<Node>> arguments;
-		std::shared_ptr<BodyNode> body;
+		
 		
 		virtual FunctionDeclarationNode* clone() const override;
 		virtual void clone(FunctionDeclarationNode*) const;
@@ -20,6 +19,9 @@ namespace QUtils::CodeGen
 		public:
 		FunctionDeclarationNode(const std::string returnType, const std::string identifier, std::vector<std::shared_ptr<Node>> arguments, std::shared_ptr<BodyNode> body = NULL);
 		FunctionDeclarationNode(const std::string returnType, const std::string identifier, std::shared_ptr<BodyNode> body = NULL);
+		
+		std::vector<std::shared_ptr<Node>> arguments;
+		std::shared_ptr<BodyNode> body;
 		
 		
 		virtual std::string toString(const unsigned int indentation, bool startIndent = false) const override;

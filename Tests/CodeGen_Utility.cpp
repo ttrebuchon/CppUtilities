@@ -59,9 +59,9 @@ bool Test_CodeGen_Utility()
 		
 		auto fooBody = QUtils::CodeGen::FunctionBodyNode::Create();
 		
-		const std::string fooString = "Hello world!";
+		const std::string fooString = "Hello!\b,\nworld.\b!\tTest\vTest2\n\n\fTest3\a";
 		
-		auto fooStmtChild = QUtils::CodeGen::StringNode::Create("\"" + fooString + "\"");
+		auto fooStmtChild = QUtils::CodeGen::LiteralNode::Create(fooString);
 		fooBody->children.push_back(QUtils::CodeGen::ReturnStatementNode::Create(fooStmtChild));
 		
 		auto fooFunc = QUtils::CodeGen::FunctionDeclarationNode::Create("std::string", "foo", fooBody);
@@ -74,6 +74,8 @@ bool Test_CodeGen_Utility()
 		gen.writeToFile("SrcTest2.cpp");
 		
 		assert_ex(TestNS::TestNS2::foo() == fooString);
+		
+		dout << "String: " << TestNS::TestNS2::foo() << std::endl;
 		
 	}
 	

@@ -110,12 +110,27 @@ namespace QUtils::CodeGen
 			return s;
 		}
 		
-		/*
-		void escapeString(std::string&)
+		
+		void modifyEscapeString(std::string& str)
 		{
-			//TODO
+			QUtils::String::Replace(str, "\\", "\\\\");
+			QUtils::String::Replace(str, "\n", "\\n");
+			QUtils::String::Replace(str, "\r", "\\r");
+			QUtils::String::Replace(str, "\t", "\\t");
+			//QUtils::String::Replace(str, "\0", "\\0");
+			QUtils::String::Replace(str, "\"", "\\\"");
+			QUtils::String::Replace(str, "\v", "\\v");
+			QUtils::String::Replace(str, "\b", "\\b");
+			QUtils::String::Replace(str, "\f", "\\f");
+			QUtils::String::Replace(str, "\a", "\\a");
 		}
-		*/
+		
+		
+		std::string escapeString(std::string str)
+		{
+			modifyEscapeString(str);
+			return str;
+		}
 		
 		void indentMultiLine(std::string& str, unsigned int count)
 		{

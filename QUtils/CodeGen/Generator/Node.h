@@ -44,7 +44,9 @@ namespace QUtils::CodeGen
 	{
 		void indent(std::string&, unsigned int count);
 		std::string indent(unsigned int count);
-		void escapeString(std::string&);
+		void modifyEscapeString(std::string&);
+		
+		std::string escapeString(std::string);
 		
 		void indentMultiLine(std::string&, unsigned int count);
 	}
