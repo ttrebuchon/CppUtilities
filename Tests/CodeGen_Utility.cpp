@@ -59,7 +59,7 @@ bool Test_CodeGen_Utility()
 		
 		auto fooBody = QUtils::CodeGen::FunctionBodyNode::Create();
 		
-		const std::string fooString = "Hello!\b,\nworld.\b!\tTest\vTest2\n\n\fTest3\a";
+		const std::string fooString = "Hello!\b,\nworld.\b!\tTest\vTest2\n\n\fTest3\a\a\a\n\\Testing!";
 		
 		auto fooStmtChild = QUtils::CodeGen::LiteralNode::Create(fooString);
 		fooBody->children.push_back(QUtils::CodeGen::ReturnStatementNode::Create(fooStmtChild));

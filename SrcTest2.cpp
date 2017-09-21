@@ -9,7 +9,7 @@ namespace TestNS
 		//test!
 		std::string foo()
 		{
-			return "Hello!\b,\nworld.\b!\tTest\vTest2\n\n\fTest3\a";
+			return "Hello!\b,\nworld.\b!\tTest\vTest2\n\n\fTest3\a\a\a\n\\Testing!";
 		}
 	}
 }
