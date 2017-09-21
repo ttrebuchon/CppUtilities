@@ -11,12 +11,17 @@ namespace QUtils::CodeGen
 		
 		protected:
 		
+		std::string value;
+		std::string suffix;
+		
 		virtual NumericLiteralNode* clone() const override;
 		
 		virtual std::string literalText() const override;
 		
+		NumericLiteralNode(const std::string val, const std::string suffix);
+		
 		public:
-		NumericLiteralNode(const char);
+		
 		
 		
 		static std::shared_ptr<NumericLiteralNode> Create(const int);

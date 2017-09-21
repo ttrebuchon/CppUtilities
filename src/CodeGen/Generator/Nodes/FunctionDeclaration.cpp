@@ -64,6 +64,7 @@ namespace QUtils::CodeGen
 		auto cvStr = CVQualifiers::toString(indentation, false) + " ";
 		QUtils::String::Replace(cvStr, "const ", "");
 		QUtils::String::Replace(cvStr, "  ", " ");
+		QUtils::String::Trim(cvStr);
 		
 		str += cvStr;
 		str += returnType + " " + identifier + "(";

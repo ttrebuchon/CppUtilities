@@ -39,14 +39,14 @@ bool Test_CodeGen_Utility()
 	{
 		QUtils::CodeGen::Generator gen;
 		
-		//auto inc = std::make_shared<QUtils::CodeGen::IncludeNode>("string");
+		auto preprocDef = QUtils::CodeGen::StringNode::Create("#define SRCTEST2\n");
+		gen.add(preprocDef);
+		
 		auto inc = QUtils::CodeGen::IncludeNode::Create("string");
 		
 		dout << inc->toString(0) << "\n";
 		
-		//auto ns = std::make_shared<QUtils::CodeGen::NamespaceNode>("TestNS");
 		auto ns = QUtils::CodeGen::NamespaceNode::Create("TestNS");
-		//auto ns2 = std::make_shared<QUtils::CodeGen::NamespaceNode>("TestNS2");
 		auto ns2 = QUtils::CodeGen::NamespaceNode::Create("TestNS2");
 		ns->children.push_back(ns2);
 		
@@ -54,7 +54,6 @@ bool Test_CodeGen_Utility()
 		
 		gen.add(inc);
 		gen.add(ns);
-		//ns2->children.push_back(std::make_shared<QUtils::CodeGen::StringNode>("//Hello\n//World!\n//This is a\n//test!\n"));
 		ns2->children.push_back(QUtils::CodeGen::StringNode::Create("//Hello\n//World!\n//This is a\n//test!\n"));
 		
 		auto fooBody = QUtils::CodeGen::FunctionBodyNode::Create();
@@ -72,8 +71,9 @@ bool Test_CodeGen_Utility()
 		gen.generate(dout);
 		
 		gen.writeToFile("SrcTest2.cpp");
-		
+		#ifdef SRCTEST2
 		assert_ex(TestNS::TestNS2::foo() == fooString);
+		#endif
 		
 		dout << "String: " << TestNS::TestNS2::foo() << std::endl;
 		
@@ -91,7 +91,36 @@ bool Test_CodeGen_Utility()
 		
 		gen.generate(dout);
 		
+		fooFunc->isConst = false;
+		fooFunc->isConstexpr = false;
+		fooFunc->isExtern = false;
+		fooFunc->isVirtual = false;
+		fooFunc->isOverride = false;
+		fooFunc->isNoExcept = false;
+		fooFunc->isVolatile = false;
+		fooFunc->isMutable = false;
+		fooFunc->isThread_Local = false;
+		fooFunc->isStatic = false;
+		
+		
+		
+		auto numFunc = QUtils::CodeGen::FunctionDeclarationNode::Create("double", "numFoo");
+		
+		ns2->children.push_back(numFunc);
+		auto numBody = QUtils::CodeGen::FunctionBodyNode::Create();
+		numFunc->body = numBody;
+		
+		double num = 1998777ULL;
+		
+		numBody->children.push_back(QUtils::CodeGen::ReturnStatementNode::Create(QUtils::CodeGen::LiteralNode::Create(num)));
+		
+		gen.generate(dout);
+		gen.writeToFile("srcTest2.cpp");
+		
+		#ifdef SRCTEST2
+		assert_ex(TestNS::TestNS2::numFoo() == num);
+		#endif
 	}
 	
-	return true;
+	return false;
 }
