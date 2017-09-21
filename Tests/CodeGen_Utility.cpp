@@ -77,6 +77,20 @@ bool Test_CodeGen_Utility()
 		
 		dout << "String: " << TestNS::TestNS2::foo() << std::endl;
 		
+		fooFunc->isConst = true;
+		fooFunc->isConstexpr = true;
+		fooFunc->isExtern = true;
+		fooFunc->isVirtual = true;
+		fooFunc->isOverride = true;
+		fooFunc->isNoExcept = true;
+		fooFunc->isVolatile = true;
+		fooFunc->isMutable = true;
+		fooFunc->isThread_Local = true;
+		fooFunc->isStatic = true;
+		
+		
+		gen.generate(dout);
+		
 	}
 	
 	return true;
