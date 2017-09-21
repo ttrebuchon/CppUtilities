@@ -27,6 +27,12 @@ namespace QUtils
 		
 		static void Replace(std::string&, const std::string target, const std::string replacement);
 		static void Replace(String&, const std::string target, const std::string replacement);
+		static void Trim(std::string&);
+		static void Trim(String&);
+		static void TrimStart(std::string&);
+		static void TrimStart(String&);
+		static void TrimEnd(std::string&);
+		static void TrimEnd(String&);
 		
 		String(std::string);
 		String(const char*);
@@ -57,6 +63,8 @@ namespace QUtils
 		//bool endsWith(std::string) const;
 		String removeWhitespaces() const;
 		String trim() const;
+		String trimStart() const;
+		String trimEnd() const;
 		std::vector<String> separateBy(std::string token) const;
 		std::vector<String> split(std::string token) const;
 		String reverse() const;

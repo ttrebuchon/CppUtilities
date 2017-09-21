@@ -42,6 +42,59 @@ namespace QUtils
 		String::Replace(str.str, target, replacement);
 	}
 	
+	void String::Trim(std::string& str)
+	{
+		TrimStart(str);
+		TrimEnd(str);
+	}
+	
+	void String::Trim(String& str)
+	{
+		String::Trim(str.str);
+	}
+	
+	void String::TrimStart(std::string& str)
+	{
+		int i;
+		for (i = 0; i < str.length(); ++i)
+		{
+			if (str[i] != ' ' && str[i] != '\t')
+			{
+				break;
+			}
+		}
+		if (i > 0)
+		{
+			str = str.substr(i);
+		}
+	}
+	
+	void String::TrimStart(String& str)
+	{
+		String::TrimStart(str.str);
+	}
+	
+	void String::TrimEnd(std::string& str)
+	{
+		int i;
+		for (i = str.length()-1; i >= 0; --i)
+		{
+			if (str[i] != ' ' && str[i] != '\t')
+			{
+				break;
+			}
+		}
+		if (i < str.length()-1)
+		{
+			str = str.substr(0, i);
+		}
+	}
+	
+	void String::TrimEnd(String& str)
+	{
+		String::TrimEnd(str.str);
+	}
+	
 	
 	
 	
@@ -249,7 +302,23 @@ namespace QUtils
 	
 	String String::trim() const
 	{
-		return removeWhitespaces();
+		String s = *this;
+		String::Trim(s);
+		return s;
+	}
+	
+	String String::trimStart() const
+	{
+		String s = *this;
+		String::TrimStart(s);
+		return s;
+	}
+	
+	String String::trimEnd() const
+	{
+		String s = *this;
+		String::TrimEnd(s);
+		return s;
 	}
 	
 	std::vector<String> String::separateBy(std::string token) const
