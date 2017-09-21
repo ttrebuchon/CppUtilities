@@ -189,19 +189,19 @@ target = lib$(name).a
 buildOC = gcc -std=c99 -c -pie
 
 all: $(target) UtilityTests.out
-	(cd Tests ; make)
-
+	(cd Tests ; $(MAKE) $(MAKEFLAGS))
+	cp Tests/UtilityTests.out .
 
 
 $(target): $(objects) makefile
 	[[ -d objs ]] || mkdir objs
 	cd objs ; ar -xv ../$(Deps_D)/sqlite3/libsqlite3.a ; ar -xv ../$(Deps_D)/curlpp/libcurlpp.a ; ar -xv ../$(Deps_D)/Clips/libclips++.a
 	ar rvs $(target) $(wildcard objs/*.o) $(objects)
-	#*/
+	#*/)
 	#$(CXX) -static-libstdc++ -static-libgcc $(objects) $(Deps_D)/sqlite3/libsqlite3.a $(Deps_D)/curlpp/libcurlpp.a -o object.o $(DEPS) -lcurl $(LINKING)
 
 UtilityTests.out: $(target)
-	(cd tests; make)
+	(cd tests; $(MAKE) $(MAKEFLAGS))
 	cp Tests/UtilityTests.out .
 	
 
@@ -213,4 +213,4 @@ clean:
 
 	
 
--include $(libdeps)
+-include $(deps)

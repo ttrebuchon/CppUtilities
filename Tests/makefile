@@ -79,7 +79,7 @@ LIB_FILE = ../lib$(LIB).a
 target = UtilityTests.out
 
 
-$(target): $(testobjects) makefile ../SrcTest.o
+$(target): $(testobjects) makefile ../SrcTest.o ../lib$(LIB).a
 	ls ..
 	$(CXX) -o $(target) $(CXXFLAGS) $(testobjects) -L../ -l$(LIB) $(PREPROC_FLAGS) $(LINKING)
 	
