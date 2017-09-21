@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef DEBUG
+
 
 #include <exception>
 #include <sstream>
@@ -164,4 +164,3 @@ class NotImplementedException : public std::exception
 
 
 #define NotImp() (NotImplementedException("", __func__).Line(__LINE__).File(__FILE__))
-#endif
