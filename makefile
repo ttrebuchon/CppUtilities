@@ -105,13 +105,8 @@ CodeGen = $(CodeGen_cpp:.cpp=.o)
 #*/
 
 
-libobjects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen)
+objects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen)
 
-
-Tests_cpp = $(wildcard Tests/*.cpp)
-Tests = $(Tests_cpp:.cpp=.o)
-#*/
-testobjects = Tests.o $(Tests)
 
 NAMESPACE=QUtils
 
@@ -119,14 +114,6 @@ SQL_FLAGS = -DSQLITE_ENABLE_COLUMN_METADATA -DSQLITE_DEFAULT_MEMSTATUS=0 -DSQLIT
 
 
 PREPROC_FLAGS = -D__NS__="$(NAMESPACE)"
-
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DSHORT_TEST
-
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DDEBUG
-
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DSEED
-
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DTEST_DEBUG
 
 PREPROC_FLAGS := $(PREPROC_FLAGS) $(SQL_FLAGS)
 
@@ -193,34 +180,37 @@ endif
 
 
 CXX = g++
-CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Og $(DEPS)
+CXXFLAGS = --static -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Og $(DEPS)# $(LINKING)
 CXXFLAGS := $(CXXFLAGS) -Wall
-libdeps = $(libobjects:.o=.d)
-testdeps = $(testobjects:.o=.d)
+deps = $(objects:.o=.d)
 name = Utility
-stLibTarget = lib$(name)
-target = $(name)Tests.out
+target = lib$(name).a
 
 buildOC = gcc -std=c99 -c -pie
 
+all: $(target) UtilityTests.out
+	(cd Tests ; make)
 
-$(target): $(stLibTarget).a $(testobjects) makefile $(libobjects) SrcTest.o
-	$(CXX) -o $(target) $(CXXFLAGS) -std=c++11 $(testobjects) -L. -l$(name) $(PREPROC_FLAGS) $(LINKING)
+
+
+$(target): $(objects) makefile
+	[[ -d objs ]] || mkdir objs
+	cd objs ; ar -xv ../$(Deps_D)/sqlite3/libsqlite3.a ; ar -xv ../$(Deps_D)/curlpp/libcurlpp.a ; ar -xv ../$(Deps_D)/Clips/libclips++.a
+	ar rvs $(target) $(wildcard objs/*.o) $(objects)
+	#*/
+	#$(CXX) -static-libstdc++ -static-libgcc $(objects) $(Deps_D)/sqlite3/libsqlite3.a $(Deps_D)/curlpp/libcurlpp.a -o object.o $(DEPS) -lcurl $(LINKING)
+
+UtilityTests.out: $(target)
+	(cd tests; make)
+	cp Tests/UtilityTests.out .
 	
 
-clean: 
+clean:
 	rm -f $(libobjects)
 	rm -f $(libobjects:.o=.d)
+	(cd Tests; make clean)
 
 
-$(stLibTarget).a: $(libobjects)
-	[[ -d objs ]] || mkdir objs
-	cd objs ; ar -xv ../$(Deps_D)/sqlite3/libsqlite3.a ; ar -xv ../$(Deps_D)/curlpp/libcurlpp.a
-	ar rvs $(stLibTarget).a $(libobjects) $(wildcard objs/*.o)
-#*/
 	
-Tests.o: makefile Tests.cpp
-	$(CXX) $(CXXFLAGS) -c Tests.cpp
 
 -include $(libdeps)
--include $(testdeps)
