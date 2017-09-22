@@ -7,6 +7,8 @@
 #include <exception>
 #include <QUtils/Genetic/Genetic.h>
 
+#include "../Data/TravelingSalesmanData.h"
+
 
 void generateProblem(const int count, const int bound, std::vector<std::tuple<int, int, double>>& edges)
 {
@@ -241,8 +243,8 @@ bool Test_Genetic_Module(const std::map<int, std::map<int, double>>& edges, cons
 
 bool Test_TravellingSalesman()
 {
-	const int count = 200;
-	const int bound = 10;
+	const int count = TSData::count;//200;
+	const int bound = TSData::bound;//10;
 	const int popSize = 100;
 	const int generations = 50;
 	const int genotype = count / 3;
@@ -250,17 +252,17 @@ bool Test_TravellingSalesman()
 	
 	
 	
-	std::vector<std::tuple<int, int, double>> rawData;
+	/*std::vector<std::tuple<int, int, double>> rawData;
 	dout << "Generating problem..." << std::endl;
-	generateProblem(count, bound, rawData);
+	generateProblem(count, bound, rawData);*/
 	
-	std::map<int, std::map<int, double>> edges;
+	std::map<int, std::map<int, double>> edges = TSData::edges;
 	
-	dout << "Organizing data..." << std::endl;
+	/*dout << "Organizing data..." << std::endl;
 	for (auto& e : rawData)
 	{
 		edges[std::get<0>(e)][std::get<1>(e)] = std::get<2>(e);
-	}
+	}*/
 	
 	
 	
