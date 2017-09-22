@@ -44,7 +44,7 @@ endif
 
 
 
-WARNINGS_ERRORS = -ftemplate-backtrace-limit=0
+WARNINGS_ERRORS = -ftemplate-backtrace-limit=0 -Wno-sign-compare
 
 WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wfatal-errors 
 
@@ -69,9 +69,12 @@ LINKING := $(LINKING) -lSDL2 -ltiff -lSDL2_ttf
 endif
 
 
+INCLUDES = -I ../Deps/curlpp/include
+
+
 
 CXX = g++
-CXXFLAGS = -std=c++14 -MMD -fpic $(PREPROC_FLAGS) $(FLAGS) $(WARNINGS_ERRORS) -Og
+CXXFLAGS = -std=c++14 -MMD -fpic -I ../.. $(PREPROC_FLAGS) $(FLAGS) $(WARNINGS_ERRORS) -Og $(INCLUDES)
 CXXFLAGS := $(CXXFLAGS) -Wall
 testdeps = $(testobjects:.o=.d)
 LIB = Utility

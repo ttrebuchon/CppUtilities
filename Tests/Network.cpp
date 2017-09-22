@@ -1,7 +1,7 @@
 #include "../Tests_Helpers.h"
 #include <QUtils/Network/Network.h>
 #include <QUtils/Network/Service.h>
-#include <json/json.hpp>
+#include "../Deps/json/json.hpp"
 
 #ifdef QUTILS_HAS_CURL
 #include <curlpp/cURLpp.hpp>

@@ -2,7 +2,7 @@
 
 #include <QUtils/SQL/SQL.h>
 
-#include <sqlite3.h>
+#include "../Deps/sqlite3/sqlite3.h"
 
 #include <QUtils/SQL/SQL_Name.h>
 
