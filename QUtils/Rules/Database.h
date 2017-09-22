@@ -1,7 +1,11 @@
 #pragma once
 #include <string>
 #include <map>
+#ifdef QUTILS_CASTOR_AVAILABLE
 #include <castor.h>
+#else
+#include "../../Deps/Castor/castor.h"
+#endif
 #include "Record.h"
 #include <iostream>
 

@@ -1,7 +1,11 @@
 #pragma once
 #include <tuple>
 #include <vector>
+#ifdef QUTILS_CASTOR_AVAILABLE
 #include <castor.h>
+#else
+#include "../../Deps/Castor/castor.h"
+#endif
 #include <functional>
 #include <QUtils/Tuple/Tuple.h>
 
