@@ -9,3 +9,5 @@
 #include "ReturnStatement.h"
 #include "Literal.h"
 #include "CVQualifiers.h"
+#include "VariableDeclaration.h"
+#include "InitializerList.h"

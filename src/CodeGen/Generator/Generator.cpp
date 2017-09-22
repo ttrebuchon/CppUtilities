@@ -59,4 +59,9 @@ namespace QUtils::CodeGen
 	{
 		return children.size();
 	}
+	
+	void Generator::insert(const std::size_t index, std::shared_ptr<Node> node)
+	{
+		children.insert(children.begin() + index, node);
+	}
 }

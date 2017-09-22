@@ -28,7 +28,7 @@ namespace QUtils::CodeGen
 		ptr->templateArguments.clear();
 		for (const auto arg : this->templateArguments)
 		{
-			ptr->templateArguments.push_back(arg->copy());
+			ptr->templateArguments.push_back(arg != NULL ? arg->copy() : NULL);
 		}
 		
 		ptr->body = (this->body != NULL ? this->body->copy() : NULL);
@@ -67,7 +67,30 @@ namespace QUtils::CodeGen
 		QUtils::String::Trim(cvStr);
 		
 		str += cvStr;
-		str += returnType + " " + identifier + "(";
+		str += returnType + " " + identifier;
+		
+		if (templateArguments.size() > 0)
+		{
+			str += "<";
+			
+			bool firstArg = true;
+			for (auto arg : templateArguments)
+			{
+				if (arg != NULL)
+				{
+					if (!firstArg)
+					{
+						str += ", ";
+					}
+					str += arg->toString(0, false);
+					firstArg = false;
+				}
+			}
+			
+			str += ">";
+		}
+		
+		str += "(";
 		for (int i = 0; i < arguments.size(); ++i)
 		{
 			if (i != 0)

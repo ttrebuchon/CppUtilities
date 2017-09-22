@@ -32,6 +32,7 @@ namespace QUtils::CodeGen
 		std::shared_ptr<const Node> at(const unsigned int) const;
 		void add(std::shared_ptr<Node>);
 		unsigned int size() const;
+		void insert(const std::size_t, std::shared_ptr<Node>);
 		
 	};
 }
