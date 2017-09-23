@@ -52,6 +52,7 @@ namespace Network_Test
 		Easy request2;
 		request2.setOpt<Url>("https://www.reddit.com/.json");
 		request2.setOpt(Header(true));
+		request2.setOpt<Timeout>(2); //Set timeout to 2 seconds
 		std::stringstream ss;
 		request2.setOpt(WriteStream(&ss));
 		try
@@ -74,6 +75,7 @@ namespace Network_Test
 			
 			request.setOpt<Url>(url);
 			request.setOpt<WriteStream>(&ss);
+			request.setOpt<Timeout>(2); //Set timeout to 2 seconds
 			
 			try
 			{
@@ -101,6 +103,7 @@ namespace Network_Test
 		request2.setOpt<Url>(annaURL);
 		request2.setOpt<FollowLocation>(true);
 		request2.setOpt<Header>(false);
+		request2.setOpt<Timeout>(2); //Set timeout to 2 seconds
 		
 		try
 		{
