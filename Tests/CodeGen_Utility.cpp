@@ -6,6 +6,7 @@
 
 #include <map>
 #include <math.h>
+#include <fstream>
 
 
 using namespace QUtils::CodeGen;
@@ -29,10 +30,24 @@ bool Test_CodeGen_Utility()
 		embed.addItem("Hello,\n world!");
 		embed.addItem(4.5);
 		
-		embed.fileWrite("SrcTest.cpp");
+		
+		
 		#ifdef TESTNS_DEFINED
 		TestNS::helloWorld();
+		std::ifstream file("SrcTest.cpp");
+		std::stringstream src;
+		src << file.rdbuf();
+		file.close();
+		
+		std::stringstream ss;
+		embed.write(ss);
+		
+		assert_ex(src.str() == ss.str());
+		#else
+		embed.fileWrite("SrcTest.cpp");
 		#endif
+		
+		embed.write(dout);
 		
 	}
 	
@@ -75,12 +90,15 @@ bool Test_CodeGen_Utility()
 		dout << "\n\n";
 		gen.generate(dout);
 		
-		gen.writeToFile("SrcTest2.cpp");
+		
 		#ifdef SRCTEST2
 		assert_ex(TestNS::TestNS2::foo() == fooString);
+		dout << "String: " << TestNS::TestNS2::foo() << std::endl;
+		#else
+		gen.writeToFile("SrcTest2.cpp");
 		#endif
 		
-		dout << "String: " << TestNS::TestNS2::foo() << std::endl;
+		
 		
 		fooFunc->isConst = true;
 		fooFunc->isConstexpr = true;
@@ -120,10 +138,12 @@ bool Test_CodeGen_Utility()
 		numBody->children.push_back(::ReturnStatementNode::Create(LiteralNode::Create(num)));
 		
 		gen.generate(dout);
-		gen.writeToFile("srcTest2.cpp");
+		
 		
 		#ifdef SRCTEST2
 		assert_ex(TestNS::TestNS2::numFoo() == num);
+		#else
+		gen.writeToFile("srcTest2.cpp");
 		#endif
 		
 		numFunc->templateArguments.push_back(NULL);
@@ -152,12 +172,29 @@ bool Test_CodeGen_Utility()
 		
 		gen.generate(dout);
 		
-		gen.writeToFile("SrcTest2.cpp");
+		
 		#ifdef SRCTEST2
 		for (int i = 0; i < 10; ++i)
 		{
 			assert_ex(TestNS::TestNS2::x.at(i) == i);
 		}
+		
+		std::ifstream file("SrcTest2.cpp");
+		std::stringstream src;
+		src << file.rdbuf();
+		file.close();
+		
+		std::stringstream ss;
+		gen.generate(ss);
+		
+		if (ss.str() != src.str())
+		{
+			gen.writeToFile("SrcTest2.cpp");
+		}
+		assert_ex(ss.str() == src.str());
+		
+		#else
+		gen.writeToFile("SrcTest2.cpp");
 		#endif
 		
 	}

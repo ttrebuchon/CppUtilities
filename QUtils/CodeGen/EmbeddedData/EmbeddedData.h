@@ -136,6 +136,8 @@ namespace QUtils::CodeGen
 		
 		void fileWrite(const std::string file) const;
 		
+		void write(std::ostream&) const;
+		
 		void generate() const;
 		
 		template <class Item>
@@ -158,6 +160,8 @@ namespace QUtils::CodeGen
 		{ setReplace(x); }
 		inline const std::string& getSymbol() const
 		{ return getReplace(); }
+		
+		
 		
 		
 	};

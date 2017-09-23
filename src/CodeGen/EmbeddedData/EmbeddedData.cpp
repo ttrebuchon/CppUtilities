@@ -62,14 +62,20 @@ namespace QUtils::CodeGen
 	
 	void EmbeddedData::fileWrite(const std::string filename) const
 	{
+		
+		std::ofstream file(filename);
+		write(file);
+		file.close();
+	}
+	
+	void EmbeddedData::write(std::ostream& out) const
+	{
 		if (changed)
 		{
 			generate();
 		}
 		
-		std::ofstream file(filename);
-		file << lastResult;
-		file.close();
+		out << lastResult;
 	}
 	
 	void EmbeddedData::generate() const
