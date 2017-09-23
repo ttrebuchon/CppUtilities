@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Crossover.h"
+#include <QUtils/Exception/NullPointer.h>
 
 namespace QUtils
 {
@@ -18,11 +19,7 @@ namespace Genetic
 	template <typename T>
 	void CrossoverAlgorithm<T>::go(const unsigned int generations)
 	{
-		if (this->population == NULL)
-		{
-			//TODO
-			throw std::exception();
-		}
+		NULLPTRCHECK(this->population);
 		
 		if (sequenceLength < 0)
 		{
@@ -52,8 +49,11 @@ namespace Genetic
 			for (int i = 1; i < endIndex; i++)
 			{
 				auto& s1 = this->population->at(i-1);
+				NULLPTRCHECK(s1);
 				auto& s2 = this->population->at(i);
+				NULLPTRCHECK(s2);
 				auto child = std::dynamic_pointer_cast<T>(s1->clone());
+				NULLPTRCHECK(child);
 				seqStart = rand() % solutionSize;
 				for (int i = 0; i < sequenceLength; i++)
 				{
@@ -96,7 +96,7 @@ namespace Genetic
 	template <typename T>
 	std::shared_ptr<const T> CrossoverAlgorithm<T>::best() const
 	{
-		const_cast<CrossoverAlgorithm<T>*>(this)->population->sort();
+		this->population->sort();
 		return this->population->at(0);
 	}
 	
