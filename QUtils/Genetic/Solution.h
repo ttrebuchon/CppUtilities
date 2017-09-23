@@ -6,6 +6,7 @@ namespace QUtils
 {
 namespace Genetic
 {
+	//T can be a container of Hs, if the solution is a set of values
 	template <class T, class H = T>
 	class Solution
 	{
