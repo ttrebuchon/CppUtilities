@@ -6,6 +6,7 @@
 #include <math.h>
 #include <exception>
 #include <QUtils/Genetic/Genetic.h>
+#include <QUtils/String/String.h>
 
 #include "../Data/TravelingSalesmanData.h"
 
@@ -436,9 +437,24 @@ bool Test_Genetic_Module(const std::map<int, std::map<int, double>>& edges, cons
 	};
 	
 	auto pop = std::make_shared<ArrayPopulation<CircularOrderedSolution<int>>>(fitness, popSize);
+	
 	for (int i = 0; i < popSize; i++)
 	{
 		pop->at(i) = std::make_shared<CircularOrderedSolution<int>>(count, 0, count-1);
+	}
+	
+	try
+	{
+	CrossoverAlgorithm<CircularOrderedSolution<int>> nullalg(NULL);
+	nullalg.go(generations);
+	}
+	catch (std::exception& ex)
+	{
+		QUtils::String str(ex.what());
+		if (!(str.contains("go(") && str.contains("unsigned int") && str.contains("population is NULL")))
+		{
+			throw;
+		}
 	}
 	CrossoverAlgorithm<CircularOrderedSolution<int>> alg(pop);
 	
