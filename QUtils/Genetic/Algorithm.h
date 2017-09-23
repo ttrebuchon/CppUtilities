@@ -46,7 +46,7 @@ namespace Genetic
 	{
 		protected:
 		unsigned long long _generation;
-		std::shared_ptr<Population<T>> population;
+		mutable std::shared_ptr<Population<T>> population;
 		
 		public:
 		const unsigned long long& generation;
