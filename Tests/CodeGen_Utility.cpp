@@ -12,13 +12,13 @@
 
 using namespace QUtils::CodeGen;
 
-const std::string srcTestPath = "Output/SrcTest.cpp";
-const std::string srcTest2Path = "Output/SrcTest2.cpp";
+const std::string srcTestPath = TestValues::OutputPath + "/SrcTest.cpp";
+const std::string srcTest2Path = TestValues::OutputPath + "/SrcTest2.cpp";
 
 bool Test_CodeGen_Utility()
 {
 	{
-		::EmbeddedData embed;
+		EmbeddedData embed;
 		embed.setTemplate("#include <iostream>\n"
 		                  "#define TESTNS_DEFINED\n"
 		                  "namespace TestNS\n"
