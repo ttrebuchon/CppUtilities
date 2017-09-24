@@ -36,7 +36,14 @@ namespace QUtils::CodeGen
 		{
 			Helpers::indent(str, indentation);
 		}
-		str += CVQualifiers::toString(0, false) + " " + type + " " + identifier;
+		
+		auto quals = CVQualifiers::toString(0, false);
+		if (quals.length() > 0)
+		{
+			str += CVQualifiers::toString(0, false) + " ";
+		}
+		
+		str += type + " " + identifier;
 		
 		if (assignment)
 		{
