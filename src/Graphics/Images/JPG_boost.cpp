@@ -1,6 +1,4 @@
-#include <QUtils/Graphics/Images/GenericPixel.h>
-#include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/io/jpeg_dynamic_io.hpp>
+#include <QUtils/Graphics/Images/JPG_PCH.h>
 
 using namespace boost::gil;
 
@@ -32,14 +30,8 @@ namespace Internal
 				pix[2] = thisPix.B;
 			}
 		}
-		try
-		{
-			jpeg_write_view(filename, v);
-		}
-		catch (...)
-		{
-			return false;
-		}
+		jpeg_write_view(filename, v);
+		
 		return true;
 	}
 	
@@ -84,7 +76,7 @@ namespace Internal
 				map = NULL;
 			}
 			w = h = 0;
-			return false;
+			throw;
 		}
 		return true;
 	}

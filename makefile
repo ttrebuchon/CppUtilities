@@ -180,7 +180,7 @@ endif
 
 
 CXX = g++
-CXXFLAGS = --static -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Og $(DEPS)# $(LINKING)
+CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Og $(DEPS)# $(LINKING)
 CXXFLAGS := $(CXXFLAGS) -Wall
 deps = $(objects:.o=.d)
 name = Utility
@@ -211,6 +211,11 @@ clean:
 	(cd Tests; make clean)
 
 
+src/Graphics/Images/JPG_boost.o: src/Graphics/Images/JPG_boost.cpp QUtils/Graphics/Images/JPG_PCH.h.gch
+	$(CXX) $(CXXFLAGS) -c src/Graphics/Images/JPG_boost.cpp
+
+QUtils/Graphics/Images/JPG_PCH.h.gch: QUtils/Graphics/Images/JPG_PCH.h
+	g++ -std=c++14 $^ -I ..
 	
 
 -include $(deps)
