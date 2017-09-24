@@ -100,3 +100,9 @@ class DebugOut
 #define dout DebugOut::Out()
 
 extern std::stringstream dout_ss;
+
+namespace TestValues
+{
+	const std::string OutputPath = "Output";
+	const std::string DataPath = "Data";
+}
