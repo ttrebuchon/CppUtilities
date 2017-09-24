@@ -76,14 +76,14 @@ bool Test_Raytrace()
 	Graphics::Images::JPGImage jImg(x, y);
 	mod->go(&jImg, x, y);
 	dout << "Writing jpeg file..." << std::endl;
-	assert_ex(jImg.save("TestImg" + suffix + ".jpg"));
+	assert_ex(jImg.save(TestValues::OutputPath + "/TestImg" + suffix + ".jpg"));
 	
 	
 	
 	/*dout << "Taking B&W...\n";
 	jImg.BWConvert();
 	
-	assert_ex(jImg.save("BW_TestImg.jpg"));*/
+	assert_ex(jImg.save(TestValues::OutputPath + "/BW_TestImg.jpg"));*/
 	
 	right->move(vector_t(-4, 0, -1));
 	
@@ -94,7 +94,7 @@ bool Test_Raytrace()
 	
 	dout << "Saving image 2\n";
 	
-	assert_ex(jImg_2.save("TestImg_2" + suffix + ".jpg"));
+	assert_ex(jImg_2.save(TestValues::OutputPath + "/TestImg_2" + suffix + ".jpg"));
 	
 	dout << "Cloning image 2\n";
 	
@@ -108,7 +108,7 @@ bool Test_Raytrace()
 	jImg_2.imgDiff(&jImg);
 	
 	dout << "Saving\n";
-	assert_ex(jImg_2.save("Diff_Test" + suffix + ".jpg"));
+	assert_ex(jImg_2.save(TestValues::OutputPath + "/Diff_Test" + suffix + ".jpg"));
 	
 	
 	
@@ -117,19 +117,19 @@ bool Test_Raytrace()
 	jImg_2.BWConvert();
 	
 	dout << "Saving\n";
-	assert_ex(jImg_2.save("Diff_Test_BW" + suffix + ".jpg"));
+	assert_ex(jImg_2.save(TestValues::OutputPath + "/Diff_Test_BW" + suffix + ".jpg"));
 	
 	dout << "Absolute diff of 2 and 1\n";
 	jImg_2_bak2->imgAbsDiff(&jImg);
 	
 	dout << "Saving\n";
-	assert_ex(jImg_2_bak2->save("AbsDiff_Test" + suffix + ".jpg"));
+	assert_ex(jImg_2_bak2->save(TestValues::OutputPath + "/AbsDiff_Test" + suffix + ".jpg"));
 	
 	dout << "BW Absolute diff of 2 and 1\n";
 	jImg_2_bak2->BWConvert();
 	
 	dout << "Saving\n";
-	assert_ex(jImg_2_bak2->save("BW_AbsDiff_Test" + suffix + ".jpg"));
+	assert_ex(jImg_2_bak2->save(TestValues::OutputPath + "/BW_AbsDiff_Test" + suffix + ".jpg"));
 	
 	
 	
@@ -142,7 +142,7 @@ bool Test_Raytrace()
 	auto bwMat = jImg_2_bak->diff(&jImg);
 	
 	jImg_2_bak->imgDiff(&jImg);
-	assert_ex(jImg_2_bak->save("BW_Diff_Test" + suffix + ".jpg"));
+	assert_ex(jImg_2_bak->save(TestValues::OutputPath + "/BW_Diff_Test" + suffix + ".jpg"));
 	
 	
 	auto print3Mat = [](auto matrix, auto w, auto h, auto d) -> void
@@ -181,7 +181,7 @@ bool Test_Raytrace()
 	/*ball->move(vector_t(4, 0, 0));
 	
 	img = mod->go(x, y);
-	writePPM("Test.ppm", x, y, img);
+	writePPM(TestValues::OutputPath + "/Test.ppm", x, y, img);
 	delete[] img;*/
 	
 	
