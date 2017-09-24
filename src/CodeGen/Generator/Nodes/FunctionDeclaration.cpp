@@ -22,7 +22,14 @@ namespace QUtils::CodeGen
 		ptr->arguments.clear();
 		for (const auto arg : this->arguments)
 		{
-			ptr->arguments.push_back(arg->copy());
+			if (arg != NULL)
+			{
+				ptr->arguments.push_back(arg->copy());
+			}
+			else
+			{
+				ptr->arguments.push_back(NULL);
+			}
 		}
 		
 		ptr->templateArguments.clear();
@@ -66,7 +73,10 @@ namespace QUtils::CodeGen
 		QUtils::String::Replace(cvStr, "  ", " ");
 		QUtils::String::Trim(cvStr);
 		
-		str += cvStr;
+		if (cvStr.length() > 0)
+		{
+			str += cvStr + " ";
+		}
 		str += returnType + " " + identifier;
 		
 		if (templateArguments.size() > 0)
