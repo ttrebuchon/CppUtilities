@@ -1,5 +1,5 @@
 #pragma once
-#include <CLIPS/clips.h>
+//#include <Clips/clips.h>
 #include <string>
 #include <vector>
 #include <map>
