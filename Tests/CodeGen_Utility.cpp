@@ -7,6 +7,7 @@
 #include <map>
 #include <math.h>
 #include <fstream>
+#include <QUtils/String/String.h>
 
 
 using namespace QUtils::CodeGen;
@@ -87,9 +88,6 @@ bool Test_CodeGen_Utility()
 		
 		ns2->children.push_back(fooFunc);
 		
-		dout << "\n\n";
-		gen.generate(dout);
-		
 		
 		#ifdef SRCTEST2
 		assert_ex(TestNS::TestNS2::foo() == fooString);
@@ -112,7 +110,32 @@ bool Test_CodeGen_Utility()
 		fooFunc->isStatic = true;
 		
 		
-		gen.generate(dout);
+		{
+			std::stringstream ss;
+			gen.generate(ss);
+			QUtils::String ss_str = ss.str();
+			QUtils::String str = fooFunc->toString(2);
+			
+			assert_ex(ss_str.contains(str));
+			QUtils::String::Trim(str);
+			
+			assert_ex(str.contains("constexpr "));
+			{
+				assert_ex(str.contains("const "));
+				auto constexprIndex = str.find("constexpr");
+				assert_ex(str.find("const", constexprIndex+1) != std::string::npos);
+				assert_ex(str.find("const", constexprIndex+1) > str.find(") "));
+			}
+			assert_ex(str.contains("extern "));
+			assert_ex(str.contains("virtual "));
+			assert_ex(str.contains(" override"));
+			assert_ex(str.find("override") > str.find(") "));
+			assert_ex(str.contains(" noexcept"));
+			assert_ex(str.contains("volatile "));
+			assert_ex(str.contains("mutable "));
+			assert_ex(str.contains("thread_local "));
+			assert_ex(str.contains("static "));
+		}
 		
 		fooFunc->isConst = false;
 		fooFunc->isConstexpr = false;
@@ -127,7 +150,9 @@ bool Test_CodeGen_Utility()
 		
 		
 		
-		auto numFunc = FunctionDeclarationNode::Create("double", "numFoo");
+		const std::string numFuncName = "numFoo";
+		
+		auto numFunc = FunctionDeclarationNode::Create("double", numFuncName);
 		
 		ns2->children.push_back(numFunc);
 		auto numBody = FunctionBodyNode::Create();
@@ -137,7 +162,6 @@ bool Test_CodeGen_Utility()
 		
 		numBody->children.push_back(::ReturnStatementNode::Create(LiteralNode::Create(num)));
 		
-		gen.generate(dout);
 		
 		
 		#ifdef SRCTEST2
@@ -147,12 +171,14 @@ bool Test_CodeGen_Utility()
 		#endif
 		
 		numFunc->templateArguments.push_back(NULL);
+		{
+			QUtils::String str = numFunc->toString(0);
+			assert_ex(str.contains(numFuncName + "<>("));
+		}
 		
 		auto vectorInclude = IncludeNode::Create("vector");
 		gen.insert(2, vectorInclude);
 		
-		
-		gen.generate(dout);
 		
 		numFunc->templateArguments.clear();
 		
@@ -170,7 +196,16 @@ bool Test_CodeGen_Utility()
 		
 		ns2->children.push_back(var);
 		
-		gen.generate(dout);
+		
+		
+		
+		{
+			QUtils::String str = var->toString(0);
+			assert_ex(str.startsWith("std::vector<int> x = { "));
+			assert_ex(str.endsWith(" };\n"));
+		}
+		
+		
 		
 		
 		#ifdef SRCTEST2
@@ -196,6 +231,10 @@ bool Test_CodeGen_Utility()
 		#else
 		gen.writeToFile("SrcTest2.cpp");
 		#endif
+		dout << "\n\n\n";
+		gen.generate(dout);
+		dout << "\n\n\n\n";
+		
 		
 	}
 	
