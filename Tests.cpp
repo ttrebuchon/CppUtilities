@@ -169,6 +169,7 @@ void Testing::run()
 	RUN(SQL());
 	RUN(GUID());
 	RUN(TravellingSalesman());
+	RUN(RucksackProblem());
 	RUN(CodeGen_Utility());
 	#ifndef SHORT_TEST
 	RUN(SDL_Drawing());
