@@ -86,7 +86,7 @@ namespace QUtils
 		}
 		if (i < str.length()-1)
 		{
-			str = str.substr(0, i);
+			str = str.substr(0, i+1);
 		}
 	}
 	
