@@ -1,8 +1,8 @@
 #include "../Tests_Helpers.h"
 #include <QUtils/CodeGen/Utility.h>
 
-#include "../SrcTest.cpp"
-#include "../SrcTest2.cpp"
+#include "../Output/SrcTest.cpp"
+#include "../Output/SrcTest2.cpp"
 
 #include <map>
 #include <math.h>
@@ -11,6 +11,9 @@
 
 
 using namespace QUtils::CodeGen;
+
+const std::string srcTestPath = "Output/SrcTest.cpp";
+const std::string srcTest2Path = "Output/SrcTest2.cpp";
 
 bool Test_CodeGen_Utility()
 {
@@ -35,7 +38,7 @@ bool Test_CodeGen_Utility()
 		
 		#ifdef TESTNS_DEFINED
 		TestNS::helloWorld();
-		std::ifstream file("SrcTest.cpp");
+		std::ifstream file(srcTestPath);
 		std::stringstream src;
 		src << file.rdbuf();
 		file.close();
@@ -45,7 +48,7 @@ bool Test_CodeGen_Utility()
 		
 		assert_ex(src.str() == ss.str());
 		#else
-		embed.fileWrite("SrcTest.cpp");
+		embed.fileWrite(srcTestPath);
 		#endif
 		
 		embed.write(dout);
@@ -93,7 +96,7 @@ bool Test_CodeGen_Utility()
 		assert_ex(TestNS::TestNS2::foo() == fooString);
 		dout << "String: " << TestNS::TestNS2::foo() << std::endl;
 		#else
-		gen.writeToFile("SrcTest2.cpp");
+		gen.writeToFile(srcTest2Path);
 		#endif
 		
 		
@@ -167,7 +170,7 @@ bool Test_CodeGen_Utility()
 		#ifdef SRCTEST2
 		assert_ex(TestNS::TestNS2::numFoo() == num);
 		#else
-		gen.writeToFile("srcTest2.cpp");
+		gen.writeToFile(srcTest2Path);
 		#endif
 		
 		numFunc->templateArguments.push_back(NULL);
@@ -214,7 +217,7 @@ bool Test_CodeGen_Utility()
 			assert_ex(TestNS::TestNS2::x.at(i) == i);
 		}
 		
-		std::ifstream file("SrcTest2.cpp");
+		std::ifstream file(srcTest2Path);
 		std::stringstream src;
 		src << file.rdbuf();
 		file.close();
@@ -224,12 +227,12 @@ bool Test_CodeGen_Utility()
 		
 		if (ss.str() != src.str())
 		{
-			gen.writeToFile("SrcTest2.cpp");
+			gen.writeToFile(srcTest2Path);
 		}
 		assert_ex(ss.str() == src.str());
 		
 		#else
-		gen.writeToFile("SrcTest2.cpp");
+		gen.writeToFile(srcTest2Path);
 		#endif
 		dout << "\n\n\n";
 		gen.generate(dout);
