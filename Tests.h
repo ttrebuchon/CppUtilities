@@ -3,7 +3,7 @@
 
 #include "Tests_Helpers.h"
 
-#define DEF_TEST(x) bool Test_##x()
+#define DEC_TEST(x) bool Test_##x()
 
 namespace QUtils
 {
@@ -44,40 +44,43 @@ class Testing
 	static bool English();*/
 };
 
-DEF_TEST(Func);
-DEF_TEST(NNST);
-DEF_TEST(CustomException);
-DEF_TEST(Markov);
-DEF_TEST(Stopwatch);
-DEF_TEST(String);
-DEF_TEST(Math);
-DEF_TEST(Matrix);
-DEF_TEST(Lazy);
-DEF_TEST(Sleep);
-DEF_TEST(Neural);
-DEF_TEST(CSV);
-DEF_TEST(nth_Poly);
-DEF_TEST(Tuple);
-DEF_TEST(Tensor_T);
-DEF_TEST(Matrix_Algs);
-DEF_TEST(Raytrace);
-DEF_TEST(RulesEngine);
-DEF_TEST(CLIPS);
-DEF_TEST(English);
-DEF_TEST(SQL);
-DEF_TEST(Multi);
-DEF_TEST(TravellingSalesman);
-DEF_TEST(GameOfLifeExtended);
-DEF_TEST(Types);
-DEF_TEST(SymbolicList);
-DEF_TEST(English_Analysis);
-DEF_TEST(Network);
-DEF_TEST(GUID);
-//DEF_TEST(SDL_GUI);
+DEC_TEST(Func);
+DEC_TEST(NNST);
+DEC_TEST(CustomException);
+DEC_TEST(Markov);
+DEC_TEST(Stopwatch);
+DEC_TEST(String);
+DEC_TEST(Math);
+DEC_TEST(Matrix);
+DEC_TEST(Lazy);
+DEC_TEST(Sleep);
+DEC_TEST(Neural);
+DEC_TEST(CSV);
+DEC_TEST(nth_Poly);
+DEC_TEST(Tuple);
+DEC_TEST(Tensor_T);
+DEC_TEST(Matrix_Algs);
+DEC_TEST(Raytrace);
+DEC_TEST(RulesEngine);
+DEC_TEST(CLIPS);
+DEC_TEST(English);
+DEC_TEST(SQL);
+DEC_TEST(Multi);
+DEC_TEST(TravellingSalesman);
+DEC_TEST(RucksackProblem);
+DEC_TEST(GameOfLifeExtended);
+DEC_TEST(Types);
+DEC_TEST(SymbolicList);
+DEC_TEST(English_Analysis);
+DEC_TEST(Network);
+DEC_TEST(GUID);
+//DEC_TEST(SDL_GUI);
 bool Test_SDL_GUI(std::ostream**, QUtils::GUI::SDL::SDLAppWindow*&);
-DEF_TEST(SDL_Drawing);
-DEF_TEST(CodeGen_Utility);
+DEC_TEST(SDL_Drawing);
+DEC_TEST(CodeGen_Utility);
 
+
+#undef DEC_TEST
 
 
 
