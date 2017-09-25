@@ -1,9 +1,11 @@
-#include <iostream>
+#include <sstream>
 #define TESTNS_DEFINED
 namespace TestNS
 {
-	void helloWorld()
+	std::string helloWorld()
 	{
-		std::cout  << "Hello,\n world!\n" << "4.5\n";
+		std::stringstream ss;
+		ss  << "Hello,\n world!\n" << "4.5\n";
+		return ss.str();
 	}
 }

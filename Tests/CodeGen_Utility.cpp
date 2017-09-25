@@ -8,6 +8,7 @@
 #include <math.h>
 #include <fstream>
 #include <QUtils/String/String.h>
+#include <type_traits>
 
 
 using namespace QUtils::CodeGen;
@@ -19,13 +20,15 @@ bool Test_CodeGen_Utility()
 {
 	{
 		EmbeddedData embed;
-		embed.setTemplate("#include <iostream>\n"
+		embed.setTemplate("#include <sstream>\n"
 		                  "#define TESTNS_DEFINED\n"
 		                  "namespace TestNS\n"
 		                  "{\n"
-		                  "\tvoid helloWorld()\n"
+		                  "\tstd::string helloWorld()\n"
 		                  "\t{\n"
-		                  "\t\tstd::cout REPLACETHIS;\n"
+		                  "\t\tstd::stringstream ss;\n"
+		                  "\t\tss REPLACETHIS;\n"
+		                  "\t\treturn ss.str();\n"
 		                  "\t}\n"
 		                  "}\n");
 		embed.setReplace("REPLACETHIS");
@@ -37,7 +40,12 @@ bool Test_CodeGen_Utility()
 		
 		
 		#ifdef TESTNS_DEFINED
-		TestNS::helloWorld();
+		static_assert(std::is_same<decltype(TestNS::helloWorld()), std::string>::value, "Incorrect return type!");
+		{
+			std::stringstream value;
+			value << "Hello,\n world!\n" << 4.5 << "\n";
+			assert_ex(TestNS::helloWorld() == value.str());
+		}
 		std::ifstream file(srcTestPath);
 		std::stringstream src;
 		src << file.rdbuf();
@@ -45,6 +53,11 @@ bool Test_CodeGen_Utility()
 		
 		std::stringstream ss;
 		embed.write(ss);
+		
+		if (src.str() != ss.str())
+		{
+			embed.fileWrite(srcTestPath);
+		}
 		
 		assert_ex(src.str() == ss.str());
 		#else
@@ -68,13 +81,11 @@ bool Test_CodeGen_Utility()
 		
 		auto inc = IncludeNode::Create("string");
 		
-		dout << inc->toString(0) << "\n";
 		
 		auto ns = NamespaceNode::Create("TestNS");
 		auto ns2 = NamespaceNode::Create("TestNS2");
 		ns->children.push_back(ns2);
 		
-		dout << ns->toString(0) << "\n";
 		
 		gen.add(inc);
 		gen.add(ns);
@@ -168,6 +179,7 @@ bool Test_CodeGen_Utility()
 		
 		
 		#ifdef SRCTEST2
+		static_assert(std::is_same<decltype(TestNS::TestNS2::numFoo()), double>::value, "Incorrect type for numFoo()");
 		assert_ex(TestNS::TestNS2::numFoo() == num);
 		#else
 		gen.writeToFile(srcTest2Path);
@@ -230,6 +242,8 @@ bool Test_CodeGen_Utility()
 			gen.writeToFile(srcTest2Path);
 		}
 		assert_ex(ss.str() == src.str());
+		static_assert(std::is_same<decltype(TestNS::TestNS2::x), std::vector<int>>::value, "Incorrect type for x");
+		
 		
 		#else
 		gen.writeToFile(srcTest2Path);
