@@ -24,7 +24,8 @@ phases:
   build:
     commands:
       - ls
-      - make -j 8 CXX=g++-7 || make -j 8 CXX=g++
+      - (cd Deps; ls) || echo CANT cd INTO Deps!
+      - make -j 8 CXX=g++-7
   post_build:
     commands:
       - echo Build completed on `date`
