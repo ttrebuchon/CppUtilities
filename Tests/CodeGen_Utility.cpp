@@ -341,5 +341,114 @@ bool Test_CodeGen_Utility()
 		tsGen.writeToFile("Data/TravelingSalesmanData.h");
 	}*/
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*{
+		const std::string headerPath = TestValues::DataPath + "/RucksackData.h";
+		const std::string dataPath = std::string("Tests") + "/RucksackData.cpp";
+		const int count = 100000;
+		const double space = 10000;
+		Generator gen_h;
+		Generator gen_cpp;
+		gen_h.add(IncludeNode::Create("vector"));
+		gen_h.add(IncludeNode::Create("tuple"));
+		gen_cpp.add(IncludeNode::Create("vector"));
+		gen_cpp.add(IncludeNode::Create("tuple"));
+		
+		//gen_cpp.add(IncludeNode::Create("../" + headerPath, true));
+		
+		auto ns = NamespaceNode::Create("RucksackData");
+		gen_cpp.add(ns);
+		
+		std::shared_ptr<VariableDeclarationNode> count_n, space_n;
+		{
+			count_n = VariableDeclarationNode::Create("int", "count");
+			count_n->isConst = true;
+			count_n->assignment = LiteralNode::Create(count);
+			
+			
+		}
+		
+		{
+			space_n = VariableDeclarationNode::Create("double", "space");
+			space_n->isConst = true;
+			space_n->assignment = LiteralNode::Create(space);
+			
+		}
+		
+		std::shared_ptr<NamespaceNode> ns_h;
+		
+		{
+			ns->children.push_back(NULL);
+			auto com = CommentNode::Create("[(Size, Value)]");
+			ns->children.push_back(com);
+		}
+		
+		auto func = FunctionDeclarationNode::Create("const std::vector<std::tuple<double, double>>&", "items");
+		ns->children.push_back(func);
+		ns_h = ns->copy();
+		assert_ex(ns_h != ns);
+		assert_ex(ns_h->children.size() == ns->children.size());
+		
+		ns_h->children.insert(ns_h->children.begin(), count_n);
+		ns_h->children.insert(ns_h->children.begin(), space_n);
+		
+		
+		
+		
+		gen_h.add(ns_h);
+		
+		auto funcBody = FunctionBodyNode::Create();
+		func->body = funcBody;
+		
+		auto var = VariableDeclarationNode::Create("std::vector<std::tuple<double, double>>", "data");
+		var->isStatic = true;
+		
+		funcBody->children.push_back(var);
+		
+		auto ret = ReturnStatementNode::Create(StringNode::Create("data"));
+		funcBody->children.push_back(ret);
+		
+		auto data = InitializerListNode::Create();
+		dout << "Generating Rucksack values...\n";
+		for (int i = 0; i < count; ++i)
+		{
+			auto tup_n = InitializerListNode::Create();
+			
+			double wgt_rand = static_cast<double>(rand())/RAND_MAX;
+			
+			double val_rand = static_cast<double>(rand())/RAND_MAX;
+			
+			tup_n->children.push_back(LiteralNode::Create(wgt_rand*10));
+			tup_n->children.push_back(LiteralNode::Create(val_rand*100));
+			
+			
+			data->children.push_back(tup_n);
+		}
+		var->assignment = data;
+		
+		
+		
+		gen_h.writeToFile(headerPath);
+		gen_cpp.writeToFile(dataPath);
+		
+	}*/
+	
 	return false;
 }
