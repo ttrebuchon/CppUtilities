@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - apt-get update -y
+      - apt-get install -y build-essential
+      - apt-get install g++
+      - apt-get install libcurl
+      - apt-get install libboost-all-dev
+  build:
+    commands:
+      - make -j 8
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - libUtility.a
+    - UtilityTests.out
+    - Log.txt
