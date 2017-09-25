@@ -23,6 +23,7 @@ phases:
       - apt-get install -y libboost-all-dev
   build:
     commands:
+      - ls
       - make -j 8 CXX=g++-7 || make -j 8 CXX=g++
   post_build:
     commands:
