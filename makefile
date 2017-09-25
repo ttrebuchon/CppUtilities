@@ -191,6 +191,12 @@ ifeq ($(HAS_CURL), TRUE)
 INCLUDED_LIBS := $(INCLUDED_LIBS) ../$(Deps_D)/curlpp/libcurlpp.a
 endif
 
+MAKE_CURLPP = 
+
+ifeq ($(HAS_CURL), TRUE)
+MAKE_CURLPP = (cd Deps/curlpp ; make)
+endif
+
 
 #CXX = g++
 CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Og $(DEPS)
@@ -210,10 +216,11 @@ all: $(target) UtilityTests.out
 
 $(target): $(objects) makefile
 	@[ -d objs ] || mkdir objs
-	$(foreach lib,$(INCLUDED_LIBS), cd objs ; ar -xv $(lib))
+	$(MAKE_CURLPP)
+	cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv $(lib) ; )
 	ar rvs $(target) $(wildcard objs/*.o) $(objects)
 	#*/)
-	#$(CXX) -static-libstdc++ -static-libgcc $(objects) $(Deps_D)/sqlite3/libsqlite3.a $(Deps_D)/curlpp/libcurlpp.a -o object.o $(DEPS) -lcurl $(LINKING)
+	@#$(CXX) -static-libstdc++ -static-libgcc $(objects) $(Deps_D)/sqlite3/libsqlite3.a $(Deps_D)/curlpp/libcurlpp.a -o object.o $(DEPS) -lcurl $(LINKING)
 
 UtilityTests.out: $(target)
 	(cd Tests ; $(MAKE) $(MAKEFLAGS) HAS_CURL="$(HAS_CURL)" HAS_BOOST="$(HAS_BOOST)" NEEDS_PTHREAD="$(NEEDS_PTHREAD)" HAS_SDL2="$(HAS_SDL2)" DEBUG="$(DEBUG)")
