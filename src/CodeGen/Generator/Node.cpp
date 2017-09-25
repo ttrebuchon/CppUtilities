@@ -49,7 +49,14 @@ namespace QUtils::CodeGen
 		
 		for (int i = 0; i < len; ++i)
 		{
-			ptr->children[i] = this->children[i]->copy();
+			if (children[i] != NULL)
+			{
+				ptr->children[i] = this->children[i]->copy();
+			}
+			else
+			{
+				ptr->children[i] = NULL;
+			}
 		}
 	}
 	
@@ -65,7 +72,14 @@ namespace QUtils::CodeGen
 		std::string str = "";
 		for (auto child : children)
 		{
-			str += child->toString(indentation+1, true);
+			if (child != NULL)
+			{
+				str += child->toString(indentation+1, true);
+			}
+			else
+			{
+				str += "\n";
+			}
 		}
 		str = (startIndent ? ind : "") + "{\n" + str + ind + "}\n";
 		return str;

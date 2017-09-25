@@ -13,6 +13,7 @@ namespace QUtils::CodeGen
 	void VariableDeclarationNode::clone(VariableDeclarationNode* ptr) const
 	{
 		Node::clone(ptr);
+		CVQualifiers::clone(ptr);
 		ptr->type = this->type;
 		ptr->identifier = this->identifier;
 		ptr->assignment = (this->assignment != NULL ? assignment->copy() : NULL);
