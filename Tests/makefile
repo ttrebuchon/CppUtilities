@@ -18,7 +18,9 @@ testobjects = ../Tests.o $(Tests)
 
 PREPROC_FLAGS := $(PREPROC_FLAGS) -DSHORT_TEST
 
+ifeq ($(DEBUG), TRUE)
 PREPROC_FLAGS := $(PREPROC_FLAGS) -DDEBUG
+endif
 
 PREPROC_FLAGS := $(PREPROC_FLAGS) -DSEED
 
@@ -92,8 +94,8 @@ clean:
 
 
 	
-Tests.o: makefile ../Tests.cpp
-	$(CXX) $(CXXFLAGS) -c Tests.cpp
+../Tests.o: ../Tests.cpp makefile 
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 
 -include $(testdeps)

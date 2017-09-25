@@ -5,6 +5,8 @@ HAS_SDL2 = FALSE #TRUE
 
 HIDE_SDL_UNAVAILABLE = FALSE #TRUE
 
+DEBUG=TRUE
+
 
 SRC = src
 
@@ -115,6 +117,11 @@ SQL_FLAGS = -DSQLITE_ENABLE_COLUMN_METADATA -DSQLITE_DEFAULT_MEMSTATUS=0 -DSQLIT
 
 PREPROC_FLAGS = -D__NS__="$(NAMESPACE)"
 
+
+ifeq ($(DEBUG), TRUE)
+PREPROC_FLAGS := $(PREPROC_FLAGS) -DDEBUG
+endif
+
 PREPROC_FLAGS := $(PREPROC_FLAGS) $(SQL_FLAGS)
 
 PREPROC_FLAGS := $(PREPROC_FLAGS) #-DPRINT_SQL_QUERIES
@@ -186,7 +193,7 @@ endif
 
 
 #CXX = g++
-CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Og $(DEPS)# $(LINKING)
+CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Og $(DEPS)
 CXXFLAGS := $(CXXFLAGS) -Wall
 deps = $(objects:.o=.d)
 name = Utility
@@ -195,7 +202,7 @@ target = lib$(name).a
 buildOC = gcc -std=c99 -c -pie
 
 all: $(target) UtilityTests.out
-	(cd Tests ; $(MAKE) $(MAKEFLAGS) HAS_CURL=$(HAS_CURL) HAS_BOOST=$(HAS_BOOST) NEEDS_PTHREAD=$(NEEDS_PTHREAD) HAS_SDL2=$(HAS_SDL2))
+	(cd Tests ; $(MAKE) $(MAKEFLAGS) HAS_CURL="$(HAS_CURL)" HAS_BOOST="$(HAS_BOOST)" NEEDS_PTHREAD="$(NEEDS_PTHREAD)" HAS_SDL2="$(HAS_SDL2)" DEBUG="$(DEBUG)")
 	@cp Tests/UtilityTests.out .
 	@echo SUCCESS
 	@sleep 0.9
@@ -203,13 +210,13 @@ all: $(target) UtilityTests.out
 
 $(target): $(objects) makefile
 	@[ -d objs ] || mkdir objs
-	cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv $(lib) ;)
+	$(foreach lib,$(INCLUDED_LIBS), cd objs ; ar -xv $(lib))
 	ar rvs $(target) $(wildcard objs/*.o) $(objects)
 	#*/)
 	#$(CXX) -static-libstdc++ -static-libgcc $(objects) $(Deps_D)/sqlite3/libsqlite3.a $(Deps_D)/curlpp/libcurlpp.a -o object.o $(DEPS) -lcurl $(LINKING)
 
 UtilityTests.out: $(target)
-	(cd Tests ; $(MAKE) $(MAKEFLAGS) HAS_CURL=$(HAS_CURL) HAS_BOOST=$(HAS_BOOST) NEEDS_PTHREAD=$(NEEDS_PTHREAD) HAS_SDL2=$(HAS_SDL2))
+	(cd Tests ; $(MAKE) $(MAKEFLAGS) HAS_CURL="$(HAS_CURL)" HAS_BOOST="$(HAS_BOOST)" NEEDS_PTHREAD="$(NEEDS_PTHREAD)" HAS_SDL2="$(HAS_SDL2)" DEBUG="$(DEBUG)")
 	@cp Tests/UtilityTests.out .
 	
 
