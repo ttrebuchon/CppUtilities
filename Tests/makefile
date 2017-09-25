@@ -12,7 +12,7 @@ SRC = ../src
 Tests_cpp = $(wildcard *.cpp)
 Tests = $(Tests_cpp:.cpp=.o)
 #*/
-testobjects = ../Tests.o $(Tests)
+objects = ../Tests.o $(Tests)
 
 
 
@@ -77,20 +77,19 @@ INCLUDES = -I ../Deps/curlpp/include
 
 #CXX = g++
 CXXFLAGS = -std=c++14 -MMD -fpic -I ../.. $(PREPROC_FLAGS) $(FLAGS) $(WARNINGS_ERRORS) -Og $(INCLUDES)
-CXXFLAGS := $(CXXFLAGS) -Wall
-testdeps = $(testobjects:.o=.d)
+testdeps = $(objects:.o=.d)
 LIB = Utility
 LIB_FILE = ../lib$(LIB).a
 target = UtilityTests.out
 
 
-$(target): $(testobjects) makefile ../Output/SrcTest.o ../lib$(LIB).a
-	$(CXX) -o $(target) $(CXXFLAGS) $(testobjects) -L../ -l$(LIB) $(PREPROC_FLAGS) $(LINKING)
+$(target): $(objects) makefile ../Output/SrcTest.o ../lib$(LIB).a
+	$(CXX) -o $(target) $(CXXFLAGS) $(objects) -L../ -l$(LIB) $(PREPROC_FLAGS) $(LINKING)
 	
 
 clean:
-	rm -f $(testobjects)
-	rm -f $(testobjects:.o=.d)
+	rm -f $(objects)
+	rm -f $(objects:.o=.d)
 
 
 	
