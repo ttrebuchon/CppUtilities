@@ -82,7 +82,7 @@ double fitness(const std::map<int, std::map<int, double>>& edges, const int* v, 
 		total += edges.at(v[count-1]).at(v[0]);
 	}
 	
-	return total;
+	return -total;
 }
 
 
@@ -302,7 +302,7 @@ bool Test_TravellingSalesman()
 	
 	auto fitCompare = [count, &edges, &populationFitness](const int* ptr, const int* ptr2) -> bool
 	{
-		return populationFitness[ptr] < populationFitness[ptr2];
+		return populationFitness[ptr] > populationFitness[ptr2];
 		//return fitness(edges, ptr, count) < fitness(edges, ptr2, count);
 	};
 	
@@ -342,7 +342,7 @@ bool Test_TravellingSalesman()
 	//dout << "\tSorting..." << std::endl;
 	sortPop();
 	if (g % 10 == 0) {
-	dout << "\tTop: " << populationFitness[population[0]] << "\n";
+	dout << "\tTop: " << -populationFitness[population[0]] << "\n";
 	}
 	
 	
@@ -356,7 +356,7 @@ bool Test_TravellingSalesman()
 	{
 		//dout << "\n\n";
 		//pArray(*it, count);
-		dout << "fit: " << fitness(edges, *it, count) << "\n";
+		dout << "fit: " << -fitness(edges, *it, count) << "\n";
 	}
 	
 	
@@ -366,9 +366,9 @@ bool Test_TravellingSalesman()
 	assert_ex(Test_Genetic_Module(edges, count, popSize, generations, &modSol));
 	
 	
-	dout << "Best Manual GA Solution: " << fitness(edges, *population, count) << std::endl;
+	dout << "Best Manual GA Solution: " << -fitness(edges, *population, count) << std::endl;
 	
-	dout << "Best Module GA Solution: " << fitness(edges, modSol, count) << std::endl;
+	dout << "Best Module GA Solution: " << -fitness(edges, modSol, count) << std::endl;
 	
 	assert_ex(isValid(*population, count));
 	assert_ex(isValid(modSol, count));
@@ -433,7 +433,7 @@ bool Test_Genetic_Module(const std::map<int, std::map<int, double>>& edges, cons
 	
 	auto fitness = [=](auto sol) -> double
 	{
-		return ::fitness(edges, sol, count);
+		return -::fitness(edges, sol, count);
 	};
 	
 	auto pop = std::make_shared<ArrayPopulation<CircularOrderedSolution<int>>>(fitness, popSize);

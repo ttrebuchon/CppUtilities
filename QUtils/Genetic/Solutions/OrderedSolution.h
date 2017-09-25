@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Solution.h"
+#include <vector>
 
 namespace QUtils
 {

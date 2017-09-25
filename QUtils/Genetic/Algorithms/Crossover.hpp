@@ -45,7 +45,9 @@ namespace Genetic
 		{
 			
 			this->population->sort();
-			endIndex = popSize-1;
+			//Don't use a precalculated constant,
+			//to account for populations where their size can change
+			endIndex = this->population->size()-1;
 			for (int i = 1; i < endIndex; i++)
 			{
 				auto& s1 = this->population->at(i-1);
@@ -59,9 +61,9 @@ namespace Genetic
 				{
 					//auto overwritten = child->at((seqStart + i) % solutionSize);
 					
-					auto nVal = s2->at((seqStart + i) % solutionSize);
+					auto nVal = s2->at((seqStart + i) % s2->size());
 					
-					child->set((seqStart + i) % solutionSize, nVal);
+					child->set((seqStart + i) % child->size(), nVal);
 					
 					/*for (auto j = 0; j < solutionSize; j++)
 					{

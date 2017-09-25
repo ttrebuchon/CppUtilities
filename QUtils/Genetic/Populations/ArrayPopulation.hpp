@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ArrayPopulation.h"
+#include <map>
 
 
 namespace QUtils
@@ -54,7 +55,7 @@ namespace Genetic
 		
 		auto compFunc = [&] (auto a, auto b) -> bool
 		{
-			return (fitVals[a] < fitVals[b]);
+			return (fitVals[a] > fitVals[b]);
 		};
 		
 		std::sort(array, array+size, compFunc);
