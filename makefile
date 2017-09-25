@@ -184,18 +184,15 @@ ifeq ($(HAS_SDL2), TRUE)
 LINKING := $(LINKING) -lSDL2 -ltiff -lSDL2_ttf
 endif
 
+SQLITE3_LIB = $(Deps_D)/sqlite3/libsqlite3.a
 
-INCLUDED_LIBS = ../$(Deps_D)/sqlite3/libsqlite3.a ../$(Deps_D)/CLIPS/libclips++.a
-
-ifeq ($(HAS_CURL), TRUE)
-INCLUDED_LIBS := $(INCLUDED_LIBS) ../$(Deps_D)/curlpp/libcurlpp.a
-endif
-
-CURLPP_DEP = 
 
 ifeq ($(HAS_CURL), TRUE)
-CURLPP_DEP = Deps/curlpp/libcurlpp.a
+CURLPP_LIB = $(Deps_D)/curlpp/libcurlpp.a
 endif
+
+
+INCLUDED_LIBS = $(SQLITE3_LIB) $(Deps_D)/CLIPS/libclips++.a $(CURLPP_LIB)
 
 
 #CXX = g++
@@ -214,16 +211,19 @@ all: $(target) UtilityTests.out
 	@sleep 0.9
 
 
-$(target): $(objects) makefile $(CURLPP_DEP)
+$(target): $(objects) makefile $(CURLPP_LIB) $(SQLITE3_LIB)
 	@[ -d objs ] || mkdir objs
-	@cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv $(lib) ; )
+	@cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv ../$(lib) ; )
 	ar rvs $(target) $(wildcard objs/*.o) $(objects)
 	#*/)
 
 ifeq ($(HAS_CURL), TRUE)
-$(CURLPP_DEP):
-	(cd Deps/curlpp ; $(MAKE) $(MAKEFLAGS))
+$(CURLPP_LIB):
+	(cd $(Deps_D)/curlpp ; $(MAKE) $(MAKEFLAGS))
 endif
+
+$(SQLITE3_LIB): 
+	(cd Deps/sqlite3 ; $(MAKE) $(MAKEFLAGS))
 
 UtilityTests.out: $(target)
 	(cd Tests ; $(MAKE) $(MAKEFLAGS) HAS_CURL="$(HAS_CURL)" HAS_BOOST="$(HAS_BOOST)" NEEDS_PTHREAD="$(NEEDS_PTHREAD)" HAS_SDL2="$(HAS_SDL2)" DEBUG="$(DEBUG)")
