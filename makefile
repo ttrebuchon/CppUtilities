@@ -191,10 +191,10 @@ ifeq ($(HAS_CURL), TRUE)
 INCLUDED_LIBS := $(INCLUDED_LIBS) ../$(Deps_D)/curlpp/libcurlpp.a
 endif
 
-MAKE_CURLPP = 
+CURLPP_DEP = 
 
 ifeq ($(HAS_CURL), TRUE)
-MAKE_CURLPP = (cd Deps/curlpp ; make)
+CURLPP_DEP = Deps/curlpp/libcurlpp.a
 endif
 
 
@@ -214,13 +214,16 @@ all: $(target) UtilityTests.out
 	@sleep 0.9
 
 
-$(target): $(objects) makefile
+$(target): $(objects) makefile $(CURLPP_DEP)
 	@[ -d objs ] || mkdir objs
-	$(MAKE_CURLPP)
-	cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv $(lib) ; )
+	@cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv $(lib) ; )
 	ar rvs $(target) $(wildcard objs/*.o) $(objects)
 	#*/)
-	@#$(CXX) -static-libstdc++ -static-libgcc $(objects) $(Deps_D)/sqlite3/libsqlite3.a $(Deps_D)/curlpp/libcurlpp.a -o object.o $(DEPS) -lcurl $(LINKING)
+
+ifeq ($(HAS_CURL), TRUE)
+$(CURLPP_DEP):
+	(cd Deps/curlpp ; $(MAKE) $(MAKEFLAGS))
+endif
 
 UtilityTests.out: $(target)
 	(cd Tests ; $(MAKE) $(MAKEFLAGS) HAS_CURL="$(HAS_CURL)" HAS_BOOST="$(HAS_BOOST)" NEEDS_PTHREAD="$(NEEDS_PTHREAD)" HAS_SDL2="$(HAS_SDL2)" DEBUG="$(DEBUG)")
@@ -231,7 +234,7 @@ clean:
 	rm -f $(objects)
 	rm -f $(objects:.o=.d)
 	(cd Tests; make clean)
-	rm UtilityTests.out
+	@rm UtilityTests.out || echo
 	rm $(target)
 
 
@@ -240,6 +243,9 @@ src/Graphics/Images/JPG_boost.o: src/Graphics/Images/JPG_boost.cpp QUtils/Graphi
 
 QUtils/Graphics/Images/JPG_PCH.h.gch: QUtils/Graphics/Images/JPG_PCH.h
 	$(CXX) $(CXXFLAGS) $^ -I .. -o $@
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $< $(DEPS)
 	
 
 -include $(deps)
