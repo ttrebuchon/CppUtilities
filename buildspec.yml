@@ -6,12 +6,16 @@ phases:
       - apt-get update -y
       - apt-get install -y build-essential
       - g++ --version
-      - apt-get install -y g++
+      - add-apt-repository ppa:jonathonf/gcc-7.1
+      - apt-get update -y
+      - apt-get install -y gcc-7 g++-7
+      - g++ --version
+      - g++-7 --version || ls
       - apt-get install -y libcurl3
       - apt-get install -y libboost-all-dev
   build:
     commands:
-      - make -j 8
+      - make -j 8 CXX=g++-7 || make -j 8 CXX=g++
   post_build:
     commands:
       - echo Build completed on `date`
