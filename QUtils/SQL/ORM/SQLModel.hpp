@@ -26,7 +26,6 @@ namespace SQL
 		SQLModelBuilder<Object> builder(models);
 		builder.tablename(this->modelName());
 		this->buildModel(builder);
-		std::cerr << "buildModel() ran for " << this->modelName() << "\n";
 		
 		if (builder.idEntity() == NULL)
 		{
@@ -38,10 +37,6 @@ namespace SQL
 		if (idEnt == NULL)
 		{
 			std::cerr << "Somehow builder.idEnt is null...\n";
-		}
-		else
-		{
-			std::cerr << "builder.idEnt is NOT null...\n";
 		}
 		
 		builder.resolveTypes(models);
