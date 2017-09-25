@@ -185,7 +185,7 @@ INCLUDED_LIBS := $(INCLUDED_LIBS) ../$(Deps_D)/curlpp/libcurlpp.a
 endif
 
 
-CXX = g++
+#CXX = g++
 CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Og $(DEPS)# $(LINKING)
 CXXFLAGS := $(CXXFLAGS) -Wall
 deps = $(objects:.o=.d)
@@ -195,7 +195,7 @@ target = lib$(name).a
 buildOC = gcc -std=c99 -c -pie
 
 all: $(target) UtilityTests.out
-	(cd Tests ; $(MAKE) $(MAKEFLAGS))
+	(cd Tests ; $(MAKE) $(MAKEFLAGS) HAS_CURL=$(HAS_CURL) HAS_BOOST=$(HAS_BOOST) NEEDS_PTHREAD=$(NEEDS_PTHREAD) HAS_SDL2=$(HAS_SDL2))
 	@cp Tests/UtilityTests.out .
 	@echo SUCCESS
 	@sleep 0.9
@@ -203,14 +203,14 @@ all: $(target) UtilityTests.out
 
 $(target): $(objects) makefile
 	@[ -d objs ] || mkdir objs
-	$(foreach lib,$(INCLUDED_LIBS), cd objs ; ar -xv $(lib))
+	cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv $(lib) ;)
 	ar rvs $(target) $(wildcard objs/*.o) $(objects)
 	#*/)
 	#$(CXX) -static-libstdc++ -static-libgcc $(objects) $(Deps_D)/sqlite3/libsqlite3.a $(Deps_D)/curlpp/libcurlpp.a -o object.o $(DEPS) -lcurl $(LINKING)
 
 UtilityTests.out: $(target)
 	(cd Tests ; $(MAKE) $(MAKEFLAGS) HAS_CURL=$(HAS_CURL) HAS_BOOST=$(HAS_BOOST) NEEDS_PTHREAD=$(NEEDS_PTHREAD) HAS_SDL2=$(HAS_SDL2))
-	cp Tests/UtilityTests.out .
+	@cp Tests/UtilityTests.out .
 	
 
 clean:

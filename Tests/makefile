@@ -73,7 +73,7 @@ INCLUDES = -I ../Deps/curlpp/include
 
 
 
-CXX = g++
+#CXX = g++
 CXXFLAGS = -std=c++14 -MMD -fpic -I ../.. $(PREPROC_FLAGS) $(FLAGS) $(WARNINGS_ERRORS) -Og $(INCLUDES)
 CXXFLAGS := $(CXXFLAGS) -Wall
 testdeps = $(testobjects:.o=.d)
