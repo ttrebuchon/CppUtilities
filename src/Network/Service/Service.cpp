@@ -14,7 +14,7 @@ namespace Network
 		_started.lock();
 		_started = true;
 		_started.unlock();
-		std::cout << "Starting service...\n";
+		
 		try
 		{
 		while (go)
@@ -28,7 +28,7 @@ namespace Network
 		}
 		catch (...)
 		{}
-		std::cout << "Service stopped...\n";
+		
 	}
 	
 	void Service::wait()
