@@ -11,6 +11,7 @@ phases:
       - apt-get upgrade -y
       - apt-get dist-upgrade -y || echo CANT DO dist-upgrade!
       - apt-get full-upgrade -y || apt-get full-upgrade || echo CANT DO full-upgrade!
+      - add-apt-repository ppa:ubuntu-toolchain-r/test -y || echo CANT ADD REPO!
       - apt-get install -y libisl15 || echo CANT INSTALL libisl15!
       - apt-get install -y cpp-7 || echo CANT INSTALL cpp-7!
       - apt-get update -y
