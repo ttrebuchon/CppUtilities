@@ -178,6 +178,12 @@ LINKING := $(LINKING) -lSDL2 -ltiff -lSDL2_ttf
 endif
 
 
+INCLUDED_LIBS = ../$(Deps_D)/sqlite3/libsqlite3.a ../$(Deps_D)/CLIPS/libclips++.a
+
+ifeq ($(HAS_CURL), TRUE)
+INCLUDED_LIBS := $(INCLUDED_LIBS) ../$(Deps_D)/curlpp/libcurlpp.a
+endif
+
 
 CXX = g++
 CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Og $(DEPS)# $(LINKING)
@@ -190,32 +196,36 @@ buildOC = gcc -std=c99 -c -pie
 
 all: $(target) UtilityTests.out
 	(cd Tests ; $(MAKE) $(MAKEFLAGS))
-	cp Tests/UtilityTests.out .
+	@cp Tests/UtilityTests.out .
+	@echo SUCCESS
+	@sleep 0.9
 
 
 $(target): $(objects) makefile
-	[[ -d objs ]] || mkdir objs
-	cd objs ; ar -xv ../$(Deps_D)/sqlite3/libsqlite3.a ; ar -xv ../$(Deps_D)/curlpp/libcurlpp.a ; ar -xv ../$(Deps_D)/Clips/libclips++.a
+	@[ -d objs ] || mkdir objs
+	$(foreach lib,$(INCLUDED_LIBS), cd objs ; ar -xv $(lib))
 	ar rvs $(target) $(wildcard objs/*.o) $(objects)
 	#*/)
 	#$(CXX) -static-libstdc++ -static-libgcc $(objects) $(Deps_D)/sqlite3/libsqlite3.a $(Deps_D)/curlpp/libcurlpp.a -o object.o $(DEPS) -lcurl $(LINKING)
 
 UtilityTests.out: $(target)
-	(cd tests; $(MAKE) $(MAKEFLAGS))
+	(cd Tests ; $(MAKE) $(MAKEFLAGS) HAS_CURL=$(HAS_CURL) HAS_BOOST=$(HAS_BOOST) NEEDS_PTHREAD=$(NEEDS_PTHREAD) HAS_SDL2=$(HAS_SDL2))
 	cp Tests/UtilityTests.out .
 	
 
 clean:
-	rm -f $(libobjects)
-	rm -f $(libobjects:.o=.d)
+	rm -f $(objects)
+	rm -f $(objects:.o=.d)
 	(cd Tests; make clean)
+	rm UtilityTests.out
+	rm $(target)
 
 
-src/Graphics/Images/JPG_boost.o: src/Graphics/Images/JPG_boost.cpp QUtils/Graphics/Images/JPG_PCH.h.gch
-	$(CXX) $(CXXFLAGS) -c src/Graphics/Images/JPG_boost.cpp
+src/Graphics/Images/JPG_boost.o: src/Graphics/Images/JPG_boost.cpp QUtils/Graphics/Images/JPG_PCH.h QUtils/Graphics/Images/JPG_PCH.h.gch
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 QUtils/Graphics/Images/JPG_PCH.h.gch: QUtils/Graphics/Images/JPG_PCH.h
-	g++ -std=c++14 $^ -I ..
+	$(CXX) $(CXXFLAGS) $^ -I .. -o $@
 	
 
 -include $(deps)

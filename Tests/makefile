@@ -1,7 +1,7 @@
-HAS_CURL = TRUE
-HAS_BOOST = TRUE
-NEEDS_PTHREAD = FALSE
-HAS_SDL2 = FALSE #TRUE
+#HAS_CURL = TRUE
+#HAS_BOOST = TRUE
+#NEEDS_PTHREAD = FALSE
+#HAS_SDL2 = FALSE #TRUE
 
 HIDE_SDL_UNAVAILABLE = FALSE #TRUE
 
@@ -83,7 +83,6 @@ target = UtilityTests.out
 
 
 $(target): $(testobjects) makefile ../Output/SrcTest.o ../lib$(LIB).a
-	ls ..
 	$(CXX) -o $(target) $(CXXFLAGS) $(testobjects) -L../ -l$(LIB) $(PREPROC_FLAGS) $(LINKING)
 	
 
