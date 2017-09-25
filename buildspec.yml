@@ -23,7 +23,7 @@ phases:
       - apt-get install -y libboost-all-dev
   build:
     commands:
-      - make CXX=g++-7
+      - make CXX=g++-7 NEEDS_PTHREAD=TRUE
   post_build:
     commands:
       - echo Build completed on `date`
