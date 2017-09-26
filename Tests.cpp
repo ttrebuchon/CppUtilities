@@ -163,31 +163,30 @@ void Testing::run()
 	dout << "Slept!\n";
 	}
 	//#endif
-	RUN(Multi());
 	RUN(Network());
-	RUN(Raytrace());
 	RUN(SQL());
-	RUN(GUID());
-	RUN(TravellingSalesman());
-	RUN(CodeGen_Utility());
-	RUN(RucksackProblem());
+	RUN(ASM());
 	#ifndef SHORT_TEST
+	RUN(CodeGen_Utility());
 	RUN(SDL_Drawing());
-	//RUN(TravellingSalesman());
+	RUN(TravellingSalesman());
 	RUN(GameOfLifeExtended());
+	RUN(RucksackProblem());
 	RUN(Types());
 	RUN(SymbolicList());
 	RUN(English_Analysis());
 	//RUN(Network());
 	RUN(CLIPS());
 	//RUN(SQL());
+	RUN(GUID());
+	RUN(Multi());
 	RUN(nth_Poly());
 	RUN(Tensor_T());
 	RUN(Matrix_Algs());
 	RUN(Neural());
 	RUN(RulesEngine());
 	RUN(English());
-	//RUN(Raytrace());
+	RUN(Raytrace());
 	RUN(Tuple());
 	RUN(CSV());
 	RUN(Matrix());
