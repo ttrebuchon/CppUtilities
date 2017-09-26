@@ -194,11 +194,6 @@ endif
 
 INCLUDED_LIBS = $(SQLITE3_LIB) $(Deps_D)/CLIPS/libclips++.a $(CURLPP_LIB)
 
-mkdir objs
-touch objs/test.o
-touch objs/test2.o
-echo $(wildcard objs/*.o)
-rm -rf objs
 
 #CXX = g++
 CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Og
@@ -215,8 +210,14 @@ all: $(target) UtilityTests.out
 	@echo SUCCESS
 	@sleep 0.9
 
+someobj.txt: 
+	mkdir objs
+	touch objs/test.o
+	touch objs/test2.o
+	echo $(wildcard objs/*.o)
+	rm -rf objs
 
-$(target): $(objects) makefile $(CURLPP_LIB) $(SQLITE3_LIB)
+$(target): someobj.txt $(objects) makefile $(CURLPP_LIB) $(SQLITE3_LIB)
 	echo BUILDING TARGET!
 	[ -d objs ] || mkdir objs
 	cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv ../$(lib) ; )
