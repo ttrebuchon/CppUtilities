@@ -84,8 +84,8 @@ bool Test_RucksackProblem()
 	dout << "\n\n-----------\n" << randFit << "\n";
 	
 	{
-		const int popCount = 10;
-		const int generations = 100;
+		const int popCount = 15;
+		const int generations = 15;
 		using namespace QUtils::Genetic;
 		auto pop = std::make_shared<ArrayPopulation<OrderedSolution<int>>>(fitness, popCount);
 		
@@ -97,8 +97,8 @@ bool Test_RucksackProblem()
 		dout << "Population of " << popCount << " created..." << std::endl;
 		
 		CrossoverAlgorithm<OrderedSolution<int>> alg(pop);
-		alg.mutateProbability = 0.5;
-		alg.sequenceLength = count/100;
+		alg.mutateProbability = 0.75;
+		alg.sequenceLength = count/1000;
 		if (alg.sequenceLength <= 1)
 		{
 			alg.sequenceLength = -1;
@@ -106,13 +106,21 @@ bool Test_RucksackProblem()
 		dout << "Algorithm created..." << std::endl;
 		
 		
-		dout << "Initial Best: " << std::flush << fitness(*alg.best().get()) << std::endl;
+		dout << "Initial Best: " << std::flush;
+		auto initBest = fitness(*alg.best().get());
+		dout << initBest << std::endl;
+		
 		dout << "Running algorithm for " << generations << " generations...\n";
 		
-		const int step = 10;
+		const int step = (generations/10 > 0 ? generations/10 : 1);
 		for (int i = 0; i < generations; i += step)
 		{
-			dout << "Running Gen(s) " << (i+1) << "-" << (i+step) << std::endl;
+			dout << "Running Gen(s) " << (i+1);
+			if (step > 1)
+			{
+				dout << "-" << (i+step);
+			}
+			dout << std::endl;
 			alg.go(step);
 			dout << "Current Best: " << fitness(*alg.best()) << "\n";
 			
@@ -123,6 +131,9 @@ bool Test_RucksackProblem()
 		assert_ex(best != NULL);
 		auto bestFit = fitness(*best.get());
 		dout << "\n\n\nBest: " << bestFit << "\n";
+		auto improve = 100*(bestFit - initBest)/initBest;
+		dout << "Improvement: " << improve << "%\n";
+		assert_ex(improve >= 0.1);
 		
 		auto tmpOrder = order;
 		auto val = fitness(order);

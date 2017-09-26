@@ -16,13 +16,13 @@ namespace Genetic
 	{
 		protected:
 		
-		std::shared_ptr<FitnessMetric<double, const Solution_t&>> fitness;
+		std::shared_ptr<FitnessMetric<double, const Solution_t&>> _fitness;
 		
 		public:
-		Population(const std::shared_ptr<FitnessMetric<double, const Solution_t&>> f) : fitness(f) {}
+		Population(const std::shared_ptr<FitnessMetric<double, const Solution_t&>> f) : _fitness(f) {}
 		
 		template <typename F>
-		Population(const F f) : fitness(std::make_shared<FitnessMetricImp<F, double, const Solution_t&>>(f))
+		Population(const F f) : _fitness(std::make_shared<FitnessMetricImp<F, double, const Solution_t&>>(f))
 		{}
 		
 		std::shared_ptr<Solution_t>& operator[](const unsigned int index) const { return this->at(index); }
@@ -33,6 +33,12 @@ namespace Genetic
 		virtual void sort() = 0;
 		
 		virtual void newGeneration() = 0;
+		virtual std::shared_ptr<const FitnessMetric<double, const Solution_t&>> fitness() const
+		{
+			return _fitness;
+		}
+		
+		virtual void addOrReplace(std::shared_ptr<Solution_t> sol) = 0;
 	};
 }
 }

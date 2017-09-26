@@ -13,7 +13,8 @@ namespace Genetic
 	{
 		protected:
 		typedef double Metric;
-		
+		mutable Metric lastFit;
+		mutable unsigned int noProgressCount;
 		
 		
 		public:

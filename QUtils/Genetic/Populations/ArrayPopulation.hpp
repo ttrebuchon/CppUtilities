@@ -2,6 +2,7 @@
 
 #include "ArrayPopulation.h"
 #include <map>
+#include <QUtils/Exception/NullPointer.h>
 
 
 namespace QUtils
@@ -48,7 +49,7 @@ namespace Genetic
 		
 		for (auto i = 0; i < size; i++)
 		{
-			fitVals[this->at(i)] = (*this->fitness)(*this->at(i));
+			fitVals[this->at(i)] = (*this->_fitness)(*this->at(i));
 		}
 		
 		
@@ -68,6 +69,14 @@ namespace Genetic
 	void ArrayPopulation<T>::newGeneration()
 	{
 		
+	}
+	
+	template <class T>
+	void ArrayPopulation<T>::addOrReplace(std::shared_ptr<T> sol)
+	{
+		NULLPTRCHECK(sol);
+		this->sort();
+		array[count-1] = sol;
 	}
 }
 }

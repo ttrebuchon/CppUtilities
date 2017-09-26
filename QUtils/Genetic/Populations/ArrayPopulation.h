@@ -25,6 +25,7 @@ namespace Genetic
 		
 		virtual void sort() override;
 		virtual void newGeneration() override;
+		virtual void addOrReplace(std::shared_ptr<Solution_t>) override;
 	};
 }
 }
