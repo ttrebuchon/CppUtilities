@@ -210,21 +210,12 @@ all: $(target) UtilityTests.out
 	@echo SUCCESS
 	@sleep 0.9
 
-someobj.txt: 
-	mkdir objs
-	touch objs/test.o
-	touch objs/test2.o
-	echo $(wildcard objs/*.o)
-	rm -rf objs
-
-$(target): someobj.txt $(objects) makefile $(CURLPP_LIB) $(SQLITE3_LIB)
+$(target): $(objects) makefile $(CURLPP_LIB) $(SQLITE3_LIB)
 	echo BUILDING TARGET!
 	[ -d objs ] || mkdir objs
 	cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv ../$(lib) ; )
-	ls
-	(cd objs ; ls) || echo CANT cd INTO objs!
-	echo $(wildcard objs/*.o)
-	ar rvs $(target) $(wildcard objs/*.o) $(objects)
+	$(eval TMP := objs/*.o)
+	ar rvs $(target) $(TMP) $(objects)
 	#*/)
 
 ifeq ($(HAS_CURL), TRUE)
