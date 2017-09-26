@@ -32,7 +32,7 @@ OBJS = agenda.o analysis.o argacces.o bload.o bmathfun.o bsave.o \
  	tmpltpsr.o tmpltrhs.o tmpltutl.o userdata.o userfunctions.o utility.o watch.o
 
 .c.o :
-	gcc -pie -static -c -x c++ -DALLOW_ENVIRONMENT_GLOBALS=0 \
+	$(CC) -pie -static -c -x c++ -DALLOW_ENVIRONMENT_GLOBALS=0 \
 	    -O3  -Wundef -Wpointer-arith -Wshadow -Wcast-qual \
 	    -Winline -Wmissing-declarations -Wredundant-decls \
 	    -Waggregate-return -lstdc++ $< -lm 
