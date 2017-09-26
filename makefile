@@ -212,10 +212,11 @@ all: $(target) UtilityTests.out
 
 
 $(target): $(objects) makefile $(CURLPP_LIB) $(SQLITE3_LIB)
+	echo BUILDING TARGET!
 	[ -d objs ] || mkdir objs
 	cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv ../$(lib) ; )
 	ls
-	(cd objs ; ls) || echo CAN'T cd INTO objs!
+	(cd objs ; ls) || echo CANT cd INTO objs!
 	ar rvs $(target) $(wildcard objs/*.o) $(objects)
 	#*/)
 
