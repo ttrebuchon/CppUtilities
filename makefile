@@ -217,6 +217,7 @@ $(target): $(objects) makefile $(CURLPP_LIB) $(SQLITE3_LIB)
 	cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv ../$(lib) ; )
 	ls
 	(cd objs ; ls) || echo CANT cd INTO objs!
+	echo $(wildcard objs/*.o)
 	ar rvs $(target) $(wildcard objs/*.o) $(objects)
 	#*/)
 
