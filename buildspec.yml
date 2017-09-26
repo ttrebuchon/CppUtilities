@@ -6,7 +6,7 @@ phases:
       - apt-get update -y
   build:
     commands:
-      - make -j 4 CXX=g++-7 CC=gcc-7 NEEDS_PTHREAD=TRUE
+      - make CXX=g++-7 CC=gcc-7 NEEDS_PTHREAD=TRUE
   post_build:
     commands:
       - echo Build completed on `date`
