@@ -194,6 +194,11 @@ endif
 
 INCLUDED_LIBS = $(SQLITE3_LIB) $(Deps_D)/CLIPS/libclips++.a $(CURLPP_LIB)
 
+mkdir objs
+touch objs/test.o
+touch objs/test2.o
+echo $(wildcard objs/*.o)
+rm -rf objs
 
 #CXX = g++
 CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Og
