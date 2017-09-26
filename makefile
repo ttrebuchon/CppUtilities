@@ -186,6 +186,8 @@ endif
 
 SQLITE3_LIB = $(Deps_D)/sqlite3/libsqlite3.a
 
+CLIPS_LIB = $(Deps_D)/CLIPS/libclips++.a
+
 
 ifeq ($(HAS_CURL), TRUE)
 CURLPP_LIB = $(Deps_D)/curlpp/libcurlpp.a
@@ -210,7 +212,7 @@ all: $(target) UtilityTests.out
 	@echo SUCCESS
 	@sleep 0.9
 
-$(target): $(objects) makefile $(CURLPP_LIB) $(SQLITE3_LIB)
+$(target): $(objects) makefile $(CURLPP_LIB) $(SQLITE3_LIB) $(CLIPS_LIB)
 	echo BUILDING TARGET!
 	[ -d objs ] || mkdir objs
 	cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv ../$(lib) ; )
@@ -225,6 +227,9 @@ endif
 
 $(SQLITE3_LIB): 
 	(cd Deps/sqlite3 ; $(MAKE) $(MAKEFLAGS))
+
+$(CLIPS_LIB):
+	(cd $(Deps_D)/CLIPS ; $(MAKE) $(MAKEFLAGS))
 
 UtilityTests.out: $(target)
 	(cd Tests ; $(MAKE) $(MAKEFLAGS) HAS_CURL="$(HAS_CURL)" HAS_BOOST="$(HAS_BOOST)" NEEDS_PTHREAD="$(NEEDS_PTHREAD)" HAS_SDL2="$(HAS_SDL2)" DEBUG="$(DEBUG)")
