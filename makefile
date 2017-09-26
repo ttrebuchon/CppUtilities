@@ -212,8 +212,8 @@ all: $(target) UtilityTests.out
 
 
 $(target): $(objects) makefile $(CURLPP_LIB) $(SQLITE3_LIB)
-	@[ -d objs ] || mkdir objs
-	@cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv ../$(lib) ; )
+	[ -d objs ] || mkdir objs
+	cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv ../$(lib) ; )
 	ar rvs $(target) $(wildcard objs/*.o) $(objects)
 	#*/)
 
