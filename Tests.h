@@ -79,6 +79,7 @@ bool Test_SDL_GUI(std::ostream**, QUtils::GUI::SDL::SDLAppWindow*&);
 DEC_TEST(SDL_Drawing);
 DEC_TEST(CodeGen_Utility);
 DEC_TEST(ASM);
+DEC_TEST(BoostBased_Serialization);
 
 
 #undef DEC_TEST

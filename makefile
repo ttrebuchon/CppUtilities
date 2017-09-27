@@ -109,8 +109,11 @@ CodeGen = $(CodeGen_cpp:.cpp=.o)
 Genetic = $(patsubst %.cpp,%.o,$(wildcard $(SRC)/Genetic/*.cpp)) $(patsubst %.cpp,%.o,$(wildcard $(SRC)/Genetic/**/*.cpp))
 #*/
 
+Serialization = $(patsubst %.cpp,%.o,$(wildcard $(SRC)/Serialization/*.cpp)) $(patsubst %.cpp,%.o,$(wildcard $(SRC)/Serialization/**/*.cpp))
+#*/
 
-objects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen) $(Genetic)
+
+objects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen) $(Genetic) $(Serialization)
 
 
 NAMESPACE=QUtils

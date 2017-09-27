@@ -164,8 +164,8 @@ void Testing::run()
 	}
 	//#endif
 	RUN(Network());
-	RUN(SQL());
 	RUN(ASM());
+	RUN(BoostBased_Serialization());
 	#ifndef SHORT_TEST
 	RUN(CodeGen_Utility());
 	RUN(SDL_Drawing());
@@ -177,7 +177,7 @@ void Testing::run()
 	RUN(English_Analysis());
 	//RUN(Network());
 	RUN(CLIPS());
-	//RUN(SQL());
+	RUN(SQL());
 	RUN(GUID());
 	RUN(Multi());
 	RUN(nth_Poly());
@@ -206,7 +206,7 @@ void Testing::run()
 	//#ifdef QUTILS_HAS_SDL2
 	if (GUI_out != NULL)
 	{
-	/*
+	
 	if (win != NULL)
 	{
 		win->handleEvents();
@@ -236,7 +236,7 @@ void Testing::run()
 	{
 		delete win;
 		win = NULL;
-	}*/
+	}
 	}
 	
 	//#endif
