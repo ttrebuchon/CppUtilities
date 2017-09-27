@@ -119,7 +119,7 @@ int main(int argc, char**argv)
 
 
 #define RUN(x) try { \
-	tout << "Running " << #x << "..." << std::endl; \
+	tout << "Running Test_" << #x << "..." << std::endl; \
 	Test_##x; \
 	tout << "Test_" << #x << " has completed." << std::endl; \
 	} \
