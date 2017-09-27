@@ -2,6 +2,7 @@
 #include <QUtils/Network/Network.h>
 #include <QUtils/Network/Service.h>
 #include "../Deps/json/json.hpp"
+#include <QUtils/GUID/GUID.h>
 
 #ifdef QUTILS_HAS_CURL
 #include <curlpp/cURLpp.hpp>
@@ -131,6 +132,7 @@ namespace Network_Test
 	}
 }
 
+void MathServiceTest();
 
 bool Test_Network()
 {
@@ -387,6 +389,192 @@ bool Test_Network()
 		
 	}
 	
+	dout << "\n\n\n\n";
+	
+	MathServiceTest();
 	
 	return true;
+}
+
+
+void MathServiceTest()
+{
+	class MathService : public QUtils::Network::Service
+	{
+		private:
+		
+		public:
+		typedef QUtils::Network::ServiceRouter<MathService> Router;
+		
+		typedef QUtils::GUID ID_t;
+		
+		protected:
+		
+		std::map<ID_t, long double> objects;
+		
+		virtual void process(QUtils::Network::Message&) override
+			{
+				
+			}
+		
+		virtual void registerProcs() override
+		{
+			this->registerProc("create", &MathService::create);
+			
+			this->registerProc/*<MathService, void, ID_t>*/("print", &MathService::print);
+			this->registerProc("get", &MathService::get);
+			this->registerProc("set", &MathService::set);
+			this->registerProc("add", &MathService::add);
+		}
+		
+		public:
+		
+		static std::shared_ptr<MathService> Create()
+		{
+			auto ptr = std::make_shared<MathService>();
+			ptr->setRouter(std::make_shared<Router>(ptr));
+			return ptr;
+		}
+		
+		ID_t create()
+		{
+			ID_t id = ID_t::Create();
+			objects[id] = 0;
+			return id;
+		}
+		
+		void print(const ID_t id) const
+		{
+			dout << "Object with ID " << id << " -> " << objects.at(id) << "\n";
+		}
+		
+		void set(const ID_t id, const long double val)
+		{
+			objects.at(id) = val;
+		}
+		
+		long double get(const ID_t id) const
+		{
+			return objects.at(id);
+		}
+		
+		ID_t add(const ID_t id1, const ID_t id2)
+		{
+			ID_t id3 = ID_t::Create();
+			objects[id3] = objects.at(id1) + objects.at(id2);
+			return id3;
+		}
+		
+		
+	};
+	
+	auto srv1 = MathService::Create();
+	
+	srv1->startThreaded();
+	dout << "Service 1 started...\n";
+	
+	auto router1 = std::dynamic_pointer_cast<MathService::Router>(srv1->localRouter());
+	
+	auto createMsg1 = std::make_shared<QUtils::Network::RPCMessage<MathService, MathService::ID_t>>("create");
+	
+	router1->send(createMsg1);
+	
+	auto createResp1 = createMsg1->future();
+	assert_ex(createResp1.valid());
+	MathService::ID_t obj_id1 = createResp1.get();
+	
+	auto printMsg1 = std::make_shared<QUtils::Network::RPCMessage<const MathService, void, MathService::ID_t>>("print", obj_id1);
+	
+	router1->send(printMsg1);
+	
+	printMsg1->future().get();
+	
+	
+	class MathObj : public QUtils::Network::LocalClient<MathService>
+	{
+		private:
+		typedef QUtils::Network::LocalClient<MathService> Base;
+		typedef typename MathService::ID_t ID_t;
+		
+		protected:
+		ID_t id;
+		
+		public:
+		
+		MathObj(std::shared_ptr<typename MathService::Router> router, const ID_t id) : Base(router), id(id)
+		{
+			
+		}
+		MathObj(std::shared_ptr<typename MathService::Router> router) : Base(router), id()
+		{
+			id = sendRPCRequest<ID_t>("create");
+		}
+		
+		void print() const
+		{
+			sendRPCRequest<void, ID_t>("print", id);
+		}
+		
+		std::shared_future<void> printAsync() const
+		{
+			return sendRPCRequestAsync<void, ID_t>("print", id);
+		}
+		
+		void set(const long double val)
+		{
+			sendRPCRequest<void, ID_t, long double>("set", id, val);
+		}
+		
+		long double get() const
+		{
+			return sendRPCRequest<long double, ID_t>("get", id);
+		}
+		
+		MathObj operator+(const MathObj obj2) const
+		{
+			return MathObj(this->router, const_cast<MathObj*>(this)->sendRPCRequest<ID_t, ID_t, ID_t>("add", id, obj2.id));
+		}
+	};
+	
+	
+	
+	MathObj obj1(router1, obj_id1);
+	dout << "MathObj1 created.\n";
+	MathObj obj2(router1);
+	dout << "MathObj2 created.\n";
+	
+	{
+	
+	auto printMessage2 = std::make_shared<QUtils::Network::RPCMessage<const MathService, void, MathService::ID_t>>("print", obj_id1);
+	router1->send(printMessage2);
+	printMessage2->future().get();
+	
+	}
+	
+	dout << "Printing...\n";
+	obj2.print();
+	dout << "Printed.\n";
+	
+	long double obj2_v = 45;
+	dout << "Setting obj2 (45)...\n";
+	obj2.set(45);
+	
+	long double obj1_v = 15;
+	dout << "Setting obj1 (15)...\n";
+	obj1.set(15);
+	
+	obj1.print();
+	obj2.print();
+	
+	long double obj3_v = obj1_v + obj2_v;
+	MathObj obj3 = obj1 + obj2;
+	
+	obj3.print();
+	
+	assert_ex(obj1.get() == obj1_v);
+	assert_ex(obj2.get() == obj2_v);
+	assert_ex(obj3.get() == obj3_v);
+	
+	srv1->stop();
+	dout << "Service 1 stopped.\n";
 }
