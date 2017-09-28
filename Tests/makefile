@@ -52,6 +52,10 @@ WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wfatal-errors
 
 FLAGS = -I ../
 
+ifeq ($(HAS_BOOST), TRUE)
+FLAGS += -I ../$(BOOST_DIR)
+endif
+
 Deps_D = ../Deps
 
 CLIPS_Dep = $(Deps_D)/CLIPS
@@ -70,13 +74,17 @@ ifeq ($(HAS_SDL2), TRUE)
 LINKING := $(LINKING) -lSDL2 -ltiff -lSDL2_ttf
 endif
 
+ifeq ($(HAS_BOOST), TRUE)
+LINKING += -L../$(BOOST_DIR)/libs/serialization -lboost_serialization
+endif
+
 
 INCLUDES = -I ../Deps/curlpp/include
 
 
 
 #CXX = g++
-CXXFLAGS = -std=c++14 -MMD -fpic -I ../.. $(PREPROC_FLAGS) $(FLAGS) $(WARNINGS_ERRORS) -Og $(INCLUDES)
+CXXFLAGS = -std=c++14 -MMD -fpic $(PREPROC_FLAGS) $(FLAGS) $(WARNINGS_ERRORS) -Og $(INCLUDES)
 testdeps = $(objects:.o=.d)
 LIB = Utility
 LIB_FILE = ../lib$(LIB).a

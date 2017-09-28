@@ -4,6 +4,7 @@ NEEDS_PTHREAD = FALSE
 HAS_SDL2 = FALSE #TRUE
 
 HIDE_SDL_UNAVAILABLE = FALSE #TRUE
+BOOST_DIR = ../boostLib
 
 DEBUG=TRUE
 
@@ -169,7 +170,7 @@ Deps_D = Deps
 CLIPS_Dep = $(Deps_D)/CLIPS
 Curlpp_Dep = -I $(Deps_D)/curlpp/include -L $(Deps_D)/curlpp
 
-DEPS = -I $(Deps_D)/Castor -I ../ -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(CLIPS_Dep)
+DEPS = -I $(Deps_D)/Castor -I $(BOOST_DIR) -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(CLIPS_Dep)
 
 ifeq ($(HAS_CURL), TRUE)
 DEPS := $(DEPS) $(Curlpp_Dep)
@@ -202,10 +203,12 @@ endif
 
 INCLUDED_LIBS = $(SQLITE3_LIB) $(Deps_D)/CLIPS/libclips++.a $(CURLPP_LIB)
 
+TESTS_MAKE_FLAGS = $(MAKEFLAGS) HAS_CURL="$(HAS_CURL)" HAS_BOOST="$(HAS_BOOST)" NEEDS_PTHREAD="$(NEEDS_PTHREAD)" HAS_SDL2="$(HAS_SDL2)" DEBUG="$(DEBUG)" BOOST_DIR="$(BOOST_DIR)"
+
 
 #CXX = g++
 CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Og
-CXXFLAGS := $(CXXFLAGS) -Wall
+CXXFLAGS += -Wall
 deps = $(objects:.o=.d)
 name = Utility
 target = lib$(name).a
@@ -213,7 +216,6 @@ target = lib$(name).a
 buildOC = gcc -std=c99 -c -pie
 
 all: $(target) UtilityTests.out
-	(cd Tests ; $(MAKE) $(MAKEFLAGS) HAS_CURL="$(HAS_CURL)" HAS_BOOST="$(HAS_BOOST)" NEEDS_PTHREAD="$(NEEDS_PTHREAD)" HAS_SDL2="$(HAS_SDL2)" DEBUG="$(DEBUG)")
 	@cp Tests/UtilityTests.out .
 	@echo SUCCESS
 	@sleep 0.9
@@ -237,9 +239,11 @@ $(SQLITE3_LIB):
 $(CLIPS_LIB):
 	(cd $(Deps_D)/CLIPS ; $(MAKE) $(MAKEFLAGS))
 
-UtilityTests.out: $(target)
-	(cd Tests ; $(MAKE) $(MAKEFLAGS) HAS_CURL="$(HAS_CURL)" HAS_BOOST="$(HAS_BOOST)" NEEDS_PTHREAD="$(NEEDS_PTHREAD)" HAS_SDL2="$(HAS_SDL2)" DEBUG="$(DEBUG)")
+UtilityTests.out: $(target) makefile Tests/makefile FORCE
+	(cd Tests ; $(MAKE) $(TESTS_MAKE_FLAGS))
 	@cp Tests/UtilityTests.out .
+
+FORCE: 
 	
 
 clean:
