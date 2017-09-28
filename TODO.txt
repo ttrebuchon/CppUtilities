@@ -32,7 +32,7 @@
 
 18) SQL/SQLite module with integration with CSV and Neural Net modules?
 
-19) Entity serialization module?
+19) Entity serialization module
 
 20) Implement FuncMatrix::flattenOverrides()
     20.1) To integrate FuncMatrix::instantiated overrides into the FuncMatrix::def functional
@@ -67,8 +67,6 @@
 	27.4) Unweighted
 	27.5) Traversal/Shortest path
 
-28) Cleanup Castor files to not throw compilation warnings
-
 29) Add module for server/multithreaded singleton operations
 	29.1) Mutexed data operations
 	29.2) Methods to pass lambda funcs that will run on the server
@@ -78,3 +76,11 @@
 		29.4.2) Segmented neural networks
 
 30) Genetic algorithm module
+	30.1) Add value/numeric solutions
+	30.2) More algorithm types
+
+31) Finish network Utilities module
+
+32) Implement non-local communication in network Service module
+
+33) Recurrent neural networks
