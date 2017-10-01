@@ -164,6 +164,7 @@ void Testing::run()
 	}
 	//#endif
 	RUN(Network());
+	RUN(Network_Sockets());
 	RUN(ASM());
 	#ifndef SHORT_TEST
 	RUN(BoostBased_Serialization());
