@@ -15,18 +15,30 @@ DEF_TEST(BoostBased_Serialization)
 	std::stringstream ar_buf;
 	{
 		boost::archive::text_oarchive ar(ar_buf);
-		ar << 4;
+		#define SERIAL(x) { auto z = x; ar << z; }
+		SERIAL(4);
+		SERIAL(5);
+		SERIAL(6);
+		SERIAL(7);
+		/*ar << 4;
 		ar << 5;
 		ar << 6;
-		ar << 7;
-		ar & 8;
+		ar << 7;*/
+		#define SERIAL2(x) { auto z = x; ar & z; }
+		SERIAL2(8);
 		
-		ar << std::string("Some Text to Archive!");
+		SERIAL(std::string("Some Text to Archive!"));
+		//ar << std::string("Some Text to Archive!");
 		
-		ar << std::string("Some More Text to \n_Archive!");
+		SERIAL(std::string("Some More Text to \n_Archive!"));
+		//ar << std::string("Some More Text to \n_Archive!");
 		
-		ar << std::string("820");
+		SERIAL(std::string("820"));
+		//ar << std::string("820");
 		
+
+		#undef SERIAL
+		#undef SERIAL2
 	}
 	
 	dout << "Archive Contents:\n{ ";
