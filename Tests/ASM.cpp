@@ -1,27 +1,33 @@
 #include "../Tests_Helpers.h"
 
+//#define ABC_RESULT 24;
+
+
 extern "C"
 {
+    static int _ABC_RESULT = 24;
+    const int& ABC_RESULT = _ABC_RESULT;
+    int abc123456()
+    {
+        return ABC_RESULT;
+    }
 
-int abc123456()
-{
-	return 24;
-}
-
-int abcdef()
-{
-	int x = abc123456();
-	return x + 439;
-}
+    int abcdef()
+    {
+        int x = abc123456();
+        return x + 439;
+    }
 }
 
 extern "C" int asmFunc();
-#if defined(i386)
+#if defined(i386) || defined(__x86_64__)
 asm (".global asmFunc\n\t"
      ".type asmFunc, @function\n\t"
      "asmFunc:\n\t"
      ".cfi_startproc\n\t"
-     "movl $7, %eax\n\t"
+     "movl ABC_RESULT, %eax\n\t"
+     "movl $10, %ecx\n\t"
+     "add %ecx, %eax\n\t"
      "ret\n\t"
      ".cfi_endproc");
 #elif defined(__aarch64__)
@@ -38,6 +44,8 @@ asm (".align 2\n"
      ".cfi_endproc\n\t"
      ".size asmFunc, .-asmFunc\n");
 #elif defined(__arm__)
+#else
+static_assert(false, "Unknown architecture!");
 #endif
 
 
@@ -45,6 +53,8 @@ asm (".align 2\n"
 
 DEF_TEST(ASM)
 {
-	assert_ex(asmFunc() == (abc123456()+10));
+    assert_ex(asmFunc() == (abc123456()+10));
+    assert_ex(asmFunc() == ABC_RESULT+10);
+    assert_ex(abc123456() == ABC_RESULT);
 	return true;
 }
