@@ -3,9 +3,11 @@
 #include <memory>
 #include <queue>
 #include <chrono>
+#include <type_traits>
 
 #include <QUtils/Multi/Mutexed.h>
 #include "Message.h"
+#include "Service.h"
 
 #include <iostream>
 
@@ -142,6 +144,7 @@ namespace Network
 	template <class Service_t>
 	class ServiceRouter : public Router
 	{
+		static_assert(std::is_base_of<Service, Service_t>::value, "ServiceRouter template parameter must derive from Service");
 		private:
 		
 		protected:

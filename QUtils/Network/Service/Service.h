@@ -5,10 +5,12 @@
 #include <chrono>
 #include <future>
 #include <string>
+#include <atomic>
 
 #include <QUtils/Multi/Mutexed.h>
 
 #include "ProcedureLookup.h"
+#include "TypeLookup.h"
 
 namespace QUtils
 {
@@ -24,7 +26,7 @@ namespace Network
 	class Service
 	{
 		private:
-		Multi::Mutexed<bool> _started;
+		std::atomic<bool> _started;
 		bool registered;
 		std::future<void> serviceFuture;
 		
@@ -61,7 +63,7 @@ namespace Network
 		}
 		
 		public:
-		const Multi::Mutexed<bool>& started;
+		const std::atomic<bool>& started;
 		template <class this_type>
 		Service(std::shared_ptr<ServiceRouter<this_type>> router) : Service((std::shared_ptr<Router>)router)
 		{}
@@ -110,9 +112,7 @@ namespace Network
 		
 		virtual void stop()
 		{
-			_started.lock();
 			_started = false;
-			_started.unlock();
 		}
 		
 		

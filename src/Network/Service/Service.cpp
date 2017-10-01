@@ -11,19 +11,16 @@ namespace Network
 	{
 		bool go = true;
 		goRegister();
-		_started.lock();
 		_started = true;
-		_started.unlock();
 		
 		try
 		{
-		while (go)
+		while (_started)
 		{
 			router->job();
-			//QUtils::sleep(100);
-			_started.lock();
-			go = *_started;
-			_started.unlock();
+			//_started.lock();
+			//go = _started;
+			//_started.unlock();
 		}
 		}
 		catch (...)
