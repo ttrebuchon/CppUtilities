@@ -165,8 +165,8 @@ void Testing::run()
 	//#endif
 	RUN(Network());
 	RUN(ASM());
-	RUN(BoostBased_Serialization());
 	#ifndef SHORT_TEST
+	RUN(BoostBased_Serialization());
 	RUN(CodeGen_Utility());
 	RUN(SDL_Drawing());
 	RUN(TravellingSalesman());
