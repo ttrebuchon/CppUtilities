@@ -18,6 +18,11 @@ namespace QUtils
 	//Static Methods
 	void String::Replace(std::string& str, const std::string target, const std::string replacement)
 	{
+		if (target.length() == 1)
+		{
+			String::Replace(str, target[0], replacement);
+			return;
+		}
 		std::string s = "";
 		//String str = this->str;
 		size_t pos;
@@ -37,9 +42,47 @@ namespace QUtils
 		str = s;
 	}
 	
-	void String::Replace(String& str, const std::string target, const std::string replacement)
+	void String::Replace(std::string& str, const char target, const std::string replacement)
 	{
-		String::Replace(str.str, target, replacement);
+		if (str.length() <= 0)
+		{
+			return;
+		}
+		char* ptr = &str[0];
+		throw NotImp();
+	}
+	
+	void String::Replace(std::string& str, const std::string target, const char replacement)
+	{
+		if (str.length() <= 0)
+		{
+			return;
+		}
+		if (target.length() == 1)
+		{
+			String::Replace(str, target[0], replacement);
+			return;
+		}
+		throw NotImp();
+	}
+	
+	void String::Replace(std::string& str, const char target, const char replacement)
+	{
+		auto len = str.length();
+		if (len <= 0)
+		{
+			return;
+		}
+		char* ptr = &str[0];
+		char* end = ptr + len;
+		while (ptr < end)
+		{
+			if (*ptr == target)
+			{
+				*ptr = replacement;
+			}
+			++ptr;
+		}
 	}
 	
 	void String::Trim(std::string& str)
@@ -93,6 +136,52 @@ namespace QUtils
 	void String::TrimEnd(String& str)
 	{
 		String::TrimEnd(str.str);
+	}
+	
+	void String::RemoveAll(std::string& str, const std::string target)
+	{
+		if (target.length() == 1)
+		{
+			RemoveAll(str, target[0]);
+			return;
+		}
+		throw NotImp();
+	}
+	
+	void String::RemoveAll(std::string& str, const char target)
+	{
+		auto len = str.length();
+		if (len <= 0)
+		{
+			return;
+		}
+		int shift = 0;
+		char* ptr = &str[0];
+		char* end = ptr + len;
+		while (ptr < end && shift == 0)
+		{
+			if (*ptr == target)
+			{
+				++shift;
+			}
+			++ptr;
+		}
+		while (ptr < end)
+		{
+			if (*ptr == target)
+			{
+				++shift;
+			}
+			else
+			{
+				*(ptr-shift) = *ptr;
+			}
+			++ptr;
+		}
+		if (shift > 0)
+		{
+			str.erase(len-shift);
+		}
 	}
 	
 	
@@ -297,7 +386,26 @@ namespace QUtils
 	
 	String String::removeWhitespaces() const
 	{
-		return this->replace(" ", "").replace("\t", "").replace("}n", "");
+		String s = *this;
+		String::RemoveAll(s, ' ');
+		String::RemoveAll(s, '\t');
+		String::RemoveAll(s, "\r\n");
+		String::RemoveAll(s, '\n');
+		return s;
+	}
+	
+	String String::removeAll(const String target) const
+	{
+		String s = *this;
+		String::RemoveAll(s, target.str);
+		return s;
+	}
+	
+	String String::removeAll(const char target) const
+	{
+		String s = *this;
+		String::RemoveAll(s, target);
+		return s;
 	}
 	
 	String String::trim() const

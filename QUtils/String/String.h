@@ -26,13 +26,25 @@ namespace QUtils
 		public:
 		
 		static void Replace(std::string&, const std::string target, const std::string replacement);
-		static void Replace(String&, const std::string target, const std::string replacement);
+		static void Replace(std::string&, const char target, const std::string replacement);
+		static void Replace(std::string&, const std::string target, const char replacement);
+		static void Replace(std::string&, const char target, const char replacement);
+		inline static void Replace(String& s, const std::string target, const std::string replacement)
+		{
+			Replace(s.str, target, replacement);
+		}
 		static void Trim(std::string&);
 		static void Trim(String&);
 		static void TrimStart(std::string&);
 		static void TrimStart(String&);
 		static void TrimEnd(std::string&);
 		static void TrimEnd(String&);
+		static void RemoveAll(std::string& s, const std::string target);
+		static void RemoveAll(std::string& s, const char target);
+		inline static void RemoveAll(String& s, const std::string target)
+		{ RemoveAll(s.str, target); }
+		inline static void RemoveAll(String& s, const char target)
+		{ RemoveAll(s.str, target); }
 		
 		String(std::string);
 		String(const char*);
@@ -62,6 +74,8 @@ namespace QUtils
 		bool endsWith(String) const;
 		//bool endsWith(std::string) const;
 		String removeWhitespaces() const;
+		String removeAll(const String target) const;
+		String removeAll(const char target) const;
 		String trim() const;
 		String trimStart() const;
 		String trimEnd() const;
