@@ -49,7 +49,17 @@ namespace QUtils::Network
 		virtual void getAddrInfoAndOpen(const std::string node, const std::string service) = 0;
 		virtual void getHostByName(const std::string) = 0;
 		
-		virtual int fd() const;
+		int fd() const;
+		
+		std::string read(const int max);
+		std::string read();
+		std::string readAll();
+		std::string readAll(const int max);
+		std::string peek(const int length);
+		void write(const std::string);
+		
+		
+		int waitingData() const;
 	};
 	
 	class INetSocket : public Socket

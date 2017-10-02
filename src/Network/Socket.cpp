@@ -7,6 +7,8 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/ioctl.h>
+#include <QUtils/String/String.h>
 
 #include <iostream>
 
@@ -93,6 +95,78 @@ namespace QUtils::Network
 	int Socket::fd() const
 	{
 		return descriptor;
+	}
+	
+	std::string Socket::read(const int max)
+	{
+		if (!isOpen())
+		{
+			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
+		}
+		std::string str(max, '\0');
+		::read(descriptor, &str[0], max);
+		QUtils::String::RemoveAll(str, '\0');
+		return str;
+	}
+	
+	std::string Socket::read()
+	{
+		if (!isOpen())
+		{
+			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
+		}
+		
+		int data = waitingData();
+		if (data <= 0)
+		{
+			return "";
+		}
+		std::string str(data, '\0');
+		::read(descriptor, &str[0], data);
+		QUtils::String::RemoveAll(str, '\0');
+		return str;
+	}
+	
+	std::string Socket::readAll()
+	{
+		if (!isOpen())
+		{
+			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
+		}
+		
+		std::string total = "";
+		
+		int data;
+		while ((data = waitingData()) > 0)
+		{
+			std::string str(data, '\0');
+			::read(descriptor, &str[0], data);
+			QUtils::String::RemoveAll(str, '\0');
+			total += str;
+		}
+		return total;
+	}
+	
+	std::string Socket::readAll(const int max)
+	{
+		return read(max);
+	}
+	
+	void Socket::write(const std::string str)
+	{
+		if (!isOpen())
+		{
+			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
+		}
+		
+		::write(descriptor, str.c_str(), str.length()+1);
+	}
+	
+	int Socket::waitingData() const
+	{
+		int count;
+		::ioctl(descriptor, FIONREAD, &count);
+		return count;
 	}
 	
 	
