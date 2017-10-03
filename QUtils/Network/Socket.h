@@ -51,12 +51,20 @@ namespace QUtils::Network
 		
 		int fd() const;
 		
-		std::string read(const int max);
+		
+		int read(void*, const int length);
+		std::string read(const int length);
 		std::string read();
 		std::string readAll();
 		std::string readAll(const int max);
+		std::string read(const char);
+		char readChar();
 		std::string peek(const int length);
+		std::string peek();
+		std::string waitAll(const int length);
 		void write(const std::string);
+		int write(const void*, const int length);
+		void write(const char);
 		
 		
 		int waitingData() const;

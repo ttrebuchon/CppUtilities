@@ -97,12 +97,23 @@ namespace QUtils::Network
 		return descriptor;
 	}
 	
+	int Socket::read(void* data, const int size)
+	{
+		if (!isOpen())
+		{
+			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
+		}
+		
+		return ::read(descriptor, data, size);
+	}
+	
 	std::string Socket::read(const int max)
 	{
 		if (!isOpen())
 		{
 			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
 		}
+		
 		std::string str(max, '\0');
 		::read(descriptor, &str[0], max);
 		QUtils::String::RemoveAll(str, '\0');
@@ -152,6 +163,84 @@ namespace QUtils::Network
 		return read(max);
 	}
 	
+	std::string Socket::read(const char terminator)
+	{
+		if (!isOpen())
+		{
+			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
+		}
+		
+		std::string str;
+		char c;
+		while (waitingData() > 0)
+		{
+			::read(descriptor, &c, 1);
+			if (c == terminator)
+			{
+				break;
+			}
+			str += c;
+		}
+		return str;
+	}
+	
+	char Socket::readChar()
+	{
+		if (!isOpen())
+		{
+			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
+		}
+		
+		
+		char c;
+		::read(descriptor, &c, 1);
+		return c;
+	}
+	
+	std::string Socket::peek(const int length)
+	{
+		if (!isOpen())
+		{
+			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
+		}
+		
+		std::string str(length, '\0');
+		int count = ::recv(descriptor, &str[0], length, MSG_PEEK);
+		QUtils::String::RemoveAll(str, '\0');
+		return str;
+	}
+	
+	std::string Socket::peek()
+	{
+		if (!isOpen())
+		{
+			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
+		}
+		
+		int data = waitingData();
+		std::string str(data, '\0');
+		int count = ::recv(descriptor, &str[0], data, MSG_PEEK);
+		QUtils::String::RemoveAll(str, '\0');
+		return str;
+	}
+	
+	std::string Socket::waitAll(const int length)
+	{
+		if (!isOpen())
+		{
+			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
+		}
+		
+		std::string str(length, '\0');
+		int count = ::recv(descriptor, &str[0], length, MSG_WAITALL);
+		if (count != length)
+		{
+			throw std::exception();
+		}
+		QUtils::String::RemoveAll(str, '\0');
+		return str;
+	}
+	
 	void Socket::write(const std::string str)
 	{
 		if (!isOpen())
@@ -160,6 +249,26 @@ namespace QUtils::Network
 		}
 		
 		::write(descriptor, str.c_str(), str.length()+1);
+	}
+	
+	void Socket::write(const char c)
+	{
+		if (!isOpen())
+		{
+			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
+		}
+		
+		::write(descriptor, &c, 1);
+	}
+	
+	int Socket::write(const void* data, const int size)
+	{
+		if (!isOpen())
+		{
+			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
+		}
+		
+		return ::write(descriptor, data, size);
 	}
 	
 	int Socket::waitingData() const
