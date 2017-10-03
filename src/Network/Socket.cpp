@@ -235,7 +235,8 @@ namespace QUtils::Network
 		int count = ::recv(descriptor, &str[0], length, MSG_WAITALL);
 		if (count != length)
 		{
-			throw std::exception();
+			int err = errno;
+			ERROR_EX(err);
 		}
 		QUtils::String::RemoveAll(str, '\0');
 		return str;
@@ -248,7 +249,11 @@ namespace QUtils::Network
 			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
 		}
 		
-		::write(descriptor, str.c_str(), str.length()+1);
+		if (::write(descriptor, str.c_str(), str.length()+1) < 0)
+		{
+			int err = errno;
+			ERROR_EX(err);
+		}
 	}
 	
 	void Socket::write(const char c)
@@ -258,7 +263,11 @@ namespace QUtils::Network
 			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
 		}
 		
-		::write(descriptor, &c, 1);
+		if (::write(descriptor, &c, 1) < 0)
+		{
+			int err = errno;
+			ERROR_EX(err);
+		}
 	}
 	
 	int Socket::write(const void* data, const int size)
@@ -394,6 +403,7 @@ namespace QUtils::Network
 	
 	std::string getError(const int err)
 	{
+		return ::strerror(err);
 		#define ERR(x) case x: return #x
 		switch (err)
 		{
@@ -422,6 +432,12 @@ namespace QUtils::Network
 			ERR(ENFILE);
 			ERR(ENOTSOCK);
 			ERR(EOPNOTSUPP);
+			ERR(EFBIG);
+			ERR(EDQUOT);
+			ERR(EFAULT);
+			ERR(EIO);
+			ERR(ENOSPC);
+			ERR(EPIPE);
 			
 			
 			
