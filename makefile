@@ -222,7 +222,7 @@ all: $(target) UtilityTests.out
 
 $(target): $(objects) makefile $(CURLPP_LIB) $(SQLITE3_LIB) $(CLIPS_LIB)
 	echo BUILDING TARGET!
-	[ -d objs ] || mkdir objs
+	-mkdir objs
 	cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv ../$(lib) ; )
 	$(eval TMP := objs/*.o)
 	ar rvs $(target) $(TMP) $(objects)
@@ -247,11 +247,11 @@ FORCE:
 	
 
 clean:
-	rm -f $(objects)
-	rm -f $(objects:.o=.d)
+	-rm -f $(objects)
+	-rm -f $(objects:.o=.d)
 	(cd Tests; make clean)
-	@rm UtilityTests.out || echo
-	rm $(target)
+	-@rm UtilityTests.out
+	-rm $(target)
 
 
 src/Graphics/Images/JPG_boost.o: src/Graphics/Images/JPG_boost.cpp QUtils/Graphics/Images/JPG_PCH.h QUtils/Graphics/Images/JPG_PCH.h.gch
