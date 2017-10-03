@@ -378,8 +378,25 @@ SOCKET_TEST(Wrapped_IO)
 	assert_ex(out_str9_2 == in_str9_2);
 	
 	assert_ex(act_srvsock->readAll() == "");
-	
 	}
+	
+	std::string in_str10;
+	
+	for (int i = 0; i < 10000; ++i)
+	{
+		in_str10 += (char)(rand() % ('Z' - 'A' + 1) + 'A');
+	}
+	
+	sock->write(in_str10);
+	
+	dout << "Reading..." << std::endl;
+	std::string out_str10 = act_srvsock->read();
+	dout << "Read." << std::endl;
+	//QUtils::sleep(1000);
+	dout << "Waiting: " << act_srvsock->waitingData() << "\n";
+	dout << in_str10.length() << "\n";
+	dout << out_str10.length() << "\n";
+	assert_ex(out_str10 == in_str10);
 }
 
 
@@ -442,11 +459,7 @@ SOCKET_TEST(Async)
 	out_str += act_srvsock->readAll();
 	
 	writeGet.get();
-	//dout << "'" << out_str2 << "'\n";
-	if (out_str2 != in_str2)
-	{
-		dout << "'" << in_str2 << "'\n'" << out_str2 << "'\n";
-	}
+	out_str += act_srvsock->readAll();
 	assert_ex(out_str2 == in_str2);
 	
 }
