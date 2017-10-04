@@ -11,20 +11,20 @@ SRC = ../src
 
 Tests_cpp = $(wildcard *.cpp)
 Tests = $(Tests_cpp:.cpp=.o)
-#*/
+
 objects = ../Tests.o $(Tests)
 
 
 
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DSHORT_TEST
+PREPROC_FLAGS += -DSHORT_TEST
 
 ifeq ($(DEBUG), TRUE)
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DDEBUG
+PREPROC_FLAGS += -DDEBUG
 endif
 
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DSEED
+PREPROC_FLAGS += -DSEED
 
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DTEST_DEBUG
+PREPROC_FLAGS += -DTEST_DEBUG
 
 
 
@@ -32,15 +32,15 @@ PREPROC_FLAGS := $(PREPROC_FLAGS) -DTEST_DEBUG
 
 
 ifeq ($(HAS_CURL), TRUE)
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DQUTILS_HAS_CURL
+PREPROC_FLAGS += -DQUTILS_HAS_CURL
 endif
 
 ifeq ($(HAS_BOOST), TRUE)
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DQUTILS_HAS_BOOST
+PREPROC_FLAGS += -DQUTILS_HAS_BOOST
 endif
 
 ifeq ($(HAS_SDL2), TRUE)
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DQUTILS_HAS_SDL2
+PREPROC_FLAGS += -DQUTILS_HAS_SDL2
 endif
 
 
@@ -48,7 +48,7 @@ endif
 
 WARNINGS_ERRORS = -ftemplate-backtrace-limit=0 -Wno-sign-compare
 
-WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wfatal-errors 
+WARNINGS_ERRORS += -Wfatal-errors 
 
 FLAGS = -I ../
 
@@ -63,15 +63,15 @@ CLIPS_Dep = $(Deps_D)/CLIPS
 LINKING = -lz -ljpeg -ldl
 
 ifeq ($(HAS_CURL), TRUE)
-LINKING := $(LINKING) -lcurl
+LINKING += -lcurl
 endif
 
 ifeq ($(NEEDS_PTHREAD), TRUE)
-LINKING := $(LINKING) -lpthread
+LINKING += -lpthread
 endif
 
 ifeq ($(HAS_SDL2), TRUE)
-LINKING := $(LINKING) -lSDL2 -ltiff -lSDL2_ttf
+LINKING += -lSDL2 -ltiff -lSDL2_ttf
 endif
 
 ifeq ($(HAS_BOOST), TRUE)
@@ -83,7 +83,7 @@ INCLUDES = -I ../Deps/curlpp/include
 
 
 
-#CXX = g++
+
 CXXFLAGS = -std=c++14 -MMD -fpic $(PREPROC_FLAGS) $(FLAGS) $(WARNINGS_ERRORS) -Og $(INCLUDES)
 testdeps = $(objects:.o=.d)
 LIB = Utility
