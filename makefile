@@ -1,3 +1,4 @@
+#User Preference/Build Options
 HAS_CURL = TRUE
 HAS_BOOST = TRUE
 NEEDS_PTHREAD = FALSE
@@ -11,12 +12,14 @@ DEBUG=TRUE
 
 SRC = src
 
-
+#Custom Functions
 rwildcard = $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 
 getobjs = $(patsubst %.cpp,%.o,$(call rwildcard,$1,*.cpp))
 
 
+
+#Module Object Variables
 Func = $(call getobjs,$(SRC)/Func/)
 
 NNST = $(call getobjs,$(SRC)/NearestNeighborTree/)
@@ -73,8 +76,10 @@ Serialization = $(call getobjs,$(SRC)/Serialization/)
 objects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen) $(Genetic) $(Serialization)
 
 
+#Namespace name, used once (Not important)
 NAMESPACE=QUtils
 
+#Flags for SQLite
 SQL_FLAGS = -DSQLITE_ENABLE_COLUMN_METADATA -DSQLITE_DEFAULT_MEMSTATUS=0 -DSQLITE_DEFAULT_WAL_SYNCHRONOUS=1 -DSQLITE_DEFAULT_FOREIGN_KEYS=1
 
 
@@ -82,15 +87,15 @@ PREPROC_FLAGS = -D__NS__="$(NAMESPACE)"
 
 
 ifeq ($(DEBUG), TRUE)
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DDEBUG
+PREPROC_FLAGS += -DDEBUG
 endif
 
-PREPROC_FLAGS := $(PREPROC_FLAGS) $(SQL_FLAGS)
+PREPROC_FLAGS += $(SQL_FLAGS)
 
-PREPROC_FLAGS := $(PREPROC_FLAGS) #-DPRINT_SQL_QUERIES
+PREPROC_FLAGS += #-DPRINT_SQL_QUERIES
 
 ifeq ($(HIDE_SDL_UNAVAILABLE), TRUE)
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DQUTILS_SDL_HIDE_NOT_AVAILABLE
+PREPROC_FLAGS += -DQUTILS_SDL_HIDE_NOT_AVAILABLE
 endif
 
 
@@ -99,25 +104,26 @@ endif
 
 
 ifeq ($(HAS_CURL), TRUE)
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DQUTILS_HAS_CURL
+PREPROC_FLAGS += -DQUTILS_HAS_CURL
 endif
 
 ifeq ($(HAS_BOOST), TRUE)
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DQUTILS_HAS_BOOST
+PREPROC_FLAGS += -DQUTILS_HAS_BOOST
 endif
 
 ifeq ($(HAS_SDL2), TRUE)
-PREPROC_FLAGS := $(PREPROC_FLAGS) -DQUTILS_HAS_SDL2
+PREPROC_FLAGS += -DQUTILS_HAS_SDL2
 endif
 
 
-
+#Defined on separate lines to make it easier
+# to comment out specific options for debugging
 
 WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -ftemplate-backtrace-limit=0
 
-WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wno-unused-local-typedefs -Wno-unused-variable -Wno-unused-but-set-variable 
+WARNINGS_ERRORS += -Wno-unused-local-typedefs -Wno-unused-variable -Wno-unused-but-set-variable 
 
-WARNINGS_ERRORS := $(WARNINGS_ERRORS) -Wfatal-errors 
+WARNINGS_ERRORS += -Wfatal-errors 
 
 FLAGS = -I .
 
@@ -129,22 +135,21 @@ Curlpp_Dep = -I $(Deps_D)/curlpp/include -L $(Deps_D)/curlpp
 DEPS = -I $(Deps_D)/Castor -I $(BOOST_DIR) -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(CLIPS_Dep)
 
 ifeq ($(HAS_CURL), TRUE)
-DEPS := $(DEPS) $(Curlpp_Dep)
+DEPS += $(Curlpp_Dep)
 endif
 
 LINKING = -lclips++ -lz -ljpeg -ldl
 
 ifeq ($(HAS_CURL), TRUE)
-LINKING := $(LINKING) #-lcurlpp
-LINKING := $(LINKING) -lcurl
+LINKING += -lcurl
 endif
 
 ifeq ($(NEEDS_PTHREAD), TRUE)
-LINKING := $(LINKING) -lpthread
+LINKING += -lpthread
 endif
 
 ifeq ($(HAS_SDL2), TRUE)
-LINKING := $(LINKING) -lSDL2 -ltiff -lSDL2_ttf
+LINKING += -lSDL2 -ltiff -lSDL2_ttf
 endif
 
 SQLITE3_LIB = $(Deps_D)/sqlite3/libsqlite3.a
@@ -162,7 +167,7 @@ INCLUDED_LIBS = $(SQLITE3_LIB) $(Deps_D)/CLIPS/libclips++.a $(CURLPP_LIB)
 TESTS_MAKE_FLAGS = $(MAKEFLAGS) HAS_CURL="$(HAS_CURL)" HAS_BOOST="$(HAS_BOOST)" NEEDS_PTHREAD="$(NEEDS_PTHREAD)" HAS_SDL2="$(HAS_SDL2)" DEBUG="$(DEBUG)" BOOST_DIR="$(BOOST_DIR)"
 
 
-#CXX = g++
+
 CXXFLAGS = -std=c++14 -MMD -fpic -I . $(PREPROC_FLAGS) $(FLAGS) -Wno-sign-compare $(WARNINGS_ERRORS) -Og
 CXXFLAGS += -Wall
 deps = $(objects:.o=.d)
