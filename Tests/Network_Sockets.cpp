@@ -432,12 +432,12 @@ SOCKET_TEST(Async)
 	assert_ex(out_str == in_str);
 	
 	
-	std::string in_str2 = "";
+	std::string in_str2 = " ";
 	std::string out_str2;
 	volatile const int count2 = 1000;
 	for (int i = 0; i < count2; ++i)
 	{
-		in_str2 += std::to_string(i);
+		in_str2 += std::to_string(i) + " ";
 	}
 	finished = false;
 	
@@ -446,7 +446,15 @@ SOCKET_TEST(Async)
 		finished = false;
 		for (int i = 0; i < count2; ++i)
 		{
-			sock->write(std::to_string(i));
+			if (i != 0)
+			{
+				sock->write(std::to_string(i) + " ");
+			}
+			else
+			{
+				sock->write(" " + std::to_string(i) + " ");
+			}
+			
 		}
 		finished = true;
 	});
@@ -456,10 +464,16 @@ SOCKET_TEST(Async)
 		out_str2 += act_srvsock->readAll();
 	}
 	QUtils::sleep(100);
-	out_str += act_srvsock->readAll();
+	//out_str2 += act_srvsock->readAll();
 	
 	writeGet.get();
-	out_str += act_srvsock->readAll();
+	//out_str2 += act_srvsock->readAll();
+	
+	for (int i = 0; i < count2; ++i)
+	{
+		assert_ex(out_str2.find(" " + std::to_string(i) + " ") != std::string::npos);
+	}
+	
 	assert_ex(out_str2 == in_str2);
 	
 }
