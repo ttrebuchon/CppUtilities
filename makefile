@@ -11,107 +11,63 @@ DEBUG=TRUE
 
 SRC = src
 
-Func_cpp = $(wildcard $(SRC)/Func/*.cpp)
-Func = $(Func_cpp:.cpp=.o)
-#*/
 
-NNST_cpp = $(wildcard $(SRC)/NearestNeighborTree/*.cpp)
-NNST = $(NNST_cpp:.cpp=.o)
-#*/
+rwildcard = $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 
-DebugOut_cpp = $(wildcard $(SRC)/DebugOut/*.cpp)
-DebugOut = $(DebugOut_cpp:.cpp=.o)
-#*/
+getobjs = $(patsubst %.cpp,%.o,$(call rwildcard,$1,*.cpp))
 
-Markov_cpp = $(wildcard $(SRC)/Markov/*.cpp)
-Markov = $(Markov_cpp:.cpp=.o)
-#*/
 
-Stopwatch_cpp = $(wildcard $(SRC)/Stopwatch/*.cpp)
-Stopwatch = $(Stopwatch_cpp:.cpp=.o)
-#*/
+Func = $(call getobjs,$(SRC)/Func/)
 
-String_cpp = $(wildcard $(SRC)/String/*.cpp)
-String = $(String_cpp:.cpp=.o)
-#*/
+NNST = $(call getobjs,$(SRC)/NearestNeighborTree/)
 
-Math_cpp = $(wildcard $(SRC)/Math/*.cpp)
-Math = $(Math_cpp:.cpp=.o)
-#*/
+DebugOut = $(call getobjs,$(SRC)/DebugOut/)
 
-LazyLoad_cpp = $(wildcard $(SRC)/LazyLoad/*.cpp)
-LazyLoad = $(LazyLoad_cpp:.cpp=.o)
-#*/
+Markov = $(call getobjs,$(SRC)/Markov/)
 
-Sleep_cpp = $(wildcard $(SRC)/Sleep/*.cpp)
-Sleep = $(Sleep_cpp:.cpp=.o)
-#*/
+Stopwatch = $(call getobjs,$(SRC)/Stopwatch/)
 
-NeuralNet_cpp = $(wildcard $(SRC)/NeuralNet/*.cpp) $(wildcard $(SRC)/NeuralNet/**/*.cpp)
-NeuralNet = $(NeuralNet_cpp:.cpp=.o)
-#*/
+String = $(call getobjs,$(SRC)/String/)
 
-CSV_cpp = $(wildcard $(SRC)/CSV/*.cpp)
-CSV = $(CSV_cpp:.cpp=.o)
-#*/
+Math = $(call getobjs,$(SRC)/Math/)
 
-Raytracer_cpp = $(wildcard $(SRC)/Raytracer/*.cpp) $(wildcard $(SRC)/Raytracer/**/*.cpp)
-Raytracer = $(Raytracer_cpp:.cpp=.o)
-#*/
+LazyLoad = $(call getobjs,$(SRC)/LazyLoad/)
 
-Rules_cpp = $(wildcard $(SRC)/Rules/*.cpp)
-Rules = $(Rules_cpp:.cpp=.o)
-#*/
+Sleep = $(call getobjs,$(SRC)/Sleep/)
 
-English_cpp = $(wildcard $(SRC)/English/**/*.cpp) $(wildcard $(SRC)/English/*.cpp)
-English = $(English_cpp:.cpp=.o)
-#*/
+NeuralNet = $(call getobjs,$(SRC)/NeuralNet/)
 
-CLIPS_cpp = $(wildcard $(SRC)/CLIPS/*.cpp)
-CLIPS = $(CLIPS_cpp:.cpp=.o)
-#*/
+CSV = $(call getobjs,$(SRC)/CSV/)
 
-SQL_cpp = $(wildcard $(SRC)/SQL/**/*.cpp) $(wildcard $(SRC)/SQL/*.cpp)
-SQL = $(SQL_cpp:.cpp=.o)
-#*/
+Raytracer = $(call getobjs,$(SRC)/Raytracer/)
 
-Multi_cpp = $(wildcard $(SRC)/Multi/**/*.cpp) $(wildcard $(SRC)/Multi/*.cpp)
-Multi = $(Multi_cpp:.cpp=.o)
-#*/
+Rules = $(call getobjs,$(SRC)/Rules/)
 
-Network_cpp = $(wildcard $(SRC)/Network/**/*.cpp) $(wildcard $(SRC)/Network/*.cpp)
-Network = $(Network_cpp:.cpp=.o)
-#*/
+English = $(call getobjs,$(SRC)/English/)
 
-Graphics_cpp = $(wildcard $(SRC)/Graphics/**/*.cpp) $(wildcard $(SRC)/Graphics/*.cpp)
-Graphics = $(Graphics_cpp:.cpp=.o)
-#*/
+CLIPS = $(call getobjs,$(SRC)/CLIPS/)
 
-Guid_cpp = $(wildcard $(SRC)/GUID/**/*.cpp) $(wildcard $(SRC)/GUID/*.cpp)
-Guid = $(Guid_cpp:.cpp=.o)
-#*/
+SQL = $(call getobjs,$(SRC)/SQL/)
 
-GUI_cpp = $(wildcard $(SRC)/GUI/**/*.cpp) $(wildcard $(SRC)/GUI/*.cpp)
-GUI = $(GUI_cpp:.cpp=.o)
-#*/
+Multi = $(call getobjs,$(SRC)/Multi/)
 
-Output_cpp = $(wildcard $(SRC)/Output/**/*.cpp) $(wildcard $(SRC)/Output/*.cpp)
-Output = $(Output_cpp:.cpp=.o)
-#*/
+Network = $(call getobjs,$(SRC)/Network/)
 
-Drawing_SDL_cpp = $(wildcard $(SRC)/Drawing/SDL/**/*.cpp) $(wildcard $(SRC)/Drawing/SDL/*.cpp)
-Drawing_SDL = $(Drawing_SDL_cpp:.cpp=.o)
-#*/
+Graphics = $(call getobjs,$(SRC)/Graphics/)
 
-CodeGen_cpp = $(wildcard $(SRC)/CodeGen/**/*.cpp) $(wildcard $(SRC)/CodeGen/**/**/*.cpp) $(wildcard $(SRC)/CodeGen/**/**/**/*.cpp) $(wildcard $(SRC)/CodeGen/*.cpp)
-CodeGen = $(CodeGen_cpp:.cpp=.o)
-#*/
+Guid = $(call getobjs,$(SRC)/GUID/)
 
-Genetic = $(patsubst %.cpp,%.o,$(wildcard $(SRC)/Genetic/*.cpp)) $(patsubst %.cpp,%.o,$(wildcard $(SRC)/Genetic/**/*.cpp))
-#*/
+GUI = $(call getobjs,$(SRC)/GUI/)
 
-Serialization = $(patsubst %.cpp,%.o,$(wildcard $(SRC)/Serialization/*.cpp)) $(patsubst %.cpp,%.o,$(wildcard $(SRC)/Serialization/**/*.cpp))
-#*/
+Output = $(call getobjs,$(SRC)/Output/)
+
+Drawing_SDL = $(call getobjs,$(SRC)/Drawing/SDL/)
+
+CodeGen = $(call getobjs,$(SRC)/CodeGen/)
+
+Genetic = $(call getobjs,$(SRC)/Genetic/)
+
+Serialization = $(call getobjs,$(SRC)/Serialization/)
 
 
 objects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen) $(Genetic) $(Serialization)
