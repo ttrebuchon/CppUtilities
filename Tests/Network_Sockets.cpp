@@ -1,5 +1,5 @@
 #include "../Tests_Helpers.h"
-#include <QUtils/Network/Socket.h>
+#include <QUtils/Network/Sockets.h>
 #include <future>
 #include <unistd.h>
 #include <atomic>
