@@ -4,25 +4,6 @@
 #include <cstdlib>
 #include <algorithm>
 
-#define PROTO_PREPROC_DEFS
-
-#ifdef PROTO_PREPROC_DEFS
-
-#define QUTILS_NETWORK_PROTO_MSG_LEN_SIZE 4
-#define QUTILS_NETWORK_PROTO_MSG_ID_SIZE 1
-#define QUTILS_NETWORK_PROTO_MSG_CHECKSUM_SIZE 3
-
-#else
-namespace QUtils { namespace Network {
-namespace SocketProtocol {
-	const auto QUTILS_NETWORK_PROTO_MSG_LEN_SIZE = 4;
-	const auto QUTILS_NETWORK_PROTO_MSG_ID_SIZE = 1;
-	const auto QUTILS_NETWORK_PROTO_MSG_CHECKSUM_SIZE = 5;
-}
-}
-}
-#endif
-
 
 namespace QUtils { namespace Network {
 namespace SocketProtocol {
@@ -130,10 +111,10 @@ namespace SocketProtocol {
 		struct SmallestType
 		{
 			typedef typename _SmallestType<MaxValue(Size) <= std::numeric_limits<T>::max(), Size, T, G...>::type type;
-			static const size_t size = sizeof(type);
-			static const size_t type_size = sizeof(type);
-			static const size_t RawSize = Size;
-			static const type Max = MaxValue(Size);
+			constexpr static size_t size = sizeof(type);
+			constexpr static size_t type_size = sizeof(type);
+			constexpr static size_t RawSize = Size;
+			constexpr static type Max = MaxValue(RawSize);
 			
 			inline static type Read(const char* data)
 			{
@@ -171,35 +152,6 @@ namespace SocketProtocol {
 		};
 		
 	}
-	/*typedef Helpers::SmallestType<
-		QUTILS_NETWORK_PROTO_MSG_LEN_SIZE,
-		unsigned char,
-		unsigned int,
-		unsigned long,
-		unsigned long long
-	> MsgLen_Info;
-	
-	typedef typename MsgLen_Info::type MsgLen_t;
-	
-	typedef Helpers::SmallestType<
-		QUTILS_NETWORK_PROTO_MSG_ID_SIZE,
-		unsigned char,
-		unsigned int,
-		unsigned long,
-		unsigned long long
-	> MsgID_Info;
-	
-	typedef typename MsgID_Info::type MsgID_t;
-	
-	typedef Helpers::SmallestType<
-		QUTILS_NETWORK_PROTO_MSG_CHECKSUM_SIZE,
-		unsigned char,
-		unsigned int,
-		unsigned long,
-		unsigned long long
-	> MsgChecksum_Info;
-	
-	typedef typename MsgChecksum_Info::type MsgChecksum_t;*/
 	
 	
 	template <int ID_s, int Length_s, int Checksum_s>

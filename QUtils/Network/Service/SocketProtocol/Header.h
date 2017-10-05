@@ -10,6 +10,8 @@ namespace SocketProtocol {
 		typename Spec::MsgID_t id;
 		typename Spec::MsgLen_t size;
 		typename Spec::MsgChecksum_t checksum;
+		
+		constexpr static auto Length = Spec::Header_Size;
 	};
 	
 }

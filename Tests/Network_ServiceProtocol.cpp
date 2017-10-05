@@ -54,6 +54,7 @@ DEF_TEST(Network_ServiceProtocol)
 	RUN_TEST(1);
 	RUN_TEST(2);
 	RUN_TEST(3);
+	RUN_TEST(4);
 	
 	
 	return true;
@@ -271,6 +272,58 @@ namespace Network_ServiceProtocol_Test
 		assert_ex(hd->size == 0x200);
 		assert_ex(hd->id == 42);
 		assert_ex(hd->checksum == 0x010000);
+	}
+	
+	
+	
+	
+	
+	template <>
+	char* getTestHeader<4>(unsigned long* size)
+	{
+		assert_ex(HEADER_SIZE == Protocol<>::HeaderLength);
+		
+		const std::string body = "Hello, world!";
+		
+		const unsigned long MsgLen = body.length();
+		*size = MsgLen;
+		auto hd = new QUtils::Network::SocketProtocol::Header<>();
+		hd->id = 56;
+		hd->size = MsgLen;
+		hd->checksum = Protocol<>::CalculateChecksum(body.c_str(), MsgLen);
+		char* raw = QUtils::Network::SocketProtocol::Protocol<>::WriteHeader(hd);
+		delete hd;
+		return raw;
+	}
+	
+	template <>
+	char* getTestBody<4>()
+	{
+		const std::string bodyStr = "Hello, world!";
+		//We don't want the null terminator
+		char* body = new char[bodyStr.length()];
+		::memcpy(body, bodyStr.c_str(), bodyStr.length());
+		return body;
+	}
+	
+	template <>
+	void verifyTestHeader<4>(const QUtils::Network::SocketProtocol::Header<>* hd)
+	{
+		const std::string body = "Hello, world!";
+		
+		const unsigned long MsgLen = body.length();
+		const auto chksum = Protocol<>::CalculateChecksum(body.c_str(), MsgLen);
+		assert_ex(hd != NULL);
+		assert_ex(hd->size == MsgLen);
+		assert_ex(hd->id == 56);
+		assert_ex(hd->checksum == chksum);
+		unsigned long long tally = 0;
+		for (int i = 0; i < body.length(); ++i)
+		{
+			tally += body[i];
+			tally %= DefaultSpec::MsgChecksum_Info::Max;
+		}
+		assert_ex(tally == chksum);
 	}
 }
 
