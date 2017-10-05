@@ -23,25 +23,25 @@ class StringException : public std::exception
 	}
 };
 
-std::string __assert_ex_helper(auto file, auto line, auto msg)
+std::string __assert_ex_helper(auto file, auto line, auto func, auto msg)
 {
 	std::stringstream ss;
-	ss << file << ":L" << line << "::Assertion Failed: " << msg;
+	ss << func << "::" << file << ":L" << line << "::Assertion Failed: " << msg;
 	return ss.str();
 }
 
 //#define assert_ex(x) ( x ) ? NULL : throw StringException(static_cast<std::stringstream>(std::stringstream() << __FILE__ << ":L" << __LINE__ << "::Assertion Failed: " << #x).str())
 
-bool _stringException_caller(auto file, auto line, auto exp)
+bool _stringException_caller(auto file, auto line, auto func, auto exp)
 {
-	throw StringException(__assert_ex_helper(file, line, exp));
+	throw StringException(__assert_ex_helper(file, line, func, exp));
 	return false;
 	
 }
 
-#define assert_ex(x) (( x ) ? true : _stringException_caller(__FILE__, __LINE__, #x))
+#define assert_ex(x) (( x ) ? true : _stringException_caller(__FILE__, __LINE__, __FUNCTION__, #x))
 
-#define assert_not_reached() _stringException_caller(__FILE__, __LINE__, "Not a valid test path!")
+#define assert_not_reached() _stringException_caller(__FILE__, __LINE__, __FUNCTION__, "Not a valid test path!")
 
 #define DEF_TEST(x) bool Test_##x()
 
