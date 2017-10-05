@@ -1,9 +1,15 @@
 #pragma once
 
+#include <tuple>
+
 namespace QUtils
 {
 namespace Types
 {
+	template <class... T>
+	using TypeSequence = std::tuple<T...>;
+	
+	
 	template <template <class...> class, class>
 	struct TemplateFromTupleTypes
 	{ };
@@ -53,6 +59,12 @@ namespace Types
 	struct ExcludeFirstN<0, A>
 	{
 		typedef std::tuple<A> type;
+	};
+	
+	template <class A>
+	struct ExcludeFirstN<1, A>
+	{
+		typedef std::tuple<> type;
 	};
 	
 	template <int N, class A, class... B>
@@ -134,6 +146,21 @@ namespace Types
 			std::tuple<TupTypes...>
 		>(), 
 		std::declval<T>()
+		)) 
+		type;
+	};
+	
+	template <class ...TupTypes, class T>
+	struct Concat<T, std::tuple<TupTypes...>>
+	{
+		typedef decltype(
+		std::tuple_cat(
+		std::declval<
+			std::tuple<T>
+		>(),
+		std::declval<
+			std::tuple<TupTypes...>
+		>()
 		)) 
 		type;
 	};
