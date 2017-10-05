@@ -10,7 +10,7 @@
 
 #define QUTILS_NETWORK_PROTO_MSG_LEN_SIZE 4
 #define QUTILS_NETWORK_PROTO_MSG_ID_SIZE 1
-#define QUTILS_NETWORK_PROTO_MSG_CHECKSUM_SIZE 5
+#define QUTILS_NETWORK_PROTO_MSG_CHECKSUM_SIZE 3
 
 #else
 namespace QUtils { namespace Network {
@@ -132,6 +132,8 @@ namespace SocketProtocol {
 			typedef typename _SmallestType<MaxValue(Size) <= std::numeric_limits<T>::max(), Size, T, G...>::type type;
 			static const size_t size = sizeof(type);
 			static const size_t type_size = sizeof(type);
+			static const size_t RawSize = Size;
+			static const type Max = MaxValue(Size);
 			
 			inline static type Read(const char* data)
 			{
@@ -166,15 +168,6 @@ namespace SocketProtocol {
 				}
 			}
 			
-			inline static type NetToHost(const type num)
-			{
-				return ToHostEndian(num);
-			}
-			
-			inline static type HostToNet(const type num)
-			{
-				return ToNetEndian(num);
-			}
 		};
 		
 	}

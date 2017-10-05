@@ -34,6 +34,24 @@ namespace SocketProtocol {
 		return rawHeader;
 	}
 	
+	MsgChecksum_t Protocol::CalculateChecksum(const char* msg, const MsgLen_t len)
+	{
+		MsgChecksum_t sum = 0;
+		
+		for (auto i = 0; i < len; ++i)
+		{
+			sum += (int)msg[i];
+			sum %= MsgChecksum_Info::Max;
+		}
+		
+		return sum;
+	}
+	
+	bool Protocol::VerifyChecksum(Header* header, const char* msg)
+	{
+		return (header->checksum == CalculateChecksum(msg, header->size));
+	}
+	
 	
 }
 }
