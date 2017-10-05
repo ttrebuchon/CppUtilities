@@ -4,11 +4,12 @@
 namespace QUtils { namespace Network {
 namespace SocketProtocol {
 	
+	template <class Spec = DefaultSpec>
 	struct Header
 	{
-		MsgID_t id;
-		MsgLen_t size;
-		MsgChecksum_t checksum;
+		typename Spec::MsgID_t id;
+		typename Spec::MsgLen_t size;
+		typename Spec::MsgChecksum_t checksum;
 	};
 	
 }

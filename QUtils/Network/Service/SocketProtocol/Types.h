@@ -171,7 +171,7 @@ namespace SocketProtocol {
 		};
 		
 	}
-	typedef Helpers::SmallestType<
+	/*typedef Helpers::SmallestType<
 		QUTILS_NETWORK_PROTO_MSG_LEN_SIZE,
 		unsigned char,
 		unsigned int,
@@ -199,5 +199,51 @@ namespace SocketProtocol {
 		unsigned long long
 	> MsgChecksum_Info;
 	
-	typedef typename MsgChecksum_Info::type MsgChecksum_t;
+	typedef typename MsgChecksum_Info::type MsgChecksum_t;*/
+	
+	
+	template <int ID_s, int Length_s, int Checksum_s>
+	struct HeaderSpec
+	{
+		const static auto ID_Size = ID_s;
+		const static auto Length_Size = Length_s;
+		const static auto Checksum_Size = Checksum_s;
+		
+		constexpr static auto Header_Size = ID_Size + Length_Size + Checksum_Size;
+		
+		typedef Helpers::SmallestType<
+			ID_Size,
+			unsigned char,
+			unsigned int,
+			unsigned long,
+			unsigned long long
+		> MsgID_Info;
+		
+		typedef Helpers::SmallestType<
+			Length_Size,
+			unsigned char,
+			unsigned int,
+			unsigned long,
+			unsigned long long
+		> MsgLen_Info;
+		
+		typedef Helpers::SmallestType<
+			Checksum_Size,
+			unsigned char,
+			unsigned int,
+			unsigned long,
+			unsigned long long
+		> MsgChecksum_Info;
+		
+		typedef typename MsgID_Info::type MsgID_t;
+		typedef typename MsgLen_Info::type MsgLen_t;
+		typedef typename MsgChecksum_Info::type MsgChecksum_t;
+		
+		//Aliases
+		typedef MsgLen_Info MsgLength_Info;
+		typedef MsgLen_t MsgLength_t;
+	};
+	
+	typedef HeaderSpec<1, 4, 3> DefaultSpec;
+	
 } } }

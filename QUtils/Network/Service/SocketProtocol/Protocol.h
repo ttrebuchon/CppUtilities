@@ -1,29 +1,32 @@
 #pragma once
 #include "Types.h"
+#include "Header.h"
 
 namespace QUtils { namespace Network {
 class Socket;
 
 namespace SocketProtocol {
 	
-	struct Header;
 	
 	//Static Class
+	template <class Spec = DefaultSpec>
 	class Protocol
 	{
 		public:
 		
-		static const size_t HeaderLength = QUTILS_NETWORK_PROTO_MSG_ID_SIZE + QUTILS_NETWORK_PROTO_MSG_LEN_SIZE + QUTILS_NETWORK_PROTO_MSG_CHECKSUM_SIZE;
+		constexpr static size_t HeaderLength = Spec::Header_Size;
 		
-		static MsgLen_t GetMsgLength(const char* header);
-		static Header* ParseHeader(const char* header, const MsgLen_t msgLen);
+		static typename Spec::MsgLen_t GetMsgLength(const char* header);
+		static Header<Spec>* ParseHeader(const char* header, const typename Spec::MsgLen_t msgLen);
 		
-		static char* WriteHeader(const Header*);
+		static char* WriteHeader(const Header<Spec>*);
 		
-		static MsgChecksum_t CalculateChecksum(const char* msg, const MsgLen_t len);
-		static bool VerifyChecksum(Header* header, const char* msg);
+		static typename Spec::MsgChecksum_t CalculateChecksum(const char* msg, const typename Spec::MsgLen_t len);
+		static bool VerifyChecksum(Header<Spec>* header, const char* msg);
 	};
 	
 }
 }
 }
+
+#include "Protocol.hpp"
