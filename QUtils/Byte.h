@@ -6,7 +6,7 @@ namespace QUtils
 	struct Byte
 	{
 		
-		constexpr inline static char BitIndex(const short index)
+		constexpr inline static unsigned char BitIndex(const short index)
 		{
 			switch (index)
 			{
@@ -38,7 +38,7 @@ namespace QUtils
 		
 		char value;
 		
-		constexpr Byte(const char c) : value(c) {}
+		constexpr Byte(const unsigned char c) : value(c) {}
 		
 		inline constexpr bool operator()(const short index)
 		{
@@ -59,7 +59,7 @@ namespace QUtils
 		}
 	};
 	
-	constexpr bool Bit(const char value, const short index)
+	constexpr bool Bit(const unsigned char value, const short index)
 	{
 		return (Byte::BitIndex(index) & value) > 0;
 	}

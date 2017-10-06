@@ -7,13 +7,13 @@ namespace QUtils { namespace Network {
 namespace SocketProtocol {
 	
 	template <class Spec>
-	typename Spec::MsgLen_t Protocol<Spec>::GetMsgLength(const char* header)
+	typename Spec::MsgLen_t Protocol<Spec>::GetMsgLength(const unsigned char* header)
 	{
 		return Spec::MsgLen_Info::Read(header+Spec::ID_Size);
 	}
 	
 	template <class Spec>
-	Header<Spec>* Protocol<Spec>::ParseHeader(const char* header, const typename Spec::MsgLen_t msgLen)
+	Header<Spec>* Protocol<Spec>::ParseHeader(const unsigned char* header, const typename Spec::MsgLen_t msgLen)
 	{
 		Header<Spec>* hd = new Header<Spec>();
 		
@@ -25,9 +25,9 @@ namespace SocketProtocol {
 	}
 	
 	template <class Spec>
-	char* Protocol<Spec>::WriteHeader(const Header<Spec>* header)
+	unsigned char* Protocol<Spec>::WriteHeader(const Header<Spec>* header)
 	{
-		char* rawHeader = new char[HeaderLength];
+		unsigned char* rawHeader = new unsigned char[HeaderLength];
 		
 		Spec::MsgID_Info::Write(header->id, rawHeader);
 		Spec::MsgLen_Info::Write(header->size, &rawHeader[Spec::ID_Size]);
@@ -38,7 +38,7 @@ namespace SocketProtocol {
 	}
 	
 	template <class Spec>
-	typename Spec::MsgChecksum_t Protocol<Spec>::CalculateChecksum(const char* msg, const typename Spec::MsgLen_t len)
+	typename Spec::MsgChecksum_t Protocol<Spec>::CalculateChecksum(const unsigned char* msg, const typename Spec::MsgLen_t len)
 	{
 		typename Spec::MsgChecksum_t sum = 0;
 		
@@ -52,7 +52,7 @@ namespace SocketProtocol {
 	}
 	
 	template <class Spec>
-	bool Protocol<Spec>::VerifyChecksum(Header<Spec>* header, const char* msg)
+	bool Protocol<Spec>::VerifyChecksum(Header<Spec>* header, const unsigned char* msg)
 	{
 		return (header->checksum == CalculateChecksum(msg, header->size));
 	}

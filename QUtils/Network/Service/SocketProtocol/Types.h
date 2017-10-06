@@ -43,7 +43,7 @@ namespace SocketProtocol {
 			constexpr const bool bigEnd = HostIsBigEndian();
 			if (!bigEnd)
 			{
-				char* ptr = reinterpret_cast<char*>(&value);
+				unsigned char* ptr = reinterpret_cast<unsigned char*>(&value);
 				std::reverse(ptr, ptr + sizeof(T));
 			}
 			return value;
@@ -55,7 +55,7 @@ namespace SocketProtocol {
 			constexpr const bool bigEnd = HostIsBigEndian();
 			if (!bigEnd)
 			{
-				char* ptr = reinterpret_cast<char*>(&value);
+				unsigned char* ptr = reinterpret_cast<unsigned char*>(&value);
 				std::reverse(ptr, ptr + sizeof(T));
 			}
 			return value;
@@ -116,32 +116,32 @@ namespace SocketProtocol {
 			constexpr static size_t RawSize = Size;
 			constexpr static type Max = MaxValue(RawSize);
 			
-			inline static type Read(const char* data)
+			inline static type Read(const unsigned char* data)
 			{
 				type num = 0;
 				if (!HostIsBigEndian())
 				{
-					std::reverse_copy(data, data+Size, (char*)&num);
+					std::reverse_copy(data, data+Size, (unsigned char*)&num);
 				}
 				else
 				{
-					::memcpy(((char*)&num)+(type_size-Size), data, Size*sizeof(char));
+					::memcpy(((unsigned char*)&num)+(type_size-Size), data, Size*sizeof(unsigned char));
 				}
 				return num;
 			}
 			
-			inline static char* Write(const type num)
+			inline static unsigned char* Write(const type num)
 			{
-				char* num_arr = new char[Size];
+				unsigned char* num_arr = new unsigned char[Size];
 				Write(num, num_arr);
 				return num_arr;
 			}
 			
-			inline static void Write(const type num, char* num_arr)
+			inline static void Write(const type num, unsigned char* num_arr)
 			{
 				if (!HostIsBigEndian())
 				{
-					std::reverse_copy((char*)&num, ((char*)&num) + Size, num_arr);
+					std::reverse_copy((unsigned char*)&num, ((unsigned char*)&num) + Size, num_arr);
 				}
 				else
 				{

@@ -16,10 +16,10 @@ void CleanupStreamSockets(Socket** passive_server, Socket** active_server, Socke
 void CleanupDGramSockets(Socket** passive_server, Socket** active_server, Socket** client);
 
 template <int>
-char* getTestHeader(unsigned long* size);
+unsigned char* getTestHeader(unsigned long* size);
 
 template <int>
-char* getTestBody()
+unsigned char* getTestBody()
 {
 	return NULL;
 }
@@ -70,14 +70,14 @@ template <int N>
 void testHeader(Socket* srvsock, Socket* act_srvsock, Socket* sock)
 {
 	unsigned long bodySize;
-	char* header_in = getTestHeader<N>(&bodySize);
+	unsigned char* header_in = getTestHeader<N>(&bodySize);
 	assert_ex(header_in != NULL);
 	
 	assert_ex(sock->write(header_in, HEADER_SIZE) == HEADER_SIZE);
 	delete[] header_in;
 	header_in = NULL;
 	
-	char* body_in = getTestBody<N>();
+	unsigned char* body_in = getTestBody<N>();
 	if (body_in != NULL)
 	{
 		assert_ex(sock->write(body_in, bodySize) == bodySize);
@@ -85,7 +85,7 @@ void testHeader(Socket* srvsock, Socket* act_srvsock, Socket* sock)
 	}
 	
 	
-	char* rawHeader = new char[Protocol<>::HeaderLength];
+	unsigned char* rawHeader = new unsigned char[Protocol<>::HeaderLength];
 	
 	assert_ex(
 	act_srvsock->read(
@@ -97,10 +97,10 @@ void testHeader(Socket* srvsock, Socket* act_srvsock, Socket* sock)
 	assert_ex(length == bodySize);
 	
 	
-	char* body = NULL;
+	unsigned char* body = NULL;
 	if (body_in != NULL)
 	{
-		body = new char[length];
+		body = new unsigned char[length];
 		assert_ex(act_srvsock->read(body, length) == length);
 	}
 	auto hd = Protocol<>::ParseHeader(rawHeader, length);
@@ -123,13 +123,13 @@ void testHeader(Socket* srvsock, Socket* act_srvsock, Socket* sock)
 namespace Network_ServiceProtocol_Test
 {
 	template <>
-	char* getTestHeader<0>(unsigned long* size)
+	unsigned char* getTestHeader<0>(unsigned long* size)
 	{
 		assert_ex(DefaultSpec::ID_Size == 1);
 		assert_ex(HEADER_SIZE == Protocol<>::HeaderLength);
 		const unsigned int MsgLen = 5;
 		*size = MsgLen;
-		char* data = new char[HEADER_SIZE];
+		unsigned char* data = new unsigned char[HEADER_SIZE];
 		
 		static_assert(DefaultSpec::ID_Size == 1, "Update values in test");
 		data[0] = 1;
@@ -160,7 +160,7 @@ namespace Network_ServiceProtocol_Test
 	
 	
 	template <>
-	char* getTestHeader<1>(unsigned long* size)
+	unsigned char* getTestHeader<1>(unsigned long* size)
 	{
 		assert_ex(DefaultSpec::ID_Size == 1);
 		assert_ex(HEADER_SIZE == Protocol<>::HeaderLength);
@@ -201,7 +201,7 @@ namespace Network_ServiceProtocol_Test
 	
 	
 	template <>
-	char* getTestHeader<2>(unsigned long* size)
+	unsigned char* getTestHeader<2>(unsigned long* size)
 	{
 		assert_ex(DefaultSpec::ID_Size == 1);
 		assert_ex(HEADER_SIZE == Protocol<>::HeaderLength);
@@ -211,7 +211,7 @@ namespace Network_ServiceProtocol_Test
 		hd->id = 128;
 		hd->size = MsgLen;
 		hd->checksum = 40;
-		char* raw = QUtils::Network::SocketProtocol::Protocol<>::WriteHeader(hd);
+		unsigned char* raw = QUtils::Network::SocketProtocol::Protocol<>::WriteHeader(hd);
 		delete hd;
 		return raw;
 	}
@@ -231,7 +231,7 @@ namespace Network_ServiceProtocol_Test
 	
 	
 	template <>
-	char* getTestHeader<3>(unsigned long* size)
+	unsigned char* getTestHeader<3>(unsigned long* size)
 	{
 		assert_ex(DefaultSpec::ID_Size == 1);
 		assert_ex(HEADER_SIZE == Protocol<>::HeaderLength);
@@ -241,18 +241,21 @@ namespace Network_ServiceProtocol_Test
 		hd->id = 42;
 		hd->size = MsgLen;
 		hd->checksum = 0x010000;
-		char* raw = QUtils::Network::SocketProtocol::Protocol<>::WriteHeader(hd);
+		unsigned char* raw = QUtils::Network::SocketProtocol::Protocol<>::WriteHeader(hd);
 		delete hd;
 		return raw;
 	}
 	
 	template <>
-	char* getTestBody<3>()
+	unsigned char* getTestBody<3>()
 	{
 		const auto len = 0x200;
-		char* body = new char[len];
+		unsigned char* body = new unsigned char[len];
 		::memset(body, 0, len);
-		const char val = (0x010000/len);
+		const unsigned char val = (0x010000/len);
+		static_assert(0x010000/len == 0x80, "");
+		static_assert(val == 0x80, "");
+		
 		static_assert(val*len == 0x010000, "");
 		unsigned long long tally = 0;
 		for (auto ptr = body; ptr < len+body; ++ptr)
@@ -279,7 +282,7 @@ namespace Network_ServiceProtocol_Test
 	
 	
 	template <>
-	char* getTestHeader<4>(unsigned long* size)
+	unsigned char* getTestHeader<4>(unsigned long* size)
 	{
 		assert_ex(HEADER_SIZE == Protocol<>::HeaderLength);
 		
@@ -290,18 +293,18 @@ namespace Network_ServiceProtocol_Test
 		auto hd = new QUtils::Network::SocketProtocol::Header<>();
 		hd->id = 56;
 		hd->size = MsgLen;
-		hd->checksum = Protocol<>::CalculateChecksum(body.c_str(), MsgLen);
-		char* raw = QUtils::Network::SocketProtocol::Protocol<>::WriteHeader(hd);
+		hd->checksum = Protocol<>::CalculateChecksum((const unsigned char*)body.c_str(), MsgLen);
+		unsigned char* raw = QUtils::Network::SocketProtocol::Protocol<>::WriteHeader(hd);
 		delete hd;
 		return raw;
 	}
 	
 	template <>
-	char* getTestBody<4>()
+	unsigned char* getTestBody<4>()
 	{
 		const std::string bodyStr = "Hello, world!";
 		//We don't want the null terminator
-		char* body = new char[bodyStr.length()];
+		unsigned char* body = new unsigned char[bodyStr.length()];
 		::memcpy(body, bodyStr.c_str(), bodyStr.length());
 		return body;
 	}
@@ -312,7 +315,7 @@ namespace Network_ServiceProtocol_Test
 		const std::string body = "Hello, world!";
 		
 		const unsigned long MsgLen = body.length();
-		const auto chksum = Protocol<>::CalculateChecksum(body.c_str(), MsgLen);
+		const auto chksum = Protocol<>::CalculateChecksum((const unsigned char*)body.c_str(), MsgLen);
 		assert_ex(hd != NULL);
 		assert_ex(hd->size == MsgLen);
 		assert_ex(hd->id == 56);
