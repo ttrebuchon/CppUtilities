@@ -16,6 +16,7 @@ namespace QUtils
 namespace Network
 {
 	class Message;
+	class Channel;
 	
 	namespace Helpers
 	{
@@ -51,6 +52,7 @@ namespace Network
 		Helpers::MessageQueue messages;
 		Multi::Mutexed<std::queue<std::shared_ptr<Message>>> messageTmpQueue;
 		//std::shared_ptr<Service> service;
+		std::vector<std::shared_ptr<Channel>> channels;
 		
 		
 		virtual std::shared_ptr<Message> next()
