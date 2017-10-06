@@ -1,7 +1,7 @@
 #pragma once
 #include <QUtils/Types/TypeSequence.h>
 #include <limits>
-#include <cstdlib>
+#include <cstring>
 #include <algorithm>
 
 
