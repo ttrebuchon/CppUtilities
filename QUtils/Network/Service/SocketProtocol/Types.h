@@ -154,14 +154,15 @@ namespace SocketProtocol {
 	}
 	
 	
-	template <int ID_s, int Length_s, int Checksum_s>
+	template <int ID_s, int Length_s, int Checksum_s, int Options_s>
 	struct HeaderSpec
 	{
-		const static auto ID_Size = ID_s;
-		const static auto Length_Size = Length_s;
-		const static auto Checksum_Size = Checksum_s;
+		constexpr static auto ID_Size = ID_s;
+		constexpr static auto Length_Size = Length_s;
+		constexpr static auto Checksum_Size = Checksum_s;
+		constexpr static auto Options_Size = Options_s;
 		
-		constexpr static auto Header_Size = ID_Size + Length_Size + Checksum_Size;
+		constexpr static auto Header_Size = ID_Size + Length_Size + Checksum_Size + Options_Size;
 		
 		typedef Helpers::SmallestType<
 			ID_Size,
@@ -196,6 +197,6 @@ namespace SocketProtocol {
 		typedef MsgLen_t MsgLength_t;
 	};
 	
-	typedef HeaderSpec<1, 4, 3> DefaultSpec;
+	typedef HeaderSpec<1, 4, 3, 1> DefaultSpec;
 	
 } } }

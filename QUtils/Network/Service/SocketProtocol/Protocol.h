@@ -18,6 +18,7 @@ namespace SocketProtocol {
 		
 		static typename Spec::MsgLen_t GetMsgLength(const unsigned char* header);
 		static Header<Spec>* ParseHeader(const unsigned char* header, const typename Spec::MsgLen_t msgLen);
+		static Header<Spec>* ParseHeader(const unsigned char* header);
 		
 		static unsigned char* WriteHeader(const Header<Spec>*);
 		

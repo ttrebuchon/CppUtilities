@@ -55,6 +55,7 @@ DEF_TEST(Network_ServiceProtocol)
 	RUN_TEST(2);
 	RUN_TEST(3);
 	RUN_TEST(4);
+	RUN_TEST(5);
 	
 	
 	return true;
@@ -274,6 +275,7 @@ namespace Network_ServiceProtocol_Test
 		assert_ex(hd != NULL);
 		assert_ex(hd->size == 0x200);
 		assert_ex(hd->id == 42);
+		assert_ex(hd->wideChars == false);
 		assert_ex(hd->checksum == 0x010000);
 	}
 	
@@ -294,6 +296,7 @@ namespace Network_ServiceProtocol_Test
 		hd->id = 56;
 		hd->size = MsgLen;
 		hd->checksum = Protocol<>::CalculateChecksum((const unsigned char*)body.c_str(), MsgLen);
+		hd->wideChars = false;
 		unsigned char* raw = QUtils::Network::SocketProtocol::Protocol<>::WriteHeader(hd);
 		delete hd;
 		return raw;
@@ -327,6 +330,65 @@ namespace Network_ServiceProtocol_Test
 			tally %= DefaultSpec::MsgChecksum_Info::Max;
 		}
 		assert_ex(tally == chksum);
+		assert_ex(!hd->wideChars);
+	}
+
+
+
+
+
+
+
+
+
+
+	template <>
+	unsigned char* getTestHeader<5>(unsigned long* size)
+	{
+		assert_ex(HEADER_SIZE == Protocol<>::HeaderLength);
+		const std::wstring body = L"Hello, world!";
+
+		const unsigned long MsgLen = body.length()*sizeof(wchar_t);
+		*size = MsgLen;
+		auto hd = new QUtils::Network::SocketProtocol::Header<>();
+		hd->id = 56;
+		hd->size = MsgLen;
+		hd->checksum = Protocol<>::CalculateChecksum((const unsigned char*)body.c_str(), MsgLen);
+		hd->wideChars = true;
+		unsigned char* raw = QUtils::Network::SocketProtocol::Protocol<>::WriteHeader(hd);
+		delete hd;
+		return raw;
+	}
+
+	template <>
+	unsigned char* getTestBody<5>()
+	{
+		const std::wstring bodyStr = L"Hello, world!";
+		//We don't want the null terminator
+		unsigned char* body = new unsigned char[bodyStr.length()*sizeof(wchar_t)];
+		::memcpy(body, bodyStr.c_str(), bodyStr.length()*sizeof(wchar_t));
+		return body;
+	}
+
+	template <>
+	void verifyTestHeader<5>(const QUtils::Network::SocketProtocol::Header<>* hd)
+	{
+		const std::wstring body = L"Hello, world!";
+
+		const unsigned long MsgLen = body.length()*sizeof(wchar_t);
+		const auto chksum = Protocol<>::CalculateChecksum((const unsigned char*)body.c_str(), MsgLen);
+		assert_ex(hd != NULL);
+		assert_ex(hd->size == MsgLen);
+		assert_ex(hd->id == 56);
+		assert_ex(hd->checksum == chksum);
+		unsigned long long tally = 0;
+		for (int i = 0; i < body.length(); ++i)
+		{
+			tally += body[i];
+			tally %= DefaultSpec::MsgChecksum_Info::Max;
+		}
+		assert_ex(tally == chksum);
+		assert_ex(hd->wideChars);
 	}
 }
 
