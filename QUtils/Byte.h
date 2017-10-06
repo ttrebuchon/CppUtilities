@@ -40,7 +40,7 @@ namespace QUtils
 		
 		constexpr Byte(const unsigned char c) : value(c) {}
 		
-		inline constexpr bool operator()(const short index)
+		inline constexpr bool operator()(const short index) const
 		{
 			return (value & BitIndex(index)) > 0;
 		}
