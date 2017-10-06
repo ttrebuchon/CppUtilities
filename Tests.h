@@ -75,6 +75,7 @@ DEC_TEST(English_Analysis);
 DEC_TEST(Network);
 DEC_TEST(Network_Sockets);
 DEC_TEST(Network_ServiceProtocol);
+DEC_TEST(Network_SocketService);
 DEC_TEST(GUID);
 //DEC_TEST(SDL_GUI);
 bool Test_SDL_GUI(std::ostream**, QUtils::GUI::SDL::SDLAppWindow*&);
