@@ -9,6 +9,7 @@ void Test_TimeSrv();
 
 DEF_TEST(Network_SocketService)
 {
+	Test_Channel();
 	Test_TimeSrv();
 	
 	return true;
