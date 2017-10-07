@@ -11,6 +11,10 @@ namespace QUtils { namespace Network {
 	
 	void Channel::addMessage(std::shared_ptr<Message> msg)
 	{
+		if (msg == NULL)
+		{
+			return;
+		}
 		
 		 lock_guard_t lock(messages);
 			(*messages)->push_back(msg);
