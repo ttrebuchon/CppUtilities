@@ -208,11 +208,11 @@ FORCE:
 	
 
 clean:
-	-rm -f $(objects)
-	-rm -f $(objects:.o=.d)
+	-@rm -f $(objects)
+	-@rm -f $(objects:.o=.d)
 	(cd Tests; make clean)
 	-@rm UtilityTests.out
-	-rm $(target)
+	-@rm $(target)
 
 
 src/Graphics/Images/JPG_boost.o: src/Graphics/Images/JPG_boost.cpp QUtils/Graphics/Images/JPG_PCH.h QUtils/Graphics/Images/JPG_PCH.h.gch

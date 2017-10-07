@@ -96,8 +96,8 @@ $(target): $(objects) makefile ../Output/SrcTest.o ../lib$(LIB).a
 	
 
 clean:
-	rm -f $(objects)
-	rm -f $(objects:.o=.d)
+	-@rm -f $(objects)
+	-@rm -f $(objects:.o=.d)
 
 
 	
