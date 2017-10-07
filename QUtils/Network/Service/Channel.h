@@ -29,6 +29,7 @@ namespace QUtils { namespace Network {
 			}
 			lock_guard_t lock(messages);
 			(*messages)->insert((*messages)->end(), begin, end);
+			hasMessages = true;
 		}
 		
 		Channel(bool hasMessages, bool isValid);
