@@ -240,10 +240,12 @@ bool Test_Network()
 		srv = StringService::Create();
 		
 		dout << "Getting Router...\n";
-		auto router = std::dynamic_pointer_cast<StringService::Router>(srv->localRouter());
+		auto router = std::dynamic_pointer_cast<StringService::Router>(srv->getRouter());
+		auto chann = QUtils::Network::LocalChannel::Create();
+		router->addChannel(chann);
 		
 		dout << "Launching service thread...\n";
-		srv->startThreaded();
+		srv->startAsync();
 		
 		
 		
@@ -251,7 +253,7 @@ bool Test_Network()
 		auto newMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, int>>("create");
 		
 		dout << "Sending Message...\n";
-		router->send(newMsg);
+		chann->send(newMsg);
 		
 		
 		dout << "Checking RPC Message Future...\n";
@@ -266,14 +268,14 @@ bool Test_Network()
 		
 		auto setMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, int, std::string>>("set", strID, "TestString");
 		
-		router->send(setMsg);
+		chann->send(setMsg);
 		
 		
 		
 		dout << "Creating 'print(id)' Message...\n";
 		auto printMsg = std::make_shared<QUtils::Network::RPCMessage<StringService, void, int>>("print", strID);
 		dout << "Sending Message...\n";
-		router->send(printMsg);
+		chann->send(printMsg);
 		
 		dout << "Checking print-future validity...\n";
 		assert_ex(printMsg->future().valid());
@@ -311,7 +313,7 @@ bool Test_Network()
 	
 	
 	
-		srv->startThreaded();
+		srv->startAsync();
 		
 		
 		
@@ -470,14 +472,17 @@ void MathServiceTest()
 	
 	auto srv1 = MathService::Create();
 	
-	srv1->startThreaded();
+	srv1->startAsync();
 	dout << "Service 1 started...\n";
 	
-	auto router1 = std::dynamic_pointer_cast<MathService::Router>(srv1->localRouter());
+	
+	
+	auto chann1 = QUtils::Network::LocalChannel::Create();
+	srv1->getRouter()->addChannel(chann1);
 	
 	auto createMsg1 = std::make_shared<QUtils::Network::RPCMessage<MathService, MathService::ID_t>>("create");
 	
-	router1->send(createMsg1);
+	chann1->send(createMsg1);
 	
 	auto createResp1 = createMsg1->future();
 	assert_ex(createResp1.valid());
@@ -485,7 +490,7 @@ void MathServiceTest()
 	
 	auto printMsg1 = std::make_shared<QUtils::Network::RPCMessage<const MathService, void, MathService::ID_t>>("print", obj_id1);
 	
-	router1->send(printMsg1);
+	chann1->send(printMsg1);
 	
 	printMsg1->future().get();
 	
@@ -501,11 +506,11 @@ void MathServiceTest()
 		
 		public:
 		
-		MathObj(std::shared_ptr<typename MathService::Router> router, const ID_t id) : Base(router), id(id)
+		MathObj(std::shared_ptr<QUtils::Network::SendChannel> channel, const ID_t id) : Base(std::dynamic_pointer_cast<QUtils::Network::LocalChannel>(channel)), id(id)
 		{
 			
 		}
-		MathObj(std::shared_ptr<typename MathService::Router> router) : Base(router), id()
+		MathObj(std::shared_ptr<QUtils::Network::LocalChannel> channel) : Base(channel), id()
 		{
 			id = sendRPCRequest<ID_t>("create");
 		}
@@ -532,21 +537,21 @@ void MathServiceTest()
 		
 		MathObj operator+(const MathObj obj2) const
 		{
-			return MathObj(this->router, const_cast<MathObj*>(this)->sendRPCRequest<ID_t, ID_t, ID_t>("add", id, obj2.id));
+			return MathObj(this->channel, const_cast<MathObj*>(this)->sendRPCRequest<ID_t, ID_t, ID_t>("add", id, obj2.id));
 		}
 	};
 	
 	
 	
-	MathObj obj1(router1, obj_id1);
+	MathObj obj1(chann1, obj_id1);
 	dout << "MathObj1 created.\n";
-	MathObj obj2(router1);
+	MathObj obj2(chann1);
 	dout << "MathObj2 created.\n";
 	
 	{
 	
 	auto printMessage2 = std::make_shared<QUtils::Network::RPCMessage<const MathService, void, MathService::ID_t>>("print", obj_id1);
-	router1->send(printMessage2);
+	chann1->send(printMessage2);
 	printMessage2->future().get();
 	
 	}
