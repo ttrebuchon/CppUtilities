@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Service.h"
 
 
 namespace QUtils

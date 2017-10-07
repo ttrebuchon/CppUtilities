@@ -30,18 +30,9 @@ namespace Network
 		bool registered;
 		std::future<void> serviceFuture;
 		
-		Service(std::shared_ptr<Router> router) : _started(false), registered(false), router(router), started(_started)
-		{
-			
-		}
+		Service(std::shared_ptr<Router> router);
 		
-		void goRegister()
-		{
-			if (!registered)
-			{
-				registerProcs();
-			}
-		}
+		void goRegister();
 		
 		protected:
 		std::shared_ptr<Router> router;
@@ -71,12 +62,7 @@ namespace Network
 		Service() : Service(NULL)
 		{}
 		
-		virtual ~Service()
-		{
-			router = NULL;
-			this->stop();
-			
-		}
+		virtual ~Service();
 		
 		template <class this_type>
 		void setRouter(std::shared_ptr<ServiceRouter<this_type>> router)
@@ -89,31 +75,12 @@ namespace Network
 			this->router = router;
 		}
 		
-		virtual std::shared_ptr<Router> localRouter()
-		{
-			return router;
-		}
+		std::shared_ptr<Router> getRouter();
 		
 		virtual void start();
-		virtual void startThreaded()
-		{
-			if (this->serviceFuture.valid())
-			{
-				if (serviceFuture.wait_for(std::chrono::seconds(1)) != std::future_status::ready)
-				{
-					//TODO
-					throw std::exception();
-				}
-			}
-			this->serviceFuture = std::async(std::launch::async, [&] () {
-				this->start();
-			});
-		}
+		virtual void startAsync();
 		
-		virtual void stop()
-		{
-			_started = false;
-		}
+		virtual void stop();
 		
 		
 		virtual void wait();

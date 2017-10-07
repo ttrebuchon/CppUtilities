@@ -50,92 +50,28 @@ namespace Network
 		
 		protected:
 		Helpers::MessageQueue messages;
-		Multi::Mutexed<std::queue<std::shared_ptr<Message>>> messageTmpQueue;
+		//Multi::Mutexed<std::queue<std::shared_ptr<Message>>> messageTmpQueue;
 		//std::shared_ptr<Service> service;
-		std::vector<std::shared_ptr<Channel>> channels;
+		QUtils::Multi::Mutexed<std::vector<std::shared_ptr<Channel>>> channels;
 		
+		virtual std::shared_ptr<Message> next();
 		
-		virtual std::shared_ptr<Message> next()
-		{
-			if (messageTmpQueue.try_lock())
-			{
-				while (!messageTmpQueue->empty())
-				{
-					messages.push(messageTmpQueue->front());
-					messageTmpQueue->pop();
-				}
-				messageTmpQueue.unlock();
-			}
-			
-			if (!messages.empty())
-			{
-				auto t = messages.top();
-				messages.pop();
-				return t;
-			}
-			else
-			{
-				return NULL;
-			}
-		}
-		
-		virtual std::shared_ptr<Message> fast_next()
-		{
-			if (messages.empty())
-			{
-				return next();
-			}
-			
-			auto t = messages.top();
-			messages.pop();
-			return t;
-		}
+		virtual std::shared_ptr<Message> fast_next();
 		
 		virtual void handleMsg(std::shared_ptr<Message> msg) = 0;
 		
 		
 		
 		
-		Router() : messages(), messageTmpQueue() {}
+		Router() : messages(), channels() {}
 		
 		public:
 		
 		
-		void send(std::shared_ptr<Message> msg)
-		{
-			messageTmpQueue.lock();
-			messageTmpQueue->push(msg);
-			messageTmpQueue.unlock();
-		}
+		bool job();
+		bool fast_job();
 		
-		
-		virtual bool job()
-		{
-			auto msg = next();
-			if (msg != NULL)
-			{
-				handleMsg(msg);
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		
-		virtual bool fast_job()
-		{
-			auto msg = fast_next();
-			if (msg != NULL)
-			{
-				handleMsg(msg);
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
+		void addChannel(const std::shared_ptr<Channel>);
 		
 		
 		friend class Service;

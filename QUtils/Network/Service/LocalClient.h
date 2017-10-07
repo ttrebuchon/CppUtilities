@@ -4,6 +4,7 @@
 #include "ReturnMessage.h"
 #include "JsonMessage.h"
 #include "RPCMessage.h"
+#include "LocalChannel.h"
 
 #include <QUtils/JSON/JSON.h>
 
@@ -12,12 +13,12 @@ namespace QUtils
 namespace Network
 {
 	template <class Service_t>
-	class LocalClient
+	class LocalClient : public Client<Service_t>
 	{
 		private:
 		
-		protected:
-		std::shared_ptr<ServiceRouter<Service_t>> router;
+		protected:/*
+		std::shared_ptr<LocalChannel> channel;
 		
 		template <class Ret, class ...T>
 		std::future<Ret> sendJSONRequestAsync(std::string name, T... t)
@@ -27,7 +28,7 @@ namespace Network
 			auto msg = std::make_shared<JsonMessage<Ret, T...>>(name, args);
 			
 			auto fut = msg->future();
-			router->send(msg);
+			channel->send(msg);
 		}
 		
 		template <class Ret, class ...T>
@@ -42,7 +43,7 @@ namespace Network
 		{
 			auto msg = std::make_shared<JsonMessage<Ret>>(name);
 			auto fut = msg->future();
-			router->send(msg);
+			channel->send(msg);
 		}
 		
 		template <class Ret>
@@ -56,7 +57,7 @@ namespace Network
 		Ret sendRPCRequest(std::string name, Args... args, int priority = 1)
 		{
 			auto msg = std::make_shared<RPCMessage<Service_t, Ret, Args...>>(name, args..., priority);
-			router->send(msg);
+			channel->send(msg);
 			if (!msg->future().valid())
 			{
 				throw std::future_error(std::future_errc::no_state);
@@ -68,7 +69,7 @@ namespace Network
 		std::shared_future<Ret> sendRPCRequestAsync(std::string name, Args... args, int priority = 1)
 		{
 			auto msg = std::make_shared<RPCMessage<Service_t, Ret, Args...>>(name, args..., priority);
-			router->send(msg);
+			channel->send(msg);
 			return msg->future();
 		}
 		
@@ -80,7 +81,7 @@ namespace Network
 		Ret sendRPCRequest(std::string name, Args... args, int priority = 1) const
 		{
 			auto msg = std::make_shared<RPCMessage<const Service_t, Ret, Args...>>(name, args..., priority);
-			router->send(msg);
+			channel->send(msg);
 			if (!msg->future().valid())
 			{
 				throw std::future_error(std::future_errc::no_state);
@@ -92,15 +93,28 @@ namespace Network
 		std::shared_future<Ret> sendRPCRequestAsync(std::string name, Args... args, int priority = 1) const
 		{
 			auto msg = std::make_shared<RPCMessage<const Service_t, Ret, Args...>>(name, args..., priority);
-			router->send(msg);
+			channel->send(msg);
 			return msg->future();
 		}
-		
+		*/
 		
 		public:
 		
-		LocalClient(std::shared_ptr<ServiceRouter<Service_t>> router) : router(router)
+		LocalClient(std::shared_ptr<LocalChannel> channel) : Client<Service_t>(channel)
 		{}
+		
+		LocalClient(std::shared_ptr<Router> router) : Client<Service_t>(LocalChannel::Create())
+		{
+			if (router == NULL)
+			{
+				//TODO
+				throw std::exception();
+			}
+			router->addChannel(std::dynamic_pointer_cast<LocalChannel>(this->channel));
+		}
+		
+		LocalClient(std::shared_ptr<Service> service) : LocalClient(service->getRouter())
+		{ }
 		
 		
 	};
