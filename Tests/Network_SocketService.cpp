@@ -6,6 +6,9 @@
 #include <QUtils/Network/Service/SocketChannel.hpp>
 #include <QUtils/Network/Service/Message.h>
 
+#include <QUtils/String/String.h>
+#include <QUtils/Sleep/Sleep.h>
+
 void Test_Channel();
 void Test_SocketChannel();
 void Test_TimeSrv();
@@ -25,6 +28,12 @@ namespace TestChannel_NS
 	using namespace QUtils::Network;
 	class TestChannel : public Channel
 	{
+		protected:
+		
+		
+		bool gatherMessages() final
+		{ return false; }
+		
 		public:
 		TestChannel() : Channel()
 		{
@@ -120,16 +129,55 @@ void Test_SocketChannel()
 {
 	using namespace QUtils::Network;
 	
+	const auto portno = 65529;
 	
 	
 	auto srvsock_future = std::async(std::launch::async, []() {
-		return SocketChannel<>::Accept(65530);
+		return SocketChannel<>::Listen(portno);
 	});
 	
-	auto sock = SocketChannel<>::Connect("localhost", 65530);
+	
+	std::this_thread::yield();
+	decltype(SocketChannel<>::Connect("", 0)) sock = NULL;
+	while (sock == NULL && srvsock_future.valid())
+	{
+		try
+		{
+			sock = SocketChannel<>::Connect("localhost", portno);
+			std::this_thread::yield();
+		}
+		catch (std::exception& ex)
+		{
+			QUtils::String what(ex.what());
+			if (!what.contains( "refused"))
+			{
+				throw;
+			}
+			dout << ex.what() << "\n\n\n";
+			assert_ex(srvsock_future.valid());
+			auto wait = srvsock_future.wait_for(std::chrono::milliseconds(5000));
+			assert_ex(wait != std::future_status::deferred);
+			if (wait == std::future_status::ready)
+			{
+				srvsock_future.get();
+			}
+		}
+	}
 	
 	auto srvsock = srvsock_future.get();
+	
+	QUtils::sleep(2000);
+	
+	auto sock2 = SocketChannel<>::Connect("localhost", portno);
+	assert_ex(sock2->isOpen());
+	
 }
+
+
+
+
+
+
 
 void Test_TimeSrv()
 {

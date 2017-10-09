@@ -280,6 +280,7 @@ SOCKET_TEST(Wrapped_IO)
 		in_str5 = std::string(count, placeHolder);
 		sock->write(in_str5);
 		assert_ex(act_srvsock->waitingData() == count+1);
+		assert_ex(act_srvsock->poll(2000));
 		out_str5 = act_srvsock->read(count-1);
 		
 		assert_ex(in_str5 == out_str5 + placeHolder);
