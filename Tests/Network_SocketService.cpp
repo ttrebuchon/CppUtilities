@@ -2,14 +2,18 @@
 
 #include <QUtils/Network/Service/Service.h>
 #include <QUtils/Network/Service/Channel.h>
+#include <QUtils/Network/Service/SocketChannel.h>
+#include <QUtils/Network/Service/SocketChannel.hpp>
 #include <QUtils/Network/Service/Message.h>
 
 void Test_Channel();
+void Test_SocketChannel();
 void Test_TimeSrv();
 
 DEF_TEST(Network_SocketService)
 {
 	Test_Channel();
+	Test_SocketChannel();
 	Test_TimeSrv();
 	
 	return true;
@@ -109,6 +113,22 @@ void Test_Channel()
 
 	delete msgs_deq;
 	
+}
+
+
+void Test_SocketChannel()
+{
+	using namespace QUtils::Network;
+	
+	
+	
+	auto srvsock_future = std::async(std::launch::async, []() {
+		return SocketChannel<>::Accept(65530);
+	});
+	
+	auto sock = SocketChannel<>::Connect("localhost", 65530);
+	
+	auto srvsock = srvsock_future.get();
 }
 
 void Test_TimeSrv()

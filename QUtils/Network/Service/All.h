@@ -6,7 +6,6 @@
 #include "Channel.h"
 #include "SendChannel.h"
 #include "Client.h"
-#include "LocalClient.h"
 #include "ServiceFactory.h"
 #include "Service.h"
 
@@ -16,3 +15,6 @@
 
 #include "LocalChannel.h"
 #include "SocketChannel.h"
+
+#include "LocalClient.h"
+#include "INetClient.h"
