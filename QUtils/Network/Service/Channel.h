@@ -32,6 +32,8 @@ namespace QUtils { namespace Network {
 			hasMessages = true;
 		}
 		
+		
+		
 		Channel(bool hasMessages, bool isValid);
 		Channel();
 		
@@ -42,8 +44,8 @@ namespace QUtils { namespace Network {
 		
 		
 		std::shared_ptr<Message> getNext();
-		
 		std::deque<std::shared_ptr<Message>>* getAll();
+		virtual bool gatherMessages() = 0;
 		
 		
 		

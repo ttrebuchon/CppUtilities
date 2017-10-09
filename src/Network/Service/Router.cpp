@@ -1,5 +1,6 @@
 #include <QUtils/Network/Service/Router.h>
 #include <QUtils/Network/Service/Channel.h>
+#include <future>
 
 namespace QUtils { namespace Network {
 	
@@ -62,6 +63,32 @@ namespace QUtils { namespace Network {
 		auto t = messages.top();
 		messages.pop();
 		return t;
+	}
+	
+	std::shared_ptr<Message> Router::slow_next()
+	{
+		std::vector<std::future<bool>> futs;
+		{
+		std::lock_guard<Multi::Mutexed<std::vector<std::shared_ptr<Channel>>>> lock(channels);
+		const auto count = channels->size();
+		futs.resize(count);
+		int i = 0;
+		for (auto channel : *channels)
+		{
+			futs[i] = std::async(std::launch::async,
+			[] (auto chan)
+			{
+				return chan->gatherMessages();
+			}, channel);
+		}
+		}
+		for (auto& fut : futs)
+		{
+			fut.get();
+		}
+		return next();
+		
+		
 	}
 	
 	bool Router::job()

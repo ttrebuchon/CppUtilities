@@ -11,6 +11,9 @@ namespace QUtils { namespace Network {
 		protected:
 		LocalChannel();
 		
+		bool gatherMessages() final
+		{ return false; }
+		
 		public:
 		
 		

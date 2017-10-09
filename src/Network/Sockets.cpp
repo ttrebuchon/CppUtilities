@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 #include <sys/ioctl.h>
 #include <QUtils/String/String.h>
+#include <poll.h>
 
 #include <iostream>
 
@@ -285,6 +286,24 @@ namespace QUtils::Network
 		int count;
 		::ioctl(descriptor, FIONREAD, &count);
 		return count;
+	}
+	
+	bool Socket::poll(const int timeout_ms)
+	{
+		pollfd fds;
+		fds.fd = descriptor;
+		fds.events = POLLIN | POLLPRI;
+		
+		
+		int retval = ::poll(&fds, 1, timeout_ms);
+		
+		int err = errno;
+		if (retval < 0)
+		{
+			ERROR_EX(err);
+		}
+		
+		return retval > 0;
 	}
 	
 	

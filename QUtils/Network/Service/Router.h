@@ -58,6 +58,8 @@ namespace Network
 		
 		virtual std::shared_ptr<Message> fast_next();
 		
+		virtual std::shared_ptr<Message> slow_next();
+		
 		virtual void handleMsg(std::shared_ptr<Message> msg) = 0;
 		
 		
