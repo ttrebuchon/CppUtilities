@@ -130,10 +130,8 @@ namespace QUtils { namespace Network {
 		
 		this->socket->write(rawHead, Protocol<Spec>::HeaderLength);
 		this->socket->write(cstr, len);
-		
+
 		delete[] rawHead;
-		
-		//throw NotImp();
 	}
 	
 	
@@ -166,6 +164,9 @@ namespace QUtils { namespace Network {
 			
 			
 			constexpr auto headLen = SocketProtocol::Protocol<Spec>::HeaderLength;
+
+			unsigned char** ids = new unsigned char*[Spec::MsgID_Info::Max + 1];
+			::memset(ids, 0, Spec::MsgID_Info::Max + 1);
 			
 			while (!*ptr->cancellation)
 			{
@@ -178,15 +179,60 @@ namespace QUtils { namespace Network {
 					
 					std::cout << std::this_thread::get_id() << " - " << "Length " << head->size << "!\n";
 					
-					auto body = ptr->sock->read((const int)head->size);
+					const auto len = head->size;
+					unsigned char* body = new unsigned char[len];
+					ptr->sock->read(body, len);
 					
 					std::cout << "Body: '" << body << "'\n";
+
+					auto chksum = SocketProtocol::Protocol<Spec>::CalculateChecksum(body, head->size);
+
+					auto respHeader = new SocketProtocol::Header<Spec>();
+					respHeader->size = Spec::MsgID_Info::size;
+					respHeader->wideChars = false;
+					respHeader->responseRequired = false;
+					respHeader->badMessage = (chksum != head->checksum);
 					
+					auto respBody = Spec::MsgID_Info::Write(head->id);
+					auto rawRespHeader = SocketProtocol::Protocol<Spec>::WriteHeader(respHeader);
+					delete respHeader;
+
+					ptr->sock->write(rawRespHeader, Spec::Header_Size);
+					ptr->sock->write(respBody, Spec::MsgID_Info::size);
+
+					delete[] rawRespHeader;
+					delete[] respBody;
 					
-					
+
+					if (chksum != head->checksum)
+					{
+						delete head;
+						delete[] body;
+						continue;
+					}
+
+					nlohmann::json jMsg;
+					if (!head->wideChars)
+					{
+						jMsg = nlohmann::json::parse(body);
+					}
+					else
+					{
+						//TODO
+						throw std::exception();
+						//jMsg = nlohmann::json::parse(std::wstring(reinterpret_cast<const wchar_t*>(body)));
+					}
+					delete[] body;
 					delete head;
+
+					const std::chrono::system_clock::time_point timestamp(std::chrono::system_clock::duration(jMsg["timestamp"].get<unsigned long long>()));
+					const int priority = jMsg["priority"];
+
+					
 				}
 			}
+
+			delete[] ids;
 			
 			
 			

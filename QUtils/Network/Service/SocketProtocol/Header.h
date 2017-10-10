@@ -12,6 +12,7 @@ namespace SocketProtocol {
 		typename Spec::MsgChecksum_t checksum;
 		bool wideChars;
 		bool responseRequired;
+		bool badMessage;
 		
 		constexpr static auto Length = Spec::Header_Size;
 	};
