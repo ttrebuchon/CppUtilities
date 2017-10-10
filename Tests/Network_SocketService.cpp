@@ -61,7 +61,7 @@ namespace TestChannel_NS
 		
 		std::string str;
 		
-		TestMessage(const std::string str) : Message(), str(str)
+		TestMessage(const std::string str) : Message(false), str(str)
 		{
 			
 		}

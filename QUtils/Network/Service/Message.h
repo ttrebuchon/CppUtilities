@@ -17,6 +17,12 @@ namespace Network
 		const std::chrono::system_clock::time_point createTime = std::chrono::system_clock::now();
 		
 		protected:
+		Message(const bool responseRequired = false) : responseRequired(responseRequired)
+		{
+
+		}
+		
+		
 		
 		virtual void visit(Service& srv)
 		{
@@ -24,7 +30,8 @@ namespace Network
 		}
 		
 		public:
-		
+		const bool responseRequired;
+
 		virtual int priority() const = 0;
 		virtual std::chrono::system_clock::time_point time() const
 		{

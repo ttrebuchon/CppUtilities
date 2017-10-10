@@ -46,7 +46,7 @@ namespace Network
 		
 		public:
 		
-		ReturnMessage() : prom(), fut(), sfut()
+		ReturnMessage() : Message(true), prom(), fut(), sfut()
 		{
 			fut = prom.get_future();
 			sfut = fut.share();

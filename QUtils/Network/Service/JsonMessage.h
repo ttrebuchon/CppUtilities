@@ -15,7 +15,7 @@ namespace Network
 		
 		
 		public:
-		JsonMessage(std::string name, std::string contents) : _name(name), _contents(contents)
+		JsonMessage(std::string name, std::string contents) : Message(false), _name(name), _contents(contents)
 		{
 			
 		}
