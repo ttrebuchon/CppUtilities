@@ -54,29 +54,29 @@ namespace Network
 		{
 			try
 			{
-			Procedure proc = ProcedureLookup<Index, Service_t, Ret, Args...>::Find(procIndex);
-			Service_t& srv = static_cast<Service_t&>(baseSrv);
-			
-			
-			auto call = [&](auto... x)
-			{
-				return (srv.*proc)(x...);
-			};
-			
-			auto value = [&]() -> Ret
-			{
-				return Helpers::CallerHelper<Ret, Args...>::callWithArgs(call, args);
-				/*if (sizeof...(Args) > 0)
+				Procedure proc = ProcedureLookup<Index, Service_t, Ret, Args...>::Find(procIndex);
+				Service_t& srv = static_cast<Service_t&>(baseSrv);
+				
+				
+				auto call = [&](auto... x)
 				{
-					
-				}
-				else
+					return (srv.*proc)(x...);
+				};
+				
+				auto value = [&]() -> Ret
 				{
-					return call();
-				}*/
-			};
-			
-			this->setValue(value);
+					return Helpers::CallerHelper<Ret, Args...>::callWithArgs(call, args);
+					/*if (sizeof...(Args) > 0)
+					{
+						
+					}
+					else
+					{
+						return call();
+					}*/
+				};
+				
+				this->setValue(value);
 			}
 			catch (...)
 			{
