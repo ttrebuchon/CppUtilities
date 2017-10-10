@@ -122,6 +122,8 @@ namespace QUtils { namespace Network {
 		head->id = 10;
 		head->checksum = Protocol<Spec>::CalculateChecksum(cstr, len);
 		head->size = len;
+		head->wideChars = false;
+		head->responseRequired = msg->responseRequired;
 		
 		unsigned char* rawHead = Protocol<Spec>::WriteHeader(head);
 		delete head;
