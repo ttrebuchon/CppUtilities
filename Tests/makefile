@@ -48,7 +48,7 @@ endif
 
 WARNINGS_ERRORS = -ftemplate-backtrace-limit=0 -Wno-sign-compare
 
-WARNINGS_ERRORS += -Wfatal-errors 
+WARNINGS_ERRORS += #-Wfatal-errors 
 
 FLAGS = -I ../
 
@@ -79,7 +79,7 @@ LINKING += -L../$(BOOST_DIR)/libs/serialization -lboost_serialization
 endif
 
 
-INCLUDES = -I ../Deps/curlpp/include
+INCLUDES = -I $(Deps_D)/curlpp/include -I $(Deps_D)
 
 
 

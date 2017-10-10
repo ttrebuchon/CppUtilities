@@ -29,6 +29,7 @@ namespace SocketProtocol {
 		if (Spec::Options_Size > 0)
 		{
 			hd->wideChars = options[0](0);
+			hd->responseRequired = options[0](1);
 		}
 
 		ptr += Spec::Options_Size;
@@ -61,6 +62,7 @@ namespace SocketProtocol {
 		{
 			auto b = new(ptr) Byte(0);
 			(*b)(0, header->wideChars);
+			(*b)(1, header->responseRequired);
 		}
 		
 		return rawHeader;

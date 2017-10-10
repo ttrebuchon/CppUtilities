@@ -58,11 +58,23 @@ namespace TestChannel_NS
 	class TestMessage : public Message
 	{
 		public:
+		
+		std::string str;
+		
+		TestMessage(const std::string str) : Message(), str(str)
+		{
+			
+		}
 
-			virtual int priority() const override
-			{
-				return 0;
-			}
+		virtual int priority() const override
+		{
+			return 0;
+		}
+		
+		virtual void serialize(nlohmann::json& j) const
+		{
+			j["str"] = str;
+		}
 
 	};
 
@@ -84,7 +96,7 @@ void Test_Channel()
 
 	
 
-	auto msg1 = std::make_shared<TestMessage>();
+	auto msg1 = std::make_shared<TestMessage>("");
 
 	chan1->Test_addMessage(msg1);
 	assert_ex(chan1->hasMessages);
@@ -98,7 +110,7 @@ void Test_Channel()
 	std::shared_ptr<Message>* msgs_arr = new std::shared_ptr<Message>[msgs_arr_size];
 	for (int i = 0; i < msgs_arr_size; ++i)
 	{
-		msgs_arr[i] = std::make_shared<TestMessage>();
+		msgs_arr[i] = std::make_shared<TestMessage>("");
 	}
 
 	chan1->Test_addMessages(msgs_arr, msgs_arr+msgs_arr_size);
@@ -114,7 +126,7 @@ void Test_Channel()
 	const auto prevSize = msgs_deq->size();
 	assert_ex(prevSize == msgs_arr_size);
 
-	auto msg2 = std::make_shared<TestMessage>();
+	auto msg2 = std::make_shared<TestMessage>("");
 	chan1->Test_addMessage(msg2);
 	assert_ex(chan1->hasMessages);
 	assert_ex(chan1->stillValid);
@@ -129,7 +141,7 @@ void Test_SocketChannel()
 {
 	using namespace QUtils::Network;
 	
-	const auto portno = 65529;
+	const auto portno = 65528;
 	
 	
 	auto srvsock_future = std::async(std::launch::async, []() {
@@ -166,10 +178,16 @@ void Test_SocketChannel()
 	
 	auto srvsock = srvsock_future.get();
 	
-	QUtils::sleep(2000);
+	//QUtils::sleep(2000);
 	
-	auto sock2 = SocketChannel<>::Connect("localhost", portno);
-	assert_ex(sock2->isOpen());
+	/*auto sock2 = SocketChannel<>::Connect("localhost", portno);
+	assert_ex(sock2->isOpen());*/
+	
+	using namespace TestChannel_NS;
+	
+	sock->send(std::make_shared<TestMessage>("Hello, world"));
+	std::this_thread::yield();
+	QUtils::sleep(1000);
 	
 }
 

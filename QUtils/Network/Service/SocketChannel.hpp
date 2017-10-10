@@ -3,6 +3,9 @@
 #include "SocketChannel.h"
 #include <QUtils/Exception/NotImplemented.h>
 #include <QUtils/Network/Sockets.h>
+#include "SocketProtocol/Protocol.h"
+#include "Message.h"
+
 #include <iostream>
 
 
@@ -110,7 +113,25 @@ namespace QUtils { namespace Network {
 	template <class Spec>
 	void SocketSendChannel<Spec>::send(std::shared_ptr<Message> msg)
 	{
-		throw NotImp();
+		using namespace SocketProtocol;
+		nlohmann::json body = *msg;
+		const std::string str = body.dump();
+		const unsigned char* cstr = reinterpret_cast<const unsigned char*>(str.c_str());
+		const auto len = (str.length()+1);
+		auto head = new Header<Spec>();
+		head->id = 10;
+		head->checksum = Protocol<Spec>::CalculateChecksum(cstr, len);
+		head->size = len;
+		
+		unsigned char* rawHead = Protocol<Spec>::WriteHeader(head);
+		delete head;
+		
+		this->socket->write(rawHead, Protocol<Spec>::HeaderLength);
+		this->socket->write(cstr, len);
+		
+		delete[] rawHead;
+		
+		//throw NotImp();
 	}
 	
 	
@@ -122,14 +143,12 @@ namespace QUtils { namespace Network {
 	
 	
 	
-	#define TPRIN std::cout << std::this_thread::get_id() << "::"
 	
 	
 	
 	template <class Spec>
 	ConnectionChannel_Info<Spec>* ConnectionChannel_Info<Spec>::Start(SocketRecvChannel<Spec>* chan, Socket* sock)
 	{
-		//return NULL;
 		ConnectionChannel_Info<Spec>* ptr = NULL;
 		try
 		{
@@ -137,7 +156,41 @@ namespace QUtils { namespace Network {
 		ptr = new ConnectionChannel_Info<Spec>();
 		ptr->sock = sock;
 		ptr->channel = chan;
-		ptr->cancellation = new bool(false);
+		ptr->cancellation = new std::atomic<bool>(false);
+		ptr->handler = std::async(std::launch::async, [](auto ptr)
+		{
+			
+			
+			
+			
+			constexpr auto headLen = SocketProtocol::Protocol<Spec>::HeaderLength;
+			
+			while (!*ptr->cancellation)
+			{
+				if (ptr->sock->poll(100))
+				{
+					unsigned char* rawHead = new unsigned char[headLen];
+					ptr->sock->read(rawHead, headLen);
+					auto head = SocketProtocol::Protocol<Spec>::ParseHeader(rawHead);
+					delete[] rawHead;
+					
+					std::cout << std::this_thread::get_id() << " - " << "Length " << head->size << "!\n";
+					
+					auto body = ptr->sock->read((const int)head->size);
+					
+					std::cout << "Body: '" << body << "'\n";
+					
+					
+					
+					delete head;
+				}
+			}
+			
+			
+			
+			
+			
+		}, ptr);
 		
 		return ptr;
 		
@@ -187,18 +240,12 @@ namespace QUtils { namespace Network {
 		{
 			*(con->cancellation) = true;
 		}
-		TPRIN << "Joining connections...\n";
 		for (auto con : connections)
 		{
-			if (!con->handler.valid())
-			{
-				TPRIN << "Not valid!\n" << std::flush;
-			}
-			else
+			if (con->handler.valid())
 			{
 				con->handler.get();
 			}
-			TPRIN << "Joined...\n";
 			delete con->cancellation;
 			con->cancellation = NULL;
 			con->sock->close();
@@ -242,18 +289,12 @@ namespace QUtils { namespace Network {
 				Socket* sock = NULL;
 				try
 				{
-				TPRIN << "Waiting for connection...\n";
 				if (ptr->socket->poll(500))
 				{
-					TPRIN << "Connection waiting!" << std::endl;
 					sock = ptr->socket->accept();
-					bool* cancel = new bool();
-					*cancel = false;
-					TPRIN << "Creating connection...\n";
 					std::unique_lock<std::shared_timed_mutex> lock(ptr->conns_m);
 					ptr->connections.push_back(ConnectionChannel_Info<Spec>::Start(ptr, sock));
 					sock = NULL;
-					TPRIN << "Connection created.\n";
 				}
 				else
 				{
@@ -262,7 +303,6 @@ namespace QUtils { namespace Network {
 				}
 				catch (...)
 				{
-					TPRIN << "Error!\n";
 					if (sock != NULL)
 					{
 						delete sock;
@@ -270,8 +310,6 @@ namespace QUtils { namespace Network {
 					}
 				}
 			}
-			
-			TPRIN << "Acceptor exiting...\n";
 		}, this);
 	}
 	

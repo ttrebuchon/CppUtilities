@@ -2,6 +2,8 @@
 
 #include "Service.h"
 
+#include <json/json.hpp>
+
 
 namespace QUtils
 {
@@ -29,9 +31,14 @@ namespace Network
 			return createTime;
 		}
 		
+		virtual void serialize(nlohmann::json&) const = 0;
+		
 		template <class Service_t>
 		friend class ServiceRouter;
 	};
+	
+	void to_json(nlohmann::json& j, const Message& msg);
+	void from_json(const nlohmann::json& j, Message& msg);
 	
 }
 }

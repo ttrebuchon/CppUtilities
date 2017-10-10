@@ -3,6 +3,7 @@
 #include <future>
 
 #include "Message.h"
+#include <QUtils/Exception/NotImplemented.h>
 
 namespace QUtils
 {
@@ -55,6 +56,12 @@ namespace Network
 		{
 			//return fut.share();
 			return sfut;
+		}
+		
+		//DEBUG
+		virtual void serialize(nlohmann::json&) const
+		{
+			throw NotImp();
 		}
 		
 	};

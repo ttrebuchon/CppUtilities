@@ -584,7 +584,7 @@ bool operator!=(const Person p1, const Person p2)
 	return !(p1 == p2);
 }
 
-void to_json(json& j, const Person& p)
+/*void to_json(json& j, const Person& p)
 {
 	j["fname"] = p.fname;
 	j["lname"] = p.lname;
@@ -596,16 +596,32 @@ void from_json(const json& j, Person& p)
 	p.fname = j.at("fname").get<std::string>();
 	p.lname = j.at("lname").get<std::string>();
 	p.birth = j.at("birth").get<unsigned long>();
+}*/
+}
+
+namespace nlohmann
+{
+	void to_json(json& j, const ns::Person& p)
+{
+	j["fname"] = p.fname;
+	j["lname"] = p.lname;
+	j["birth"] = p.birth;
+}
+
+void from_json(const json& j, ns::Person& p)
+{
+	p.fname = j.at("fname").get<std::string>();
+	p.lname = j.at("lname").get<std::string>();
+	p.birth = j.at("birth").get<unsigned long>();
 }
 }
 
 SOCKET_TEST(JSON)
 {
-	
+	using namespace ns;
 	ns::Person in_p1{"Tyler", "Trebuchon", 10000};
 	
-	json in_j1;// = in_p1;
-	ns::to_json(in_j1, in_p1);
+	json in_j1 = in_p1;
 	
 	dout << "Writing...\n";
 	sock->write(in_j1.dump());
@@ -617,7 +633,7 @@ SOCKET_TEST(JSON)
 	json out_j1 = json::parse(out_str1);
 	
 	ns::Person out_p1;
-	ns::from_json(out_j1, out_p1);
+	from_json(out_j1, out_p1);
 	
 	assert_ex(in_p1 == out_p1);
 	assert_ex(in_j1 == out_j1);

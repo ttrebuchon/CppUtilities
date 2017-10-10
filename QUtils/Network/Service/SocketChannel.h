@@ -4,6 +4,7 @@
 #include "SendChannel.h"
 #include "SocketProtocol/Types.h"
 #include <list>
+#include <QUtils/Network/Sockets.h>
 
 namespace QUtils { namespace Network {
 	
@@ -67,7 +68,7 @@ namespace QUtils { namespace Network {
 		Socket* sock;
 		std::future<void> handler;
 		SocketRecvChannel<Spec>* channel;
-		bool* cancellation;
+		std::atomic<bool>* cancellation;
 		
 		static ConnectionChannel_Info<Spec>* Start(SocketRecvChannel<Spec>*, Socket*);
 	};
