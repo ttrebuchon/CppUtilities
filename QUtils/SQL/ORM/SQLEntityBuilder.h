@@ -131,6 +131,7 @@ namespace SQL
 		
 		this->deserialize = Helpers::SetSQL_t<Object>([fAccess, fromSQL] (Object& obj, SQLType_ptr ptr, SQLSystem* sys, bool includeReferenced)
 		{
+			//TODO: Pass member by reference instead of assigning
 			fAccess(obj) = fromSQL(ptr, sys, includeReferenced);
 		});
 		}
