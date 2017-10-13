@@ -288,7 +288,7 @@ namespace QUtils::Network
 		return count;
 	}
 	
-	bool Socket::poll(const int timeout_ms)
+	bool Socket::poll(const int timeout_ms) const
 	{
 		pollfd fds;
 		fds.fd = descriptor;

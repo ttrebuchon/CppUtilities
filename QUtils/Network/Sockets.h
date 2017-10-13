@@ -69,7 +69,7 @@ namespace QUtils::Network
 		
 		int waitingData() const;
 		
-		bool poll(const int timeout_ms);
+		bool poll(const int timeout_ms) const;
 	};
 	
 	class INetSocket : public Socket
