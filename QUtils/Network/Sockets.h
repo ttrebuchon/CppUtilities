@@ -62,6 +62,7 @@ namespace QUtils::Network
 		std::string peek(const int length);
 		std::string peek();
 		std::string waitAll(const int length);
+		int waitAll(void*, const int length);
 		void write(const std::string);
 		int write(const void*, const int length);
 		void write(const char);

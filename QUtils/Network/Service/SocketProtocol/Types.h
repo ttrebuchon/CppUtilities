@@ -107,13 +107,16 @@ namespace SocketProtocol {
 			typedef typename _SmallestType<MaxValue(Size) <= std::numeric_limits<H>::max(), Size, H, G...>::type type;
 		};
 		
-		template <int Size, class T, class... G>
+		
+		
+		template <int _Size, class T, class... G>
 		struct SmallestType
 		{
-			typedef typename _SmallestType<MaxValue(Size) <= std::numeric_limits<T>::max(), Size, T, G...>::type type;
-			constexpr static size_t size = sizeof(type);
+			typedef typename _SmallestType<MaxValue(_Size) <= std::numeric_limits<T>::max(), _Size, T, G...>::type type;
+			constexpr static size_t Size = sizeof(type);
+			//constexpr static size_t Size = _Size;
 			constexpr static size_t type_size = sizeof(type);
-			constexpr static size_t RawSize = Size;
+			constexpr static size_t RawSize = _Size;
 			constexpr static type Max = MaxValue(RawSize);
 			
 			inline static type Read(const unsigned char* data)
@@ -121,18 +124,18 @@ namespace SocketProtocol {
 				type num = 0;
 				if (!HostIsBigEndian())
 				{
-					std::reverse_copy(data, data+Size, (unsigned char*)&num);
+					std::reverse_copy(data, data+_Size, (unsigned char*)&num);
 				}
 				else
 				{
-					::memcpy(((unsigned char*)&num)+(type_size-Size), data, Size*sizeof(unsigned char));
+					::memcpy(((unsigned char*)&num)+(type_size-_Size), data, _Size*sizeof(unsigned char));
 				}
 				return num;
 			}
 			
 			inline static unsigned char* Write(const type num)
 			{
-				unsigned char* num_arr = new unsigned char[Size];
+				unsigned char* num_arr = new unsigned char[_Size];
 				Write(num, num_arr);
 				return num_arr;
 			}
@@ -141,15 +144,16 @@ namespace SocketProtocol {
 			{
 				if (!HostIsBigEndian())
 				{
-					std::reverse_copy((unsigned char*)&num, ((unsigned char*)&num) + Size, num_arr);
+					std::reverse_copy((unsigned char*)&num, ((unsigned char*)&num) + _Size, num_arr);
 				}
 				else
 				{
-					::memcpy(num_arr, &num+(type_size-Size), Size);
+					::memcpy(num_arr, &num+(type_size-_Size), _Size);
 				}
 			}
 			
 		};
+		
 		
 	}
 	

@@ -24,6 +24,10 @@ namespace SocketProtocol {
 		
 		static typename Spec::MsgChecksum_t CalculateChecksum(const unsigned char* msg, const typename Spec::MsgLen_t len);
 		static bool VerifyChecksum(Header<Spec>* header, const unsigned char* msg);
+		
+		static unsigned char* GoodMessageResponse(const typename Spec::MsgID_t);
+		static unsigned char* BadMessageResponse(const typename Spec::MsgID_t);
+		
 	};
 	
 }

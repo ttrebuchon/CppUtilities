@@ -20,6 +20,10 @@ namespace SocketProtocol {
 		
 		hd->size = msgLen;
 		hd->id = Spec::MsgID_Info::Read(header);
+		if (hd->id == Spec::MsgID_Info::Max)
+		{
+			hd->integrityResponse = true;
+		}
 		auto ptr = header + Spec::ID_Size + Spec::Length_Size;
 		hd->checksum = Spec::MsgChecksum_Info::Read(ptr);
 
@@ -46,11 +50,24 @@ namespace SocketProtocol {
 	template <class Spec>
 	unsigned char* Protocol<Spec>::WriteHeader(const Header<Spec>* header)
 	{
+		static_assert(HeaderLength == sizeof(unsigned char)*(Spec::ID_Size + Spec::Length_Size + Spec::Checksum_Size + Spec::Options_Size), "");
+		
+		static_assert(Spec::Header_Size == sizeof(unsigned char)*(Spec::ID_Size + Spec::Length_Size + Spec::Checksum_Size + Spec::Options_Size), "");
+		
+		
+		
 		unsigned char* rawHeader = new unsigned char[HeaderLength];
 
 		auto ptr = rawHeader;
-
-		Spec::MsgID_Info::Write(header->id, ptr);
+		
+		if (header->integrityResponse)
+		{
+			Spec::MsgID_Info::Write(Spec::MsgID_Info::Max, ptr);
+		}
+		else
+		{
+			Spec::MsgID_Info::Write(header->id, ptr);
+		}
 
 		ptr += Spec::ID_Size;
 		Spec::MsgLen_Info::Write(header->size, ptr);
@@ -87,6 +104,34 @@ namespace SocketProtocol {
 	{
 		return (header->checksum == CalculateChecksum(msg, header->size));
 	}
+	
+	
+	
+	template <class Spec>
+	unsigned char* Protocol<Spec>::GoodMessageResponse(const typename Spec::MsgID_t id)
+	{
+		auto hd = Header<Spec>::GoodMessageResponse();
+		unsigned char* msg = new unsigned char[HeaderLength + Spec::ID_Size];
+		
+		::memcpy(msg, hd, HeaderLength);
+		delete hd;
+		Spec::MsgID_Info::Write(id, msg+HeaderLength);
+		return msg;
+	}
+	
+	template <class Spec>
+	unsigned char* Protocol<Spec>::BadMessageResponse(const typename Spec::MsgID_t id)
+	{
+		auto hd = Header<Spec>::BadMessageResponse();
+		unsigned char* msg = new unsigned char[HeaderLength + Spec::ID_Size];
+		
+		::memcpy(msg, hd, HeaderLength);
+		delete hd;
+		Spec::MsgID_Info::Write(id, msg+HeaderLength);
+		return msg;
+	}
+	
+	
 }
 }
 }

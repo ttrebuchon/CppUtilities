@@ -243,6 +243,23 @@ namespace QUtils::Network
 		return str;
 	}
 	
+	int Socket::waitAll(void* body, const int length)
+	{
+		
+		if (!isOpen())
+		{
+			throw SocketException().Function(__func__).Line(__LINE__).File(__FILE__).Msg("Socket isn't open");
+		}
+		
+		int count = ::recv(descriptor, body, length, MSG_WAITALL);
+		if (count != length)
+		{
+			int err = errno;
+			ERROR_EX(err);
+		}
+		return count;
+	}
+	
 	void Socket::write(const std::string str)
 	{
 		if (!isOpen())
