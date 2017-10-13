@@ -50,15 +50,19 @@ namespace SocketProtocol {
 	template <class Spec>
 	unsigned char* Protocol<Spec>::WriteHeader(const Header<Spec>* header)
 	{
+		unsigned char* rawHeader = new unsigned char[HeaderLength];
+		WriteHeader(header, rawHeader);
+		return rawHeader;
+	}
+	
+	template <class Spec>
+	unsigned int Protocol<Spec>::WriteHeader(const Header<Spec>* header, void* rawHeader)
+	{
 		static_assert(HeaderLength == sizeof(unsigned char)*(Spec::ID_Size + Spec::Length_Size + Spec::Checksum_Size + Spec::Options_Size), "");
 		
 		static_assert(Spec::Header_Size == sizeof(unsigned char)*(Spec::ID_Size + Spec::Length_Size + Spec::Checksum_Size + Spec::Options_Size), "");
-		
-		
-		
-		unsigned char* rawHeader = new unsigned char[HeaderLength];
 
-		auto ptr = rawHeader;
+		auto ptr = reinterpret_cast<unsigned char*>(rawHeader);
 		
 		if (header->integrityResponse)
 		{
@@ -82,7 +86,7 @@ namespace SocketProtocol {
 			(*b)(1, header->responseRequired);
 		}
 		
-		return rawHeader;
+		return Spec::ID_Size + Spec::Length_Size + Spec::Checksum_Size + Spec::Options_Size;
 	}
 	
 	template <class Spec>
@@ -110,11 +114,12 @@ namespace SocketProtocol {
 	template <class Spec>
 	unsigned char* Protocol<Spec>::GoodMessageResponse(const typename Spec::MsgID_t id)
 	{
-		auto hd = Header<Spec>::GoodMessageResponse();
+		Header<Spec> hd;
+		hd.setGoodMessageResponse();
+		
 		unsigned char* msg = new unsigned char[HeaderLength + Spec::ID_Size];
 		
-		::memcpy(msg, hd, HeaderLength);
-		delete hd;
+		WriteHeader(&hd, msg);
 		Spec::MsgID_Info::Write(id, msg+HeaderLength);
 		return msg;
 	}
@@ -122,11 +127,12 @@ namespace SocketProtocol {
 	template <class Spec>
 	unsigned char* Protocol<Spec>::BadMessageResponse(const typename Spec::MsgID_t id)
 	{
-		auto hd = Header<Spec>::BadMessageResponse();
+		Header<Spec> hd;
+		hd.setBadMessageResponse();
+		
 		unsigned char* msg = new unsigned char[HeaderLength + Spec::ID_Size];
 		
-		::memcpy(msg, hd, HeaderLength);
-		delete hd;
+		WriteHeader(&hd, msg);
 		Spec::MsgID_Info::Write(id, msg+HeaderLength);
 		return msg;
 	}

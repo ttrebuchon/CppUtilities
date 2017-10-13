@@ -21,6 +21,7 @@ namespace SocketProtocol {
 		static Header<Spec>* ParseHeader(const unsigned char* header);
 		
 		static unsigned char* WriteHeader(const Header<Spec>*);
+		static unsigned int WriteHeader(const Header<Spec>*, void*);
 		
 		static typename Spec::MsgChecksum_t CalculateChecksum(const unsigned char* msg, const typename Spec::MsgLen_t len);
 		static bool VerifyChecksum(Header<Spec>* header, const unsigned char* msg);

@@ -144,13 +144,14 @@ void Test_SocketChannel()
 	const auto portno = 65528;
 	
 	
-	auto srvsock_future = std::async(std::launch::async, []() {
+	/*auto srvsock_future = std::async(std::launch::async, []() {
 		return SocketChannel<>::Listen(portno);
-	});
+	});*/
+	auto srvsock = SocketChannel<>::Listen(portno);
 	
 	
 	std::this_thread::yield();
-	decltype(SocketChannel<>::Connect("", 0)) sock = NULL;
+	/*decltype(SocketChannel<>::Connect("", 0)) sock = NULL;
 	while (sock == NULL && srvsock_future.valid())
 	{
 		try
@@ -176,7 +177,16 @@ void Test_SocketChannel()
 		}
 	}
 	
-	auto srvsock = srvsock_future.get();
+	auto srvsock = srvsock_future.get();*/
+	auto sock = SocketChannel<>::Connect("localhost", portno);
+	
+	assert_ex(sock != NULL);
+	assert_ex(sock->getSocket() != NULL);
+	assert_ex(srvsock->getSocket() != NULL);
+	
+	assert_ex(sock->getSocket()->isOpen());
+	assert_ex(srvsock->getSocket()->isOpen());
+	
 	
 	//QUtils::sleep(2000);
 	
@@ -185,10 +195,17 @@ void Test_SocketChannel()
 	
 	using namespace TestChannel_NS;
 	
-	sock->send(std::make_shared<TestMessage>("Hello, world"));
-	std::this_thread::yield();
-	QUtils::sleep(1000);
+	dout << "SocketChannels connection established." << std::endl;
 	
+	sock->send(std::make_shared<TestMessage>("Hello, world"));
+	dout << "Message sent." << std::endl;
+	std::this_thread::yield();
+	dout << "Sleeping...\n";
+	QUtils::sleep(1000);
+	dout << "Done Sleeping." << std::endl;
+	sock = NULL;
+	QUtils::sleep(1000);
+	dout << "Done sleeping again." << std::endl;
 }
 
 

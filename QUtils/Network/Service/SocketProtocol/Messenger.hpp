@@ -95,7 +95,7 @@ namespace SocketProtocol
 			socket->read(body, Spec::ID_Size);
 		if (head->badMessage)
 		{
-			std::cout << "BadMessage!\n" << std::flush;
+			std::cerr << "BadMessage!\n" << std::flush;
 			
 			resendBadMessage(body);
 		}

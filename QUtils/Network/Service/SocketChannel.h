@@ -3,6 +3,7 @@
 #include "Channel.h"
 #include "SendChannel.h"
 #include "SocketProtocol/Types.h"
+#include "SocketProtocol/Messenger.h"
 #include <list>
 #include <QUtils/Network/Sockets.h>
 
@@ -38,6 +39,11 @@ namespace QUtils { namespace Network {
 			return socket->isOpen();
 		}
 		
+		const Socket* getSocket() const
+		{
+			return socket;
+		}
+		
 	};
 	
 	
@@ -54,6 +60,8 @@ namespace QUtils { namespace Network {
 		
 		
 		public:
+		
+		virtual ~SocketSendChannel();
 		
 		void send(std::shared_ptr<Message>) final override;
 		

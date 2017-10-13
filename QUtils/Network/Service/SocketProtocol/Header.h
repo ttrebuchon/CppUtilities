@@ -17,26 +17,23 @@ namespace SocketProtocol {
 		
 		constexpr static auto Length = Spec::Header_Size;
 		
+		void setGoodMessageResponse()
+		{
+			integrityResponse = true;
+			id = Spec::MsgID_Info::Max;
+			badMessage = false;
+		}
+		
+		void setBadMessageResponse()
+		{
+			integrityResponse = true;
+			id = Spec::MsgID_Info::Max;
+			badMessage = true;
+		}
+		
 		Header() : id(0), size(0), checksum(0), wideChars(false), responseRequired(false), integrityResponse(false), badMessage(false)
 		{
 			
-		}
-		
-		static Header* GoodMessageResponse()
-		{
-			auto hd = new Header();
-			hd->integrityResponse = true;
-			hd->id = Spec::MsgID_Info::Max;
-			return hd;
-		}
-		
-		static Header* BadMessageResponse()
-		{
-			auto hd = new Header();
-			hd->integrityResponse = true;
-			hd->id = Spec::MsgID_Info::Max;
-			hd->badMessage = true;
-			return hd;
 		}
 	};
 	
