@@ -4,6 +4,8 @@
 #include <QUtils/Network/Service/SocketProtocol/Protocol.h>
 #include <QUtils/Network/Service/SocketProtocol/Header.h>
 
+#include <QUtils/Network/Service/SocketProtocol/Messenger.h>
+
 using QUtils::Network::Socket;
 
 namespace Network_ServiceProtocol_Test
@@ -58,7 +60,7 @@ typedef QUtils::Network::SocketProtocol::HeaderSpec<2, 4, 3, 1> Spec6;
 
 
 
-
+void MessengerTest();
 
 
 
@@ -89,6 +91,7 @@ DEF_TEST(Network_ServiceProtocol)
 	RUN_TEST(4);
 	RUN_TEST(5);
 	RUN_TEST_S(6, Spec6);
+	MessengerTest();
 	
 	
 	return true;
@@ -540,6 +543,67 @@ namespace Network_ServiceProtocol_Test
 		assert_ex(tally == chksum);
 		assert_ex(hd->wideChars);
 	}
+}
+
+
+void MessengerTest()
+{
+	dout << "Testing Messenger...\n";
+	using namespace QUtils::Network::SocketProtocol;
+	
+	typedef DefaultSpec Spec;
+	
+	Socket *passive, *active, *client;
+	
+	passive = active = client = NULL;
+	
+	try
+	{
+		InitStreamSockets(&passive, &active, &client);
+		
+		
+		auto msgr = Messenger::Create<Spec>(client);
+		
+		auto srv = Messenger::Create<Spec>(active);
+		
+		assert_ex(msgr != NULL);
+		assert_ex(srv != NULL);
+		
+		
+		{
+			std::string body_in = "Hello";
+			msgr->send(reinterpret_cast<const unsigned char*>(body_in.c_str()), body_in.length()+1, false, false);
+			
+			
+			unsigned long long len_out, id_out;
+			bool wideChars_out, responseRequired_out;
+			
+			unsigned char* body_out = srv->receive(len_out, wideChars_out, responseRequired_out, id_out);
+			
+			assert_ex(len_out == body_in.length()+1);
+			assert_ex(!wideChars_out);
+			assert_ex(!responseRequired_out);
+			
+			
+			unsigned long long len_r, id_r;
+			bool wideChars_r, responseRequired_r;
+			
+			assert_ex(msgr->receive(len_r, wideChars_r, responseRequired_r, id_r) == NULL);
+			
+		}
+		
+		
+	}
+	catch (...)
+	{
+		if (passive != NULL)
+		{
+			CleanupStreamSockets(&passive, &active, &client);
+		}
+		throw;
+	}
+	
+	CleanupStreamSockets(&passive, &active, &client);
 }
 
 
