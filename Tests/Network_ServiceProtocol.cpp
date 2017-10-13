@@ -29,6 +29,10 @@ using QUtils::Network::SocketProtocol::DefaultSpec;
 template <int>
 void verifyTestHeader(const QUtils::Network::SocketProtocol::Header<>*);
 
+
+template <class S, int>
+void verifyTestHeader(const QUtils::Network::SocketProtocol::Header<S>*);
+
 }
 
 
@@ -36,6 +40,27 @@ using namespace Network_ServiceProtocol_Test;
 
 template <int>
 void testHeader(Socket* srvsock, Socket* act_srvsock, Socket* sock);
+
+template <class, int>
+void testHeader(Socket* srvsock, Socket* act_srvsock, Socket* sock);
+
+
+
+
+
+
+
+typedef QUtils::Network::SocketProtocol::HeaderSpec<2, 4, 3, 1> Spec6;
+
+
+
+
+
+
+
+
+
+
 
 #define HEADER_SIZE DefaultSpec::Header_Size
 
@@ -50,12 +75,20 @@ DEF_TEST(Network_ServiceProtocol)
 	CleanupStreamSockets(&passive, &active, &client);
 	
 	
+	#define RUN_TEST_S(x, S) \
+	dout << "Running Test " << x << "...\n"; \
+	InitStreamSockets(&passive, &active, &client); \
+	testHeader<S, x>(passive, active, client); \
+	CleanupStreamSockets(&passive, &active, &client);
+	
+	
 	RUN_TEST(0);
 	RUN_TEST(1);
 	RUN_TEST(2);
 	RUN_TEST(3);
 	RUN_TEST(4);
 	RUN_TEST(5);
+	RUN_TEST_S(6, Spec6);
 	
 	
 	return true;
@@ -110,6 +143,59 @@ void testHeader(Socket* srvsock, Socket* act_srvsock, Socket* sock)
 	if (body != NULL)
 	{
 		assert_ex(Protocol<>::VerifyChecksum(hd, body));
+		delete[] body;
+	}
+	
+	
+	delete hd;
+	delete[] rawHeader;
+	assert_ex(act_srvsock->waitingData() == 0);
+}
+
+
+template <class S, int N>
+void testHeader(Socket* srvsock, Socket* act_srvsock, Socket* sock)
+{
+	unsigned long bodySize;
+	unsigned char* header_in = getTestHeader<N>(&bodySize);
+	assert_ex(header_in != NULL);
+	
+	assert_ex(sock->write(header_in, S::Header_Size) == S::Header_Size);
+	delete[] header_in;
+	header_in = NULL;
+	
+	unsigned char* body_in = getTestBody<N>();
+	if (body_in != NULL)
+	{
+		assert_ex(sock->write(body_in, bodySize) == bodySize);
+		delete[] body_in;
+	}
+	
+	
+	unsigned char* rawHeader = new unsigned char[Protocol<S>::HeaderLength];
+	
+	assert_ex(
+	act_srvsock->read(
+		rawHeader,
+		Protocol<S>::HeaderLength
+	) == Protocol<S>::HeaderLength);
+	
+	auto length = QUtils::Network::SocketProtocol::Protocol<S>::GetMsgLength(rawHeader);
+	assert_ex(length == bodySize);
+	
+	
+	unsigned char* body = NULL;
+	if (body_in != NULL)
+	{
+		body = new unsigned char[length];
+		assert_ex(act_srvsock->read(body, length) == length);
+	}
+	auto hd = Protocol<S>::ParseHeader(rawHeader, length);
+	verifyTestHeader<S, N>(hd);
+	
+	if (body != NULL)
+	{
+		assert_ex(Protocol<S>::VerifyChecksum(hd, body));
 		delete[] body;
 	}
 	
@@ -386,6 +472,70 @@ namespace Network_ServiceProtocol_Test
 		{
 			tally += body[i];
 			tally %= DefaultSpec::MsgChecksum_Info::Max;
+		}
+		assert_ex(tally == chksum);
+		assert_ex(hd->wideChars);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	template <>
+	unsigned char* getTestHeader<6>(unsigned long* size)
+	{
+		const std::wstring body = L"Hello, world!";
+
+		const unsigned long MsgLen = body.length()*sizeof(wchar_t);
+		*size = MsgLen;
+		auto hd = new QUtils::Network::SocketProtocol::Header<Spec6>();
+		assert_ex(sizeof(Spec6::MsgID_t) == 4);
+		assert_ex(Spec6::Header_Size == 10);
+		hd->id = 65592; //2^16 + 56
+		hd->size = MsgLen;
+		hd->checksum = Protocol<Spec6>::CalculateChecksum((const unsigned char*)body.c_str(), MsgLen);
+		hd->wideChars = true;
+		unsigned char* raw = QUtils::Network::SocketProtocol::Protocol<Spec6>::WriteHeader(hd);
+		delete hd;
+		return raw;
+	}
+
+	template <>
+	unsigned char* getTestBody<6>()
+	{
+		const std::wstring bodyStr = L"Hello, world!";
+		//We don't want the null terminator
+		unsigned char* body = new unsigned char[bodyStr.length()*sizeof(wchar_t)];
+		::memcpy(body, bodyStr.c_str(), bodyStr.length()*sizeof(wchar_t));
+		return body;
+	}
+
+	template <>
+	void verifyTestHeader<Spec6, 6>(const QUtils::Network::SocketProtocol::Header<Spec6>* hd)
+	{
+		const std::wstring body = L"Hello, world!";
+
+		const unsigned long MsgLen = body.length()*sizeof(wchar_t);
+		const auto chksum = Protocol<Spec6>::CalculateChecksum((const unsigned char*)body.c_str(), MsgLen);
+		assert_ex(hd != NULL);
+		assert_ex(hd->size == MsgLen);
+		assert_ex(hd->id == 56);
+		assert_ex(hd->checksum == chksum);
+		unsigned long long tally = 0;
+		for (int i = 0; i < body.length(); ++i)
+		{
+			tally += body[i];
+			tally %= Spec6::MsgChecksum_Info::Max;
 		}
 		assert_ex(tally == chksum);
 		assert_ex(hd->wideChars);
