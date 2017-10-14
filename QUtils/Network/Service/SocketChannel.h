@@ -6,6 +6,8 @@
 #include "SocketProtocol/Messenger.h"
 #include <list>
 #include <QUtils/Network/Sockets.h>
+#include <shared_mutex>
+#include <future>
 
 namespace QUtils { namespace Network {
 	
@@ -54,7 +56,8 @@ namespace QUtils { namespace Network {
 	class SocketSendChannel : public SocketChannel<Spec>, public SendChannel
 	{
 		protected:
-		
+		std::shared_timed_mutex msgr_m;
+		std::shared_ptr<SocketProtocol::Messenger> msgr;
 		
 		SocketSendChannel(Socket*);
 		

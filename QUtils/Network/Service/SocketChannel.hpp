@@ -107,7 +107,7 @@ namespace QUtils { namespace Network {
 	
 	
 	template <class Spec>
-	SocketSendChannel<Spec>::SocketSendChannel(Socket* sock) : SocketChannel<Spec>(sock), SendChannel()
+	SocketSendChannel<Spec>::SocketSendChannel(Socket* sock) : SocketChannel<Spec>(sock), SendChannel(), msgr_m(), msgr(SocketProtocol::Messenger::Create<Spec>(sock))
 	{
 		
 	}
@@ -115,6 +115,8 @@ namespace QUtils { namespace Network {
 	template <class Spec>
 	SocketSendChannel<Spec>::~SocketSendChannel()
 	{
+		std::lock_guard<std::shared_timed_mutex> msgr_lock(msgr_m);
+		msgr.reset();
 		if (this->socket != NULL)
 		{
 			if (this->socket->isOpen())
@@ -134,20 +136,16 @@ namespace QUtils { namespace Network {
 		const std::string str = body.dump();
 		const unsigned char* cstr = reinterpret_cast<const unsigned char*>(str.c_str());
 		const auto len = (str.length()+1);
-		auto head = new Header<Spec>();
-		head->id = 10;
-		head->checksum = Protocol<Spec>::CalculateChecksum(cstr, len);
-		head->size = len;
-		head->wideChars = false;
-		head->responseRequired = msg->responseRequired;
 		
-		unsigned char* rawHead = Protocol<Spec>::WriteHeader(head);
-		delete head;
 		
-		this->socket->write(rawHead, Protocol<Spec>::HeaderLength);
-		this->socket->write(cstr, len);
-
-		delete[] rawHead;
+		{
+			std::lock_guard<std::shared_timed_mutex> msgr_lock(msgr_m);
+			if (!msgr->openIDs())
+			{
+				throw NotImp();
+			}
+			msgr->send(cstr, len, false, msg->responseRequired);
+		}
 	}
 	
 	
@@ -181,13 +179,6 @@ namespace QUtils { namespace Network {
 			
 			auto messenger = SocketProtocol::Messenger::Create<Spec>(ptr->sock);
 			
-			/*constexpr auto headLen = SocketProtocol::Protocol<Spec>::HeaderLength;
-
-			unsigned char** ids = new unsigned char*[Spec::MsgID_Info::Max];
-			::memset(ids, 0, Spec::MsgID_Info::Max*sizeof(unsigned char*));
-			
-			std::map<typename Spec::MsgID_t, nlohmann::json> returnMessages;*/
-			
 			
 			unsigned long long id;
 			unsigned long long len;
@@ -199,15 +190,6 @@ namespace QUtils { namespace Network {
 			{
 				if (ptr->sock->poll(100))
 				{
-					/*unsigned char* rawHead = new unsigned char[headLen];
-					ptr->sock->read(rawHead, headLen);
-					auto head = SocketProtocol::Protocol<Spec>::ParseHeader(rawHead);
-					delete[] rawHead;
-					
-					std::cout << std::this_thread::get_id() << " - " << "Length " << head->size << "!\n";*/
-					
-					//const auto len = head->size;
-					//unsigned char* body = new unsigned char[len];
 					body = messenger->receive(len, wideChars, responseRequired, id);
 					if (body == NULL)
 					{
@@ -219,66 +201,19 @@ namespace QUtils { namespace Network {
 						body = NULL;
 						continue;
 					}
-					//ptr->sock->read(body, len);
 					
+					#ifdef DEBUG
 					//DEBUG
 					{
 					std::string bodyStr(len, 'a');
 					::memcpy(&bodyStr[0], body, len);
 					std::cout << "Body: '" << bodyStr << "'\n" << std::flush;
 					}
+					#endif
 
-					/*auto chksum = SocketProtocol::Protocol<Spec>::CalculateChecksum(body, head->size);
-					
-					if (head->badMessage)
-					{
-						auto id = Spec::MsgID_Info::Read(body);
-						
-						if (ids[id] == NULL)
-						{
-							std::cerr << "Missing backup for bad message for id " << (unsigned long long)id << "!" << std::endl;
-							//TODO
-							delete[] body;
-							delete head;
-							delete[] ids;
-							throw std::exception();
-						}
-						
-						auto len = *(typename Spec::MsgID_t*)ids[id];
-						
-						ptr->sock->write(ids[id] + Spec::MsgID_Info::size, len + Spec::Header_Size);
-						delete[] body;
-						delete head;
-						continue;
-					}
-
-					auto respHeader = new SocketProtocol::Header<Spec>();
-					respHeader->size = Spec::MsgID_Info::size;
-					respHeader->wideChars = false;
-					respHeader->responseRequired = false;
-					respHeader->badMessage = (chksum != head->checksum);
-					
-					auto respBody = Spec::MsgID_Info::Write(head->id);
-					auto rawRespHeader = SocketProtocol::Protocol<Spec>::WriteHeader(respHeader);
-					delete respHeader;
-
-					ptr->sock->write(rawRespHeader, Spec::Header_Size);
-					ptr->sock->write(respBody, Spec::MsgID_Info::size);
-
-					delete[] rawRespHeader;
-					delete[] respBody;
-					
-
-					if (chksum != head->checksum)
-					{
-						delete head;
-						delete[] body;
-						continue;
-					}
-					*/
 
 					nlohmann::json jMsg;
-					if (!/*head->*/wideChars)
+					if (!wideChars)
 					{
 						jMsg = nlohmann::json::parse(body);
 					}
@@ -290,25 +225,13 @@ namespace QUtils { namespace Network {
 					}
 					delete[] body;
 					
-					//const typename Spec::MsgID_t id = head->id;
-					
 					
 
 					const std::chrono::system_clock::time_point timestamp(std::chrono::system_clock::duration(jMsg["timestamp"].get<unsigned long long>()));
 					const int priority = jMsg["priority"];
 					
-					
-					/*if (head->responseRequired)
-					{
-						
-					}
-					
-					delete head;*/
-					
 				}
 			}
-
-			//delete[] ids;
 			
 			
 			
@@ -371,7 +294,7 @@ namespace QUtils { namespace Network {
 			}
 			catch (...)
 			{
-				//throw();
+				
 			}
 		}
 		{
