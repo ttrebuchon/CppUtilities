@@ -203,9 +203,30 @@ void Test_SocketChannel()
 	dout << "Sleeping...\n";
 	QUtils::sleep(1000);
 	dout << "Done Sleeping." << std::endl;
-	sock = NULL;
-	QUtils::sleep(1000);
-	dout << "Done sleeping again." << std::endl;
+	
+	const int count1 = 250;
+	const int count2 = 2000;
+	for (int i = 0; i < count1; ++i)
+	{
+		sock->send(std::make_shared<TestMessage>(std::to_string(i)));
+	}
+	
+	/*for (int i = 0; i < count1/4; ++i)
+	{
+		assert_ex(sock->receive
+	}*/
+	
+	for (int i = 0; i < count2; ++i)
+	{
+		sock->send(std::make_shared<TestMessage>(std::to_string(i+count1)));
+	}
+	
+	
+	std::this_thread::yield();
+	dout << "Sleeping...\n";
+	QUtils::sleep(5000);
+	
+	
 }
 
 
