@@ -75,7 +75,11 @@ LINKING += -lSDL2 -ltiff -lSDL2_ttf
 endif
 
 ifeq ($(HAS_BOOST), TRUE)
-LINKING += -L../$(BOOST_DIR)/libs/serialization -lboost_serialization
+LINKING += -L$(BOOST_DIR)/libs/serialization -lboost_serialization
+
+LINKING += #-L$(BOOST_DIR)/libs/thread -lboost_thread
+
+LINKING += #-L$(BOOST_DIR)/libs/system -lboost_system
 endif
 
 
