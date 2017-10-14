@@ -5,6 +5,7 @@
 #include "JsonMessage.h"
 #include "RPCMessage.h"
 #include "LocalChannel.h"
+#include "Router.h"
 
 #include <QUtils/JSON/JSON.h>
 

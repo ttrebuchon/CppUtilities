@@ -5,6 +5,7 @@
 #include <atomic>
 #include <mutex>
 #include <shared_mutex>
+#include <string>
 
 namespace QUtils::Network
 {
