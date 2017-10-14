@@ -28,12 +28,16 @@ namespace SocketProtocol
 		template <class Spec>
 		static std::shared_ptr<Messenger> Create(Socket*);
 		
+		static std::shared_ptr<Messenger> CreateDefault(Socket*);
+		
 		
 		virtual void send(const unsigned char* data, const unsigned int length, bool wideChars = false, bool responseRequired = false) = 0;
 		
 		virtual unsigned char* receive(unsigned long long& length, bool& wideChars, bool& responseRequired, unsigned long long& id) = 0;
 		
 		bool poll(const int timeout_ms) const;
+		
+		virtual bool openIDs() const = 0;
 	};
 	
 	
@@ -45,6 +49,7 @@ namespace SocketProtocol
 		private:
 		
 		unsigned char** cachedMsgs;
+		typename Spec::MsgID_t idsLeft;
 		
 		protected:
 		
@@ -62,6 +67,11 @@ namespace SocketProtocol
 		
 		void resendBadMessage(const unsigned char* body);
 		void resendBadMessage(const typename Spec::MsgID_t id);
+		
+		inline bool openIDs() const override
+		{
+			return idsLeft > 0;
+		}
 		
 		
 		friend class Messenger;

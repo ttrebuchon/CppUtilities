@@ -9,7 +9,7 @@ namespace QUtils { namespace Network {
 namespace SocketProtocol
 {
 	template <class Spec>
-	MessengerWithSpec<Spec>::MessengerWithSpec(Socket* socket) : Messenger(socket), cachedMsgs(new unsigned char*[Spec::MsgID_Info::Max])
+	MessengerWithSpec<Spec>::MessengerWithSpec(Socket* socket) : Messenger(socket), cachedMsgs(new unsigned char*[Spec::MsgID_Info::Max]), idsLeft(Spec::MsgID_Info::Max)
 	{
 		::memset(cachedMsgs, 0, Spec::MsgID_Info::Max*sizeof(unsigned char*));
 	}
@@ -70,6 +70,7 @@ namespace SocketProtocol
 		
 		socket->write(msg, length + Spec::Header_Size);
 		cachedMsgs[id] = msg;
+		--idsLeft;
 		
 	}
 	
@@ -93,15 +94,21 @@ namespace SocketProtocol
 		{
 		unsigned char* body = new unsigned char[Spec::ID_Size];
 			socket->read(body, Spec::ID_Size);
+			auto id = Spec::MsgID_Info::Read(body);
 		if (head->badMessage)
 		{
 			std::cerr << "BadMessage!\n" << std::flush;
 			
-			resendBadMessage(body);
+			resendBadMessage(id);
 		}
 		else
 		{
-			
+			if (cachedMsgs[id] != NULL)
+			{
+				delete[] cachedMsgs[id];
+				cachedMsgs[id] = NULL;
+				++idsLeft;
+			}
 		}
 		delete[] body;
 		delete head;
@@ -165,6 +172,19 @@ namespace SocketProtocol
 		//TODO
 		throw NotImp();
 	}
+	
+	/*template <class Spec>
+	bool MessengerWithSpec<Spec>::openIDs() const
+	{
+		for (typename Spec::MsgID_t id = 0; id < Spec::MsgID_Info::Max; ++id)
+		{
+			if (cachedMsgs[id] == NULL)
+			{
+				return true;
+			}
+		}
+		return false;
+	}*/
 }
 }
 }
