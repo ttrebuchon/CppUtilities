@@ -83,6 +83,7 @@ DEC_TEST(SDL_Drawing);
 DEC_TEST(CodeGen_Utility);
 DEC_TEST(ASM);
 DEC_TEST(BoostBased_Serialization);
+DEC_TEST(Graph_DependencyGraph);
 
 
 #undef DEC_TEST
