@@ -15,14 +15,12 @@ namespace QUtils { namespace Network {
 	
 	
 	
-	template <class Spec>
-	SocketChannel<Spec>::SocketChannel(Socket* sock) : socket(sock)
+	SocketChannel::SocketChannel(Socket* sock) : socket(sock)
 	{
 		
 	}
 	
-	template <class Spec>
-	SocketChannel<Spec>::~SocketChannel()
+	SocketChannel::~SocketChannel()
 	{
 		/*if (socket != NULL)
 		{
@@ -37,7 +35,7 @@ namespace QUtils { namespace Network {
 	
 	
 	template <class Spec>
-	std::shared_ptr<SocketRecvChannel<Spec>> SocketChannel<Spec>::Listen(const unsigned short port, const unsigned int backlog)
+	std::shared_ptr<SocketRecvChannel<Spec>> SocketChannel::Listen(const unsigned short port, const unsigned int backlog)
 	{
 		INetSocket* sock = NULL;
 		try
@@ -68,7 +66,7 @@ namespace QUtils { namespace Network {
 	}
 	
 	template <class Spec>
-	std::shared_ptr<SocketSendChannel<Spec>> SocketChannel<Spec>::Connect(const std::string hostname, const unsigned short port)
+	std::shared_ptr<SocketSendChannel<Spec>> SocketChannel::Connect(const std::string hostname, const unsigned short port)
 	{
 		INetSocket* sock = NULL;
 		try
@@ -107,7 +105,7 @@ namespace QUtils { namespace Network {
 	
 	
 	template <class Spec>
-	SocketSendChannel<Spec>::SocketSendChannel(Socket* sock) : SocketChannel<Spec>(sock), SendChannel(), msgr_m(), msgr(SocketProtocol::Messenger::Create<Spec>(sock))
+	SocketSendChannel<Spec>::SocketSendChannel(Socket* sock) : SocketChannel(sock), SendChannel(), msgr_m(), msgr(SocketProtocol::Messenger::Create<Spec>(sock))
 	{
 		
 	}
@@ -266,7 +264,7 @@ namespace QUtils { namespace Network {
 	
 	
 	template <class Spec>
-	SocketRecvChannel<Spec>::SocketRecvChannel(Socket* sock) : SocketChannel<Spec>(sock), Channel(), acceptor(), acceptor_cancellation(false), connections(), conns_m()
+	SocketRecvChannel<Spec>::SocketRecvChannel(Socket* sock) : SocketChannel(sock), Channel(), acceptor(), acceptor_cancellation(false), connections(), conns_m()
 	{
 		
 	}

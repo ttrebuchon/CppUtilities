@@ -147,7 +147,7 @@ void Test_SocketChannel()
 	/*auto srvsock_future = std::async(std::launch::async, []() {
 		return SocketChannel<>::Listen(portno);
 	});*/
-	auto srvsock = SocketChannel<>::Listen(portno);
+	auto srvsock = SocketChannel::Listen<>(portno);
 	
 	
 	std::this_thread::yield();
@@ -178,7 +178,7 @@ void Test_SocketChannel()
 	}
 	
 	auto srvsock = srvsock_future.get();*/
-	auto sock = SocketChannel<>::Connect("localhost", portno);
+	auto sock = SocketChannel::Connect<>("localhost", portno);
 	
 	assert_ex(sock != NULL);
 	assert_ex(sock->getSocket() != NULL);
@@ -190,7 +190,7 @@ void Test_SocketChannel()
 	
 	//QUtils::sleep(2000);
 	
-	/*auto sock2 = SocketChannel<>::Connect("localhost", portno);
+	/*auto sock2 = SocketChannel::Connect<>("localhost", portno);
 	assert_ex(sock2->isOpen());*/
 	
 	using namespace TestChannel_NS;

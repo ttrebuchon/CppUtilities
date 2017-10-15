@@ -11,15 +11,11 @@
 
 namespace QUtils { namespace Network {
 	
-	template <class>
-	class SocketRecvChannel;
-	
-	template <class>
-	class SocketSendChannel;
-	
+	template <class> class SocketRecvChannel;
+	template <class> class SocketSendChannel;
 	class Socket;
 	
-	template <class ProtocolSpec = SocketProtocol::DefaultSpec>
+	
 	class SocketChannel
 	{
 		private:
@@ -32,8 +28,10 @@ namespace QUtils { namespace Network {
 		
 		public:
 		
+		template <class ProtocolSpec = SocketProtocol::DefaultSpec>
 		static std::shared_ptr<SocketRecvChannel<ProtocolSpec>> Listen(const unsigned short port, const unsigned int backlog = 10);
 		
+		template <class ProtocolSpec = SocketProtocol::DefaultSpec>
 		static std::shared_ptr<SocketSendChannel<ProtocolSpec>> Connect(const std::string hostname, const unsigned short port);
 		
 		bool isOpen() const
@@ -46,6 +44,8 @@ namespace QUtils { namespace Network {
 			return socket;
 		}
 		
+		
+		
 	};
 	
 	
@@ -53,7 +53,7 @@ namespace QUtils { namespace Network {
 	
 	
 	template <class Spec>
-	class SocketSendChannel : public SocketChannel<Spec>, public SendChannel
+	class SocketSendChannel : public SocketChannel, public SendChannel
 	{
 		protected:
 		std::shared_timed_mutex msgr_m;
@@ -69,7 +69,6 @@ namespace QUtils { namespace Network {
 		void send(std::shared_ptr<Message>) final override;
 		
 		
-		template <class>
 		friend class SocketChannel;
 	};
 	
@@ -85,7 +84,7 @@ namespace QUtils { namespace Network {
 	};
 	
 	template <class Spec>
-	class SocketRecvChannel : public SocketChannel<Spec>, public Channel
+	class SocketRecvChannel : public SocketChannel, public Channel
 	{
 		protected:
 		std::thread acceptor;
@@ -105,7 +104,6 @@ namespace QUtils { namespace Network {
 		virtual ~SocketRecvChannel();
 		
 		
-		template <class>
 		friend class SocketChannel;
 	};
 	
