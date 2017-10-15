@@ -53,7 +53,7 @@ WARNINGS_ERRORS += #-Wfatal-errors
 FLAGS = -I ../
 
 ifeq ($(HAS_BOOST), TRUE)
-FLAGS += -I ../$(BOOST_DIR)
+FLAGS += -I $(BOOST_DIR)
 endif
 
 Deps_D = ../Deps
