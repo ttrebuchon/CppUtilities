@@ -8,6 +8,10 @@
 #include "Lockable.h"
 #include "Task.h"
 
+#include "ThreadPool/Handle.h"
+#include "ThreadPool/Job.h"
+#include "ThreadPool/Pool.h"
+
 namespace QUtils
 {
 namespace Multi
@@ -17,14 +21,15 @@ namespace Multi
 		
 	}
 	
-	class ThreadPool
+	class ThreadPool final
 	{
 		private:
+		ThreadPool* current;
 		
-		
-		protected:
+		static void Init();
 		
 		public:
+		
 	};
 }
 }
