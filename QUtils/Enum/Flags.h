@@ -7,31 +7,29 @@
 \
 \
 \
-inline Type& operator|=(Type& a, const Type b) \
+constexpr inline Type operator|(const Type a, const Type b) \
 { \
-	reinterpret_cast<int&>(a) |= static_cast<int>(b); \
-	return a; \
-} \
-\
-inline Type& operator&=(Type& a, const Type b) \
-{ \
-	reinterpret_cast<int&>(a) &= static_cast<int>(b); \
-	return a; \
+	return static_cast<Type>(static_cast<int>(a) | static_cast<int>(b)); \
 } \
 \
 \
-\
-inline Type operator|(Type a, const Type b) \
+constexpr inline Type operator&(const Type a, const Type b) \
 { \
-	a |= b; \
-	return a; \
+	return static_cast<Type>(static_cast<int>(a) & static_cast<int>(b)); \
 } \
 \
 \
 \
-inline Type operator&(Type a, const Type b) \
+\
+constexpr inline Type& operator|=(Type& a, const Type b) \
 { \
-	a &= b; \
+	a = a | b; \
+	return a; \
+} \
+\
+constexpr inline Type& operator&=(Type& a, const Type b) \
+{ \
+	a = a & b; \
 	return a; \
 }
 
