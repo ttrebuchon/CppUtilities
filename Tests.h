@@ -84,6 +84,7 @@ DEC_TEST(CodeGen_Utility);
 DEC_TEST(ASM);
 DEC_TEST(BoostBased_Serialization);
 DEC_TEST(Graph_DependencyGraph);
+DEC_TEST(Multi_ThreadPool);
 
 
 #undef DEC_TEST
