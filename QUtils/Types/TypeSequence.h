@@ -116,6 +116,24 @@ namespace Types
 		typedef A type;
 	};
 	
+	template <class A, class... B>
+	struct FirstType
+	{
+		typedef A type;
+	};
+	
+	template <class... A>
+	struct FirstTypeOrVoid;
+	
+	template <>
+	struct FirstTypeOrVoid<>
+	{
+		typedef void type;
+	};
+	
+	template <class... A>
+	struct FirstTypeOrVoid : public FirstType<A...> { };
+	
 	
 	template <class T>
 	struct ExtractArgs
