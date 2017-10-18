@@ -35,11 +35,7 @@ namespace Multi
 		};
 		
 		
-		template <>
-		std::tuple<> FutureHelper::call(std::tuple<>&)
-		{
-			return std::tuple<>();
-		}
+		
 	}
 	
 	
