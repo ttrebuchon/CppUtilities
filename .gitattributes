@@ -20,6 +20,9 @@ deps/** linguist-vendored=true
 ./deps/** linguist-vendored=true
 
 Deps/CLIPS/* linguist-vendored=true
+Deps/CLIPS/** linguist-vendored=true
+Deps/CLIPS/*.h linguist-vendored=true
+Deps/CLIPS/*.c linguist-vendored=true
 
 
 *.h linguist-language=C++
