@@ -4,4 +4,20 @@ deps/*  linguist-vendored
 ./Deps/*  linguist-vendored
 ./deps/*  linguist-vendored
 
+
+
+Deps/**/*  linguist-vendored
+deps/**/*  linguist-vendored
+
+./Deps/**/*  linguist-vendored
+./deps/**/*  linguist-vendored
+
+
+Deps/**  linguist-vendored
+deps/**  linguist-vendored
+
+./Deps/**  linguist-vendored
+./deps/**  linguist-vendored
+
+
 *.h linguist-language=C++
