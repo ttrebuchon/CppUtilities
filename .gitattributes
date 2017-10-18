@@ -1,23 +1,25 @@
-Deps/*  linguist-vendored
-deps/*  linguist-vendored
+Deps/* linguist-vendored=true
+deps/* linguist-vendored=true
 
-./Deps/*  linguist-vendored
-./deps/*  linguist-vendored
-
-
-
-Deps/**/*  linguist-vendored
-deps/**/*  linguist-vendored
-
-./Deps/**/*  linguist-vendored
-./deps/**/*  linguist-vendored
+./Deps/* linguist-vendored=true
+./deps/* linguist-vendored=true
 
 
-Deps/**  linguist-vendored
-deps/**  linguist-vendored
 
-./Deps/**  linguist-vendored
-./deps/**  linguist-vendored
+Deps/**/* linguist-vendored=true
+deps/**/* linguist-vendored=true
+
+./Deps/**/* linguist-vendored=true
+./deps/**/* linguist-vendored=true
+
+
+Deps/** linguist-vendored=true
+deps/** linguist-vendored=true
+
+./Deps/** linguist-vendored=true
+./deps/** linguist-vendored=true
+
+Deps/CLIPS/* linguist-vendored=true
 
 
 *.h linguist-language=C++
