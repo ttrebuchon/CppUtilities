@@ -4,7 +4,7 @@ A collection of various tools, side projects, and challenges I've written (and a
 
 This is NOT intended to be professional-level code, and the modules within this repo are primarily useful as proof-of-concepts and code snippets. Additionally, after beginning some of the modules I discovered that some of those exact same ideas were already present in Boost, with full functionality and more polish.
 
-The files under the /Deps folder are open source libraries that I use in one or more of my modules, and although I have modified some of them (For example, modified Castor to fix unused-typedef warnings by replacing them with static assertions), they are NOT my code and each have their own licensing that they are distributed under.
+The files under the /Deps folder are open source libraries that I use in one or more of my modules, and although I have modified some of them (For example, modified Castor to fix unused-typedef warnings by replacing them with static assertions), they are NOT my code and each have their own licensing that they are distributed under. They are present in this repository because my phone (See below) is unable to effectively handle git submodules, and building the libraries using their respective build tools is not always possible.
 
 
 
