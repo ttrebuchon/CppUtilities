@@ -1,1 +1,4 @@
 Deps/*  linguist-vendored
+deps/*  linguist-vendored
+
+*.h linguist-language=C++
