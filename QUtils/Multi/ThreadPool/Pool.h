@@ -2,7 +2,12 @@
 
 #include <functional>
 #include <memory>
+#include <shared_mutex>
+#include <list>
+
 #include <QUtils/Graph/DependencyGraph.h>
+#include "Job.h"
+#include "Handle.h"
 
 namespace QUtils { namespace Multi {
 namespace Pool
@@ -10,29 +15,41 @@ namespace Pool
 	class _Pool final
 	{
 		private:
-		QUtils::Graph::DependencyGraph<std::shared_ptr<Job>> jobs;
 		
+		enum struct State
+		{
+			Created,
+			Running,
+			Closing,
+		};
+		
+		State state;
+		std::shared_timed_mutex control_m;
+		std::promise<void> closePromise;
+		std::shared_future<void> closeFuture;
+		std::condition_variable cond;
+		std::atomic<int> runningCount;
+		QUtils::Graphs::DependencyGraph<std::shared_ptr<Job>> jobs;
+		std::list<std::thread> threads;
 		std::atomic<unsigned int> threadCount;
 		
-		public:
-		_Pool()
-		{
-			
-		}
 		
-		JobHandle addJob(const std::function<void()> func)
-		{
-			std::shared_ptr<Job> ptr;
-			jobs.push_back(ptr = std::make_shared<Job>(func));
-			JobHandle handle(ptr);
-			return handle;
-		}
+		std::mutex job_m;
+		void threadDriver();
+		
+		public:
+		_Pool(const unsigned int threadCount);
+		~_Pool();
+		
+		void init();
+		
+		JobHandle addJob(const std::function<void()> func);
 		
 		void setThreads(const unsigned int);
 		unsigned int getThreads() const;
 		
-		std::future<void> pause();
-		std::future<void> close();
+		std::shared_future<void> pause();
+		std::shared_future<void> close();
 		
 		
 		

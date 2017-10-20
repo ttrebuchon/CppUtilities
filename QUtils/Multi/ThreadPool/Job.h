@@ -1,6 +1,7 @@
 #pragma once
 #include <atomic>
 #include <memory>
+#include <future>
 
 namespace QUtils { namespace Multi {
 namespace Pool

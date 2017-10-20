@@ -24,13 +24,13 @@ namespace Multi
 	}
 	
 	
-	
+	//Static Class
 	class ThreadPool final
 	{
 		private:
 		
 		static std::shared_timed_mutex Current_m;
-		static Pool::_Pool* Current;
+		static std::shared_ptr<Pool::_Pool> Current;
 		static std::atomic<unsigned int> ThreadCount;
 		
 		
@@ -38,13 +38,14 @@ namespace Multi
 		
 		public:
 		
-		static Pool::_Pool* Create(const int threads);
+		static std::shared_ptr<Pool::_Pool> Create(const int threads);
 		
 		static void SetThreads(const unsigned int);
 		static unsigned int GetThreads();
 		static JobHandle AddJob(const std::function<void()> func);
-		static std::future<void> Pause();
-		static std::future<void> Close();
+		//static std::shared_future<void> Start();
+		static std::shared_future<void> Pause();
+		static std::shared_future<void> Close();
 	};
 }
 }
