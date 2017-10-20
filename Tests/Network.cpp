@@ -30,14 +30,16 @@ namespace Network_Test
 			return (dout << "---------------------" << "\n\n\n\n\n" << "---------------------" << "\n");
 		};
 		
+		const std::string redditURL = "utility.ttrebuchon.com/RedditForward.php?.json?limit=1";
+		
 		curlpp::Easy request;
-		request.setOpt<Url>("http://www.reddit.com/.json");
+		request.setOpt<Url>(redditURL);
 		request.setOpt<Timeout>(2); //Set timeout to 2 seconds
 		request.perform();
 		
 		br() << std::flush;
 		
-		dout << "\n\n\n\n" << "\"" << curlpp::options::Url("www.reddit.com/.json") << "\"" << std::endl;
+		dout << "\n\n\n\n" << "\"" << curlpp::options::Url(redditURL) << "\"" << std::endl;
 		
 		br();
 		//dout << request << std::endl;
@@ -51,7 +53,7 @@ namespace Network_Test
 		dout << curlpp::infos::EffectiveUrl::get(request) << std::endl;
 		
 		Easy request2;
-		request2.setOpt<Url>("https://www.reddit.com/.json");
+		request2.setOpt<Url>(redditURL);
 		request2.setOpt(Header(true));
 		request2.setOpt<Timeout>(2); //Set timeout to 2 seconds
 		std::stringstream ss;
