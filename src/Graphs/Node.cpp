@@ -1,6 +1,6 @@
 #include <QUtils/Graph/Node.h>
 
-namespace QUtils { namespace Graph {
+namespace QUtils { namespace Graphs {
 	
 	Node::Node(NodeDetails details) : details(details | Node::Details)
 	{

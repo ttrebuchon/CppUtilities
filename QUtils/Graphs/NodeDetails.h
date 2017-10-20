@@ -2,7 +2,7 @@
 
 #include <QUtils/Enum/Flags.h>
 
-namespace QUtils { namespace Graph {
+namespace QUtils { namespace Graphs {
 	
 	enum struct NodeDetails
 	{

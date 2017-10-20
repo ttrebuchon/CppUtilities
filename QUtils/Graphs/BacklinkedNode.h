@@ -3,7 +3,7 @@
 #include <memory>
 #include "NodeDetails.h"
 
-namespace QUtils { namespace Graph {
+namespace QUtils { namespace Graphs {
 	
 	class Node;
 	

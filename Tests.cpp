@@ -168,7 +168,7 @@ void Testing::run()
 	RUN(Network_ServiceProtocol());
 	RUN(Network_SocketService());
 	RUN(ASM());
-	RUN(Graph_DependencyGraph());
+	RUN(Graphs_DependencyGraph());
 	RUN(Multi_ThreadPool());
 	#ifndef SHORT_TEST
 	RUN(BoostBased_Serialization());

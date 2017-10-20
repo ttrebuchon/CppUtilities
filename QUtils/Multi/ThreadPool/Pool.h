@@ -5,7 +5,7 @@
 #include <shared_mutex>
 #include <list>
 
-#include <QUtils/Graph/DependencyGraph.h>
+#include <QUtils/Graphs/DependencyGraph.h>
 #include "Job.h"
 #include "Handle.h"
 

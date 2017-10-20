@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-namespace QUtils { namespace Graph {
+namespace QUtils { namespace Graphs {
 	
 	class Node
 	{
