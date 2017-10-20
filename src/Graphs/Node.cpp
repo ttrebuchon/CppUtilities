@@ -1,4 +1,4 @@
-#include <QUtils/Graph/Node.h>
+#include <QUtils/Graphs/Node.h>
 
 namespace QUtils { namespace Graphs {
 	

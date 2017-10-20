@@ -72,10 +72,10 @@ Genetic = $(call getobjs,$(SRC)/Genetic/)
 
 Serialization = $(call getobjs,$(SRC)/Serialization/)
 
-Graph = $(call getobjs,$(SRC)/Graph/)
+Graphs = $(call getobjs,$(SRC)/Graphs/)
 
 
-objects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen) $(Genetic) $(Serialization) $(Graph)
+objects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen) $(Genetic) $(Serialization) $(Graphs)
 
 
 #Namespace name, used once (Not important)
