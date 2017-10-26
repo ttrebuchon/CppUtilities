@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Node.h"
+#include <mutex>
 
 
 namespace QUtils { namespace Graphs {
@@ -12,27 +13,28 @@ namespace DependencyGraph_NS {
 	class Node : public Graphs::Node, public Graphs::BackLinked
 	{
 		public:
-		typedef signed long long Priority_t;
+		typedef long double Weight_t;
 		
 		private:
-		Priority_t priority;
+		Weight_t wgt;
 		
 		
 		
 		protected:
+		std::mutex mutex;
 		
 		
 		public:
 		constexpr static NodeDetails Details = Graphs::Node::Details | Graphs::BackLinked::Details;
 		
-		Node(/*const Priority_t priority*/) : Graphs::Node(Details), Graphs::BackLinked()/*, priority(priority)*/
+		Node(/*const Wight_t wgt*/) : Graphs::Node(Details), Graphs::BackLinked()/*, wgt(wgt)*/
 		{
 			
 		}
 		
-		inline Priority_t nodePriority() const
+		inline Weight_t nodeWeight() const
 		{
-			return priority;
+			return wgt;
 		}
 	};
 }

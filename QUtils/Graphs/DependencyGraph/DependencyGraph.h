@@ -28,7 +28,7 @@ namespace QUtils { namespace Graphs {
 		
 		protected:
 		
-		virtual std::shared_ptr<BaseNode> createNode(const Priority_t)
+		virtual std::shared_ptr<BaseNode> createNode(const Weight_t) const override
 		{
 			throw NotImp();
 		}
@@ -45,6 +45,11 @@ namespace QUtils { namespace Graphs {
 			auto ptr = std::make_shared<Node_t>(t);
 			Base::push_back(ptr);
 			return ptr;
+		}
+		
+		std::shared_ptr<Node_t> getNext()
+		{
+			return std::static_pointer_cast<Node_t>(Base::getNext());
 		}
 	};
 	
@@ -67,7 +72,7 @@ namespace QUtils { namespace Graphs {
 		
 		protected:
 		
-		virtual std::shared_ptr<BaseNode> createNode(const Priority_t)
+		virtual std::shared_ptr<BaseNode> createNode(const Weight_t) const override
 		{
 			throw NotImp();
 		}
@@ -83,6 +88,11 @@ namespace QUtils { namespace Graphs {
 			auto ptr = std::make_shared<Node_t>();
 			Base::push_back(ptr);
 			return ptr;
+		}
+		
+		std::shared_ptr<Node_t> getNext()
+		{
+			return std::static_pointer_cast<Node_t>(Base::getNext());
 		}
 		
 	};

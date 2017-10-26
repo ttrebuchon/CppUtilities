@@ -18,7 +18,7 @@ namespace DependencyGraph_NS {
 	class DependencyGraph_Base : public Graphs::Graph
 	{
 		public:
-		typedef typename Node::Priority_t Priority_t;
+		typedef typename Node::Weight_t Weight_t;
 		
 		
 		
@@ -28,22 +28,21 @@ namespace DependencyGraph_NS {
 		typedef std::shared_ptr<Node> Node_ptr;
 		typedef std::shared_ptr<const Node> Node_ptr_c;
 		
+		DependencyGraph_Base();
+		
 		
 		std::deque<std::shared_ptr<Node>> roots;
-		std::shared_timed_mutex roots_m;
-		typedef std::lock_guard<decltype(roots_m)> roots_lock_t;
+		mutable std::shared_timed_mutex roots_m;
+		typedef std::lock_guard<decltype(roots_m)> roots_lock;
+		typedef std::shared_lock<decltype(roots_m)> roots_shared_lock;
 		
-		virtual std::shared_ptr<Node> createNode(const Priority_t)
-		{
-			throw NotImp();
-		}
+		virtual std::shared_ptr<Node> createNode(const Weight_t) const = 0;
 		
 		std::shared_ptr<Node> getNewNode();
 		
-		void push_back(const Node_ptr)
-		{
-			throw NotImp();
-		}
+		void push_back(const Node_ptr);
+		
+		std::shared_ptr<Node> getNext();
 		
 		public:
 		
@@ -51,11 +50,7 @@ namespace DependencyGraph_NS {
 		
 		
 		
-		std::size_t ready() const
-		{
-			return roots.size();
-			throw NotImp();
-		}
+		std::size_t ready() const;
 		
 	};
 	

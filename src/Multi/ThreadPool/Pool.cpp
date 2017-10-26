@@ -179,11 +179,18 @@ namespace Pool
 				
 				if (emergencyExit || state == State::Closing)
 				{
+					//DEBUG
+					std::cerr << "Breaking...\n" << std::flush;
 					break;
 				}
 				
 				//TODO
-				std::cerr << "Breaking...\n" << std::flush;
+				std::cerr << "Didn't break!\n";
+				auto next = jobs.getNext();
+				if (next == NULL)
+				{
+					continue;
+				}
 				
 				
 				
