@@ -48,8 +48,19 @@ namespace QUtils
 		{
 			return;
 		}
-		char* ptr = &str[0];
-		throw NotImp();
+		if (replacement.length() == 1)
+		{
+			String::Replace(str, target, replacement[0]);
+			return;
+		}
+		
+		
+		size_t index = 0;
+		while ((index = str.find(target, index)) != std::string::npos)
+		{
+			str = str.replace(index, 1, replacement);
+			index += replacement.length();
+		}
 	}
 	
 	void String::Replace(std::string& str, const std::string target, const char replacement)
