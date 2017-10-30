@@ -5,7 +5,8 @@
 #include <sstream>
 
 
-	#define QUTILS_CUSTOM_EXCEPTION(name, msg) class name : public std::exception { \
+	#define QUTILS_CUSTOM_EXCEPTION(name, msg)\
+	class name : public std::exception { \
 	protected: \
 	std::string _file; \
 	int _line; \
