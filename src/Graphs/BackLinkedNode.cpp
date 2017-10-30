@@ -1,6 +1,8 @@
 #include <QUtils/Graphs/BackLinkedNode.h>
 #include <QUtils/Graphs/Node.h>
 
+#include <iostream>
+
 namespace QUtils { namespace Graphs {
 	
 	BackLinked::BackLinked(const size_t parentCount) : parents(parentCount)
@@ -19,6 +21,11 @@ namespace QUtils { namespace Graphs {
 	}
 	
 	BackLinked::BackLinked() : BackLinked(0)
+	{
+		
+	}
+	
+	BackLinked::~BackLinked()
 	{
 		
 	}

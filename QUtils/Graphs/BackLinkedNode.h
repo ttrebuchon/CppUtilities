@@ -23,6 +23,8 @@ namespace QUtils { namespace Graphs {
 		BackLinked(NodeDetails&);
 		BackLinked();
 		
+		virtual ~BackLinked();
+		
 		
 		public:
 		constexpr static NodeDetails Details = NodeDetails::BackLinked;
