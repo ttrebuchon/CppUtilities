@@ -2,6 +2,8 @@
 #include <QUtils/Graphs/SimpleEdge.h>
 #include <QUtils/Exception/NotImplemented.h>
 
+#include <iostream>
+
 namespace QUtils { namespace Graphs {
 	
 	Node::Node(NodeDetails details, const size_t childCount) : details(details | Node::Details), children(childCount)
@@ -117,7 +119,6 @@ namespace QUtils { namespace Graphs {
 				
 			}
 		}*/
-		
 		for (auto child : children)
 		{
 			if (child != NULL && nodes.count(child) <= 0)
@@ -205,7 +206,7 @@ namespace QUtils { namespace Graphs {
 		for (const auto child : children)
 		{
 			auto cCopy = child->clone(nodes);
-			copy->push_back_child(cCopy);
+			copy->addChild(cCopy);
 		}
 		
 		
