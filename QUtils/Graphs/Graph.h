@@ -41,6 +41,8 @@ namespace QUtils { namespace Graphs {
 		Node_ptr removeRootAt(const size_t);
 		
 		virtual std::shared_ptr<Graph> clone() const;
+		
+		inline const NodeList_t& getRoots() const { return roots; }
 	};
 	
 	
