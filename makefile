@@ -229,7 +229,8 @@ QUtils/Graphics/Images/JPG_PCH.h.gch: QUtils/Graphics/Images/JPG_PCH.h
 	$(CXX) $(CXXFLAGS) $^ -I .. -o $@ $(DEPS)
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $< $(DEPS)
+	@echo $@ ' < ' $<
+	@$(CXX) $(CXXFLAGS) -c -o $@ $< $(DEPS)
 	
 
 -include $(deps)
