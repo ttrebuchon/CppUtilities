@@ -1,0 +1,13 @@
+
+
+Deps_D := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))/Deps
+
+CLIPS_Dep = $(Deps_D)/CLIPS
+
+Curlpp_Dep = -I $(Deps_D)/curlpp/include -L $(Deps_D)/curlpp
+
+QUTILS_DEPS := -I $(Deps_D)/Castor -I $(BOOST_DIR) -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(CLIPS_Dep)
+
+ifeq ($(HAS_CURL), TRUE)
+QUTILS_DEPS += $(Curlpp_Dep)
+endif

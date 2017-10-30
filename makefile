@@ -131,10 +131,14 @@ FLAGS = -I .
 
 Deps_D = Deps
 
-CLIPS_Dep = $(Deps_D)/CLIPS
-Curlpp_Dep = -I $(Deps_D)/curlpp/include -L $(Deps_D)/curlpp
+#CLIPS_Dep = $(Deps_D)/CLIPS
+#Curlpp_Dep = -I $(Deps_D)/curlpp/include -L $(Deps_D)/curlpp
 
-DEPS = -I $(Deps_D)/Castor -I $(BOOST_DIR) -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(CLIPS_Dep)
+#DEPS = -I $(Deps_D)/Castor -I $(BOOST_DIR) -I $(Deps_D)/sqlite3 -I $(Deps_D) -I $(CLIPS_Dep) -L $(CLIPS_Dep)
+
+-include makefile_deps
+
+DEPS = $(QUTILS_DEPS)
 
 ifeq ($(HAS_CURL), TRUE)
 DEPS += $(Curlpp_Dep)
@@ -154,17 +158,17 @@ ifeq ($(HAS_SDL2), TRUE)
 LINKING += -lSDL2 -ltiff -lSDL2_ttf
 endif
 
-SQLITE3_LIB = $(Deps_D)/sqlite3/libsqlite3.a
+SQLITE3_LIB = Deps/sqlite3/libsqlite3.a
 
-CLIPS_LIB = $(Deps_D)/CLIPS/libclips++.a
+CLIPS_LIB = Deps/CLIPS/libclips++.a
 
 
 ifeq ($(HAS_CURL), TRUE)
-CURLPP_LIB = $(Deps_D)/curlpp/libcurlpp.a
+CURLPP_LIB = Deps/curlpp/libcurlpp.a
 endif
 
 
-INCLUDED_LIBS = $(SQLITE3_LIB) $(Deps_D)/CLIPS/libclips++.a $(CURLPP_LIB)
+INCLUDED_LIBS = $(SQLITE3_LIB) Deps/CLIPS/libclips++.a $(CURLPP_LIB)
 
 TESTS_MAKE_FLAGS = $(MAKEFLAGS) HAS_CURL="$(HAS_CURL)" HAS_BOOST="$(HAS_BOOST)" NEEDS_PTHREAD="$(NEEDS_PTHREAD)" HAS_SDL2="$(HAS_SDL2)" DEBUG="$(DEBUG)" BOOST_DIR="../$(BOOST_DIR)"
 
@@ -182,9 +186,10 @@ all: $(target) UtilityTests.out
 	@cp Tests/UtilityTests.out .
 	@echo SUCCESS
 	@sleep 0.9
+	@echo $(shell pwd)
 
 $(target): $(objects) makefile $(CURLPP_LIB) $(SQLITE3_LIB) $(CLIPS_LIB)
-	echo BUILDING TARGET!
+	@echo BUILDING TARGET!
 	-mkdir objs
 	cd objs ; $(foreach lib,$(INCLUDED_LIBS), ar -xv ../$(lib) ; )
 	$(eval TMP := objs/*.o)
@@ -193,14 +198,14 @@ $(target): $(objects) makefile $(CURLPP_LIB) $(SQLITE3_LIB) $(CLIPS_LIB)
 
 ifeq ($(HAS_CURL), TRUE)
 $(CURLPP_LIB):
-	(cd $(Deps_D)/curlpp ; $(MAKE) $(MAKEFLAGS))
+	(cd Deps/curlpp ; $(MAKE) $(MAKEFLAGS))
 endif
 
 $(SQLITE3_LIB): 
 	(cd Deps/sqlite3 ; $(MAKE) $(MAKEFLAGS))
 
 $(CLIPS_LIB):
-	(cd $(Deps_D)/CLIPS ; $(MAKE) $(MAKEFLAGS))
+	(cd Deps/CLIPS ; $(MAKE) $(MAKEFLAGS))
 
 UtilityTests.out: $(target) makefile Tests/makefile FORCE
 	(cd Tests ; $(MAKE) $(TESTS_MAKE_FLAGS))

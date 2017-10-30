@@ -56,9 +56,9 @@ ifeq ($(HAS_BOOST), TRUE)
 FLAGS += -I $(BOOST_DIR)
 endif
 
-Deps_D = ../Deps
+#Deps_D = ../Deps
 
-CLIPS_Dep = $(Deps_D)/CLIPS
+#CLIPS_Dep = $(Deps_D)/CLIPS
 
 LINKING = -lz -ljpeg -ldl
 
@@ -82,8 +82,10 @@ LINKING += #-L$(BOOST_DIR)/libs/thread -lboost_thread
 LINKING += #-L$(BOOST_DIR)/libs/system -lboost_system
 endif
 
+-include ../makefile_deps
 
-INCLUDES = -I $(Deps_D)/curlpp/include -I $(Deps_D)
+#INCLUDES = -I $(Deps_D)/curlpp/include -I $(Deps_D)
+INCLUDES += $(QUTILS_DEPS)
 
 
 
@@ -97,7 +99,6 @@ target = UtilityTests.out
 
 $(target): $(objects) makefile ../Output/SrcTest.o ../lib$(LIB).a
 	$(CXX) -o $(target) $(CXXFLAGS) $(objects) -L../ -l$(LIB) $(PREPROC_FLAGS) $(LINKING)
-	
 
 clean:
 	-@rm -f $(objects)
