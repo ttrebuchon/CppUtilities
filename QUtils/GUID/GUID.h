@@ -11,11 +11,13 @@
 
 #include <string>
 
+
+#include <json/json.hpp>
+
 namespace QUtils
 {
 namespace GUID_NS
 {
-	
 	class GUID
 	{
 		private:
@@ -23,6 +25,9 @@ namespace GUID_NS
 		boost::uuids::uuid uuid;
 		
 		GUID(const boost::uuids::uuid);
+		
+		#else
+		char data[16];
 		#endif
 		public:
 		GUID();
@@ -33,6 +38,8 @@ namespace GUID_NS
 		bool is_nil() const;
 		
 		static GUID FromString(const std::string);
+		
+		GUID& operator=(const GUID&);
 		
 		
 		friend std::ostream& operator<<(std::ostream&, GUID const&);
@@ -61,6 +68,11 @@ namespace GUID_NS
 	bool operator>(GUID const&, GUID const&);
 	bool operator<=(GUID const&, GUID const&);
 	bool operator>=(GUID const&, GUID const&);
+	
+	void to_json(nlohmann::json&, const GUID&);
+	void from_json(const nlohmann::json&, GUID&);
+	
+	static_assert(sizeof(GUID) == 16, "");
 	
 }
 using GUID = GUID_NS::GUID;

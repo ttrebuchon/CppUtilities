@@ -80,5 +80,35 @@ bool Test_GUID()
 		dout << 2*count << " GUIDs Tested.\n";
 	}
 	
+	{
+		QUtils::GUID id1 = QUtils::GUID::Create();
+		std::string str1 = to_string(id1);
+		QUtils::GUID id1_1;
+		id1_1 = QUtils::GUID::FromString(str1);
+		assert_ex(id1 == id1_1);
+		
+		std::map<QUtils::GUID, std::string> ids;
+		
+		
+		for (int i = 0; i < 10000; ++i)
+		{
+			QUtils::GUID id;
+			id = QUtils::GUID::Create();
+			std::string str = to_string(id);
+			QUtils::GUID id_1 = QUtils::GUID::FromString(str);
+			assert_ex(id == id_1);
+			
+			ids[id] = str;
+		}
+		
+		for (auto pair : ids)
+		{
+			assert_ex(ids.at(QUtils::GUID::FromString(pair.second)) == pair.second);
+			assert_ex(ids.at(pair.first) == pair.second);
+		}
+		
+		dout << "GUID Serialization Tested.\n";
+	}
+	
 	return true;
 }

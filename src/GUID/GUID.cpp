@@ -107,6 +107,15 @@ namespace GUID_NS
 	}
 	
 	
+	GUID& GUID::operator=(const GUID& value)
+	{
+	#ifdef QUTILS_HAS_BOOST
+		this->uuid = value.uuid;
+	#endif
+		return *this;
+	}
+	
+	
 	
 	
 	
@@ -198,6 +207,25 @@ namespace GUID_NS
 	{
 	#ifdef QUTILS_HAS_BOOST
 		return lhs.uuid >= rhs.uuid;
+	#else
+		throw FeatureNotAvailableException().Msg(NOT_AVAIL_MSG);
+	#endif
+	}
+	
+	
+	void to_json(nlohmann::json& j, const GUID& guid)
+	{
+	#ifdef QUTILS_HAS_BOOST
+		j = to_string(guid);
+	#else
+		throw FeatureNotAvailableException().Msg(NOT_AVAIL_MSG);
+	#endif
+	}
+	
+	void from_json(const nlohmann::json& j, GUID& guid)
+	{
+	#ifdef QUTILS_HAS_BOOST
+		guid = GUID::FromString(j.get<std::string>());
 	#else
 		throw FeatureNotAvailableException().Msg(NOT_AVAIL_MSG);
 	#endif
