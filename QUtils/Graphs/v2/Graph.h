@@ -9,11 +9,11 @@ namespace QUtils { namespace Graphs {
 	
 	namespace Internal {
 		
-	template <class T, template <class...> class Node_t>
+	template <class T, class Wgt_t, template <class...> class Node_t>
 	class Graph_Base
 	{
 		private:
-		typedef std::shared_ptr<Node_t<T>> Node_ptr;
+		typedef std::shared_ptr<Node_t<T, Wgt_t>> Node_ptr;
 		
 		protected:
 		std::set<Node_ptr> _nodes;
@@ -30,8 +30,13 @@ namespace QUtils { namespace Graphs {
 		{
 			if (n)
 			{
-				_roots.push_back(n);
+				if (std::find(_roots.begin(), _roots.end(), n) == _roots.end())
+				{
+					_roots.push_back(n);
+				}
 				_nodes.insert(n);
+				auto descendants = n->getDescendants();
+				_nodes.insert(descendants.begin(), descendants.end());
 			}
 			return n;
 		}
@@ -43,6 +48,10 @@ namespace QUtils { namespace Graphs {
 			_nodes.erase(n);
 		}
 		
+		inline Node_ptr createRoot()
+		{
+			return addRoot(std::make_shared<Node_t<T, Wgt_t>>());
+		}
 		
 		
 		auto begin() -> decltype(nodes.begin())
@@ -64,56 +73,84 @@ namespace QUtils { namespace Graphs {
 		{
 			return nodes.end();
 		}
+		
+		template <class F>
+		std::set<Node_ptr> where(const F f) const
+		{
+			std::set<Node_ptr> res;
+			auto it = nodes.begin();
+			while ((it = std::find_if(it, nodes.end(), f)) != nodes.end())
+			{
+				res.insert(*it);
+				++it;
+			}
+			return res;
+		}
+		
+		void updateNodes()
+		{
+			for (auto root : roots)
+			{
+				root->getDescendants(_nodes);
+			}
+		}
 	};
 	
 	}
 	
-	template <class T = void, template <class...> class Node_t = Node>
-	class Graph : public Internal::Graph_Base<T, Node_t>
+	template <class T = void, class Wgt_t = void, template <class...> class _Node_t = Node>
+	class Graph : public Internal::Graph_Base<T, Wgt_t, _Node_t>
 	{
-		private:
-		typedef std::shared_ptr<Node_t<T>> Node_ptr;
+		public:
+		typedef _Node_t<T, Wgt_t> Node_t;
 		
-		typedef Internal::Graph_Base<T, Node_t> Base;
+		private:
+		typedef std::shared_ptr<Node_t> Node_ptr;
+		
+		typedef Internal::Graph_Base<T, Wgt_t, _Node_t> Base;
 		
 		protected:
 		
 		public:
 		
 		using Base::addRoot;
+		using Base::createRoot;
 		
 		Graph() : Base()
 		{}
 		
-		inline Node_ptr addRoot(const T t)
+		inline Node_ptr createRoot(const T t)
 		{
-			return Base::addRoot(std::make_shared<Node_t<T>>(t));
+			return Base::addRoot(std::make_shared<Node_t>(t));
 		}
+		
+		
+		
+		
 		
 	};
 	
 	
-	template <template <class...> class Node_t>
-	class Graph<void, Node_t> : public Internal::Graph_Base<void, Node_t>
+	template <class Wgt_t, template <class...> class _Node_t>
+	class Graph<void, Wgt_t, _Node_t> : public Internal::Graph_Base<void, Wgt_t, _Node_t>
 	{
-		private:
-		typedef std::shared_ptr<Node_t<void>> Node_ptr;
+		public:
+		typedef _Node_t<void, Wgt_t> Node_t;
 		
-		typedef Internal::Graph_Base<void, Node_t> Base;
+		private:
+		typedef std::shared_ptr<Node_t> Node_ptr;
+		
+		typedef Internal::Graph_Base<void, Wgt_t, _Node_t> Base;
 		
 		protected:
 		
 		public:
 		
 		using Base::addRoot;
+		using Base::createRoot;
 		
 		Graph() : Base()
 		{}
-		
-		inline Node_ptr addRoot()
-		{
-			return Base::addRoot(std::make_shared<Node_t<void>>());
-		}
 	};
 	
 	

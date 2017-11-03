@@ -24,12 +24,17 @@ namespace QUtils { namespace Graphs {
 		EdgeCollection<Node<T, Wgt_t>, Wgt_t> in;
 		EdgeCollection<Node<T, Wgt_t>, Wgt_t> out;
 		
-		Node(const T& t) : value(t)
+		Node(const T& t) : value(t), in(), out()
+		{}
+		
+		Node() : value(), in(), out()
 		{}
 		
 		
 		static inline Node_sptr Create(const T& t)
 		{ return Node_sptr(new this_t(t)); }
+		static inline Node_sptr Create()
+		{ return Node_sptr(new this_t()); }
 		
 		std::set<const Node_sptr> getDescendants() const;
 		std::set<Node_sptr> getDescendants();
