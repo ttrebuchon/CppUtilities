@@ -163,14 +163,14 @@ void Testing::run()
 	dout << "Slept!\n";
 	}
 	//#endif
-	RUN(Network());
+	RUN(ASM());
+	RUN(Graphs_DependencyGraph());
+	RUN(Graphs());
+	#ifndef SHORT_TEST
+	RUN(Multi_ThreadPool());
 	RUN(Network_Sockets());
 	RUN(Network_ServiceProtocol());
 	RUN(Network_SocketService());
-	RUN(ASM());
-	RUN(Graphs_DependencyGraph());
-	RUN(Multi_ThreadPool());
-	#ifndef SHORT_TEST
 	RUN(BoostBased_Serialization());
 	RUN(CodeGen_Utility());
 	RUN(SDL_Drawing());
