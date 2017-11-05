@@ -183,8 +183,12 @@ DEF_TEST(Graphs)
 	
 	{
 		Graph<> g;
+		std::vector<typename Node<>::wptr_t> path;
+		typename Node<>::wptr_t wend;
+		{
 		auto root = g.createRoot();
 		auto end = Node<>::Create();
+		wend = end;
 		auto mid1 = Node<>::Create();
 		auto mid1_2 = Node<>::Create();
 		auto mid2 = Node<>::Create();
@@ -207,6 +211,21 @@ DEF_TEST(Graphs)
 		assert_ex(djikstra[1] == mid2);
 		assert_ex(djikstra[2] == mid12);
 		assert_ex(djikstra[3] == end);
+		
+		path.resize(djikstra.size());
+		std::transform(djikstra.begin(), djikstra.end(), path.begin(), [](auto ptr)
+		{
+			return ptr;
+		});
+		
+		g.updateNodes();
+		}
+		auto path2 = g.djikstraPath(g.roots[0], wend.lock());
+		assert_ex(path2.size() == path.size());
+		for (int i = 0; i < path.size(); ++i)
+		{
+			assert_ex(path[i].lock() == path2[i]);
+		}
 	}
 	
 	return true;

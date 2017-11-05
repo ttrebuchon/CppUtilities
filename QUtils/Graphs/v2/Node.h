@@ -20,6 +20,9 @@ namespace QUtils { namespace Graphs {
 		
 		
 		public:
+		typedef Node_sptr ptr_t;
+		typedef Node_ptr wptr_t;
+		
 		T value;
 		EdgeCollection<Node<T, Wgt_t>, Wgt_t> in;
 		EdgeCollection<Node<T, Wgt_t>, Wgt_t> out;
@@ -54,6 +57,9 @@ namespace QUtils { namespace Graphs {
 		protected:
 		
 		public:
+		typedef Node_sptr ptr_t;
+		typedef Node_ptr wptr_t;
+		
 		EdgeCollection<Node<void, Wgt_t>, Wgt_t> in;
 		EdgeCollection<Node<void, Wgt_t>, Wgt_t> out;
 		
