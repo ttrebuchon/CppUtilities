@@ -174,6 +174,32 @@ DEF_TEST(Graphs)
 		
 		dout << "Value: " << end->value.second << "\n";
 		
+		
+		auto djikstra = nn.djikstraPath(root, end);
+		assert_ex(djikstra.size() == 3);
+		assert_ex(djikstra[0] == root);
+		assert_ex(djikstra[2] == end);
+	}
+	
+	{
+		Graph<> g;
+		auto root = g.createRoot();
+		auto end = Node<>::Create();
+		auto mid1 = Node<>::Create();
+		auto mid1_2 = Node<>::Create();
+		auto mid2 = Node<>::Create();
+		
+		root->out.push_back(mid1);
+		root->out.push_back(mid2);
+		
+		mid1->out.push_back(mid1_2);
+		
+		mid1_2->out.push_back(end);
+		mid2->out.push_back(end);
+		
+		
+		auto djikstra = g.djikstraPath(root, end);
+		assert_ex(djikstra.size() == 3);
 	}
 	
 	return true;
