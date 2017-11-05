@@ -21,7 +21,22 @@ namespace QUtils { namespace Graphs {
 			std::map<Node_t, Node_t> paths;
 			Node_t start, end;
 			
-			std::priority_queue<std::tuple<Node_t, Node_t, Cost_t>> q;
+			
+			typedef std::tuple<Node_t, Node_t, Cost_t> QValue_t;
+			
+			struct Compare
+			{
+				std::greater<Cost_t> obj;
+				bool operator()(QValue_t v1, QValue_t v2)
+				{
+					return obj(std::get<2>(v1), std::get<2>(v2));
+				}
+			};
+			
+			
+			
+			
+			std::priority_queue<QValue_t, std::vector<QValue_t>, Compare> q;
 			
 			Type(Node_t start, Node_t end) : costs(), paths(), start(start), end(end), q()
 			{
@@ -38,7 +53,6 @@ namespace QUtils { namespace Graphs {
 						q.emplace(start, c, CostFunc(start, c));
 					}
 				}
-				
 				
 				while (!q.empty())
 				{
