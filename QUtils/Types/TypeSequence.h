@@ -221,5 +221,35 @@ namespace Types
 	{
 		typedef std::tuple<B...> type;
 	};
+	
+	
+	
+	
+	
+	namespace Helpers
+	{
+		template <class Tup, template <class> class X, class... Y>
+		struct ForEachType;
+		
+		
+		template <class Tup, template <class> class X, class T, class... Y>
+		struct ForEachType<Tup, X, T, Y...>
+		{
+			typedef typename ForEachType<typename Types::Concat<Tup, X<T>>::type, X, Y...>::type type;
+		};
+		
+		template <class Tup, template <class> class X>
+		struct ForEachType<Tup, X>
+		{
+			typedef Tup type;
+		};
+	}
+	
+	
+	template <template <class> class X, class T, class... Y>
+	struct ForEachType
+	{
+		typedef typename Helpers::ForEachType<std::tuple<X<T>>, X, Y...>::type type;
+	};
 }
 }
