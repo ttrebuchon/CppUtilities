@@ -172,7 +172,7 @@ DEF_TEST(Graphs)
 		
 		end->value.first = act(end->value.second);
 		
-		dout << "Value: " << end->value.second << "\n";
+		dout << "Value: " << end->value.first << "\n";
 		
 		
 		auto djikstra = nn.djikstraPath(root, end);
@@ -188,18 +188,25 @@ DEF_TEST(Graphs)
 		auto mid1 = Node<>::Create();
 		auto mid1_2 = Node<>::Create();
 		auto mid2 = Node<>::Create();
+		auto mid12 = Node<>::Create();
 		
 		root->out.push_back(mid1);
 		root->out.push_back(mid2);
 		
 		mid1->out.push_back(mid1_2);
 		
-		mid1_2->out.push_back(end);
-		mid2->out.push_back(end);
+		mid1_2->out.push_back(mid12);
+		mid2->out.push_back(mid12);
+		
+		mid12->out.push_back(end);
 		
 		
 		auto djikstra = g.djikstraPath(root, end);
-		assert_ex(djikstra.size() == 3);
+		assert_ex(djikstra.size() == 4);
+		assert_ex(djikstra[0] == root);
+		assert_ex(djikstra[1] == mid2);
+		assert_ex(djikstra[2] == mid12);
+		assert_ex(djikstra[3] == end);
 	}
 	
 	return true;
