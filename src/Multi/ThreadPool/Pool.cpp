@@ -42,7 +42,7 @@ namespace Pool
 		
 		
 		
-		std::cout << "Deleting _Pool...\n";
+		
 		
 		for (auto& thread : threads)
 		{
