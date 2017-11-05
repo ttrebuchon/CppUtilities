@@ -94,6 +94,8 @@ namespace QUtils { namespace Graphs {
 				root->getDescendants(_nodes);
 			}
 		}
+		
+		std::vector<Node_ptr> djikstraPath(Node_ptr, Node_ptr) const;
 	};
 	
 	}
@@ -124,10 +126,6 @@ namespace QUtils { namespace Graphs {
 			return Base::addRoot(std::make_shared<Node_t>(t));
 		}
 		
-		
-		
-		
-		
 	};
 	
 	
@@ -156,3 +154,5 @@ namespace QUtils { namespace Graphs {
 	
 }
 }
+
+#include "Graph.hpp"
