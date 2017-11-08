@@ -4,11 +4,25 @@
 #include <vector>
 #include <memory>
 #include <set>
+#include <map>
 
 namespace QUtils { namespace Graphs {
 	
 	namespace Internal {
-		
+	
+	
+	template <class T>
+	struct IntIfVoid
+	{
+		typedef T type;
+	};
+	
+	template <>
+	struct IntIfVoid<void>
+	{
+		typedef int type;
+	};
+	
 	template <class T, class Wgt_t, template <class...> class Node_t>
 	class Graph_Base
 	{
@@ -18,6 +32,27 @@ namespace QUtils { namespace Graphs {
 		protected:
 		std::set<Node_ptr> _nodes;
 		std::vector<Node_ptr> _roots;
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		void subset(Graph_Base<T, Wgt_t, Node_t>& g, std::vector<Node_ptr>& vec) const
+		{
+			for (auto root : roots)
+			{
+				if (std::find(vec.begin(), vec.end(), root) != vec.end())
+				{
+					g._roots.push_back(root);
+				}
+			}
+			
+			
+		}
 		
 		public:
 		const std::vector<Node_ptr>& roots;
@@ -95,7 +130,28 @@ namespace QUtils { namespace Graphs {
 			}
 		}
 		
-		std::vector<Node_ptr> djikstraPath(Node_ptr, Node_ptr) const;
+		inline void addNode(Node_ptr n)
+		{
+			if (n)
+			{
+				_nodes.insert(n);
+			}
+		}
+		
+		private:
+		
+		typedef typename IntIfVoid<Wgt_t>::type Cost_t;
+		
+		public:
+		
+		
+		std::vector<Node_ptr> djikstraPath(Node_ptr, Node_ptr, Cost_t* cost = NULL) const;
+		
+		std::map<Node_ptr, Node_ptr> djikstraPaths(Node_ptr) const;
+		
+		std::map<Node_ptr, Node_ptr> djikstraPaths(Node_ptr, std::map<Node_ptr, Cost_t>& costs) const;
+		
+		
 	};
 	
 	}
@@ -126,6 +182,15 @@ namespace QUtils { namespace Graphs {
 			return Base::addRoot(std::make_shared<Node_t>(t));
 		}
 		
+		template <class It>
+		Graph subset(It start, It end) const
+		{
+			Graph g;
+			std::vector<Node_ptr> vec(start, end);
+			Base::subset(g, vec);
+			return g;
+		}
+		
 	};
 	
 	
@@ -149,6 +214,15 @@ namespace QUtils { namespace Graphs {
 		
 		Graph() : Base()
 		{}
+		
+		template <class It>
+		Graph subset(It start, It end) const
+		{
+			Graph g;
+			std::vector<Node_ptr> vec(start, end);
+			Base::subset(g, vec);
+			return g;
+		}
 	};
 	
 	

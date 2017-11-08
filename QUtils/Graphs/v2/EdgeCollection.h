@@ -26,9 +26,18 @@ namespace QUtils { namespace Graphs {
 		
 		typedef std::weak_ptr<Node_t> Node_ptr;
 		protected:
+		Node_ptr owner;
 		
 		public:
+		EdgeCollection(Node_ptr owner) : std::vector<Edge_t>(), owner(owner)
+		{
+			
+		}
 		
+		EdgeCollection() : EdgeCollection(Node_ptr())
+		{
+			
+		}
 		
 		virtual Node_ptr& node(const size_t index)
 		{
@@ -44,12 +53,19 @@ namespace QUtils { namespace Graphs {
 		{
 			std::vector<Edge_t>::push_back(Edge_t());
 			this->back().out = node;
+			this->back().in = owner;
 		}
 		
 		void push_back(nullptr_t)
 		{
 			std::vector<Edge_t>::push_back(Edge_t());
 			this->back().out = Node_ptr();
+			this->back().in = owner;
+		}
+		
+		void setOwner(Node_ptr owner)
+		{
+			this->owner = owner;
 		}
 	};
 }

@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <cmath>
+#include <functional>
+#include <map>
 #include <QUtils/Graphs/v2/Graph.h>
 
 using namespace QUtils::Graphs;
@@ -205,7 +207,9 @@ DEF_TEST(Graphs)
 		mid12->out.push_back(end);
 		
 		
-		auto djikstra = g.djikstraPath(root, end);
+		int cost;
+		auto djikstra = g.djikstraPath(root, end, &cost);
+		assert_ex(cost == 3);
 		assert_ex(djikstra.size() == 4);
 		assert_ex(djikstra[0] == root);
 		assert_ex(djikstra[1] == mid2);
@@ -226,6 +230,132 @@ DEF_TEST(Graphs)
 		{
 			assert_ex(path[i].lock() == path2[i]);
 		}
+	}
+	
+	
+	{
+		const int count = 100;
+		const int rCount = count*count/10;
+		Graph<> g;
+		std::vector<typename Node<>::ptr_t> nodes(count);
+		
+		for (int i = 0; i < count; ++i)
+		{
+			nodes[i] = Node<>::Create();
+			
+		}
+		for (int i = 1; i < count; ++i)
+		{
+			nodes[i-1]->out.push_back(nodes[i]);
+			
+		}
+		g.addRoot(nodes[0]);
+		g.updateNodes();
+		assert_ex(g.nodes.size() == count);
+		
+		
+		
+		for (auto i = 0; i < rCount; ++i)
+		{
+			int x = rand() % count;
+			int y = rand() % count;
+			if (x == y)
+			{
+				--i;
+				continue;
+			}
+			
+			nodes[x]->out.push_back(nodes[y]);
+		}
+		
+		int cost;
+		auto path = g.djikstraPath(nodes[0], nodes[count-1], &cost);
+		dout << "Cost: " << cost << "\n";
+		
+		
+		std::function<int(typename Node<>::ptr_t, std::map<typename Node<>::ptr_t, int>&)> checker;
+		
+		checker = [&](auto ptr, auto& checked) -> int
+		{
+			checked.insert({ptr, -1});
+			int best = INT_MAX;
+			
+			for (auto& childEdge : ptr->out)
+			{
+				auto child = childEdge.out.lock();
+				
+				if (child == nodes[count-1])
+				{
+					checked[child] = 0;
+					checked[ptr] = 1;
+					return 1;
+				}
+				
+				if (checked.count(child) <= 0)
+				{
+					auto val = checker(child, checked);
+					if (val+1 < best && val >= 0)
+					{
+						best = val+1;
+					}
+				}
+				else
+				{
+					if (checked[child]+1 < best && checked[child] >= 0)
+					{
+						best = checked[child]+1;
+					}
+				}
+			}
+			
+			
+			if (best == INT_MAX)
+			{
+				best = -1;
+			}
+			
+			checked[ptr] = best;
+			
+			return best;
+		};
+		
+		std::map<typename Node<>::ptr_t, int> nodeMap;
+		
+		int realCost = checker(nodes[0], nodeMap);
+		dout << "Real Cost: " << realCost << "\n";
+		assert_ex(realCost == cost);
+		
+		typedef typename Node<>::ptr_t Node_ptr;
+		
+		std::map<Node_ptr, std::map<Node_ptr, Node_ptr>> paths;
+		
+		for (auto node : g.nodes)
+		{
+			paths[node] = g.djikstraPaths(node);
+			assert_ex(paths[node].size() == g.nodes.size());
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		std::set<typename Node<>::ptr_t> subsetNodes;
+		
+		subsetNodes.insert(nodes[0]);
+		subsetNodes.insert(nodes[count-1]);
+		while (subsetNodes.size() < count/10)
+		{
+			auto i = rand() % count;
+			subsetNodes.insert(nodes[i]);
+		}
+		
+		
+		auto subset = g.subset(subsetNodes.begin(), subsetNodes.end());
 	}
 	
 	return true;

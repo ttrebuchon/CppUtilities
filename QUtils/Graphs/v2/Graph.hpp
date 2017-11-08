@@ -14,7 +14,7 @@ namespace QUtils { namespace Graphs {
 	template <class Node_t, class Cost_t, class Children_t>
 	struct DjikstraPath_t
 	{
-		template <Cost_t(*CostFunc)(Node_t, Node_t), Children_t(*ChildFunc)(Node_t)>
+		template <Cost_t(*CostFunc)(const Node_t&, const Node_t&), Children_t(*ChildFunc)(const Node_t&)>
 		struct Type
 		{
 			std::map<Node_t, Cost_t> costs;
@@ -27,7 +27,7 @@ namespace QUtils { namespace Graphs {
 			struct Compare
 			{
 				std::greater<Cost_t> obj;
-				bool operator()(QValue_t v1, QValue_t v2)
+				bool operator()(const QValue_t& v1, const QValue_t& v2)
 				{
 					return obj(std::get<2>(v1), std::get<2>(v2));
 				}
@@ -71,13 +71,14 @@ namespace QUtils { namespace Graphs {
 						break;
 					}
 					
-					for (auto c : ChildFunc(std::get<1>(n)))
+					auto childs = ChildFunc(std::get<1>(n));
+					
+					for (const auto& c : childs)
 					{
-						if (Types::IsNull(c))
+						if (!Types::IsNull(c))
 						{
-							continue;
+							q.emplace(std::get<1>(n), c, cost + CostFunc(std::get<1>(n), c));
 						}
-						q.emplace(std::get<1>(n), c, cost + CostFunc(std::get<1>(n), c));
 					}
 				}
 				
@@ -88,23 +89,13 @@ namespace QUtils { namespace Graphs {
 	};
 		
 		
-		template <class T>
-		struct IntIfVoid
-		{
-			typedef T type;
-		};
 		
-		template <>
-		struct IntIfVoid<void>
-		{
-			typedef int type;
-		};
 		
 	
 	template <class Node_t, class Wgt_t>
 	struct CostGetter
 	{
-		static Wgt_t call(Node_t n1, Node_t n2)
+		static Wgt_t call(const Node_t& n1, const Node_t& n2)
 		{
 			for (auto& e : n1->out)
 			{
@@ -121,14 +112,14 @@ namespace QUtils { namespace Graphs {
 	template <class Node_t>
 	struct CostGetter<Node_t, void>
 	{
-		static int call(Node_t, Node_t)
+		static int call(const Node_t&, const Node_t&)
 		{
 			return 1;
 		}
 	};
 	
 	template <class Node_t>
-	std::vector<Node_t> getChildren(Node_t parent)
+	std::vector<Node_t> getChildren(const Node_t& parent)
 	{
 		std::vector<Node_t> children(parent->out.size());
 		std::transform(parent->out.begin(), parent->out.end(), children.begin(), [](auto& edge)
@@ -139,9 +130,8 @@ namespace QUtils { namespace Graphs {
 	}
 	
 	template <class T, class Wgt_t, template <class...> class Node_t>
-	std::vector<std::shared_ptr<Node_t<T, Wgt_t>>> Graph_Base<T, Wgt_t, Node_t>::djikstraPath(Node_ptr start, Node_ptr end) const
+	std::vector<std::shared_ptr<Node_t<T, Wgt_t>>> Graph_Base<T, Wgt_t, Node_t>::djikstraPath(Node_ptr start, Node_ptr end, Cost_t* costPtr) const
 	{
-		typedef typename IntIfVoid<Wgt_t>::type Cost_t;
 		typedef DjikstraPath_t<Node_ptr, Cost_t, std::vector<Node_ptr>> OuterDjikstra;
 		typedef typename OuterDjikstra::template Type<CostGetter<Node_ptr, Wgt_t>::call, getChildren> Djikstra;
 		
@@ -151,7 +141,10 @@ namespace QUtils { namespace Graphs {
 		Djikstra pather(start, end);
 		pather.go();
 		
-		Cost_t cost = pather.costs.at(end);
+		if (costPtr != NULL)
+		{
+			*costPtr = pather.costs.at(end);
+		}
 		std::vector<Node_ptr> path;
 		std::list<Node_ptr> list;
 		Node_ptr tmp = end;
@@ -168,6 +161,49 @@ namespace QUtils { namespace Graphs {
 	
 	
 	
+	
+	
+	
+	template <class T, class Wgt_t, template <class...> class Node_t>
+	std::map<std::shared_ptr<Node_t<T, Wgt_t>>, std::shared_ptr<Node_t<T, Wgt_t>>> Graph_Base<T, Wgt_t, Node_t>::djikstraPaths(Node_ptr start) const
+	{
+		typedef DjikstraPath_t<Node_ptr, Cost_t, std::vector<Node_ptr>> OuterDjikstra;
+		typedef typename OuterDjikstra::template Type<CostGetter<Node_ptr, Wgt_t>::call, getChildren> Djikstra;
+		
+		
+		Djikstra pather(start, NULL);
+		pather.go();
+		
+		return pather.paths;
 	}
+	
+	
+	template <class T, class Wgt_t, template <class...> class Node_t>
+	std::map<std::shared_ptr<Node_t<T, Wgt_t>>, std::shared_ptr<Node_t<T, Wgt_t>>> Graph_Base<T, Wgt_t, Node_t>::djikstraPaths(Node_ptr start, std::map<Node_ptr, Cost_t>& costs) const
+	{
+		typedef DjikstraPath_t<Node_ptr, Cost_t, std::vector<Node_ptr>> OuterDjikstra;
+		typedef typename OuterDjikstra::template Type<CostGetter<Node_ptr, Wgt_t>::call, getChildren> Djikstra;
+		
+		
+		Djikstra pather(start, NULL);
+		pather.go();
+		
+		costs = pather.costs;
+		return pather.paths;
+	}
+	
+	
+	
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
 }

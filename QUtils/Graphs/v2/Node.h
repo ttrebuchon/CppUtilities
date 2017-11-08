@@ -35,9 +35,17 @@ namespace QUtils { namespace Graphs {
 		
 		
 		static inline Node_sptr Create(const T& t)
-		{ return Node_sptr(new this_t(t)); }
+		{
+			auto ptr = Node_sptr(new this_t(t));
+			ptr->out.setOwner(ptr);
+			return ptr;
+		}
 		static inline Node_sptr Create()
-		{ return Node_sptr(new this_t()); }
+		{
+			auto ptr = Node_sptr(new this_t());
+			ptr->out.setOwner(ptr);
+			return ptr;
+		}
 		
 		std::set<const Node_sptr> getDescendants() const;
 		std::set<Node_sptr> getDescendants();
@@ -68,7 +76,11 @@ namespace QUtils { namespace Graphs {
 		
 		
 		static inline Node_sptr Create()
-		{ return Node_sptr(new this_t()); }
+		{
+			auto ptr = Node_sptr(new this_t());
+			ptr->out.setOwner(ptr);
+			return ptr;
+		}
 		
 		std::set<const Node_sptr> getDescendants() const;
 		std::set<Node_sptr> getDescendants();
