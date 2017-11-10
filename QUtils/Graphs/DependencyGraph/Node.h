@@ -10,7 +10,7 @@ namespace DependencyGraph_NS {
 	
 	
 	
-	class Node : public Graphs::Node, public Graphs::BackLinked
+	/*class Node : public Graphs::Node<
 	{
 		public:
 		typedef long double Weight_t;
@@ -27,7 +27,7 @@ namespace DependencyGraph_NS {
 		public:
 		constexpr static NodeDetails Details = Graphs::Node::Details | Graphs::BackLinked::Details;
 		
-		Node(/*const Wight_t wgt*/) : Graphs::Node(Details), Graphs::BackLinked()/*, wgt(wgt)*/
+		Node() : Graphs::Node(Details), Graphs::BackLinked()
 		{
 			
 		}
@@ -36,7 +36,10 @@ namespace DependencyGraph_NS {
 		{
 			return wgt;
 		}
-	};
+	};*/
+	
+	template <class T>
+	using Node = Graphs::Node<T, long double>;
 }
 }
 }

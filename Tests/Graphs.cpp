@@ -1,4 +1,4 @@
-#include <QUtils/Graphs/v2/Graph.h>
+#include <QUtils/Graphs/Graph.h>
 #include "Tests_Helpers.h"
 
 
