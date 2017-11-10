@@ -40,19 +40,7 @@ namespace QUtils { namespace Graphs {
 		
 		
 		
-		
-		void subset(Graph_Base<T, Wgt_t, Node_t>& g, std::vector<Node_ptr>& vec) const
-		{
-			for (auto root : roots)
-			{
-				if (std::find(vec.begin(), vec.end(), root) != vec.end())
-				{
-					g._roots.push_back(root);
-				}
-			}
-			
-			
-		}
+		void subset(Graph_Base<T, Wgt_t, Node_t>& g, std::vector<Node_ptr>& vec) const;
 		
 		public:
 		const std::vector<Node_ptr>& roots;
@@ -126,6 +114,7 @@ namespace QUtils { namespace Graphs {
 		{
 			for (auto root : roots)
 			{
+				_nodes.insert(root);
 				root->getDescendants(_nodes);
 			}
 		}
@@ -150,6 +139,26 @@ namespace QUtils { namespace Graphs {
 		std::map<Node_ptr, Node_ptr> djikstraPaths(Node_ptr) const;
 		
 		std::map<Node_ptr, Node_ptr> djikstraPaths(Node_ptr, std::map<Node_ptr, Cost_t>& costs) const;
+		
+		template <class It>
+		std::map<Node_ptr, std::map<Node_ptr, Node_ptr>> djikstraPaths(It start, It end, std::map<Node_ptr, std::map<Node_ptr, Cost_t>>& costs) const
+		{
+			std::set<Node_ptr> nodes(start, end);
+			if (nodes.count(NULL) > 0)
+			{
+				nodes.erase(NULL);
+			}
+			return djikstraPaths(nodes, costs);
+		}
+		
+		template <class It>
+		inline std::map<Node_ptr, std::map<Node_ptr, Node_ptr>> djikstraPaths(It start, It end) const
+		{
+			std::map<Node_ptr, std::map<Node_ptr, Cost_t>> costs;
+			return djikstraPaths(start, end, costs);
+		}
+		
+		std::map<Node_ptr, std::map<Node_ptr, Node_ptr>> djikstraPaths(std::set<Node_ptr> nodes, std::map<Node_ptr, std::map<Node_ptr, Cost_t>>& costs) const;
 		
 		
 	};
