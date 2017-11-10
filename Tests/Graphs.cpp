@@ -1,10 +1,8 @@
+#include <QUtils/Graphs/v2/Graph.h>
 #include "Tests_Helpers.h"
 
-#include <memory>
+
 #include <cmath>
-#include <functional>
-#include <map>
-#include <QUtils/Graphs/v2/Graph.h>
 
 using namespace QUtils::Graphs;
 
@@ -327,13 +325,13 @@ DEF_TEST(Graphs)
 		
 		typedef typename Node<>::ptr_t Node_ptr;
 		
-		std::map<Node_ptr, std::map<Node_ptr, Node_ptr>> paths;
+		/*std::map<Node_ptr, std::map<Node_ptr, Node_ptr>> paths;
 		
 		for (auto node : g.nodes)
 		{
 			paths[node] = g.djikstraPaths(node);
 			assert_ex(paths[node].size() == g.nodes.size());
-		}
+		}*/
 		
 		
 		
@@ -355,7 +353,91 @@ DEF_TEST(Graphs)
 		}
 		
 		
-		auto subset = g.subset(subsetNodes.begin(), subsetNodes.end());
+		/*auto subset = g.subset(subsetNodes.begin(), subsetNodes.end());
+		
+		dout << "subset.nodes.size(): " << subset.nodes.size() << "\n";
+		dout << "subsetNodes.size(): " << subsetNodes.size() << "\n";
+		
+		assert_ex(subset.nodes.size() == subsetNodes.size());*/
+	}
+	
+	{
+		Graph<> g;
+		auto r = g.createRoot();
+		auto tmp = r;
+		typename Node<>::ptr_t h = NULL;
+		size_t lastSize = 1;
+		assert_ex(g.nodes.size() == 1);
+		for (int i = 0; i < 100; ++i)
+		{
+			lastSize = g.nodes.size();
+			auto n = Node<>::Create();
+			size_t tmpLast = tmp->out.size();
+			tmp->out.push_back(n);
+			assert_ex(tmp->out.size() == tmpLast+1);
+			assert_ex(tmp->out.back().out.lock() == n);
+			g.updateNodes();
+			assert_ex(g.nodes.size() == lastSize+1);
+			tmp = n;
+			if (i == 50)
+			{
+				h = tmp;
+			}
+		}
+		
+		std::vector<Node<>::ptr_t> vec = {r, h, tmp};
+		auto paths = g.djikstraPaths(vec.begin(), vec.end());
+		assert_ex(paths.count(r) > 0);
+		assert_ex(paths.count(h) > 0);
+		assert_ex(paths.count(tmp) > 0);
+		dout << "Paths found\n";
+		
+		
+		auto checkPath = [](auto& paths, auto start, auto end)
+		{
+			assert_ex(paths.count(start) > 0);
+			std::list<Node<>::ptr_t> path;
+			Node<>::ptr_t n = end;
+			while (n != start)
+			{
+				path.push_front(n);
+				if (paths.at(start).count(n) <= 0)
+				{
+					dout << "Missing for " << n << "\n";
+					dout << "Size: " << paths.at(start).size() << "\n";
+				}
+				assert_ex(paths.at(start).count(n) > 0);
+				n = paths.at(start).at(n);
+			}
+			path.push_front(n);
+			
+		};
+		
+		checkPath(paths, r, h);
+		checkPath(paths, r, tmp);
+		checkPath(paths, h, tmp);
+		
+		dout << "Paths check out\n";
+		
+		
+		auto sub = g.subset(vec.begin(), vec.end());
+		dout << sub.nodes.size() << "\n";
+		assert_ex(sub.roots.size() == 1);
+		assert_ex(sub.roots[0] != g.roots[0]);
+		assert_ex(sub.roots[0]->out.size() == 1);
+		assert_ex(sub.roots[0]->out.back().out.lock());
+		assert_ex(sub.roots[0]->out.back().out.lock() != h);
+		assert_ex(sub.roots[0]->out.back().out.lock()->out.size() == 1);
+		assert_ex(sub.roots[0]->out.back().out.lock()->out.back().out.lock());
+		assert_ex(sub.roots[0]->out.back().out.lock()->out.back().out.lock() != tmp);
+		assert_ex(sub.roots[0]->out.back().out.lock()->out.back().out.lock()->out.size() == 0);
+		
+		assert_ex(sub.roots[0]->out.back().out.lock()->out.back().out.lock() != sub.roots[0]);
+		
+		assert_ex(sub.roots[0]->out.back().out.lock()->out.back().out.lock() != sub.roots[0]->out.back().out.lock());
+		
+		
+		assert_ex(sub.nodes.size() == 3);
 	}
 	
 	return true;
