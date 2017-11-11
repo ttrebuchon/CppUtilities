@@ -86,6 +86,7 @@ DEC_TEST(BoostBased_Serialization);
 DEC_TEST(Graphs_DependencyGraph);
 DEC_TEST(Graphs);
 DEC_TEST(Multi_ThreadPool);
+DEC_TEST(Iterable);
 
 
 #undef DEC_TEST

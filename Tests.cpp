@@ -166,6 +166,7 @@ void Testing::run()
 	RUN(ASM());
 	RUN(Graphs_DependencyGraph());
 	RUN(Graphs());
+	RUN(Iterable());
 	#ifndef SHORT_TEST
 	RUN(Multi_ThreadPool());
 	RUN(Network_Sockets());
