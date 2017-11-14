@@ -9,7 +9,7 @@ namespace QUtils { namespace Iterable {
 	{
 		public:
 		typedef Iterator<T> iterator;
-		
+		typedef Iterator<const T> const_iterator;
 		
 		private:
 		
@@ -23,6 +23,8 @@ namespace QUtils { namespace Iterable {
 		
 		virtual iterator begin() = 0;
 		virtual iterator end() = 0;
+		virtual const_iterator cbegin() const = 0;
+		virtual const_iterator cend() const = 0;
 		
 	};
 }

@@ -42,8 +42,8 @@ namespace QUtils { namespace Iterable {
 		return !(it1 == it2);
 	}
 	
-	template <class iterator>
-	class Wrapper_Iterator_Ptr : public Iterator_Ptr<typename std::remove_reference<decltype(*std::declval<iterator>())>::type>
+	template <class T, class iterator>
+	class Wrapper_Iterator_Ptr : public Iterator_Ptr</*typename std::remove_reference<decltype(*std::declval<iterator>())>::type*/T>
 	{
 		private:
 		protected:
@@ -51,7 +51,8 @@ namespace QUtils { namespace Iterable {
 		
 		
 		public:
-		typedef typename std::remove_reference<decltype(*std::declval<iterator>())>::type value_type;
+		//typedef typename std::remove_reference<decltype(*std::declval<iterator>())>::type value_type;
+		typedef T value_type;
 		
 		private:
 		typedef Iterator_Ptr<value_type> Base;
@@ -80,17 +81,17 @@ namespace QUtils { namespace Iterable {
 		std::unique_ptr<Iterator_Ptr<value_type>> operator++(int) override
 		{
 			auto it2 = it++;
-			return std::make_unique<Wrapper_Iterator_Ptr<iterator>>(it2);
+			return std::make_unique<Wrapper_Iterator_Ptr<T, iterator>>(it2);
 		}
 		
 		virtual bool equals(const Iterator_Ptr<value_type>& other) const override
 		{
-			return (it == ((Wrapper_Iterator_Ptr<iterator>&)other).it);
+			return (it == ((Wrapper_Iterator_Ptr<T, iterator>&)other).it);
 		}
 		
 		virtual std::unique_ptr<Iterator_Ptr<value_type>> clone() const override
 		{
-			return std::make_unique<Wrapper_Iterator_Ptr<iterator>>(it);
+			return std::make_unique<Wrapper_Iterator_Ptr<T, iterator>>(it);
 		}
 		
 	};

@@ -13,6 +13,11 @@ namespace QUtils { namespace Iterable {
 		protected:
 		std::unique_ptr<Iterator_Ptr<T>> ptr;
 		
+		Iterator(std::unique_ptr<Iterator_Ptr<T>>&& ptr) : ptr(nullptr)
+		{
+			this->ptr.swap(ptr);
+		}
+		
 		public:
 		//typedef T value_type;
 		
@@ -20,12 +25,17 @@ namespace QUtils { namespace Iterable {
 		template <class It>
 		Iterator(It it) : ptr(nullptr)
 		{
-			static_assert(std::is_same<T, typename std::remove_reference<decltype(*std::declval<It>())>::type>::value, "");
-			static_assert(std::is_same<T, typename Wrapper_Iterator_Ptr<It>::value_type>::value, "");
-			ptr = std::make_unique<Wrapper_Iterator_Ptr<It>>(it);
+			typedef decltype(*std::declval<It>()) GRef;
+			static_assert(std::is_convertible<GRef, T&>::value, "");
+			ptr = std::make_unique<Wrapper_Iterator_Ptr<T, It>>(it);
 		}
 		
 		Iterator(const Iterator<T>& it) : ptr(nullptr)
+		{
+			ptr = it.ptr->clone();
+		}
+		
+		explicit Iterator(Iterator<T>& it) : ptr(nullptr)
 		{
 			ptr = it.ptr->clone();
 		}
@@ -59,7 +69,18 @@ namespace QUtils { namespace Iterable {
 			return *this;
 		}
 		
-		Iterator<T> operator++(int);
+		Iterator<T> operator++(int)
+		{
+			return Iterator<T>(ptr->operator++(0));
+		}
+		
+		
+		
+		/*operator Iterator<const T>() const
+		{
+			return Iterator<const T>(this);
+		}*/
+		
 		
 		template <class G>
 		friend bool operator==(const Iterator<G>& it1, const Iterator<G>& it2);

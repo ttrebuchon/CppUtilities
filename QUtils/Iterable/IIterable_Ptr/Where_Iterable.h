@@ -1,10 +1,11 @@
 #pragma once
 #include "../IIterable_Ptr.h"
+#include <list>
 
 namespace QUtils { namespace Iterable { namespace Internal {
 	
-	template <class T, class G>
-	class Reference_IIterable_Ptr : public IIterable_Ptr<T>
+	template <class T>
+	class Where_IIterable_Ptr : public IIterable_Ptr<T>
 	{
 		public:
 		typedef Iterator<T> iterator;
@@ -14,37 +15,44 @@ namespace QUtils { namespace Iterable { namespace Internal {
 		private:
 		
 		protected:
-		G& ref;
-		
+		std::list<T> list;
 		
 		public:
 		
-		Reference_IIterable_Ptr(G& obj) : ref(obj)
-		{}
+		template <class F, class Iter>
+		Where_IIterable_Ptr(const F pred, Iter start, Iter end) : list()
+		{
+			for (Iter it = start; it != end; ++it)
+			{
+				if (pred(*it))
+				{
+					list.push_back(*it);
+				}
+			}
+		}
+		
 		
 		virtual iterator begin() override
 		{
-			return ref.begin();
+			return list.begin();
 		}
 		
 		virtual iterator end() override
 		{
-			return ref.end();
+			return list.end();
 		}
 		
 		virtual const_iterator cbegin() const override
 		{
-			/*static_assert(std::is_same<typename G::const_iterator, void>::value, "");
-			typedef decltype(ref.begin()) F;
-			static_assert(std::is_same<F, void>::value, "");*/
-			return ref.begin();
+			return list.begin();
 		}
 		
 		virtual const_iterator cend() const override
 		{
-			return ref.end();
+			return list.end();
 		}
 	};
+	
 }
 }
 }

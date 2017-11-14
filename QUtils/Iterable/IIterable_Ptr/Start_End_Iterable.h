@@ -8,6 +8,7 @@ namespace QUtils { namespace Iterable { namespace Internal {
 	{
 		public:
 		typedef Iterator<T> iterator;
+		typedef Iterator<const T> const_iterator;
 		
 		
 		private:
@@ -29,6 +30,16 @@ namespace QUtils { namespace Iterable { namespace Internal {
 		}
 		
 		virtual iterator end() override
+		{
+			return it2;
+		}
+		
+		virtual const_iterator cbegin() const override
+		{
+			return it1;
+		}
+		
+		virtual const_iterator cend() const override
 		{
 			return it2;
 		}

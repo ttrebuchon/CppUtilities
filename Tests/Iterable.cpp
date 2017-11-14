@@ -6,15 +6,29 @@
 
 void basicTest();
 void test1();
+void test2();
+void whereTest();
 
 DEF_TEST(Iterable)
 {
 	basicTest();
 	test1();
+	test2();
+	whereTest();
 	return true;
 }
 
+#define TEST_VEC_SIZE 1000
 
+std::vector<int> getTestVector(const size_t count)
+{
+	std::vector<int> vec(count);
+	for (size_t i = 0; i < count; ++i)
+	{
+		vec[i] = i+1;
+	}
+	return vec;
+}
 
 void basicTest()
 {
@@ -53,6 +67,10 @@ void basicTest()
 	
 	}
 	
+	
+	
+	
+	
 	QUtils::Iterable::IIterable<int> range2(vec);
 	
 	assert_ex(range.begin() == range2.begin());
@@ -61,6 +79,10 @@ void basicTest()
 		auto vec2 = range2.toVector();
 		assert_ex(vec2 == vec);
 	}
+	
+	
+	
+	
 	
 	int* origBegin = &vec[0];
 	
@@ -117,4 +139,74 @@ void test1()
 	{
 		assert_ex(vec[i++] == x);
 	}
+}
+
+void test2()
+{
+	std::vector<int> vec = {1, 2, 3, 4};
+	std::transform(vec.begin(), vec.end(), vec.begin(), [](auto x)
+	{
+		return 2*x;
+	});
+	
+	for (int i = 0; i < vec.size(); ++i)
+	{
+		assert_ex(vec.at(i) == 2*(i+1));
+	}
+	
+	using namespace QUtils::Iterable;
+	IIterable<int> ran(vec);
+	
+	std::transform(ran.begin(), ran.end(), ran.begin(), [](auto x)
+	{
+		return 2*x;
+	});
+	
+	for (int i = 0; i < vec.size(); ++i)
+	{
+		assert_ex(vec.at(i) == 4*(i+1));
+	}
+	
+	for (int i = 0; i < vec.size(); ++i)
+	{
+		assert_ex(ran.at(i) == 4*(i+1));
+	}
+	
+	
+	
+	const IIterable<int>& ran2 = ran.getConst();
+	
+	for (auto& x : ran2)
+	{
+		
+	}
+	
+	for (int i = 0; i < vec.size(); ++i)
+	{
+		assert_ex(vec.at(i) == 4*(i+1));
+	}
+}
+
+void whereTest()
+{
+	auto vec = getTestVector(TEST_VEC_SIZE);
+	
+	using namespace QUtils::Iterable;
+	IIterable<int> ran(vec);
+	
+	auto ran2 = ran.where([](const auto& x)
+	{
+		return x % 2 == 0;
+	});
+	
+	int i = 0;
+	for (auto x : ran2)
+	{
+		assert_ex(x % 2 == 0);
+		++i;
+	}
+	assert_ex(i == (TEST_VEC_SIZE+1) / 2);
+	
+	auto ran3 = ran2.toVector();
+	assert_ex(ran3.size() == i);
 }
