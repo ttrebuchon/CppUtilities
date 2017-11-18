@@ -337,7 +337,17 @@ typedef std::map<Stimuli, Gene> Genotype_t;
 
 
 
-
+Genotype_t vecGenesToGenotype(const std::vector<Gene>& vec)
+{
+	Genotype_t genes;
+	
+	for (const auto& gene : vec)
+	{
+		genes[gene.stim] = gene;
+	}
+	
+	return genes;
+}
 
 
 class Organism
@@ -521,6 +531,11 @@ class Herbivore : public Organism
 		
 	}
 	
+	Herbivore(const int vision, const std::vector<Gene> genes) : Herbivore(vision, vecGenesToGenotype(genes))
+	{
+		
+	}
+	
 	virtual std::string species() const override { return "Herbivore"; }
 	
 	virtual int speed() const {
@@ -694,6 +709,9 @@ class EcoSystem
 	const int h;
 	
 	public:
+	
+	static bool print;
+	
 	EcoSystem(const int w, const int h) : grid(new Grid(w, h)), entities(), w(w), h(h)
 	{
 		
@@ -751,10 +769,21 @@ class EcoSystem
 	{
 		#define PRINT
 		#ifdef PRINT
-		#define p(x)  dout << x
+		bool& __p = this->print;
+		auto _p = [&__p](auto x)
+		{
+			if (__p)
+			{
+				dout << x.str();
+			}
+		};
 		#else
-		#define p(x)
+		auto _p = [](auto x)
+		{
+			
+		};
 		#endif
+		#define p(x) _p(std::stringstream() << x)
 		std::vector<GridCell*> cells;
 		while (steps-- > 0)
 		{
@@ -822,6 +851,7 @@ class EcoSystem
 					{
 						organism->kill();
 						p(organism->species() << " starved\n");
+						
 					}
 				}
 			}
@@ -894,7 +924,7 @@ class EcoSystem
 };
 
 
-
+bool EcoSystem::print = true;
 
 
 
@@ -943,9 +973,11 @@ bool Test_GameOfLifeExtended()
 	
 	const int stepCount = 50;
 	const int startCount = 2;
+	bool fitnessOutput = false;
 	
-	auto herbivoreFitness = [&sys, stepCount, startCount, herbVis] (const auto& genes)
+	auto herbivoreFitness = [&fitnessOutput, &sys, stepCount, startCount, herbVis] (const auto& genes)
 	{
+		EcoSystem::print = fitnessOutput;
 		sys.clear();
 		sys.base(startCount, std::make_shared<Herbivore>(herbVis, genes));
 		sys.init();
@@ -967,6 +999,8 @@ bool Test_GameOfLifeExtended()
 			fitness += herb->nourishment;
 		}
 		
+		if (fitnessOutput)
+		{
 		for (auto herb : herbivores)
 		{
 			dout << "\n\nFor herbivore at " << herb->pos << "\n";
@@ -987,23 +1021,38 @@ bool Test_GameOfLifeExtended()
 				dout << org->species() << " at " << org->pos << std::endl;
 			}
 		}
+		}
 		
 		
 		return fitness;
 	};
 	
 	auto best = -1;
-	
-	while (best <= 0)
+	int randCount = 0;
+	do
 	{
 		auto randGenes = genotype(ids, herbVis);
-		dout << (best = herbivoreFitness(randGenes)) << std::endl;
-		dout << "\n\n____________\n\n";
+		auto tmp = herbivoreFitness(randGenes);
+		if (best < tmp)
+		{
+			best = tmp;
+			dout << best << std::endl;
+			dout << "\n\n____________\n\n";
+		}
+		++randCount;
 	}
+	while (randCount < 1000);
 	
-	/*const int popCount = 20;
 	
-	typedef QUtils::Genetic::NumericVectorSolution<Vec> Sol_t;
+	
+	
+	
+	
+	/**/
+	const int popCount = 10;//20;
+	
+	//typedef QUtils::Genetic::NumericVectorSolution<Vec> Sol_t;
+	typedef QUtils::Genetic::MapSolution<Stimuli, Gene> Sol_t;
 	
 	auto pop = std::make_shared<QUtils::Genetic::ArrayPopulation<Sol_t>>([&] (auto s)
 	{
@@ -1012,30 +1061,39 @@ bool Test_GameOfLifeExtended()
 	
 	for (auto i = 0; i < popCount; i++)
 	{
-		auto genes = extractResponses(genotype(ids, 1));
+		/*auto genes = extractResponses(genotype(ids, 1));
 		pop->at(i) = std::make_shared<Sol_t>(genes.size());
+		
 		for (int j = 0; j < genes.size(); j++)
 		{
-			pop->at(i)->at(j) = genes[j];
-		}
+			pop->at(i)->atIndex(j) = Gene{pop->at(i)->keyAtIndex(j),genes[j]};
+		}*/
+		pop->at(i) = std::make_shared<Sol_t>(genotype(ids, 1));
 	}
 	
 	QUtils::Genetic::CrossoverAlgorithm<Sol_t> alg(pop);
+	
 	alg.mutateOverride = [](auto& sol)
 	{
 		int index = rand() % sol.size();
-		sol.at(index) = randomVec();
+		sol.at(index).response = randomVec();
 	};
 	
 	const int genCount = 100;
 	for (int i = 0; i < genCount; i += 10)
 	{
+		if (i > 80)
+		{
+			//fitnessOutput = true;
+		}
 	alg.go(10);
 	dout << "Generation " << i << "\n";
 	}
 	auto bestG = alg.best()->get();
 	auto bestV = herbivoreFitness(bestG);
-	dout << "\n\nBest: " << bestV << std::endl;*/
+	dout << "\n\nBest: " << bestV << std::endl;
+	
+	dout << "\nBest by Random: " << best << "\n";
 	
 	
 	return true;
