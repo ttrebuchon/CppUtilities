@@ -2,6 +2,7 @@
 
 #include "Crossover.h"
 #include <QUtils/Exception/NullPointer.h>
+#include "AppropSize.hpp"
 
 namespace QUtils
 {
@@ -28,7 +29,8 @@ namespace Genetic
 				//TODO
 				throw std::exception();
 			}
-			const auto unitSize = sizeof(decltype(this->population->at(0)->at(0)));
+			const auto unitSize = Helpers::UnitSize<decltype(this->population->at(0))>::size;
+			//const auto unitSize = sizeof(decltype(this->population->at(0)->at(0)));
 			const auto unitsPer10KB = 10000*sizeof(char)/unitSize;
 			sequenceLength = this->population->at(0)->size()/3;
 			

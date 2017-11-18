@@ -21,8 +21,8 @@ namespace Genetic
 		
 		T& operator[](const unsigned int i) { return at(i); }
 		const T& operator[](const unsigned  int i) const { return at(i); }
-		virtual T& at(const unsigned int);
-		virtual const T& at(const unsigned int) const;
+		virtual T& at(const size_t) override;
+		virtual const T& at(const size_t) const;
 		
 		virtual unsigned int size() const;
 		

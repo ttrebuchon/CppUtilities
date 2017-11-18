@@ -46,13 +46,13 @@ namespace Genetic
 	
 	
 	template <class T>
-	T& OrderedSolution<T>::at(const unsigned int i)
+	T& OrderedSolution<T>::at(const size_t i)
 	{
 		return order[i];
 	}
 	
 	template <class T>
-	const T& OrderedSolution<T>::at(const unsigned int i) const
+	const T& OrderedSolution<T>::at(const size_t i) const
 	{
 		return order[i];
 	}

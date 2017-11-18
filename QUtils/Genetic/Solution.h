@@ -24,6 +24,7 @@ namespace Genetic
 		
 		virtual void modified() = 0;
 		virtual H& set(const int index, const H) = 0;
+		virtual H& at(const size_t) = 0;
 	};
 }
 }

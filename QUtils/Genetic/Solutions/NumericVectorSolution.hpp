@@ -21,13 +21,13 @@ namespace Genetic
 	
 	
 	template <class T>
-	T& NumericVectorSolution<T>::at(const unsigned int i)
+	T& NumericVectorSolution<T>::at(const size_t i)
 	{
 		return values[i];
 	}
 	
 	template <class T>
-	const T& NumericVectorSolution<T>::at(const unsigned int i) const
+	const T& NumericVectorSolution<T>::at(const size_t i) const
 	{
 		return values[i];
 	}
