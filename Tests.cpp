@@ -167,6 +167,8 @@ void Testing::run()
 	RUN(Graphs_DependencyGraph());
 	RUN(Graphs());
 	RUN(Iterable());
+	RUN(TravellingSalesman());
+	RUN(GameOfLifeExtended());
 	#ifndef SHORT_TEST
 	RUN(Multi_ThreadPool());
 	RUN(Network_Sockets());
@@ -175,8 +177,8 @@ void Testing::run()
 	RUN(BoostBased_Serialization());
 	RUN(CodeGen_Utility());
 	RUN(SDL_Drawing());
-	RUN(TravellingSalesman());
-	RUN(GameOfLifeExtended());
+	//RUN(TravellingSalesman());
+	//RUN(GameOfLifeExtended());
 	RUN(RucksackProblem());
 	RUN(Types());
 	RUN(SymbolicList());
