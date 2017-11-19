@@ -74,8 +74,10 @@ Serialization = $(call getobjs,$(SRC)/Serialization/)
 
 Graphs = $(call getobjs,$(SRC)/Graphs/)
 
+World = $(call getobjs,$(SRC)/World/)
 
-objects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen) $(Genetic) $(Serialization) $(Graphs)
+
+objects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen) $(Genetic) $(Serialization) $(Graphs) $(World)
 
 
 #Namespace name, used once (Not important)

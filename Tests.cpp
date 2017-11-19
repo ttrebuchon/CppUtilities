@@ -168,7 +168,7 @@ void Testing::run()
 	RUN(Graphs());
 	RUN(Iterable());
 	RUN(TravellingSalesman());
-	RUN(GameOfLifeExtended());
+	RUN(World_Physics());
 	#ifndef SHORT_TEST
 	RUN(Multi_ThreadPool());
 	RUN(Network_Sockets());
@@ -178,7 +178,7 @@ void Testing::run()
 	RUN(CodeGen_Utility());
 	RUN(SDL_Drawing());
 	//RUN(TravellingSalesman());
-	//RUN(GameOfLifeExtended());
+	RUN(GameOfLifeExtended());
 	RUN(RucksackProblem());
 	RUN(Types());
 	RUN(SymbolicList());

@@ -1027,6 +1027,12 @@ bool Test_GameOfLifeExtended()
 		return fitness;
 	};
 	
+	
+	const int popCount = 5;
+	const int genCount = 30;
+	const int randLimit = popCount*genCount;
+	
+	
 	auto best = -1;
 	int randCount = 0;
 	do
@@ -1041,7 +1047,7 @@ bool Test_GameOfLifeExtended()
 		}
 		++randCount;
 	}
-	while (randCount < 1000);
+	while (randCount < randLimit);
 	
 	
 	
@@ -1049,7 +1055,7 @@ bool Test_GameOfLifeExtended()
 	
 	
 	/**/
-	const int popCount = 10;//20;
+	//const int popCount = 10;//20;
 	
 	//typedef QUtils::Genetic::NumericVectorSolution<Vec> Sol_t;
 	typedef QUtils::Genetic::MapSolution<Stimuli, Gene> Sol_t;
@@ -1079,7 +1085,7 @@ bool Test_GameOfLifeExtended()
 		sol.at(index).response = randomVec();
 	};
 	
-	const int genCount = 100;
+	//const int genCount = 100;
 	for (int i = 0; i < genCount; i += 10)
 	{
 		if (i > 80)

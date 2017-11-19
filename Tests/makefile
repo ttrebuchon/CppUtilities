@@ -48,7 +48,7 @@ endif
 
 WARNINGS_ERRORS = -ftemplate-backtrace-limit=0 -Wno-sign-compare
 
-WARNINGS_ERRORS += #-Wfatal-errors 
+WARNINGS_ERRORS += -Wfatal-errors 
 
 FLAGS = -I ../
 
