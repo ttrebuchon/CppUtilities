@@ -52,3 +52,4 @@ Log.txt
 
 #Local Test Files
 *English_Analyzer_Test.txt
+Test_Files/DBC/*.dbc
