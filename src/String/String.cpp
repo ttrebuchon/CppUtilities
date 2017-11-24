@@ -211,12 +211,90 @@ namespace QUtils
 		
 	}
 	
-	String::String() : String("")
+	String::String() : str()
 	{
 		
 	}
 	
 	String::String(const String& s) : str(s.str)
+	{
+		
+	}
+	
+	String::String(const int n, const char c) : str(n, c)
+	{
+		
+	}
+	
+	String::String(const unsigned int n, const String s) : str()
+	{
+		const auto len = s.length();
+		if (n == 0 || len == 0)
+		{
+			return;
+		}
+		str = s;
+		const auto endSize = n*len;
+		
+		unsigned int m = 1;
+		while (n >= 2*m)
+		{
+			m *= 2;
+			str += str;
+		}
+		
+		while (n - m > 0)
+		{
+			str += s;
+		}
+	}
+	
+	String::String(char c) : str()
+	{
+		str += c;
+	}
+	
+	String::String(short n) : str(std::to_string(n))
+	{
+		
+	}
+	
+	String::String(int n) : str(std::to_string(n))
+	{
+		
+	}
+	
+	String::String(long n) : str(std::to_string(n))
+	{
+		
+	}
+	
+	String::String(unsigned char c) : str()
+	{
+		str += c;
+	}
+	
+	String::String(unsigned short n) : str(std::to_string(n))
+	{
+		
+	}
+	
+	String::String(unsigned int n) : str(std::to_string(n))
+	{
+		
+	}
+	
+	String::String(unsigned long n) : str(std::to_string(n))
+	{
+		
+	}
+	
+	String::String(float n) : str(std::to_string(n))
+	{
+		
+	}
+	
+	String::String(double n) : str(std::to_string(n))
 	{
 		
 	}
@@ -311,6 +389,10 @@ namespace QUtils
 	
 	size_t String::find(const std::string s, size_t start) const
 	{
+		if (s == "")
+		{
+			return 0;
+		}
 		return str.find(s, start);
 	}
 	
@@ -524,6 +606,26 @@ namespace QUtils
 	String String::insert(int pos, String nStr) const
 	{
 		return substr(0, pos) + nStr + substr(pos);
+	}
+	
+	String String::padLeft(int totLen, char c)
+	{
+		if (length() >= totLen)
+		{
+			return *this;
+		}
+		
+		return std::string(totLen - length(), c) + *this;
+	}
+	
+	String String::padRight(int totLen, char c)
+	{
+		if (length() >= totLen)
+		{
+			return *this;
+		}
+		
+		return *this + std::string(totLen - length(), c);
 	}
 	//End Member Functions
 	

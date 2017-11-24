@@ -50,6 +50,18 @@ namespace QUtils
 		String(const char*);
 		String();
 		String(const String&);
+		String(const int, const char);
+		String(const unsigned int, const String);
+		String(char);
+		String(short);
+		String(int);
+		String(long);
+		String(unsigned char);
+		String(unsigned short);
+		String(unsigned int);
+		String(unsigned long);
+		String(float);
+		String(double);
 		~String();
 		
 		
