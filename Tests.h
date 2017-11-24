@@ -88,6 +88,7 @@ DEC_TEST(Graphs);
 DEC_TEST(Multi_ThreadPool);
 DEC_TEST(Iterable);
 DEC_TEST(World_Physics);
+DEC_TEST(DBC);
 
 
 #undef DEC_TEST

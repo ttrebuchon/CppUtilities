@@ -169,6 +169,7 @@ void Testing::run()
 	RUN(Iterable());
 	RUN(TravellingSalesman());
 	RUN(World_Physics());
+	RUN(DBC());
 	#ifndef SHORT_TEST
 	RUN(Multi_ThreadPool());
 	RUN(Network_Sockets());
