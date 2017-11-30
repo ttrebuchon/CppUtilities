@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "QUtils/DebugOut/DebugOut.h"
+#include "QUtils/Debug/DebugOut.h"
 #include "QUtils/Output/MultiStream.h"
 #include "Tests.h"
 #include <time.h>
