@@ -79,7 +79,7 @@ DEF_TEST(DBC)
 	auto imprDrainSoulProc = spell.findRowWithValue(0, 18371);
 	auto imprDrainSoulR1 = spell.findRowWithValue(0, 18213);
 	
-	dout << "Improved Drain Soul Rank 1:\n";
+	/*dout << "Improved Drain Soul Rank 1:\n";
 	for (int i = 0; i < imprDrainSoulR1.width(); ++i)
 	{
 		if (imprDrainSoulR1.couldBeString(i))
@@ -106,7 +106,7 @@ DEF_TEST(DBC)
 			dout << imprDrainSoulProc.at<uint>(i) << " - " << imprDrainSoulProc.at<float>(i) << "\n\n";
 		}
 	}
-	dout << "\n\n\n\n";
+	dout << "\n\n\n\n";*/
 	
 	dout << "Max String Index: " << spell.maxStringIndex() << "\n";
 	
@@ -136,7 +136,7 @@ DEF_TEST(DBC)
 	dout << "\n\n";
 	QUtils::Dbc::DbcFile talent(filepath3.c_str());
 	
-	dout << "Talent Rows: " << talent.size() << "\n\n";
+	/*dout << "Talent Rows: " << talent.size() << "\n\n";
 	
 	
 	for (auto t : talent)
@@ -148,7 +148,7 @@ DEF_TEST(DBC)
 				dout << t.at<uint>(0) << " - \"" << t.at<std::string>(i) << "\"\n";
 			}
 		}
-	}
+	}*/
 	
 	
 	
@@ -231,7 +231,7 @@ DEF_TEST(DBC)
 		}
 	}
 	
-	dout << "Shard Rows: \n{\n";
+	/*dout << "Shard Rows: \n{\n";
 	for (auto& s : shardRows)
 	{
 		dout << "\t" << s.at<uint>(0) << "\n";
@@ -253,10 +253,10 @@ DEF_TEST(DBC)
 		}
 		dout << "\n";
 	}
-	dout << "}\n";
+	dout << "}\n";*/
 	
 	
-	std::list<QUtils::Dbc::DbcRow> drainRows;
+	/*std::list<QUtils::Dbc::DbcRow> drainRows;
 	for (auto s : spell)
 	{
 		if (QUtils::String(s.at<std::string>(136)).toUpper() == "DRAIN SOUL")
@@ -327,7 +327,7 @@ DEF_TEST(DBC)
 		}
 		dout << "\n";
 	}
-	dout << "}\n";
+	dout << "}\n";*/
 	
 	
 	
@@ -353,7 +353,7 @@ DEF_TEST(DBC)
 	
 	
 	
-	std::list<QUtils::Dbc::DbcRow> afflic;
+	/*std::list<QUtils::Dbc::DbcRow> afflic;
 	const QUtils::String afflicStr = "Afflic";
 	
 	for (auto t : talentTab)
@@ -391,10 +391,10 @@ DEF_TEST(DBC)
 		}
 		dout << "\n";
 	}
-	dout << "}\n";
+	dout << "}\n";*/
 	
 	
-	{
+	/*{
 	std::vector<std::tuple<uint, uint, uint, uint, uint>> common;
 	for (auto t : talent)
 	{
@@ -431,11 +431,11 @@ DEF_TEST(DBC)
 		
 	}
 	
-	}
+	}*/
 	
 	dout << std::string(40, '_') << std::string(10, '\n');
-	findCommonData(1120);
-	dout << std::string(40, '_') << std::string(10, '\n');
+	/*findCommonData(1120);
+	dout << std::string(40, '_') << std::string(10, '\n');*/
 	tryFindFKs();
 	dout << std::string(40, '_') << std::string(10, '\n');
 	vtableTesting();
@@ -649,10 +649,10 @@ std::list<ForeignKeyData> tryFindFKs()
 	*/
 	
 	auto& spell = *namesToFiles.at("Spell.dbc");
-	for (int i = 1; i < spell.columns(); ++i)
+	/*for (int i = 1; i < spell.columns(); ++i)
 	{
 		dout << "(" << QUtils::String(i).padRight(3) << " / " << spell.columns() << ") Text? " << (spell.couldBeString(i, false) ? "True" : "False") << "\n";
-	}
+	}*/
 	
 	assert_ex(spell.couldBeString(136));
 	assert_ex(spell.couldBeString(137));
