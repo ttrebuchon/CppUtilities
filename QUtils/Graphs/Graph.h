@@ -5,6 +5,9 @@
 #include <memory>
 #include <set>
 #include <map>
+#include <QUtils/Debug/DAssert.h>
+
+
 
 namespace QUtils { namespace Graphs {
 	
@@ -40,7 +43,7 @@ namespace QUtils { namespace Graphs {
 		
 		
 		
-		void subset(Graph_Base<T, Wgt_t, Node_t>& g, std::vector<Node_ptr>& vec) const;
+		void subset(Graph_Base<T, Wgt_t, Node_t>& g, std::map<Node_ptr, Node_ptr>& equivs) const;
 		
 		public:
 		const std::vector<Node_ptr>& roots;
@@ -112,11 +115,15 @@ namespace QUtils { namespace Graphs {
 		
 		void updateNodes()
 		{
+			std::set<Node_ptr> newNodes;
 			for (auto root : roots)
 			{
-				_nodes.insert(root);
-				root->getDescendants(_nodes);
+				dassert(root != NULL);
+				newNodes.insert(root);
+				root->getDescendants(newNodes);
+				
 			}
+			_nodes = newNodes;
 		}
 		
 		inline void addNode(Node_ptr n)
@@ -194,9 +201,23 @@ namespace QUtils { namespace Graphs {
 		template <class It>
 		Graph subset(It start, It end) const
 		{
+			std::map<Node_ptr, Node_ptr> equivs;
+			return subset(start, end, equivs);
+		}
+		
+		template <class It>
+		Graph subset(It start, It end, std::map<Node_ptr, Node_ptr>& equivs) const
+		{
 			Graph g;
-			std::vector<Node_ptr> vec(start, end);
-			Base::subset(g, vec);
+			equivs.clear();
+			auto it = start;
+			while (it != end)
+			{
+				equivs[*it] = NULL;
+				++it;
+			}
+			
+			Base::subset(g, equivs);
 			return g;
 		}
 		
@@ -227,9 +248,23 @@ namespace QUtils { namespace Graphs {
 		template <class It>
 		Graph subset(It start, It end) const
 		{
+			std::map<Node_ptr, Node_ptr> equivs;
+			return subset(start, end, equivs);
+		}
+		
+		template <class It>
+		Graph subset(It start, It end, std::map<Node_ptr, Node_ptr>& equivs) const
+		{
 			Graph g;
-			std::vector<Node_ptr> vec(start, end);
-			Base::subset(g, vec);
+			equivs.clear();
+			auto it = start;
+			while (it != end)
+			{
+				equivs[*it] = NULL;
+				++it;
+			}
+			
+			Base::subset(g, equivs);
 			return g;
 		}
 	};

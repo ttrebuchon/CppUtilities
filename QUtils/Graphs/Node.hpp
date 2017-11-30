@@ -6,16 +6,16 @@
 namespace QUtils { namespace Graphs {
 	
 	#define GET_DESCS \
-	for (auto& o : out) \
-	{ \
+	for (Edge<this_t, Wgt_t>& o : out) \
+	{\
 		auto locked = o.out.lock(); \
 		if (locked) \
-		{ \
+		{\
 			if (nodes.count(locked) <= 0) \
-			{ \
+			{\
 				nodes.insert(locked); \
+				locked->getDescendants(nodes);\
 			} \
-			locked->getDescendants(nodes); \
 		} \
 	}
 	

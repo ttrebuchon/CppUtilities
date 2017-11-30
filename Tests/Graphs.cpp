@@ -233,7 +233,7 @@ DEF_TEST(Graphs)
 	
 	{
 		const int count = 100;
-		const int rCount = count*count/10;
+		const int rCount = count*count/1000;
 		Graph<> g;
 		std::vector<typename Node<>::ptr_t> nodes(count);
 		
@@ -265,6 +265,7 @@ DEF_TEST(Graphs)
 			
 			nodes[x]->out.push_back(nodes[y]);
 		}
+		g.updateNodes();
 		
 		int cost;
 		auto path = g.djikstraPath(nodes[0], nodes[count-1], &cost);
@@ -346,19 +347,27 @@ DEF_TEST(Graphs)
 		
 		subsetNodes.insert(nodes[0]);
 		subsetNodes.insert(nodes[count-1]);
-		while (subsetNodes.size() < count/10)
+		while (subsetNodes.size() < count/* /10*/)
 		{
 			auto i = rand() % count;
 			subsetNodes.insert(nodes[i]);
 		}
 		
-		
-		/*auto subset = g.subset(subsetNodes.begin(), subsetNodes.end());
+		std::map<Node_ptr, Node_ptr> equivs;
+		/**/auto subset = g.subset(subsetNodes.begin(), subsetNodes.end(), equivs);
 		
 		dout << "subset.nodes.size(): " << subset.nodes.size() << "\n";
 		dout << "subsetNodes.size(): " << subsetNodes.size() << "\n";
 		
-		assert_ex(subset.nodes.size() == subsetNodes.size());*/
+		assert_ex(subset.nodes.size() == subsetNodes.size());/**/
+		
+		int subsetCost;
+		auto subsetPath = subset.djikstraPath(equivs.at(nodes[0]), equivs.at(nodes[count-1]), &subsetCost);
+		dout << "Subset Cost: " << subsetCost << "\n";
+		g.djikstraPath(nodes[0], nodes[count-1], &cost);
+		assert_ex(realCost == cost);
+		dout << "Full Graph Cost: " << cost << "\n";
+		assert_ex(subsetCost == cost);
 	}
 	
 	{

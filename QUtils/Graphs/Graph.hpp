@@ -323,18 +323,21 @@ namespace QUtils { namespace Graphs {
 	
 	
 	template <class T, class Wgt_t, template <class...> class Node_t>
-	void Graph_Base<T, Wgt_t, Node_t>::subset(Graph_Base<T, Wgt_t, Node_t>& g, std::vector<Node_ptr>& vec) const
+	void Graph_Base<T, Wgt_t, Node_t>::subset(Graph_Base<T, Wgt_t, Node_t>& g, std::map<Node_ptr, Node_ptr>& equivs) const
 	{
-		std::map<Node_ptr, Node_ptr> equivs;
-		for (auto node : vec)
+		for (auto& node : equivs)
 		{
-			equivs[node] = std::make_shared<Node_t<T, Wgt_t>>(*node);
+			node.second = std::make_shared<Node_t<T, Wgt_t>>(*node.first);
+			node.second->out.clear();
+			node.second->in.clear();
+			/*equivs[node] = std::make_shared<Node_t<T, Wgt_t>>(*node);
 			equivs[node]->out.clear();
-			equivs[node]->in.clear();
+			equivs[node]->in.clear();*/
 		}
 		for (auto root : roots)
 		{
-			if (std::find(vec.begin(), vec.end(), root) != vec.end())
+			if (equivs.count(root) > 0)
+			//if (std::find(vec.begin(), vec.end(), root) != vec.end())
 			{
 				g._roots.push_back(equivs[root]);
 			}
@@ -342,7 +345,12 @@ namespace QUtils { namespace Graphs {
 		
 		std::map<Node_ptr, std::map<Node_ptr, Cost_t>> costs;
 		
-		
+		std::vector<Node_ptr> vec;
+		vec.reserve(equivs.size());
+		for (const auto& pair : equivs)
+		{
+			vec.push_back(pair.first);
+		}
 		auto paths = this->djikstraPaths(vec.begin(), vec.end(), costs);
 		
 		
