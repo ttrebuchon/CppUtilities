@@ -44,6 +44,11 @@ namespace QUtils { namespace Iterable { namespace Internal {
 		{
 			return ref.end();
 		}
+		
+		virtual std::unique_ptr<IIterable_Ptr<T>> reference() const override
+		{
+			return std::make_unique<Reference_IIterable_Ptr<T, G>>(ref);
+		}
 	};
 }
 }

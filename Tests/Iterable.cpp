@@ -8,6 +8,7 @@ void basicTest();
 void test1();
 void test2();
 void whereTest();
+void copyTest();
 
 DEF_TEST(Iterable)
 {
@@ -15,6 +16,7 @@ DEF_TEST(Iterable)
 	test1();
 	test2();
 	whereTest();
+	copyTest();
 	return true;
 }
 
@@ -209,4 +211,71 @@ void whereTest()
 	
 	auto ran3 = ran2.toVector();
 	assert_ex(ran3.size() == i);
+}
+
+void copyTest()
+{
+	std::vector<int> vec = {0, 1, 2, 3};
+	vec.shrink_to_fit();
+	
+	using namespace QUtils::Iterable;
+	
+	IIterable<int> r(vec);
+	assert_ex(r.at(0) == 0);
+	r.at(0) = -1;
+	assert_ex(r.at(0) == -1);
+	assert_ex(vec.at(0) == -1);
+	r.at(0) = 0;
+	
+	
+	IIterable<int> r2 = r.copy();
+	assert_ex(r2.at(0) == 0);
+	r2.at(0) = -1;
+	assert_ex(r2.at(0) == -1);
+	assert_ex(vec.at(0) == 0);
+	assert_ex(r.at(0) == 0);
+	r2.at(0) = 0;
+	
+	IIterable<int> r3(r2);
+	
+	{
+		IIterable<int> r4(vec);
+		r3 = r4;
+	}
+	assert_ex(r3.toVector() == vec);
+	
+	
+	{
+		auto vec2 = getTestVector(TEST_VEC_SIZE);
+		r3 = IIterable<int>(vec2).copy();
+	}
+	
+	auto vec3 = getTestVector(TEST_VEC_SIZE);
+	
+	assert_ex(r3.toVector() == vec3);
+	for (auto& x : r3)
+	{
+		x += 1;
+	}
+	
+	for (int i = 1; i < TEST_VEC_SIZE; ++i)
+	{
+		r3.at(i) = r3.at(i-1);
+	}
+	--r3.at(0);
+	
+	
+	auto r4 = r3.select<int>([](const auto& x)
+	{
+		return 2*x;
+	}).where([](const auto& x)
+	{
+		return x % 2 == 1;
+	});
+	
+	for (auto x : r4)
+	{
+		assert_not_reached();
+	}
+	
 }

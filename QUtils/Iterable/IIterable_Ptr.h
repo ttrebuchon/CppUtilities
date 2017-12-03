@@ -25,7 +25,7 @@ namespace QUtils { namespace Iterable {
 		virtual iterator end() = 0;
 		virtual const_iterator cbegin() const = 0;
 		virtual const_iterator cend() const = 0;
-		
+		virtual std::unique_ptr<IIterable_Ptr<T>> reference() const = 0;
 	};
 }
 }

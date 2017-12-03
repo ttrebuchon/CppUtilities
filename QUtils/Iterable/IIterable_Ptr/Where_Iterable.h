@@ -1,8 +1,11 @@
 #pragma once
 #include "../IIterable_Ptr.h"
+#include "SharedPtr_Iterable.h"
 #include <list>
 
 namespace QUtils { namespace Iterable { namespace Internal {
+	
+	
 	
 	template <class T>
 	class Where_IIterable_Ptr : public IIterable_Ptr<T>
@@ -15,18 +18,18 @@ namespace QUtils { namespace Iterable { namespace Internal {
 		private:
 		
 		protected:
-		std::list<T> list;
+		std::shared_ptr<std::list<T>> list;
 		
 		public:
 		
 		template <class F, class Iter>
-		Where_IIterable_Ptr(const F pred, Iter start, Iter end) : list()
+		Where_IIterable_Ptr(const F pred, Iter start, Iter end) : list(std::make_shared<std::list<T>>())
 		{
 			for (Iter it = start; it != end; ++it)
 			{
 				if (pred(*it))
 				{
-					list.push_back(*it);
+					list->push_back(*it);
 				}
 			}
 		}
@@ -34,22 +37,27 @@ namespace QUtils { namespace Iterable { namespace Internal {
 		
 		virtual iterator begin() override
 		{
-			return list.begin();
+			return list->begin();
 		}
 		
 		virtual iterator end() override
 		{
-			return list.end();
+			return list->end();
 		}
 		
 		virtual const_iterator cbegin() const override
 		{
-			return list.begin();
+			return list->begin();
 		}
 		
 		virtual const_iterator cend() const override
 		{
-			return list.end();
+			return list->end();
+		}
+		
+		virtual std::unique_ptr<IIterable_Ptr<T>> reference() const override
+		{
+			return std::make_unique<SharedPtr_IIterable_Ptr<T, std::list<T>>>(this->list);
 		}
 	};
 	

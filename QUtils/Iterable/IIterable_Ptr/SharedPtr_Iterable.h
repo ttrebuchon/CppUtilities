@@ -3,8 +3,8 @@
 
 namespace QUtils { namespace Iterable { namespace Internal {
 	
-	template <class T>
-	class Start_End_IIterable_Ptr : public IIterable_Ptr<T>
+	template <class T, class G>
+	class SharedPtr_IIterable_Ptr : public IIterable_Ptr<T>
 	{
 		public:
 		typedef Iterator<T> iterator;
@@ -14,39 +14,40 @@ namespace QUtils { namespace Iterable { namespace Internal {
 		private:
 		
 		protected:
-		iterator it1, it2;
-		
+		std::shared_ptr<G> ptr;
 		
 		
 		public:
 		
-		template <class It>
-		Start_End_IIterable_Ptr(const It& start, const It& end) : it1(start), it2(end)
+		SharedPtr_IIterable_Ptr(std::shared_ptr<G> ptr) : ptr(ptr)
 		{}
 		
 		virtual iterator begin() override
 		{
-			return it1;
+			return ptr->begin();
 		}
 		
 		virtual iterator end() override
 		{
-			return it2;
+			return ptr->end();
 		}
 		
 		virtual const_iterator cbegin() const override
 		{
-			return it1;
+			/*static_assert(std::is_same<typename G::const_iterator, void>::value, "");
+			typedef decltype(ref.begin()) F;
+			static_assert(std::is_same<F, void>::value, "");*/
+			return ptr->begin();
 		}
 		
 		virtual const_iterator cend() const override
 		{
-			return it2;
+			return ptr->end();
 		}
 		
 		virtual std::unique_ptr<IIterable_Ptr<T>> reference() const override
 		{
-			return std::make_unique<Start_End_IIterable_Ptr<T>>(it1, it2);
+			return std::make_unique<SharedPtr_IIterable_Ptr<T, G>>(ptr);
 		}
 	};
 }

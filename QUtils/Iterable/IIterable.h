@@ -38,6 +38,19 @@ namespace QUtils { namespace Iterable {
 			
 		}
 		
+		IIterable(const IIterable<T>& it) : ptr(it.ptr->reference())
+		{
+			
+		}
+		
+		IIterable<T>& operator=(const IIterable<T>& it)
+		{
+			auto r = it.ptr->reference();
+			ptr.swap(r);
+			
+			return *this;
+		}
+		
 		iterator begin()
 		{
 			return ptr->begin();
@@ -82,6 +95,7 @@ namespace QUtils { namespace Iterable {
 			if (i < index && it == e)
 			{
 				//TODO: throw out of bounds
+				throw std::exception();
 			}
 			return *it;
 		}
@@ -91,10 +105,29 @@ namespace QUtils { namespace Iterable {
 			return std::move(IIterable<T>(std::make_unique<Internal::Where_IIterable_Ptr<T>>(pred, begin(), end())));
 		}
 		
+		template <class G>
+		IIterable<G> select(std::function<G(const T&)> func) const
+		{
+			return std::move(IIterable<G>(std::make_unique<Internal::Select_IIterable_Ptr<G>>(func, begin(), end())));
+		}
+		
 		auto& getConst() const
 		{
 			//ptr = NULL;
 			return *this;
+		}
+		
+		IIterable<T> copy()
+		{
+			auto p = std::shared_ptr<std::vector<T>>(new std::vector<T>(begin(), end()));
+			return 
+			std::move(
+			IIterable<T>(
+			std::make_unique<
+				Internal::Copied_IIterable_Ptr<T>
+			>(
+				p
+			)));
 		}
 	};
 }
