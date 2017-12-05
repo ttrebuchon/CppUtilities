@@ -89,6 +89,7 @@ DEC_TEST(Multi_ThreadPool);
 DEC_TEST(Iterable);
 DEC_TEST(World_Physics);
 DEC_TEST(DBC);
+DEC_TEST(Reddit);
 
 
 #undef DEC_TEST

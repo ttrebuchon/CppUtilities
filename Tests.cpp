@@ -166,10 +166,11 @@ void Testing::run()
 	RUN(ASM());
 	RUN(Graphs_DependencyGraph());
 	RUN(Graphs());
-	RUN(Iterable());
 	RUN(TravellingSalesman());
 	RUN(World_Physics());
 	RUN(DBC());
+	RUN(Iterable());
+	RUN(Reddit());
 	#ifndef SHORT_TEST
 	RUN(Multi_ThreadPool());
 	RUN(Network_Sockets());
