@@ -1,6 +1,7 @@
 #pragma once
 
 #include <tuple>
+#include <type_traits>
 
 namespace QUtils
 {
@@ -251,5 +252,58 @@ namespace Types
 	{
 		typedef typename Helpers::ForEachType<std::tuple<X<T>>, X, Y...>::type type;
 	};
+	
+	
+	namespace Helpers
+	{
+		template <class Needle, class... Haystack>
+		struct TypeInSequence;
+		
+		
+		template <class Needle, class Head, class... Haystack>
+		struct TypeInSequence<Needle, Head, Haystack...> : public TypeInSequence<Needle, Haystack...> {};
+		
+		template <class Needle>
+		struct TypeInSequence<Needle> : public std::integral_constant<bool, false>
+		{};
+		
+		template <class Needle, class... Haystack>
+		struct TypeInSequence<Needle, Needle, Haystack...> : public std::integral_constant<bool, true>
+		{};
+		
+	}
+	
+	template <class Needle, class... Haystack>
+	struct TypeInSequence : public std::integral_constant<bool, Helpers::TypeInSequence<Needle, Haystack...>::value>
+	{};
+	
+	
+	
+	
+	
+	namespace TrueForAll_Helpers
+	{
+		template <bool B, template <class> class Pred, class... Types>
+		struct TrueForAll;
+		
+		template <template <class> class Pred>
+		struct TrueForAll<true, Pred> : std::true_type
+		{};
+		
+		template <template <class> class Pred, class... Types>
+		struct TrueForAll<false, Pred, Types...> : std::false_type
+		{};
+		
+		template <bool B, template <class> class Pred, class T, class... Types>
+		struct TrueForAll<B, Pred, T, Types...> : public TrueForAll<B && Pred<T>::value, Pred, Types...>
+		{
+			
+		};
+	}
+	
+	
+	template <template <class> class Pred, class... Types>
+	struct TrueForAll : public TrueForAll_Helpers::TrueForAll<true, Pred, Types...>
+	{};
 }
 }
