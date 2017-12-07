@@ -13,7 +13,7 @@ namespace QUtils { namespace Iterable {
 	{
 		public:
 		typedef Iterator<T> iterator;
-		//typedef Iterator<const T> const_iterator;
+		typedef typename IIterable_Ptr<T>::const_iterator const_iterator;
 		
 		
 		private:
@@ -128,6 +128,25 @@ namespace QUtils { namespace Iterable {
 			>(
 				p
 			)));
+		}
+		
+		
+		//Element Access
+		const T& front() const
+		{
+			return ptr->front();
+		}
+		T& front()
+		{
+			return ptr->front();
+		}
+		const T& back() const
+		{
+			return ptr->back();
+		}
+		T& back()
+		{
+			return ptr->back();
 		}
 	};
 }
