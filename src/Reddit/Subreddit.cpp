@@ -1,7 +1,10 @@
 #include <QUtils/Reddit/Thing.h>
 #include <QUtils/Reddit/Subreddit.h>
+#include <QUtils/Reddit/Link.h>
+#include <QUtils/Reddit/Listing.h>
 
 #include <QUtils/Debug/DAssert.h>
+#include <QUtils/Exception/NotImplemented.h>
 
 #include "Macro.h"
 
@@ -41,7 +44,12 @@ namespace QUtils { namespace Reddit {
 	PROPERTY(bool, user_is_subscriber)
 	
 	
-	
+	//Methods
+	Listing<Link>* Subreddit::getListing(int limit) const
+	{
+		
+		return Thing::parseListingURL<Link>("/r/" + display_name() + ".json", "limit=" + std::to_string(limit));
+	}
 	
 	
 }

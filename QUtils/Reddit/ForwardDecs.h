@@ -8,6 +8,8 @@ namespace QUtils { namespace Reddit {
 	class Created;
 	template <class>
 	class Listing;
+	template <class>
+	class MoreListing;
 	class Subreddit;
 	class Account;
 	class Link;

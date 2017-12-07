@@ -15,6 +15,7 @@ namespace QUtils { namespace Reddit {
 		Account(RedditSystem* sys, json_ptr&&);
 		
 		public:
+		constexpr static Reddit::Kind Kind = Reddit::Kind::t2;
 		
 		int comment_karma() const;
 		bool has_mail() const;

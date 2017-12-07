@@ -9,7 +9,7 @@
 
 namespace QUtils { namespace Reddit {
 	
-	Link::Link(RedditSystem* sys, json_ptr&& j) : Thing(sys, (json_ptr&&)j), Votable(), Created()
+	Link::Link(RedditSystem* sys, json_ptr&& j) : Thing(sys, (json_ptr&&)j), Votable(), Created(), _comments(nullptr)
 	{
 		
 	}
@@ -23,7 +23,7 @@ namespace QUtils { namespace Reddit {
 	
 	Account* Link::author() const
 	{
-		throw NotImp();
+		return sys->account(json->at("author"));
 	}
 	
 	
@@ -65,7 +65,23 @@ namespace QUtils { namespace Reddit {
 	
 	
 	
+	const MoreListing<Comment>* Link::comments() const
+	{
+		if (!_comments)
+		{
+			_comments = sys->comments(id());
+		}
+		return _comments;
+	}
 	
+	MoreListing<Comment>* Link::comments()
+	{
+		if (!_comments)
+		{
+			_comments = sys->comments(id());
+		}
+		return _comments;
+	}
 	
 }
 }

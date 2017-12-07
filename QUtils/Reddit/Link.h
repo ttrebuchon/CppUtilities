@@ -15,8 +15,11 @@ namespace QUtils { namespace Reddit {
 		protected:
 		Link(RedditSystem* sys, json_ptr&&);
 		
+		mutable MoreListing<Comment>* _comments;
+		
 		
 		public:
+		constexpr static Reddit::Kind Kind = Reddit::Kind::t3;
 		
 		std::string author_name() const;
 		Account* author() const;
@@ -46,6 +49,10 @@ namespace QUtils { namespace Reddit {
 		unsigned long edited() const;
 		std::string distinguished() const;
 		bool stickied() const;
+		
+		
+		const MoreListing<Comment>* comments() const;
+		MoreListing<Comment>* comments();
 		
 		friend class RedditSystem;
 	};

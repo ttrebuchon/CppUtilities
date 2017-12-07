@@ -17,6 +17,7 @@ namespace QUtils { namespace Reddit {
 		
 		
 		public:
+		constexpr static Reddit::Kind Kind = Reddit::Kind::t1;
 		
 		virtual void refresh() override;
 		

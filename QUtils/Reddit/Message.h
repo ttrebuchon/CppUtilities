@@ -15,6 +15,7 @@ namespace QUtils { namespace Reddit {
 		Message(RedditSystem* sys, json_ptr&&);
 		
 		public:
+		constexpr static Reddit::Kind Kind = Reddit::Kind::t4;
 		
 		std::string author_name() const;
 		Account* author() const;

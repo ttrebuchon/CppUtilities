@@ -16,7 +16,9 @@ namespace QUtils { namespace Reddit {
 		Subreddit(RedditSystem* sys, json_ptr&&);
 		
 		public:
+		constexpr static Reddit::Kind Kind = Reddit::Kind::t5;
 		
+		//Attributes
 		int accounts_active() const;
 		int comment_score_hide_mins() const;
 		std::string description() const;
@@ -40,6 +42,9 @@ namespace QUtils { namespace Reddit {
 		bool user_is_moderator() const;
 		bool user_is_subscriber() const;
 		
+		
+		//Methods
+		Listing<Link>* getListing(int count = 10) const;
 		
 		
 		friend class RedditSystem;

@@ -5,10 +5,23 @@
 
 namespace QUtils { namespace Reddit {
 	
-	Thing::Thing(RedditSystem* sys, json_ptr&& json) : sys(sys), json()
+	Thing* Thing::parseURL(const std::string url, const std::string queryStr) const
+	{
+		return sys->parseURL(url, queryStr);
+	}
+	
+	Thing* Thing::parse(const std::string json) const
+	{
+		return sys->parse(json);
+	}
+	
+	Thing::Thing(RedditSystem* sys, json_ptr&& json, bool addToSys) : sys(sys), json()
 	{
 		this->json.swap(json);
-		sys->addThing(this);
+		if (addToSys)
+		{
+			sys->addThing(this);
+		}
 	}
 	
 	Thing::~Thing()
