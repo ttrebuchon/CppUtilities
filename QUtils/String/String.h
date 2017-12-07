@@ -104,6 +104,11 @@ namespace QUtils
 		String padLeft(int totLen, char c = ' ');
 		String padRight(int totLen, char c = ' ');
 		
+		inline std::string& std_str()
+		{ return str; }
+		inline const std::string& std_str() const
+		{ return str; }
+		
 		
 		//Iterators
 		class iterator
