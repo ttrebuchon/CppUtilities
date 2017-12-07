@@ -78,8 +78,10 @@ World = $(call getobjs,$(SRC)/World/)
 
 DBC = $(call getobjs,$(SRC)/DBC/)
 
+Reddit = $(call getobjs,$(SRC)/Reddit/)
 
-objects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen) $(Genetic) $(Serialization) $(Graphs) $(World) $(DBC)
+
+objects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen) $(Genetic) $(Serialization) $(Graphs) $(World) $(DBC) $(Reddit)
 
 
 #Namespace name, used once (Not important)
