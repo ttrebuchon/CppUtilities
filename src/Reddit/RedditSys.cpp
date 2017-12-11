@@ -181,10 +181,7 @@ namespace QUtils { namespace Reddit {
 	
 	void RedditSystem::getJSON(nlohmann::json& j, const std::string path, const std::string query) const
 	{
-		std::cerr << (api + path) << "?" << query << std::endl;
-		std::ofstream file("URL.txt");
-		file << (api + path) << "?" << query << std::endl;
-		file.close();
+		//std::cerr << (api + path) << "?" << query << std::endl;
 		{
 			const std::string res = this->getPage(api + path, query);
 			j = nlohmann::json::parse(res);
