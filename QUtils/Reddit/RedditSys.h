@@ -16,6 +16,8 @@ namespace QUtils { namespace Reddit {
 		
 		virtual std::string getPage(const std::string URL, const std::string queryStr) const = 0;
 		
+		void getJSON(nlohmann::json&, const std::string path, const std::string queryStr) const;
+		
 		void addThing(Thing*);
 		
 		mutable std::map<std::string, Thing*> thingsByName;

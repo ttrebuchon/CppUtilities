@@ -2,6 +2,7 @@
 #include <QUtils/Reddit/RedditSys.h>
 
 #include <QUtils/Exception/NotImplemented.h>
+#include <QUtils/Debug/dassert.h>
 
 namespace QUtils { namespace Reddit {
 	
@@ -22,6 +23,8 @@ namespace QUtils { namespace Reddit {
 		{
 			sys->addThing(this);
 		}
+		dassert(this->json->count("id") > 0);
+		dassert(this->json->count("name") > 0);
 	}
 	
 	Thing::~Thing()

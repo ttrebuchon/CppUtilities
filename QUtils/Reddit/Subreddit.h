@@ -43,6 +43,12 @@ namespace QUtils { namespace Reddit {
 		bool user_is_subscriber() const;
 		
 		
+		virtual typename Reddit::Kind kind() const override
+		{
+			return Kind;
+		}
+		
+		
 		//Methods
 		Listing<Link>* getListing(int count = 10) const;
 		

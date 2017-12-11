@@ -1,5 +1,6 @@
 #include <QUtils/Reddit/Comment.h>
 #include <QUtils/Reddit/RedditSys.h>
+#include <QUtils/Reddit/MoreListing.h>
 
 #include <QUtils/Debug/DAssert.h>
 #include <QUtils/Exception/NotImplemented.h>
@@ -8,8 +9,12 @@
 
 namespace QUtils { namespace Reddit {
 	
-	Comment::Comment(RedditSystem* sys, json_ptr&& j) : Thing(sys, (json_ptr&&)j), Votable(), Created()
+	Comment::Comment(RedditSystem* sys, json_ptr&& j) : Thing(sys, std::forward<json_ptr>(j)), Votable(), Created()
 	{
+		dassert(json->count("author") > 0);
+		dassert(json->count("replies") > 0);
+		dassert(json->count("body") > 0);
+		dassert(json->count("body_html") > 0);
 		
 	}
 	
@@ -57,9 +62,28 @@ namespace QUtils { namespace Reddit {
 	{
 		throw NotImp();
 	}
-	Listing<Thing>* Comment::replies() const
+	MoreListing<Comment>* Comment::replies() const
 	{
-		throw NotImp();
+		if (_replies == NULL)
+		{
+			if (!json->at("replies").is_object())
+			{
+			json->at("replies") = {
+				{"kind",  "Listing"},
+				{"data", {
+					
+					{"children",  "[]"_json },
+					{"after", "null"_json},
+					{"before", "null"_json},
+					{"modhash", "null"_json}
+					
+				}
+				}
+			};
+			}
+			_replies = new MoreListing<Comment>(sys, std::make_shared<nlohmann::json>(json->at("replies").at("data")));
+		}
+		return _replies;
 	}
 	PROPERTY(bool, saved)
 	PROPERTY(bool, score_hidden)

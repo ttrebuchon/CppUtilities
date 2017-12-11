@@ -15,3 +15,7 @@
 #include "Account.h"
 #include "More.h"
 #include "Thing.hpp"
+
+namespace QUtils { namespace Reddit {
+}
+}

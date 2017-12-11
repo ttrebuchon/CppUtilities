@@ -35,6 +35,12 @@ namespace QUtils { namespace Reddit {
 		Subreddit* subreddit() const;
 		bool was_comment() const;
 		
+		
+		virtual typename Reddit::Kind kind() const override
+		{
+			return Kind;
+		}
+		
 		friend class RedditSystem;
 	};
 	

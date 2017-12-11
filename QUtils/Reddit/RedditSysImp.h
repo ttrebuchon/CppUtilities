@@ -23,6 +23,7 @@ namespace QUtils { namespace Reddit {
 			{
 				throw MissingJSONException().File(__FILE__).Line(__LINE__).Function(__func__).Msg("URL doesn't have \".json\" extension: \"" + URL + "\"");
 			}
+			
 			try
 			{
 			return func(URL + "?" + queryStr);

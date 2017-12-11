@@ -35,7 +35,7 @@ namespace QUtils { namespace Reddit {
 		
 		std::string id() const;
 		std::string name() const;
-		Kind kind() const;
+		virtual Kind kind() const = 0;
 		
 		virtual void refresh();
 		

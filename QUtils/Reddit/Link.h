@@ -51,6 +51,12 @@ namespace QUtils { namespace Reddit {
 		bool stickied() const;
 		
 		
+		virtual typename Reddit::Kind kind() const override
+		{
+			return Kind;
+		}
+		
+		
 		const MoreListing<Comment>* comments() const;
 		MoreListing<Comment>* comments();
 		

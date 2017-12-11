@@ -15,6 +15,7 @@
 
 #ifdef DEBUG
 #include <iostream>
+#include <fstream>
 #endif
 
 namespace QUtils { namespace Reddit {
@@ -178,15 +179,24 @@ namespace QUtils { namespace Reddit {
 	
 	
 	
-	
+	void RedditSystem::getJSON(nlohmann::json& j, const std::string path, const std::string query) const
+	{
+		std::cerr << (api + path) << "?" << query << std::endl;
+		std::ofstream file("URL.txt");
+		file << (api + path) << "?" << query << std::endl;
+		file.close();
+		{
+			const std::string res = this->getPage(api + path, query);
+			j = nlohmann::json::parse(res);
+		}
+	}
 	
 	void RedditSystem::addThing(Thing* thing)
 	{
+		dassert(thing->name() != "");
+		dassert(thingsByName.count(thing->name()) <= 0);
 		items.insert(thing);
-		if (thingsByName.count(thing->name()) <= 0 && thing->name() != "")
-		{
-			thingsByName[thing->name()] = thing;
-		}
+		thingsByName[thing->name()] = thing;
 	}
 	
 	

@@ -13,6 +13,7 @@ namespace QUtils { namespace Reddit {
 		private:
 		
 		protected:
+		mutable MoreListing<Comment>* _replies = NULL;
 		Comment(RedditSystem* sys, json_ptr&&);
 		
 		
@@ -40,7 +41,7 @@ namespace QUtils { namespace Reddit {
 		int num_reports() const;
 		std::string parent_id() const;
 		Comment* parent() const;
-		Listing<Thing>* replies() const;
+		MoreListing<Comment>* replies() const;
 		bool saved() const;
 		bool score_hidden() const;
 		std::string subreddit_name() const;
@@ -49,7 +50,16 @@ namespace QUtils { namespace Reddit {
 		std::string distinguished() const;
 		
 		
+		virtual typename Reddit::Kind kind() const override
+		{
+			return Kind;
+		}
+		
+		
 		friend class RedditSystem;
+		
+		template <class>
+		friend class MoreListing;
 	};
 	
 	

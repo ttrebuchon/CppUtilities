@@ -28,6 +28,11 @@ namespace QUtils { namespace Reddit {
 		int link_karma() const;
 		bool over_18() const;
 		
+		virtual typename Reddit::Kind kind() const override
+		{
+			return Kind;
+		}
+		
 		friend class RedditSystem;
 	};
 	

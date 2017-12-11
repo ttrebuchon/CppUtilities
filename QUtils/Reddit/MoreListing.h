@@ -1,8 +1,10 @@
 #pragma once
-
 #include "Listing.h"
+#include "Comment.h"
+#include "More.h"
 
 #include <QUtils/Exception/NotImplemented.h>
+#include <string>
 
 namespace QUtils { namespace Reddit {
 	
@@ -10,18 +12,33 @@ namespace QUtils { namespace Reddit {
 	class MoreListing : public Listing<T>
 	{
 		protected:
-		const nlohmann::json* more;
+		std::list<More*> more;
 		
-		MoreListing(RedditSystem* sys, std::shared_ptr<nlohmann::json> jptr) : Listing<T>(sys), more(nullptr)
+		public:
+		
+		MoreListing(RedditSystem* sys, std::shared_ptr<nlohmann::json> jptr) : Listing<T>(sys), more()
 		{
 			this->json = jptr;
-			more = nullptr;
+			
+			dassert(this->json->count("after") > 0);
+			dassert(this->json->count("before") > 0);
+			dassert(this->json->count("modhash") > 0);
+			
 			T* c;
-			for (const auto& child : this->json->at("children"))
+			for (auto& child : this->json->at("children"))
 			{
 				if (StringToKind(child.at("kind")) == Kind::more)
 				{
-					more = &child;
+					std::string oldName = child.at("data").at("name").template get<std::string>();
+					child.at("data").at("name") = "more_" + oldName;
+					more.push_back(
+					new More(
+						sys,
+						std::make_unique<nlohmann::json>(
+						child.at("data")
+						)
+					)
+					);
 					continue;
 				}
 				if (sys->thingsByName.count(child.at("data").at("name")) > 0)
@@ -43,17 +60,32 @@ namespace QUtils { namespace Reddit {
 			
 			
 		}
-		public:
 		
 		
 		
-		std::size_t loadMore()
+		std::size_t loadMore(bool all = false)
 		{
+			for (auto& m : more)
+			{
+				for (auto& mm : m->children())
+				{
+					std::cerr << mm << "\n";
+				}
+			}
 			throw NotImp();
+		}
+		
+		inline bool canLoadMore() const
+		{
+			return more.size() > 0;
 		}
 		
 		friend class RedditSystem;
 	};
+	
+	
+	template <>
+	std::size_t MoreListing<Comment>::loadMore(bool all);
 	
 }
 }

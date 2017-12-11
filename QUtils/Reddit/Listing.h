@@ -3,6 +3,7 @@
 #include <list>
 #include <QUtils/Iterable/IIterable.h>
 #include <QUtils/Types/Void_t.h>
+#include <QUtils/Debug/dassert.h>
 
 #include "Thing.h"
 #include "RedditSys.h"
@@ -46,6 +47,9 @@ namespace QUtils { namespace Reddit {
 		
 		Listing(RedditSystem* sys, std::shared_ptr<nlohmann::json> jptr) : Iterable::IIterable<T*>(children), sys(sys), json(jptr), children(), things()
 		{
+			dassert(json->count("after") > 0);
+			dassert(json->count("before") > 0);
+			dassert(json->count("modhash") > 0);
 			T* c;
 			for (const auto& child : json->at("children"))
 			{

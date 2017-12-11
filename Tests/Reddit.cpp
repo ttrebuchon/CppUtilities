@@ -35,6 +35,8 @@ DEF_TEST(Reddit)
 	dout << "[\n" << links->before() << "\n" << links->after() << "\n" << links->modhash() << "\n]\n";
 	
 	
+	
+	dout << "Checking duplicate links...\n";
 	std::set<Reddit::Link*> linksSet(links->begin(), links->end());
 	{
 	auto len1 = linksSet.size();
@@ -47,7 +49,7 @@ DEF_TEST(Reddit)
 	assert_ex(linksSet.size() == len1);
 	}
 	
-	std::set<Reddit::Account*> accounts;
+	/*std::set<Reddit::Account*> accounts;
 	for (auto link : *links)
 	{
 		accounts.insert(link->author());
@@ -57,7 +59,7 @@ DEF_TEST(Reddit)
 	{
 		dout << auth->name() << "\n";
 		dout << auth->has_verified_email() << "\n";
-	}
+	}*/
 	
 	auto link2 = links->front();
 	
@@ -75,17 +77,67 @@ DEF_TEST(Reddit)
 	dout << "Loading more...\n";
 	
 	comm2_len = 0;
-	int loaded = comments2->loadMore();
+	int loaded = comments2->loadMore(true);
 	dout << loaded << " more loaded\n\n\n";
+	
+	
+	std::set<Reddit::Comment*> searched, toSearch;
+	
 	for (auto com : *comments2)
 	{
-		dout << com << "\n\t" << com->name() << "\n";
-		++comm2_len;
+		toSearch.insert(com);
 	}
+	
+	search:
+	
+	for (auto it = toSearch.begin(); it != toSearch.end();)
+	{
+		auto pcom = *it;
+		toSearch.erase(it);
+		searched.insert(pcom);
+		pcom->replies()->loadMore(true);
+		bool added = false;
+		for (auto com : *pcom->replies())
+		{
+			if (toSearch.count(com) <= 0 && searched.count(com) <= 0)
+			{
+				toSearch.insert(com);
+				added = true;
+			}
+		}
+		
+		searched.insert(pcom);
+		it = toSearch.begin();
+	}
+	
+	for (auto it = searched.begin(); it != searched.end();)
+	{
+		if ((*it)->replies()->canLoadMore())
+		{
+			toSearch.insert(*it);
+			it = searched.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+	
+	if (toSearch.size() > 0)
+	{
+		goto search;
+	}
+	
+	comm2_len = searched.size();
 	
 	dout << "\n\nLen: " << comm2_len << "\n";
 	
 	dout << "Total Len: " << link2->num_comments() << "\n\n";
+	
+	for (auto comment : searched)
+	{
+		assert_ex(!comment->replies()->canLoadMore());
+	}
 	
 	
 	if (links)

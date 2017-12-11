@@ -8,7 +8,8 @@ namespace QUtils { namespace Reddit {
 	class Created : virtual public Thing
 	{
 		protected:
-		Created() : Thing(nullptr, nullptr) {}
+		Created();
+		Created(RedditSystem*, json_ptr&&);
 		
 		public:
 		
