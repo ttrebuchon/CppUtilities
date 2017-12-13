@@ -23,7 +23,12 @@ DEF_TEST(Reddit)
 	assert_ex(link1->subreddit_id() == gaming->id());
 	assert_ex(link1->subreddit() == gaming);
 	
-	auto links = gaming->getListing();
+	auto nosleep = sys->subreddit("nosleep");
+	auto scp = sys->subreddit("scp");
+	auto advAni = sys->subreddit("AdviceAnimals");
+	
+	auto testSub = advAni;
+	auto links = testSub->getListing();
 	dout << "Retrieved!\n";
 	for (auto link : *links)
 	{
@@ -40,7 +45,7 @@ DEF_TEST(Reddit)
 	std::set<Reddit::Link*> linksSet(links->begin(), links->end());
 	{
 	auto len1 = linksSet.size();
-	auto links2 = gaming->getListing(5);
+	auto links2 = testSub->getListing(5);
 	
 	for (auto link : *links2)
 	{
@@ -62,6 +67,7 @@ DEF_TEST(Reddit)
 	}*/
 	
 	auto link2 = links->front();
+	dout << "Examining link [" << link2->permalink() << "]\n";
 	
 	auto comments2 = link2->comments();
 	
