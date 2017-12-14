@@ -3,6 +3,7 @@
 #include <iostream>
 #include <exception>
 #include <sstream>
+#include <QUtils/Debug/AssertEx.h>
 
 
 
@@ -39,7 +40,7 @@ bool _stringException_caller(auto file, auto line, auto func, auto exp)
 	
 }
 
-#define assert_ex(x) (( x ) ? true : _stringException_caller(__FILE__, __LINE__, __FUNCTION__, #x))
+//#define assert_ex(x) (( x ) ? true : _stringException_caller(__FILE__, __LINE__, __FUNCTION__, #x))
 
 #define assert_not_reached() _stringException_caller(__FILE__, __LINE__, __FUNCTION__, "Not a valid test path!")
 
