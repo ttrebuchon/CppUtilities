@@ -20,6 +20,7 @@ namespace QUtils { namespace Reddit {
 		{
 			this->json = jptr;
 			
+			dassert(this->json->count("children") > 0);
 			dassert(this->json->count("after") > 0);
 			dassert(this->json->count("before") > 0);
 			dassert(this->json->count("modhash") > 0);
@@ -31,6 +32,12 @@ namespace QUtils { namespace Reddit {
 				{
 					std::string oldName = child.at("data").at("name").template get<std::string>();
 					child.at("data").at("name") = "more_" + oldName;
+					if (sys->thingsByName.count("more_" + oldName) > 0)
+					{
+						more.push_back(dynamic_cast<More*>(sys->thingsByName.at("more_" + oldName)));
+					}
+					else
+					{
 					more.push_back(
 					new More(
 						sys,
@@ -39,6 +46,7 @@ namespace QUtils { namespace Reddit {
 						)
 					)
 					);
+					}
 					continue;
 				}
 				if (sys->thingsByName.count(child.at("data").at("name")) > 0)

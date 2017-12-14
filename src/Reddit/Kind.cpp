@@ -24,6 +24,7 @@ namespace QUtils { namespace Reddit {
 		CASE("t5", t5);
 		CASE("award", t6);
 		CASE("t6", t6);
+		CASE("Listing", Listing);
 		
 		return Kind::none;
 		

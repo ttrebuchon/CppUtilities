@@ -14,14 +14,15 @@ namespace QUtils { namespace Reddit {
 		t3,
 		t4,
 		t5,
-		t6
+		t6,
+		Listing
 	};
 	
 	template <Kind K>
 	constexpr const char* KindToString()
 	{
 		static_assert((int)K >= 0, "");
-		static_assert((int)K <= 7, "");
+		static_assert((int)K <= 8, "");
 		switch (K)
 		{
 			case Kind::none:
@@ -47,6 +48,9 @@ namespace QUtils { namespace Reddit {
 			
 			case Kind::t6:
 				return "award";
+				
+			case Kind::Listing:
+				return "Listing";
 		}
 	}
 	
@@ -77,6 +81,9 @@ namespace QUtils { namespace Reddit {
 			
 			case Kind::t6:
 				return "award";
+				
+			case Kind::Listing:
+				return "Listing";
 			
 			default:
 				return "none";
@@ -104,6 +111,7 @@ namespace QUtils { namespace Reddit {
 		CASE("t5", t5);
 		CASE("award", t6);
 		CASE("t6", t6);
+		CASE("Listing", Listing);
 		
 		return Kind::none;
 		

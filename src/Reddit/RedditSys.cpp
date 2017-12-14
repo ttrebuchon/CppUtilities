@@ -8,6 +8,7 @@
 #include <QUtils/Reddit/Comment.h>
 
 #include <QUtils/Debug/DAssert.h>
+#include <QUtils/Debug/AssertEx.h>
 #include <QUtils/String.h>
 #include <QUtils/Exception/NotImplemented.h>
 #include <QUtils/Exception/Exception.h>
@@ -28,7 +29,16 @@ namespace QUtils { namespace Reddit {
 	}
 	
 	QUTILS_CUSTOM_EXCEPTION(ParseException,);
-	QUTILS_CUSTOM_EXCEPTION(InvalidURLException,); 
+	QUTILS_CUSTOM_EXCEPTION(InvalidURLException,);
+	
+	
+	RedditSystem::~RedditSystem()
+	{
+		for (auto thing : items)
+		{
+			delete thing;
+		}
+	}
 	
 	Subreddit* RedditSystem::subreddit(const std::string name)
 	{
@@ -182,18 +192,38 @@ namespace QUtils { namespace Reddit {
 	void RedditSystem::getJSON(nlohmann::json& j, const std::string path, const std::string query) const
 	{
 		//std::cerr << (api + path) << "?" << query << std::endl;
+		std::string res;
+		try
 		{
-			const std::string res = this->getPage(api + path, query);
+			res = this->getPage(api + path, query);
 			j = nlohmann::json::parse(res);
+		}
+		catch (...)
+		{
+			std::ofstream file;
+			file.open("BadJSON.txt", std::ofstream::app);
+			file << "\n\n" << (api + path + "?" + query) << "\n\n";
+			file.close();
+			std::cerr << "[" << (api + path + "?" + query) << "]\n";
+			std::cerr << "\n\n||" << res << "||\n\n";
+			throw;
 		}
 	}
 	
 	void RedditSystem::addThing(Thing* thing)
 	{
+		try
+		{
 		dassert(thing->name() != "");
-		dassert(thingsByName.count(thing->name()) <= 0);
+		assert_ex(thingsByName.count(thing->name()) <= 0);
 		items.insert(thing);
 		thingsByName[thing->name()] = thing;
+		}
+		catch (...)
+		{
+			std::cerr << "[" << thing->name() << "]\n";
+			throw;
+		}
 	}
 	
 	
@@ -240,6 +270,9 @@ namespace QUtils { namespace Reddit {
 					case Kind::t3:
 					return parseLink(j);
 					
+					case Kind::Listing:
+					throw NotImp().Msg(std::string("Kind: ") + KindToString<Kind::Listing>());
+					
 					default:
 					throw NotImp().Msg(std::string("Kind: ") + KindToString(StringToKind(j.at("kind"))));
 				}
@@ -247,6 +280,10 @@ namespace QUtils { namespace Reddit {
 		}
 		else if (j.is_array())
 		{
+			if (j.size() == 0)
+			{
+				return nullptr;
+			}
 			
 		}
 		throw NotImp();
@@ -277,6 +314,18 @@ namespace QUtils { namespace Reddit {
 		return std::make_shared<nlohmann::json>(data);
 	}
 	
+	void RedditSystem::getCommentJSON(nlohmann::json& json, const std::string link_id, const std::string comment_id, bool includeReplies) const
+	{
+		if (!includeReplies)
+		{
+			getJSON(json, "comments/" + link_id + "/comment/" + comment_id + ".json", "limit=1");
+		}
+		else
+		{
+			getJSON(json, "comments/" + link_id + "/comment/" + comment_id + ".json", "");
+		}
+	}
+	
 	Comment* RedditSystem::parseComment(nlohmann::json& j)
 	{
 		dassert(j.count("kind") == 1);
@@ -285,7 +334,48 @@ namespace QUtils { namespace Reddit {
 		nlohmann::json& data = j.at("data");
 		dassert(data.is_object());
 		
-		return new Comment(this, std::make_unique<nlohmann::json>(data));
+		if (thingsByName.count(data.at("name")) <= 0)
+		{
+			return new Comment(this, std::make_unique<nlohmann::json>(data));
+		}
+		
+		Comment* obj = dynamic_cast<Comment*>(thingsByName.at(data.at("name")));
+		dassert(obj != NULL);
+		
+		bool doReplies = false;
+		
+		if (data.count("replies") > 0)
+		{
+			if (data.at("replies").is_object())
+			{
+				doReplies = true;
+			}
+			
+		}
+		
+		if (doReplies)
+		{
+			dassert(StringToKind(data.at("replies").at("kind").get<std::string>()) == Kind::Listing);
+			nlohmann::json& replies = data.at("replies").at("data");
+			auto list = new MoreListing<Comment>(this, std::make_shared<nlohmann::json>(replies));
+			list->loadMore(true);
+			
+			for (auto& reply : *list)
+			{
+				if (reply == nullptr)
+				{
+					continue;
+				}
+				if (std::find(obj->replies()->begin(), obj->replies()->end(), reply) == obj->replies()->end())
+				{
+					obj->replies()->push_back(reply);
+				}
+			}
+		}
+		
+		*obj->json = data;
+		
+		return obj;
 	}
 	
 	Account* RedditSystem::parseAccount(nlohmann::json& j)

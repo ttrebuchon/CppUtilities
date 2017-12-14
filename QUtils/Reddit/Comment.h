@@ -20,7 +20,7 @@ namespace QUtils { namespace Reddit {
 		public:
 		constexpr static Reddit::Kind Kind = Reddit::Kind::t1;
 		
-		virtual void refresh() override;
+		virtual void refresh(bool thorough = false) override;
 		
 		std::string approved_by() const;
 		std::string author_name() const;

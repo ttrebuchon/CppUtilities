@@ -145,6 +145,102 @@ DEF_TEST(Reddit)
 		assert_ex(!comment->replies()->canLoadMore());
 	}
 	
+	auto comment = comments2->front();
+	dout << "Len: " << comment->replies()->toList().size() << "\n";
+	comment->refresh();
+	dout << "Len: " << comment->replies()->toList().size() << "\n";
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	toSearch.clear();
+	searched.clear();
+	
+	for (auto com : *comments2)
+	{
+		toSearch.insert(com);
+	}
+	
+	search2:
+	
+	for (auto it = toSearch.begin(); it != toSearch.end();)
+	{
+		auto pcom = *it;
+		toSearch.erase(it);
+		searched.insert(pcom);
+		dout << pcom->name() << ", " << std::flush;
+		pcom->refresh();
+		pcom->replies()->loadMore(true);
+		bool added = false;
+		for (auto com : *pcom->replies())
+		{
+			if (toSearch.count(com) <= 0 && searched.count(com) <= 0)
+			{
+				toSearch.insert(com);
+				added = true;
+			}
+		}
+		
+		searched.insert(pcom);
+		it = toSearch.begin();
+	}
+	
+	for (auto it = searched.begin(); it != searched.end();)
+	{
+		if ((*it)->replies()->canLoadMore())
+		{
+			toSearch.insert(*it);
+			it = searched.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+	
+	if (toSearch.size() > 0)
+	{
+		//goto search2;
+	}
+	dout << "\n\n";
+	
+	comm2_len = searched.size();
+	
+	dout << "\n\nLen: " << comm2_len << "\n";
+	
+	dout << "Total Len: " << link2->num_comments() << "\n\n";
+	
+	for (auto comment : searched)
+	{
+		assert_ex(!comment->replies()->canLoadMore());
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	if (links)
 	{

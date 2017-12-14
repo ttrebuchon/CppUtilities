@@ -72,6 +72,16 @@ namespace QUtils { namespace Reddit {
 			}
 		}
 		
+		void push_back(T* t)
+		{
+			if (t == nullptr)
+			{
+				return;
+			}
+			things[t->name()] = t;
+			children.push_back(t);
+		}
+		
 		public:
 		
 		typedef typename Iterable::IIterable<T*>::iterator iterator;

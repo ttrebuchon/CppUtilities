@@ -35,7 +35,7 @@ namespace QUtils { namespace Reddit {
 		if (link_id.substr(0, 3) != "t3_")
 		{
 			Comment* parent = dynamic_cast<Comment*>(sys->thingsByName.at(parentName));
-			link_id = parent->link_id();
+			link_id = "t3_" + parent->link_id();
 		}
 		const std::string id = more->id();
 		const std::string path = "/api/morechildren.json";

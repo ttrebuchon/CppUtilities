@@ -42,7 +42,7 @@ namespace QUtils { namespace Reddit {
 		return json->at("name");
 	}
 	
-	void Thing::refresh()
+	void Thing::refresh(bool thorough)
 	{
 		throw NotImp();
 	}

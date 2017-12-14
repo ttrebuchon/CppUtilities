@@ -1,6 +1,7 @@
 #include <QUtils/Reddit/Comment.h>
 #include <QUtils/Reddit/RedditSys.h>
 #include <QUtils/Reddit/MoreListing.h>
+#include <QUtils/Reddit/Link.h>
 
 #include <QUtils/Debug/DAssert.h>
 #include <QUtils/Exception/NotImplemented.h>
@@ -18,9 +19,12 @@ namespace QUtils { namespace Reddit {
 		
 	}
 	
-	void Comment::refresh()
+	void Comment::refresh(bool thorough)
 	{
-		throw NotImp();
+		nlohmann::json j;
+		sys->getCommentJSON(j, this->link_id(), this->id(), thorough);
+		auto other = sys->parseJSON(j[1].at("data").at("children")[0]);
+		dassert(other == this);
 	}
 	
 	#define PROPERTY(TYPE, NAME) CLASS_PROPERTY(Comment, TYPE, NAME)
@@ -53,7 +57,11 @@ namespace QUtils { namespace Reddit {
 	{
 		throw NotImp();
 	}
-	PROPERTY(std::string, link_id)
+	std::string Comment::link_id() const
+	{
+		std::string str = json->at("link_id").get<std::string>();
+		return str.length() >= 3 ? str.substr(3) : str;
+	}
 	PROPERTY(std::string, link_title)
 	PROPERTY(std::string, link_url)
 	PROPERTY(int, num_reports)
