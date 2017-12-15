@@ -167,11 +167,11 @@ void Testing::run()
 	RUN(Graphs_DependencyGraph());
 	RUN(Graphs());
 	RUN(TravellingSalesman());
-	RUN(World_Physics());
 	RUN(DBC());
 	RUN(Iterable());
-	RUN(Reddit());
+	RUN(World_Physics());
 	#ifndef SHORT_TEST
+	RUN(Reddit());
 	RUN(Multi_ThreadPool());
 	RUN(Network_Sockets());
 	RUN(Network_ServiceProtocol());
