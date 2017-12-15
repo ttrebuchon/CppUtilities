@@ -108,6 +108,16 @@ namespace QUtils { namespace World {
 	}
 	
 	template <class T, class G>
+	constexpr Vector<decltype(T() * G())> operator*(const G l, const Vector<T> r)
+	{
+		return Vector<decltype(T() * G())>(
+		l * r.x,
+		l * r.y,
+		l * r.z
+		);
+	}
+	
+	template <class T, class G>
 	Vector<T>& operator*=(Vector<T>& l, const G r)
 	{
 		l.x *= r;
@@ -120,6 +130,16 @@ namespace QUtils { namespace World {
 	constexpr auto operator*(const Vector<T> l, const Vector<G> r)
 	{
 		return l.dot(r);
+	}
+	
+	template <class T, class G>
+	constexpr Vector<decltype(T() / G())> operator/(const Vector<T> l, const G r)
+	{
+		return Vector<decltype(T() / G())>(
+		l.x / r,
+		l.y / r,
+		l.z / r
+		);
 	}
 	
 	template <class T, class G>

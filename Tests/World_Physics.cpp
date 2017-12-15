@@ -1,6 +1,6 @@
 #include "../Tests_Helpers.h"
 
-#include <QUtils/World/Physics/Newtonian/Newtonian.h>
+#include <QUtils/World/Physics/Physics.h>
 constexpr QUtils::World::Vector<double> testF()
 {
 	return QUtils::World::Vector<double>();
@@ -8,10 +8,7 @@ constexpr QUtils::World::Vector<double> testF()
 
 DEF_TEST(World_Physics)
 {
-	using namespace QUtils::World::Physics::Newtonian;
-	
-	Environment env;
-	Particle part;
+	using namespace QUtils::World::Physics;
 	
 	
 	QUtils::World::Vector<double> v = QUtils::World::Vector<double>{1, 2, 3};
@@ -83,6 +80,44 @@ DEF_TEST(World_Physics)
 		static_assert(Vec(1, 0, 0).magnitude() == 1);
 		static_assert(Vec(1, 0, 0).value() == 1);
 		
+		
+	}
+	
+	
+	
+	
+	
+	{
+		System<double> sys;
+		sys.timescale = pow(10, -3);
+		sys.env = std::make_shared<Environment<double>>();
+		sys.env->gravity = pow(10, 11);
+		auto part = std::make_shared<StandardParticle<double>>();
+		sys.particles.push_back(part);
+		
+		
+		sys.env->forces.push_back(std::make_shared<UniformGravity<double>>(Vec(0, -10, 0)));
+		sys.env->forces.push_back(std::make_shared<MagneticFieldForce<double>>());
+		sys.env->fields.push_back(std::make_shared<UniformMagnetic<double>>(Vec(10, 0, 0)));
+		
+		part->_mass = 1000;
+		part->properties["charge"] = {-1000, 0, 0};
+		
+		auto part2 = std::make_shared<StandardParticle<double>>();
+		sys.particles.push_back(part2);
+		part2->position({1000, 20, 0});
+		part2->_mass = 1;
+		part2->properties["charge"] = {1, 0, 0};
+		
+		dout << "\n\n" << to_string(part->position()) << "\n";
+		
+		for (int i = 0; i < 10000; ++i)
+		{
+			sys.step();
+			dout << "\n\nTime: " << sys.ticks*sys.timescale << "s\n";
+			dout << "P1: " << to_string(part->position()) << "\n\tv: " << to_string(part->velocity()) << "\n\tF: " << to_string(sys.forces.at(part)) << "\n";
+			dout << "P2: " << to_string(part2->position()) << "\n\tv: " << to_string(part2->velocity()) << "\n\tF: " << to_string(sys.forces.at(part2)) << "\n\n";
+		}
 		
 	}
 	
