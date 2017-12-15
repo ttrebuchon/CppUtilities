@@ -114,9 +114,13 @@ DEF_TEST(World_Physics)
 		for (int i = 0; i < 10000; ++i)
 		{
 			sys.step();
+			if (i % 1000 == 999)
+			{
 			dout << "\n\nTime: " << sys.ticks*sys.timescale << "s\n";
 			dout << "P1: " << to_string(part->position()) << "\n\tv: " << to_string(part->velocity()) << "\n\tF: " << to_string(sys.forces.at(part)) << "\n";
 			dout << "P2: " << to_string(part2->position()) << "\n\tv: " << to_string(part2->velocity()) << "\n\tF: " << to_string(sys.forces.at(part2)) << "\n\n";
+			}
+			
 		}
 		
 	}
