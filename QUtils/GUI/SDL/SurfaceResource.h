@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Resource.h"
+#include <QUtils/Drawing/SDL/Surface.h>
 
 namespace QUtils::Drawing::SDL
 {
