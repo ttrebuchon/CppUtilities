@@ -12,22 +12,22 @@
 
 namespace QUtils::GUI::SDL
 {
-	SDLScrollView::SDLScrollView(const std::string id, bool touch) : View(id, touch), pos_m(), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1)
+	SDLScrollView::SDLScrollView(const std::string id, bool touch) : View(id, touch), pos_m(), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1), stickBottom(false)
 	{
 		registerEvents();
 	}
 	
-	SDLScrollView::SDLScrollView(bool touch) : View(touch), pos_m(), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1)
+	SDLScrollView::SDLScrollView(bool touch) : View(touch), pos_m(), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1), stickBottom(false)
 	{
 		registerEvents();
 	}
 	
-	SDLScrollView::SDLScrollView(const std::string id) : View(id), pos_m(), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1)
+	SDLScrollView::SDLScrollView(const std::string id) : View(id), pos_m(), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1), stickBottom(false)
 	{
 		registerEvents();
 	}
 	
-	SDLScrollView::SDLScrollView() : View(), pos_m(), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1)
+	SDLScrollView::SDLScrollView() : View(), pos_m(), child(NULL), background(NULL), posx(0), posy(0), childW(-1), childH(-1), stickBottom(false)
 	{
 		registerEvents();
 	}
@@ -94,6 +94,10 @@ namespace QUtils::GUI::SDL
 		std::lock_guard<std::recursive_mutex> lock(this_m);
 		if (child != NULL)
 		{
+			if (child->changed())
+			{
+				childChanged = true;
+			}
 			if ((child->width() != childW) || (child->height() != childH))
 			{
 				child->width(childW);
@@ -161,6 +165,14 @@ namespace QUtils::GUI::SDL
 		ch *= h;
 		
 		double posx, posy;
+		
+		
+		
+		if (stickBottom && childChanged)
+		{
+			this->posy = -(INT_MAX-1);
+			childChanged = false;
+		}
 		
 		
 		double childRenX, childRenY;
@@ -245,6 +257,16 @@ namespace QUtils::GUI::SDL
 	{
 		_changed = true;
 		childH = value;
+	}
+	
+	bool SDLScrollView::stickToBottom() const
+	{
+		return stickBottom;
+	}
+	
+	void SDLScrollView::stickToBottom(bool value)
+	{
+		stickBottom = value;
 	}
 	
 	

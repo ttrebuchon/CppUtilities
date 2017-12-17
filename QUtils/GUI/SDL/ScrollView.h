@@ -17,6 +17,9 @@ namespace QUtils::GUI::SDL
 		
 		double childW, childH;
 		
+		bool stickBottom;
+		bool childChanged;
+		
 		public:
 		SDLScrollView(const std::string id, bool touch);
 		SDLScrollView(bool touch);
@@ -44,5 +47,8 @@ namespace QUtils::GUI::SDL
 		virtual void childWidth(const double);
 		virtual double childHeight() const;
 		virtual void childHeight(const double);
+		
+		virtual bool stickToBottom() const;
+		virtual void stickToBottom(bool value);
 	};
 }

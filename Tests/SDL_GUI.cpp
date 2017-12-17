@@ -432,6 +432,9 @@ bool Test_SDL_GUI(std::ostream** GUI_out, QUtils::GUI::SDL::SDLAppWindow*& windo
 	
 	
 	auto textScroll = new SDLScrollView("TextScrollView", TOUCH);
+	assert_ex(!textScroll->stickToBottom());
+	textScroll->stickToBottom(true);
+	assert_ex(textScroll->stickToBottom());
 	
 	auto text = new SDLStreamLabelViewComponent("TextScroll_TextComp", TOUCH, "font1", 50);
 	*GUI_out = new std::ostream(text->buf());
@@ -540,7 +543,7 @@ bool Test_SDL_GUI(std::ostream** GUI_out, QUtils::GUI::SDL::SDLAppWindow*& windo
 	}
 	
 	window->invokeUpdate().get();
-	sleep(10000);
+	sleep(500);
 	
 	window->handleEvents();
 	
