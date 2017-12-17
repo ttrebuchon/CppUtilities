@@ -102,7 +102,7 @@ namespace QUtils::GUI::SDL
 		std::lock_guard<std::recursive_mutex> lock(this_m);
 		if (changed())
 		{
-			std::cerr << "Updating (_textChanged = " << _textChanged << ")\n";
+			//std::cerr << "Updating (_textChanged = " << _textChanged << ")\n";
 			onUpdate(this);
 			if (_fontNameChanged || _fontSizeChanged)
 			{
