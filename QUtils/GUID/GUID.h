@@ -42,6 +42,7 @@ namespace GUID_NS
 		GUID& operator=(const GUID&);
 		
 		
+		friend class std::hash<GUID>;
 		friend std::ostream& operator<<(std::ostream&, GUID const&);
 		friend std::istream& operator>>(std::istream&, GUID&);
 		friend std::string to_string(GUID const& u);
@@ -52,6 +53,7 @@ namespace GUID_NS
 		friend bool operator>(GUID const&, GUID const&);
 		friend bool operator<=(GUID const&, GUID const&);
 		friend bool operator>=(GUID const&, GUID const&);
+		
 	};
 	
 	std::ostream& operator<<(std::ostream&, GUID const&);
@@ -76,4 +78,16 @@ namespace GUID_NS
 	
 }
 using GUID = GUID_NS::GUID;
+}
+
+
+
+namespace std
+{
+	template <>
+	class hash<QUtils::GUID>
+	{
+		public:
+		std::size_t operator()(const QUtils::GUID id) const;
+	};
 }

@@ -8,6 +8,7 @@
 
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/functional/hash.hpp>
 
 #endif
 
@@ -232,4 +233,18 @@ namespace GUID_NS
 	}
 	
 }
+}
+
+
+namespace std
+{
+	std::size_t hash<QUtils::GUID>::operator()(const QUtils::GUID id) const
+	{
+	#ifdef QUTILS_HAS_BOOST
+		boost::hash<boost::uuids::uuid> uuid_hasher;
+		return uuid_hasher(id.uuid);
+	#else
+		throw FeatureNotAvailableException().Msg(NOT_AVAIL_MSG);
+	#endif
+	}
 }
