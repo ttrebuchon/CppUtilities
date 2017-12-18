@@ -163,14 +163,15 @@ void Testing::run()
 	dout << "Slept!\n";
 	}
 	//#endif
+	
+	RUN(World_Physics(win));
+	RUN(Settings());
+	#ifndef SHORT_TEST
 	RUN(ASM());
 	RUN(Graphs_DependencyGraph());
 	RUN(Graphs());
-	RUN(TravellingSalesman());
 	RUN(DBC());
 	RUN(Iterable());
-	RUN(World_Physics());
-	#ifndef SHORT_TEST
 	RUN(Reddit());
 	RUN(Multi_ThreadPool());
 	RUN(Network_Sockets());
@@ -179,13 +180,13 @@ void Testing::run()
 	RUN(BoostBased_Serialization());
 	RUN(CodeGen_Utility());
 	RUN(SDL_Drawing());
-	//RUN(TravellingSalesman());
+	RUN(TravellingSalesman());
 	RUN(GameOfLifeExtended());
 	RUN(RucksackProblem());
 	RUN(Types());
 	RUN(SymbolicList());
 	RUN(English_Analysis());
-	//RUN(Network());
+	RUN(Network());
 	RUN(CLIPS());
 	RUN(SQL());
 	RUN(GUID());
@@ -201,7 +202,6 @@ void Testing::run()
 	RUN(CSV());
 	RUN(Matrix());
 	RUN(Math());
-	
 	RUN(Sleep());
 	RUN(Lazy());
 	RUN(Func());

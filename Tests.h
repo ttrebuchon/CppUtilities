@@ -87,9 +87,10 @@ DEC_TEST(Graphs_DependencyGraph);
 DEC_TEST(Graphs);
 DEC_TEST(Multi_ThreadPool);
 DEC_TEST(Iterable);
-DEC_TEST(World_Physics);
+bool Test_World_Physics(QUtils::GUI::SDL::SDLAppWindow*);
 DEC_TEST(DBC);
 DEC_TEST(Reddit);
+DEC_TEST(Settings);
 
 
 #undef DEC_TEST
