@@ -235,13 +235,13 @@ namespace GUID_NS
 }
 }
 
+static boost::hash<boost::uuids::uuid> uuid_hasher;
 
 namespace std
 {
 	std::size_t hash<QUtils::GUID>::operator()(const QUtils::GUID id) const
 	{
 	#ifdef QUTILS_HAS_BOOST
-		boost::hash<boost::uuids::uuid> uuid_hasher;
 		return uuid_hasher(id.uuid);
 	#else
 		throw FeatureNotAvailableException().Msg(NOT_AVAIL_MSG);
