@@ -30,5 +30,11 @@ namespace QUtils { namespace World {
 	{
 		return sqrt(x*x + y*y + z*z);
 	}
+	
+	template <class T>
+	constexpr Vector<typename Meta::Types<T, T>::Unit> Vector<T>::unit() const
+	{
+		return *this / magnitude();
+	}
 }
 }

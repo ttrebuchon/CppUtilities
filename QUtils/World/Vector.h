@@ -12,6 +12,7 @@ namespace QUtils { namespace World {
 			typedef decltype(std::declval<T>()*std::declval<G>() + std::declval<T>()*std::declval<G>()) Dot;
 			typedef decltype(std::declval<T>()*std::declval<G>() - std::declval<T>()*std::declval<G>()) Cross;
 			typedef decltype(sqrt(std::declval<T>()*std::declval<T>() + std::declval<T>()*std::declval<T>())) Magnitude;
+			typedef decltype(std::declval<T>()/std::declval<Magnitude>()) Unit;
 		};
 	}
 	
@@ -42,6 +43,8 @@ namespace QUtils { namespace World {
 		{
 			return magnitude();
 		}
+		
+		constexpr Vector<typename Meta::Types<T, T>::Unit> unit() const;
 	};
 	
 	template <class T>
