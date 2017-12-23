@@ -91,6 +91,8 @@ bool Test_World_Physics(QUtils::GUI::SDL::SDLAppWindow*);
 DEC_TEST(DBC);
 DEC_TEST(Reddit);
 DEC_TEST(Settings);
+DEC_TEST(World_World);
+DEC_TEST(SpatialTree);
 
 
 #undef DEC_TEST
