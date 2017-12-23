@@ -95,13 +95,6 @@ namespace QUtils { namespace __Settings {
 		{
 			open();
 		}
-		if (doc->count(key) > 0)
-		{
-			if (doc->at(key).get<T>() == value)
-			{
-				return;
-			}
-		}
 		(*doc)[key] = value;
 		changed = true;
 	}
