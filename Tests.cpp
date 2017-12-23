@@ -166,6 +166,8 @@ void Testing::run()
 	
 	RUN(World_Physics(win));
 	RUN(Settings());
+	RUN(World_World());
+	RUN(SpatialTree());
 	#ifndef SHORT_TEST
 	RUN(ASM());
 	RUN(Graphs_DependencyGraph());
