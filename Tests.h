@@ -92,6 +92,7 @@ DEC_TEST(DBC);
 DEC_TEST(Reddit);
 DEC_TEST(Settings);
 DEC_TEST(World_World);
+DEC_TEST(World_Maps);
 DEC_TEST(SpatialTree);
 
 
