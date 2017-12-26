@@ -1,12 +1,21 @@
 #include "../Tests_Helpers.h"
 
 #include <QUtils/World/Physics/Physics.h>
+#include <QUtils/GUI/SDL/SDL.h>
+#include <QUtils/Drawing/SDL/SDL.h>
+#include <QUtils/Sleep/Sleep.h>
+
+
+
 constexpr QUtils::World::Vector<double> testF()
 {
 	return QUtils::World::Vector<double>();
 }
 
-DEF_TEST(World_Physics)
+QUtils::GUI::ViewComponent* setupGUI(QUtils::GUI::SDL::SDLAppWindow*);
+void resetGUI(QUtils::GUI::SDL::SDLAppWindow*, QUtils::GUI::ViewComponent*);
+
+bool Test_World_Physics(QUtils::GUI::SDL::SDLAppWindow* window)
 {
 	using namespace QUtils::World::Physics;
 	
@@ -83,6 +92,26 @@ DEF_TEST(World_Physics)
 		
 	}
 	
+	QUtils::GUI::ViewComponent* orig = NULL;
+	if (window != NULL)
+	{
+		orig = setupGUI(window);
+	}
+	
+	
+	
+	{
+		
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -124,7 +153,147 @@ DEF_TEST(World_Physics)
 		}
 		
 	}
-	
+	if (window != NULL && orig != NULL)
+	{
+		resetGUI(window, orig);
+	}
 	
 	return true;
+}
+
+
+
+
+
+
+
+QUtils::GUI::ViewComponent* setupGUI(QUtils::GUI::SDL::SDLAppWindow* window)
+{
+	try
+	{
+	const int w = window->width();
+	const int h = window->height();
+	const bool TOUCH = true;
+	
+	using namespace QUtils::GUI;
+	using namespace QUtils::GUI::SDL;
+	using namespace QUtils::Drawing::SDL;
+	
+	auto orig = window->replaceView(NULL);
+	assert_ex(orig->window == NULL);
+	while (window->updateBlocked())
+	{
+		window->unblockUpdate();
+	}
+	
+	dout << "(" << window->width() << ", " << window->height() << ")\n" << std::flush;
+	
+	assert_ex(window->width() == w);
+	assert_ex(window->height() == h);
+	
+	Renderer* ren;
+	
+	auto tex = window->invokeUI([=, &ren]() -> Texture*
+	{
+	auto tmp = new Texture(window->getRenderer(), PixelFormat::RGBA8888, TextureAccess::Target, w, h);
+	ren = window->getRenderer();
+	ren->target(tmp);
+	ren->setDrawColor(0, 0, 0, 255);
+	ren->clear();
+	ren->setDrawColor(255, 255, 255, 255);
+	ren->fillRect({0, 0, w, h});
+	ren->renderPresent();
+	ren->target(NULL);
+	return tmp;
+	}).get();
+	
+	
+	#define TEXCOMP "PhysTexComp"
+	auto texComp = new SDLTextureViewComponent(TEXCOMP, TOUCH, tex);
+	dout << "TexComp id: '" << texComp->id << "'\n";
+	assert_ex(texComp->parent == NULL);
+	assert_ex(texComp->window == NULL);
+	assert_ex(texComp->id == TEXCOMP);
+	
+	assert_ex(window->replaceView(texComp) == NULL);
+	assert_ex(texComp->parent == NULL);
+	assert_ex(texComp->window == window);
+	
+	window->unblockUpdate();
+	assert_ex(!window->updateBlocked());
+	assert_ex(window->replaceView(NULL) == texComp);
+	assert_ex(texComp->parent == NULL);
+	assert_ex(texComp->window == NULL);
+	
+	
+	dout << "Render Successful\n";
+	
+	
+	
+	
+	auto texView = new SDLAbsoluteTextureView("PhysAbsTextureView", TOUCH, w, h);
+	dout << "TexView Created\n";
+	
+	texView->addChild(texComp, 0, 0, 1, 0.5);
+	dout << "First child added\n";
+	
+	
+	auto tex2 = window->invokeUI([=]()
+	{
+		auto tex2 = new Texture(ren, PixelFormat::RGBA8888, TextureAccess::Target, w, h);
+	window->blockUpdate();
+	ren->target(tex2);
+	ren->setDrawColor(0, 100, 255, 255);
+	ren->clear();
+	ren->fillRect(0, 0, w, h);
+	ren->renderPresent();
+	return tex2;
+	}).get();
+	
+	auto texComp2 = new SDLTextureViewComponent("TexComp2", TOUCH, tex2);
+	dout << "Second child created\n";
+	texView->addChild(texComp2, 0.5, 0, 0.5, 1);
+	dout << "Second child added\n";
+	
+	texComp2->onFingerDown += [](auto...x)
+	{
+		dout << "\nTex Comp 2 Clicked!\n\n";
+	};
+	
+	texComp->onFingerDown += [](auto...x)
+	{
+		dout << "\nTex Comp Clicked!\n\n";
+	};
+	
+	
+	texComp2->opacity(1);
+	assert_ex(texComp2->opacity() == 1);
+	
+	
+	window->replaceView(texView);
+	dout << "Window view set\n";
+	assert_ex(window->updateBlocked());
+	window->unblockUpdate();
+	assert_ex(!window->updateBlocked());
+	window->invokeUpdate().get();
+	dout << "Window updated\n";
+	assert_ex(!window->updateBlocked());
+	dout << "Handling Events...\n";
+	window->handleEvents();
+	dout << "Handled" << std::endl;
+	
+	QUtils::sleep(5000);
+	
+	return orig;
+	}
+	catch (...)
+	{
+		return NULL;
+	}
+}
+
+
+void resetGUI(QUtils::GUI::SDL::SDLAppWindow* window, QUtils::GUI::ViewComponent* orig)
+{
+	window->replaceView(orig);
 }
