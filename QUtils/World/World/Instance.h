@@ -1,6 +1,7 @@
 #pragma once
 
 #include "WorldObject.h"
+#include "Map.h"
 
 
 namespace QUtils { namespace World {
@@ -11,8 +12,14 @@ namespace QUtils { namespace World {
 		
 		protected:
 		
+		Instance(World_t* world, Map<float>::Ptr map) : WorldObject(world), map(map)
+		{
+			
+		}
+		
 		public:
-		typedef std::shared_ptr<Instance> Ptr;
+		WORLD_OBJECT(Instance)
+		Map<float>::Ptr map;
 		
 		
 	};

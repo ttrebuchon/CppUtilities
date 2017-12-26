@@ -4,16 +4,19 @@
 
 namespace QUtils { namespace World {
 	
-	
-	
-	WorldObject::WorldObject(World_t* world, const GUID id) : world(world), objID(id)
+	void WorldObject::registerObj()
 	{
 		world->registerObject(this);
 	}
 	
+	WorldObject::WorldObject(World_t* world, const GUID id) : world(world), objID(id)
+	{
+		
+	}
+	
 	WorldObject::WorldObject(World_t* world) : world(world), objID(GUID::Create())
 	{
-		world->registerObject(this);
+		
 	}
 }
 }

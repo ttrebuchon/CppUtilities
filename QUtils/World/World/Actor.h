@@ -1,18 +1,20 @@
 #pragma once
 
-#include "WorldObject.h"
+#include "Entity.h"
 
 
 namespace QUtils { namespace World {
 	
-	class Actor : public WorldObject
+	class Actor : public Entity
 	{
 		private:
 		
 		protected:
 		
+		
+		
 		public:
-		typedef std::shared_ptr<Actor> Ptr;
+		WORLD_OBJECT(Actor)
 	};
 }
 }

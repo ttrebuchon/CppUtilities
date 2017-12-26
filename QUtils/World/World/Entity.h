@@ -1,7 +1,8 @@
 #pragma once
 
-
 #include "WorldObject.h"
+#include "Effect.h"
+#include "Collections/EffectSet.h"
 
 namespace QUtils { namespace World {
 	
@@ -10,9 +11,14 @@ namespace QUtils { namespace World {
 		private:
 		
 		protected:
+		Entity(World_t* world) : WorldObject(world), effects()
+		{}
 		
 		public:
-		typedef std::shared_ptr<Entity> Ptr;
+		WORLD_OBJECT(Entity)
+		EffectSet effects;
+		
+		virtual ~Entity();
 		
 	};
 }

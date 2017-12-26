@@ -13,6 +13,7 @@ namespace QUtils { namespace World {
 		protected:
 		
 		public:
+		typedef std::shared_ptr<Map<T>> Ptr;
 		typedef Vector<T> Vec_t;
 		
 		
