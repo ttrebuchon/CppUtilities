@@ -2,6 +2,7 @@
 #include <QUtils/World/World/All.h>
 #include <vector>
 #include <QUtils/Types/CompilerPrint.h>
+#include <iomanip>
 
 void test_EffectSet();
 
@@ -20,7 +21,9 @@ DEF_TEST(World_World)
 	
 	auto inst = Instance::Create(world, mFlat);
 	
-	auto ent = Entity::Create(world);
+	//auto ent = Entity::Create(world);
+	assert_ex(world->go(10s) == 10s);
+	assert_ex(world->go() > 0s);
 	
 	if (world)
 	{
@@ -61,4 +64,21 @@ void test_EffectSet()
 	assert_ex(es.size() == 1);
 	es.insert(e2);
 	assert_ex(es.size() == 2);
+	
+	
+	es.clear();
+	e1->t = Timespan(Clock::now(), 100s);
+	e2->t = Timespan(Clock::now(), 10s);
+	es.insert(e1);
+	assert_ex(es.size() == 1);
+	es.insert(e1);
+	assert_ex(es.size() == 1);
+	es.insert(e2);
+	assert_ex(es.size() == 2);
+	
+	for (auto& e : es)
+	{
+		assert_ex(e == e2);
+		break;
+	}
 }
