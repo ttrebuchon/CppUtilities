@@ -1,5 +1,6 @@
 #pragma once
 #include <chrono>
+#include <limits>
 
 namespace QUtils { namespace World {
 	
@@ -49,6 +50,54 @@ namespace QUtils { namespace World {
 	
 	
 	using namespace std::literals::chrono_literals;
+	
+	
+	
+	template <int Ratio>
+	struct WorldClock_R
+	{
+		public:
+		typedef long long int rep;
+		typedef std::ratio<1, Ratio> period;
+		typedef std::chrono::duration<rep, period> duration;
+		typedef std::chrono::time_point<WorldClock_R<Ratio>> time_point;
+		constexpr static bool is_steady = true;
+		
+		static time_point min()
+		{
+			return time_point(duration(0));
+		}
+		
+		static time_point max()
+		{
+			return time_point(duration(std::numeric_limits<rep>::max()));
+		}
+		
+		
+		
+		WorldClock_R() : ticks(0)
+		{
+			
+		}
+		
+		inline time_point now() const
+		{
+			return time_point(duration(ticks));
+		}
+		
+		void advance()
+		{
+			++ticks;
+		}
+		
+		private:
+		rep ticks;
+		
+	};
+	
+	
+	
+	
 	typedef std::chrono::steady_clock Clock;
 	static_assert(Clock::is_steady, "Clock must be a steady type");
 	typedef typename Clock::time_point Time;
@@ -56,5 +105,6 @@ namespace QUtils { namespace World {
 	typedef Clock_Timespan<Clock> Timespan;
 	
 	
+	typedef WorldClock_R<1000> WorldClock;
 }
 }

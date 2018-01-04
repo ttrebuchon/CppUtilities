@@ -11,8 +11,7 @@ namespace QUtils { namespace World {
 		private:
 		
 		protected:
-		Entity(World_t* world) : WorldObject(world), effects()
-		{}
+		Entity(World_t*);
 		
 		public:
 		WORLD_OBJECT(Entity)
