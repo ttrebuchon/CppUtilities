@@ -141,6 +141,29 @@ namespace QUtils
 			}
 		};
 		
+		template <class T, class R, class>
+		struct Tuple_Sum_Imp;
+		
+		template <class T, class R, int I, int... Is>
+		struct Tuple_Sum_Imp<T, R, QUtils::Types::Sequence<I, Is...>>
+		{
+			static void go(T& t, R& r)
+			{
+				r += std::get<I>(t);
+				Tuple_Sum_Imp<T, R, QUtils::Types::Sequence<Is...>>::go(t, r);
+			}
+		};
+		
+		template <class T, class R, int I>
+		struct Tuple_Sum_Imp<T, R, QUtils::Types::Sequence<I>>
+		{
+			static void go(T& t, R& r)
+			{
+				r += std::get<I>(t);
+			}
+		};
+		
+		
 		template <class, class>
 		struct Tuple_Sum;
 		
@@ -150,7 +173,10 @@ namespace QUtils
 			static auto go(T& t)
 			{
 				static_assert(sizeof...(Is) == std::tuple_size<T>::value, "");
-				return (std::get<Is>(t) + ...);
+				double sum = 0;
+				Tuple_Sum_Imp<T, double, QUtils::Types::Sequence<Is...>>::go(t, sum);
+				return sum;
+				//return (std::get<Is>(t) + ...);
 			}
 		};
 		
