@@ -170,6 +170,7 @@ void Testing::run()
 	RUN(World_World());
 	RUN(SpatialTree());
 	#ifndef SHORT_TEST
+	RUN(Cards());
 	RUN(ASM());
 	RUN(Graphs_DependencyGraph());
 	RUN(Graphs());

@@ -94,6 +94,7 @@ DEC_TEST(Settings);
 DEC_TEST(World_World);
 DEC_TEST(World_Maps);
 DEC_TEST(SpatialTree);
+DEC_TEST(Cards);
 
 
 #undef DEC_TEST
