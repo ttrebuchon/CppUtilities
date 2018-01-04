@@ -81,8 +81,10 @@ DBC = $(call getobjs,$(SRC)/DBC/)
 
 Reddit = $(call getobjs,$(SRC)/Reddit/)
 
+Cards = $(call getobjs,$(SRC)/Cards/)
 
-objects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen) $(Genetic) $(Serialization) $(Graphs) $(World) $(DBC) $(Reddit)
+
+objects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen) $(Genetic) $(Serialization) $(Graphs) $(World) $(DBC) $(Reddit) $(Cards)
 
 
 #Namespace name, used once (Not important)
@@ -130,7 +132,7 @@ endif
 
 WARNINGS_ERRORS = -Werror -Wno-error=sign-compare -ftemplate-backtrace-limit=0
 
-WARNINGS_ERRORS += -Wno-unused-local-typedefs -Wno-unused-variable -Wno-unused-but-set-variable 
+WARNINGS_ERRORS += -Wno-unused-local-typedefs #-Wno-unused-variable -Wno-unused-but-set-variable 
 
 WARNINGS_ERRORS += -Wfatal-errors 
 
