@@ -46,7 +46,9 @@ endif
 
 
 
-WARNINGS_ERRORS = -ftemplate-backtrace-limit=0 -Wno-sign-compare
+WARNINGS_ERRORS += -Wall -Werror -ftemplate-backtrace-limit=0 -Wno-sign-compare
+
+WARNINGS_ERRORS += #-Wno-unused-variable -Wno-unused-but-set-variable
 
 WARNINGS_ERRORS += -Wfatal-errors 
 
