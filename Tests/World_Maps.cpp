@@ -7,7 +7,7 @@
 DEF_TEST(World_Maps)
 {
 	using namespace QUtils::World;
-	auto world = new World_t;
+	//auto world = new World_t;
 	
 	auto m1_func = [](auto x, auto y)
 	{
@@ -96,7 +96,70 @@ DEF_TEST(World_Maps)
 		{
 			dout << to_string(*close) << "\n";
 		}
+		
+		
+		
+		
 	}
+	
+	
+	{
+		std::vector<std::vector<Vector<float>>> points
+		{
+			{
+				{-1,0,0},
+				{0,0,0},
+				{0,1,0},
+				{-1,0,0},
+				{0.5,0.5,1},
+				{0,0,0},
+				{0.5,0.5,1},
+				{0,1,0}
+			},
+			{
+				Vector<float>{0,0,0},
+				Vector<float>{1,0,0},
+				Vector<float>{1,1,0},
+				Vector<float>{0,1,0},
+				Vector<float>{0,0,0}
+			},
+			/*{
+				Vector<float>{0,1,0},
+				Vector<float>{0,0,0},
+				Vector<float>{1,0,0}
+			},
+			{
+				Vector<float>{1,0,0},
+				Vector<float>{1,1,0},
+				Vector<float>{0,1,0}
+			},
+			{
+				Vector<float>{1,1,0},
+				Vector<float>{0,1,0},
+				Vector<float>{0,0,0}
+			},*/
+		};
+		
+		if (points[0].size() == 5)
+		{
+			assert_ex(points[0][0] == points[0][4]);
+		}
+		
+		auto mesh = Maps::Mesh<float>::FromPoints(points);
+		
+		
+		for (auto& v : mesh->vertices)
+		{
+			dout << to_string(v.first) << "\n";
+			for (auto& e : v.second->edges)
+			{
+				dout << "\t" << to_string(e->start->pos) << " -> " << to_string(e->dest->pos) << "\n";
+			}
+			assert_ex(v.second->edges.size() == 2);
+		}
+	}
+	
+	
 	
 	return true;
 }
