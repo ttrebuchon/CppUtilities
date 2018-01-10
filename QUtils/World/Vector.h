@@ -45,6 +45,9 @@ namespace QUtils { namespace World {
 		}
 		
 		constexpr Vector<typename Meta::Types<T, T>::Unit> unit() const;
+		
+		template <class G>
+		constexpr operator Vector<G>() const;
 	};
 	
 	template <class T>

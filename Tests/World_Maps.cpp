@@ -145,21 +145,193 @@ DEF_TEST(World_Maps)
 			assert_ex(points[0][0] == points[0][4]);
 		}
 		
-		auto mesh = Maps::Mesh<float>::FromPoints(points);
+		auto mesh = Maps::Mesh<double>::FromPoints(points);
+		assert_ex(mesh->faces.size() == 2);
 		
-		
-		for (auto& v : mesh->vertices)
+		/*for (auto& v : mesh->points)
 		{
 			dout << to_string(v.first) << "\n";
-			for (auto& e : v.second->edges)
-			{
-				dout << "\t" << to_string(e->start->pos) << " -> " << to_string(e->dest->pos) << "\n";
-			}
-			assert_ex(v.second->edges.size() == 2);
-		}
+		}*/
+		mesh.reset();
 	}
 	
 	
+	{
+		std::vector<std::vector<Vector<float>>> points
+		{
+			{
+				{0,0,0},
+				{1,0,0},
+				{1,1,0},
+				{0,1,0},
+			}
+		};
+		
+		auto mesh = Maps::Mesh<double>::FromPoints(points);
+		assert_ex(mesh->faces.size() == 1);
+		
+		auto v = mesh->points.at({0,0,0});
+		assert_ex(v != nullptr);
+		auto e = v->edge;
+		assert_ex(e != nullptr);
+		auto nextV = e->next->vert;
+		assert_ex(nextV != nullptr);
+		dout << "\n\n" << to_string(nextV->pos) << std::endl;
+		
+		if (nextV->pos != Vector<double>{1,0,0})
+		{
+			
+			e = e->sym;
+			assert_ex(e != nullptr);
+			nextV = e->next->vert;
+			assert_ex(nextV != nullptr);
+			dout << "\n\n" << to_string(nextV->pos) << std::endl;
+		}
+		
+		mesh->splitEdge(e, {0.5, 0, 0});
+		
+		assert_ex(e->next != nullptr);
+		assert_ex(e->next->vert != nullptr);
+		assert_ex(e->next->vert->pos == (Vector<double>{0.5,0,0}));
+		assert_ex(e->next->vert->index == points[0].size());
+		
+		mesh.reset();
+	}
+	
+	auto printFace = [](auto f)
+	{
+		auto sEdge = f->edge;
+		dout << to_string(sEdge->vert->pos) << "\n";
+		auto ptr = sEdge->next;
+		while (ptr != sEdge)
+		{
+			dout << to_string(ptr->vert->pos) << "\n";
+			ptr = ptr->next;
+		}
+	};
+	
+	
+	{
+		std::vector<std::vector<Vector<float>>> points
+		{
+			{
+				{0,0,0},
+				{1,0,0},
+				{1,1,0},
+				{0,1,0},
+			}
+		};
+		
+		auto mesh = Maps::Mesh<double>::FromPoints(points);
+		assert_ex(mesh->faces.size() == 1);
+		
+		/*auto len = mesh->edges.size();
+		for (int i = 0; i < len; ++i)
+		{
+			mesh->splitEdge(mesh->edges[i], (mesh->edges[i]->next->vert->pos + mesh->edges[i]->vert->pos)/2);
+		}
+		
+		assert_ex(mesh->vertices.size() == 2*len);*/
+		
+		
+		dout << "Face: \n";
+		printFace(mesh->faces.at(0));
+		dout << std::flush;
+		
+		mesh->triangulate(mesh->faces.at(0));
+		
+		dout << "\n\nFace(s) After Tri: \n\n";
+		for (auto face : mesh->faces)
+		{
+			printFace(face);
+			dout << "\n";
+		}
+		dout << "Done\n\n" << std::flush;
+		
+		
+		mesh.reset();
+	}
+	
+	{
+		std::vector<std::vector<Vector<float>>> points
+		{
+			//Bottom
+			{
+				{0,0,0},
+				{1,0,0},
+				{1,1,0},
+				{0,1,0},
+			},
+			//Top
+			{
+				{0,0,1},
+				{1,0,1},
+				{1,1,1},
+				{0,1,1},
+			},
+			//Front
+			{
+				{0,0,0},
+				{1,0,0},
+				{1,0,1},
+				{0,0,1},
+			},
+			//Back
+			{
+				{0,1,0},
+				{1,1,0},
+				{1,1,1},
+				{0,1,1},
+			},
+			//Left
+			{
+				{0,0,0},
+				{0,0,1},
+				{0,1,1},
+				{0,1,0},
+			},
+			//Right
+			{
+				{1,0,0},
+				{1,0,1},
+				{1,1,1},
+				{1,1,0},
+			},
+		};
+		
+		auto mesh = Maps::Mesh<double>::FromPoints(points);
+		assert_ex(mesh->faces.size() == points.size());
+		
+		/*auto len = mesh->edges.size();
+		for (int i = 0; i < len; ++i)
+		{
+			mesh->splitEdge(mesh->edges[i], (mesh->edges[i]->next->vert->pos + mesh->edges[i]->vert->pos)/2);
+		}
+		
+		assert_ex(mesh->vertices.size() == 2*len);*/
+		
+		
+		dout << "Face: \n";
+		printFace(mesh->faces.at(0));
+		dout << std::flush;
+		
+		
+		for (int i = 0; i < mesh->faces.size(); ++i)
+		{
+			mesh->triangulate(mesh->faces.at(i));
+		}
+		
+		dout << "\n\nFace(s) After Tri: \n\n";
+		for (auto face : mesh->faces)
+		{
+			printFace(face);
+			dout << "\n";
+		}
+		dout << std::flush;
+		
+		
+		mesh.reset();
+	}
 	
 	return true;
 }

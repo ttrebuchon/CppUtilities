@@ -4,6 +4,7 @@
 #include "../SharedPtrOnly.h"
 #include <QUtils/Types/IntegerSequence.h>
 #include <QUtils/Exception/NotImplemented.h>
+#include <QUtils/Debug/dassert.h>
 
 namespace QUtils { namespace World {
 namespace Maps {
@@ -24,12 +25,11 @@ namespace Maps {
 			}
 		};
 		
-		template <class T>
+		template <class G, class T>
 		struct Get_List
 		{
 			private:
 			
-			typedef typename std::remove_reference<decltype(*std::declval<T>().begin())>::type G;
 			
 			public:
 			
@@ -42,14 +42,14 @@ namespace Maps {
 				}
 			}
 			
-			static std::vector<G> Get(T t)
+			static std::vector<G> Get(auto t)
 			{
 				return std::vector<G>(t.begin(), t.end());
 			}
 		};
 		
-		template <class T, class ...G>
-		struct Get_List<std::tuple<T, G...>>
+		template <class Out, class T, class ...G>
+		struct Get_List<Out, std::tuple<T, G...>>
 		{
 			private:
 			typedef typename QUtils::Types::SequenceGen<sizeof...(G)>::type Sequence;
@@ -110,181 +110,263 @@ namespace Maps {
 		SHARED_PTR_ONLY(Mesh)
 		typedef Vector<T> Vec_t;
 		
-		struct Edge;
 		struct Face;
-		struct Vertex;
-		
+		struct Edge;
 		
 		struct Vertex
 		{
-			std::set<Edge*> edges;
 			Vec_t pos;
-			
-			bool connected(const Vertex* end) const;
-		};
-		
-		
-		struct Edge
-		{
-			private:
 			size_t index;
-			Edge* next;
+			Edge* edge;
 			
-			Edge(Vertex* vStart, Vertex* vEnd) : index(), next(nullptr), start(vStart), dest(vEnd), edges{nullptr, nullptr, nullptr, nullptr}, face(nullptr)
+			Vertex(const Vec_t pos, const size_t index) : pos(pos), index(index), edge(nullptr)
 			{
 				
-			}
-			
-			Edge() : Edge(nullptr, nullptr)
-			{
-				
-			}
-			
-			~Edge();
-			
-			public:
-			Vertex *start, *dest;
-			Edge* edges[4];
-			Face *face;
-			
-			
-			static Edge* Create()
-			{
-				auto ptr = new Edge[4];
-				for (int i = 0; i < 4; ++i)
-				{
-					ptr[i].index = i;
-				}
-				
-				ptr[0].next = ptr+0;
-				ptr[1].next = ptr+3;
-				ptr[2].next = ptr+2;
-				ptr[3].next = ptr+1;
-				
-				return ptr;
-			}
-			
-			
-			
-			Edge* rot() const;
-			Edge* invRot() const;
-			Edge* sym() const;
-			Edge* sNext() const
-			{
-				return next;
-			}
-			Edge* sPrev() const
-			{
-				return rot()->sNext()->rot();
-			}
-			Edge* dNext() const
-			{
-				return sym()->sNext()->sym();
-			}
-			Edge* dPrev() const
-			{
-				return invRot()->sNext()->invRot();
-			}
-			
-			Edge* lNext() const
-			{
-				return invRot()->sNext()->rot();
-			}
-			
-			Edge* lPrev() const
-			{
-				return sNext()->sym();
-			}
-			
-			Edge* rNext() const
-			{
-				return rot()->sNext()->invRot();
-			}
-			
-			Edge* rPrev() const
-			{
-				return sym()->sNext();
-			}
-			
-			Edge* left() const
-			{
-				return rot()->face;
-			}
-			
-			Edge* right() const
-			{
-				return invRot()->face;
-			}
-			
-			static void splice(Edge* a, Edge* b)
-			{
-				Edge* alpha = a->sNext()->rot();
-				Edge* beta = b->sNext()->rot();
-				
-				Edge* t1 = b->sNext();
-				Edge* t2 = a->sNext();
-				Edge* t3 = beta->sNext();
-				Edge* t4 = alpha->sNext();
-				
-				a->next = t1;
-				b->next = t2;
-				alpha->next = t3;
-				beta->next = t4;
-			}
-			
-			void setStart(Vertex* s)
-			{
-				start = s;
-				s->addEdge(this);
-			}
-			
-			void setDest(Vertex* s)
-			{
-				sym()->start = s;
-				s->addEdge(sym());
-			}
-			
-			void setLeft(Face* f)
-			{
-				rot()->face = f;
-				f->addEdge(this);
-			}
-			
-			void setRight(Face* f)
-			{
-				invRot()->face = f;
-				f->addEdge(sym());
 			}
 		};
 		
 		
-		
-		
-		
+		#include "Mesh/Face.h"
+		#include "Mesh/Edge.h"
 		
 		
 		
 		//protected:
-		std::map<Vec_t, Vertex*, Vec_Comparator> vertices;
+		std::map<Vec_t, Vertex*, Vec_Comparator> points;
+		std::vector<Vertex*> vertices;
+		std::vector<Edge*> edges;
 		std::vector<Face*> faces;
 		
-		Mesh() : vertices(), faces()
+		Mesh() : points(), vertices(), edges(), faces()
 		{
 			
 		}
 		
 		
+		Vertex* getPoint(const Vec_t pos)
+		{
+			if (points.count(pos) <= 0)
+			{
+				size_t index = vertices.size();
+				vertices.push_back(points[pos] = new Vertex(pos, index));
+				dassert(points.at(pos) != nullptr);
+			}
+			return points.at(pos);
+		}
+		
+		void addFaces(const auto& ptFaces)
+		{
+			std::vector<std::vector<size_t>> vertFaces;
+			std::set<size_t> vertexIndices;
+			
+			for (const auto& face : ptFaces)
+			{
+				std::vector<size_t> vFace;
+				for (const auto& pt : face)
+				{
+					Vertex* vert = getPoint(pt);
+					dassert(vert != nullptr);
+					vFace.push_back(vert->index);
+					vertexIndices.insert(vert->index);
+				}
+				
+				vertFaces.push_back(vFace);
+			}
+			
+			int eCount = 0;
+			for (auto& f : vertFaces)
+			{
+				eCount += f.size();
+			}
+			std::vector<Edge*> edges(eCount);
+			std::vector<Face*> faces;
+			std::map<Vertex*, std::vector<Edge*>> outgoing;
+			
+			for (auto& e : edges)
+			{
+				e = new Edge;
+			}
+			
+			int edgeIndex = 0;
+			for (auto& face : vertFaces)
+			{
+				int i = 0;
+				Face* f = new Face;
+				for (auto& vIndex : face)
+				{
+					Edge* edge = edges[edgeIndex + i];
+					
+					edge->vert = vertices.at(vIndex);
+					edge->vert->edge = edge;
+					edge->face = f;
+					f->edge = edge;
+					outgoing[vertices.at(vIndex)].push_back(edge);
+					if (i > 0)
+					{
+						edge->prev = edges[edgeIndex+i-1];
+						edges[edgeIndex+i-1]->next = edge;
+					}
+					
+					++i;
+				}
+				
+				edges[edgeIndex]->prev = edges[edgeIndex+i-1];
+				edges[edgeIndex+i-1]->next = edges[edgeIndex];
+				
+				faces.push_back(f);
+				
+				edgeIndex += i;
+			}
+			
+			for (auto& e : edges)
+			{
+				this->edges.push_back(e);
+			}
+			
+			for (auto& f : faces)
+			{
+				this->faces.push_back(f);
+			}
+			
+			for (int i = 0; i < this->edges.size(); ++i)
+			{
+				if (this->edges[i]->sym == nullptr)
+				{
+					Edge* e = this->edges[i];
+					Vertex* v = e->next->vert;
+					for (auto& out : outgoing.at(v))
+					{
+						if (out->next->vert == e->vert)
+						{
+							e->sym = out;
+							dassert(out->sym == nullptr || out->sym == e);
+							out->sym = e;
+							break;
+						}
+					}
+					
+				}
+				
+			}
+		}
+		
+		void splitEdge(Edge* e, const Vec_t pos)
+		{
+			Edge* eNew = new Edge;
+			eNew->sym = e->sym;
+			
+			
+			size_t index = vertices.size();
+			Vertex* vNew = new Vertex(pos, index);
+			vertices.push_back(vNew);
+			dassert(points.count(pos) <= 0);
+			points[pos] = vNew;
+			
+			
+			eNew->vert = vNew;
+			vNew->edge = eNew;
+			eNew->face = e->face;
+			
+			
+			eNew->prev = e;
+			eNew->next = e->next;
+			
+			
+			e->next->prev = eNew;
+			e->next = eNew;
+			
+			edges.push_back(eNew);
+			
+			
+			
+			if (e->sym != nullptr)
+			{
+				Edge* symNew = new Edge;
+				symNew->sym = e;
+				symNew->vert = vNew;
+				symNew->face = e->sym->face;
+				symNew->prev = e->sym;
+				symNew->next = e->sym->next;
+				e->sym->next->prev = symNew;
+				e->sym->next = symNew;
+				e->sym->sym = eNew;
+				e->sym = symNew;
+				
+				edges.push_back(symNew);
+			}
+		}
+		
+		void triangulate(Face* face)
+		{
+			dassert(face != nullptr);
+			while (true)
+			{
+				Edge* e[4];
+				e[0] = face->edge;
+				dassert(e[0] != nullptr);
+				e[1] = e[0]->next;
+				dassert(e[1] != nullptr);
+				e[2] = e[1]->next;
+				dassert(e[2] != nullptr);
+				e[3] = e[2]->next;
+				dassert(e[3] != nullptr);
+				
+				if (e[0] == e[3])
+				{
+					break;
+				}
+				
+				Vertex *v1, *v3;
+				v1 = e[1]->vert;
+				v3 = e[3]->vert;
+				
+				Edge* eNew = new Edge;
+				Edge* symNew = new Edge;
+				Face* fNew = new Face;
+				
+				eNew->face = face;
+				eNew->vert = v1;
+				eNew->prev = e[0];
+				eNew->next = e[3];
+				eNew->sym = symNew;
+				
+				symNew->vert = v3;
+				symNew->face = fNew;
+				symNew->prev = e[2];
+				symNew->next = e[1];
+				symNew->sym = eNew;
+				
+				fNew->edge = e[1];
+				e[1]->prev = e[2]->next = symNew;
+				e[3]->prev = e[0]->next = eNew;
+				e[1]->face = e[2]->face = fNew;
+				face->edge = eNew;
+				
+				edges.push_back(eNew);
+				edges.push_back(symNew);
+				faces.push_back(fNew);
+			}
+		}
 		
 		public:
 		
 		
 		virtual ~Mesh()
 		{
-			for (auto& v : vertices)
+			for (auto vert : vertices)
 			{
-				delete v.second;
+				delete vert;
 			}
-			vertices.clear();
+			
+			for (auto face : faces)
+			{
+				delete face;
+			}
+			
+			for (auto edge : edges)
+			{
+				delete edge;
+			}
 		}
 		
 		static Ptr FromPoints(const auto& faces)
@@ -296,253 +378,32 @@ namespace Maps {
 				return mesh;
 			}
 			
-			std::vector<std::vector<Vec_t>> vecFaces;
 			
+			std::vector<std::vector<Vec_t>> converted;
 			for (auto& face : faces)
 			{
-				std::vector<Vec_t> conv = Mesh_Helpers::Get_List<std::vector<Vec_t>>::Get(face);
-				vecFaces.emplace_back(conv.begin(), conv.end());
-				
+				converted.push_back(Mesh_Helpers::Get_List<Vec_t, std::vector<Vec_t>>::Get(face));
 			}
 			
-			
-			
-			
-			
-			
-			for (auto& face : faces)
-			{
-				mesh->faceFromPoints(face);
-			}
+			mesh->addFaces(converted);
 			
 			return mesh;
 		}
 		
 		template <class ...Vecs>
-		Face* faceFromPoints(const std::tuple<Vecs...>& face)
+		void faceFromPoints(const std::tuple<Vecs...>& face)
 		{
 			typedef typename QUtils::Types::SequenceGen<sizeof...(Vecs)-1>::type Sequence;
 			typedef Mesh_Helpers::Tuple_To_Init_List<Sequence> Type;
-			return faceFromPoints(Type::go(face));
+			faceFromPoints(Type::go(face));
 		}
 		
-		Face* faceFromPoints(const auto& face)
+		void faceFromPoints(const std::vector<Vec_t>&)
 		{
-			if (face.begin() == face.end())
-			{
-				return nullptr;
-			}
 			
-			struct TVert;
-			struct TFace;
-			
-			struct TSector
-			{
-				TVert* p;
-				TFace* f;
-				TVert* q;
-			};
-			
-			typedef std::vector<TSector*> Arc;
-			
-			struct TVert
-			{
-				Vec_t pos;
-				std::vector<Arc*> arcs;
-				Vertex* vertex;
-				bool done = false;
-			};
-			
-			struct TFace
-			{
-				std::vector<TVert*> arcs;
-				Face* finished;
-				
-				void addArcs(decltype(face)& verts, std::map<Vec_t, Vertex*, Vec_Comparator>& vertices)
-				{
-					for (auto p : verts)
-					{
-						arcs.push_back(new TVert{p});
-						if (vertices.count(p) > 0)
-						{
-							//arcs.back()->vertex = vertices.at(p);
-						}
-					}
-					
-					
-					auto w = arcs.begin();
-					auto v = w++;
-					auto u = v;
-					for (auto it = arcs.begin(); it != arcs.end(); ++it)
-					{
-						u = it;
-					}
-					
-					for (; w != arcs.end(); u = v, v = w, ++w)
-					{
-						this->merge_arc(*v, *w, *u);
-					}
-					this->merge_arc(*v, *arcs.begin(), *u);
-				}
-				
-				void merge_arc(TVert* v, TVert* p, TVert* q)
-				{
-					Arc* bef = nullptr;
-					Arc* aft = nullptr;
-					TSector* sector = new TSector{p, this, q};
-					
-					for (auto a : v->arcs)
-					{
-						if (a->back()->q == p)
-						{
-							bef = a;
-						}
-						
-						if (a->back()->p == q)
-						{
-							aft = a;
-						}
-					}
-					
-					if (bef)
-					{
-						if (aft)
-						{
-							bef->push_back(sector);
-							if (bef == aft)
-							{
-								v->done = true;
-								return;
-							}
-							v->arcs.erase(std::find(v->arcs.begin(), v->arcs.end(), aft));
-							for (auto& x : *aft)
-							{
-								bef->push_back(x);
-							}
-						}
-						else
-						{
-							bef->push_back(sector);
-						}
-					}
-					else
-					{
-						if (aft)
-						{
-							aft->insert(aft->begin(), sector);
-						}
-						else
-						{
-							Arc* arc = new Arc;
-							arc->push_back(sector);
-							v->arcs.push_back(arc);
-						}
-					}
-				}
-				
-				Face* makeFace(Mesh* m)
-				{
-					TFace* x = arcs.front()->arcs.front()->front()->f;
-					assert(x != nullptr);
-					throw NotImp();
-				}
-			};
-			
-			TFace* tface = new TFace;
-			tface->addArcs(face, this->vertices);
-			
-			Face* f = tface->makeFace(this);
-			
-			delete tface;
-			return f;
-			
-			/*int count = -1;
-			
-			std::vector<Vertex*> vertices;
-			for (auto& point : face)
-			{
-				if (this->vertices.count(point) <= 0)
-				{
-					this->vertices[point] = new Vertex{{},point};
-					vertices.push_back(this->vertices[point]);
-				}
-				else if (std::find(vertices.begin(), vertices.end(), this->vertices.at(point)) == vertices.end())
-				{
-					vertices.push_back(this->vertices[point]);
-				}
-				++count;
-			}
-			{
-			int n = 0;
-			auto it = face.begin();
-			Vec_t first = *it;
-			Vec_t last;
-			while (it != face.end())
-			{
-				last = *it;
-				++n;
-				++it;
-			}
-			
-			if (first != last)
-			{
-				++count;
-			}
-			}
-			
-			std::vector<Edge*> edges(count);
-			{
-				int i = 0;
-				Vertex * last = nullptr;
-				Vertex* current;
-				Vertex* first = nullptr;
-				for (auto& p : face)
-				{
-					current = this->vertices.at(p);
-					if (i != 0)
-					{
-						Edge* e = edges[i-1] = new Edge(last, current);
-						last->edges.insert(e);
-					}
-					else
-					{
-						first = current;
-					}
-					
-					last = current;
-					++i;
-				}
-				edges[i-1] = new Edge(last, first);
-			}
-			
-			//int faceCount = 2 + edges.size() - vertices.size();
-			
-			std::map<Vertex*, std::set<Edge*>> edgeOuts;
-			for (auto e : edges)
-			{
-				edgeOuts[e->start].insert(e);
-			}
-			
-			*/
-			
-			//TODO
-			throw NotImp();
 		}
 		
 	};
-	
-	template <class T>
-	inline bool Mesh<T>::Vertex::connected(const Vertex* v2) const
-	{
-		for (const auto& e : edges)
-		{
-			if ((e->start == this && e->dest == v2) || (e->dest == this && e->start == v2))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
 	
 }
 }

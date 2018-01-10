@@ -36,5 +36,12 @@ namespace QUtils { namespace World {
 	{
 		return *this / magnitude();
 	}
+	
+	template <class T>
+	template <class G>
+	constexpr Vector<T>::operator Vector<G>() const
+	{
+		return Vector<G>{x, y, z};
+	}
 }
 }
