@@ -5,6 +5,7 @@
 #include <QUtils/Types/IntegerSequence.h>
 #include <QUtils/Exception/NotImplemented.h>
 #include <QUtils/Debug/dassert.h>
+#include <QUtils/NearestNeighborTree/NearestNeighborTree.h>
 
 namespace QUtils { namespace World {
 namespace Maps {
@@ -136,9 +137,23 @@ namespace Maps {
 		std::vector<Vertex*> vertices;
 		std::vector<Edge*> edges;
 		std::vector<Face*> faces;
+		std::shared_ptr<QUtils::NearestNeighbor<Vertex, T, T, T>> tree;
 		
-		Mesh() : points(), vertices(), edges(), faces()
+		Mesh() : points(),
+		vertices(),
+		edges(),
+		faces(), tree(std::make_shared<NearestNeighbor<Vertex, T, T, T>>(
+		[](auto v){return v->pos.x;},
+		[](auto v){return v->pos.y;},
+		[](auto v){return v->pos.z;}
+		))
 		{
+			tree->dist =
+				[](Vertex* v1, Vertex* v2)
+				{
+					return (v1->pos - v2->pos).value();
+				};
+			
 			
 		}
 		
@@ -148,8 +163,12 @@ namespace Maps {
 			if (points.count(pos) <= 0)
 			{
 				size_t index = vertices.size();
-				vertices.push_back(points[pos] = new Vertex(pos, index));
+				Vertex* newV = new Vertex(pos, index);
+				points[pos] = newV;
+				vertices.push_back(newV);
+				tree->insert(newV);
 				dassert(points.at(pos) != nullptr);
+				dassert(tree->size() == vertices.size());
 			}
 			return points.at(pos);
 		}
@@ -259,6 +278,11 @@ namespace Maps {
 			size_t index = vertices.size();
 			Vertex* vNew = new Vertex(pos, index);
 			vertices.push_back(vNew);
+			if (points.count(pos) > 0)
+			{
+				//TODO
+				throw std::exception();
+			}
 			dassert(points.count(pos) <= 0);
 			points[pos] = vNew;
 			
@@ -403,7 +427,62 @@ namespace Maps {
 			
 		}
 		
+		void calculateNormals()
+		{
+			for (auto& face : faces)
+			{
+				face->calcNorm();
+			}
+		}
+		
+		Face* closestFace(const Vec_t point, Vec_t* closest = nullptr) const
+		{
+			if (faces.size() == 0)
+			{
+				return nullptr;
+			}
+			Face* closestF = nullptr;
+			//Vec_t closestPoint;
+			
+			Vertex dummy(point, 0);
+			auto results = tree->traverse(&dummy, 1);
+			//closestPoint = results.front()->pos;
+			
+			closestF = results.front()->edge->face;
+			
+			if (closest != nullptr)
+			{
+				*closest = results.front()->pos;
+			}
+			return closestF;
+		}
+		
 	};
+	
+	
+	template <class T>
+	void Mesh<T>::Face::calcNorm() const
+	{
+		Vec_t n{0,0,0};
+		
+		Edge *start, *e;
+		e = start = this->edge;
+		
+		do
+		{
+			const Vec_t& pos = e->vert->pos;
+			const Vec_t& pnext = e->next->vert->pos;
+			
+			n.x += (pos.y - pnext.y)*(pos.z + pnext.z);
+			n.y += (pos.z - pnext.z)*(pos.x + pnext.x);
+			n.z += (pos.x - pnext.x)*(pos.y + pnext.y);
+			e = e->next;
+			
+		}
+		while (e != start);
+		
+		_norm = n.unit();
+	}
 	
 }
 }

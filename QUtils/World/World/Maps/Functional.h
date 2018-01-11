@@ -42,12 +42,12 @@ namespace Maps {
 		}
 		
 		
-		virtual bool hits(const Vec_t& bsse, const Vec_t& dir, Vec_t* result) const override
+		virtual bool hits(const Vec_t& bsse, const Vec_t& dir, Vec_t* result) const
 		{
 			throw NotImp();
 		}
 		
-		virtual T slant(const Vec_t& pos, const Vec_t& dir) const override
+		virtual T slant(const Vec_t& pos, const Vec_t& dir) const
 		{
 			auto g = grad(pos.x, pos.y, NULL, NULL);
 			g.z = 0;

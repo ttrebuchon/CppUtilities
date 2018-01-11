@@ -12,9 +12,10 @@ namespace QUtils { namespace World {
 		protected:
 		
 		
-		
 		public:
 		WORLD_OBJECT(Actor)
+		
+		
 	};
 }
 }

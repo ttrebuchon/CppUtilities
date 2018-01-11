@@ -14,6 +14,14 @@ DEF_TEST(World_Maps)
 		return Vector<float>(x, y, sin(x)*sin(y) + x + y);
 	};
 	
+	/*auto mWavey_func = [](auto x, auto y)
+	{
+		return Vector<float>(x, y, sin(atan(1)*x));
+	};*/
+	
+	
+	
+	
 	auto m1 = Maps::FunctionalMap<float>::Create([](auto x, auto y, auto sz, auto ez)
 	{
 		return Vector<float>(cos(x)*sin(y) + 1, sin(x)*cos(y) + 1, 0);
@@ -21,12 +29,12 @@ DEF_TEST(World_Maps)
 	
 	auto mFlat = Maps::FunctionalMap<float>::Create([](auto x, auto y, auto sz, auto ez)
 	{
-		return Vector<float>(1, 1, 0);
+		return Vector<float>(0, 0, 0);
 	});
 	
 	auto mSlope = Maps::FunctionalMap<float>::Create([](auto x, auto y, auto sz, auto ez)
 	{
-		return Vector<float>(1, 0, 0);
+		return Vector<float>(1, 1, 0);
 	});
 	
 	{
@@ -195,6 +203,11 @@ DEF_TEST(World_Maps)
 		assert_ex(e->next->vert->pos == (Vector<double>{0.5,0,0}));
 		assert_ex(e->next->vert->index == points[0].size());
 		
+		
+		assert_ex(mesh->faces.size() == 1);
+		auto face = mesh->faces.at(0);
+		assert_ex(face->norm() == Vector<double>(0,0,1));
+		
 		mesh.reset();
 	}
 	
@@ -327,8 +340,86 @@ DEF_TEST(World_Maps)
 			printFace(face);
 			dout << "\n";
 		}
-		dout << std::flush;
+		dout << "Done\n\n" << std::flush;
 		
+		
+		mesh.reset();
+	}
+	
+	{
+		const float width = 100;
+		const float height = 100;
+		const int xCount = 100;
+		const int yCount = 100;
+		std::vector<std::vector<Vector<float>>> meshPoints;
+		meshPoints.reserve(xCount);
+		std::list<Vector<float>>* lastRow = nullptr;
+		for (float x = 0; x <= width; x += width/xCount)
+		{
+			std::list<Vector<float>>* row = new std::list<Vector<float>>;
+			for (float y = 0; y <= height; y += height/yCount)
+			{
+				row->push_front(m1_func(x, y));
+			}
+			if (lastRow != nullptr)
+			{
+				meshPoints.emplace_back();
+				std::vector<Vector<float>>& points = meshPoints.back();
+				points = std::vector<Vector<float>>(lastRow->begin(), lastRow->end());
+				points.reserve(lastRow->size() + row->size());
+				for (auto& p : *row)
+				{
+					points.push_back(p);
+				}
+				delete lastRow;
+			}
+			lastRow = new std::list<Vector<float>>(row->rbegin(), row->rend());
+			lastRow = row;
+		}
+		meshPoints.shrink_to_fit();
+		
+		
+		auto mesh = Maps::Mesh<double>::FromPoints(meshPoints);
+		assert_ex(mesh->faces.size() == meshPoints.size());
+		
+		
+		
+		
+		
+		/*dout << "\n\nFace(s) Before Tri: \n\n";
+		int i = 0;
+		for (auto face : mesh->faces)
+		{
+			if (i > 0)
+			{
+				break;
+			}
+			printFace(face);
+			dout << "\n";
+			++i;
+		}
+		dout << "Done\n\n" << std::flush;*/
+		
+		for (int i = 0; i < mesh->faces.size(); ++i)
+		{
+			mesh->triangulate(mesh->faces.at(i));
+		}
+		
+		/*dout << "\n\nFace(s) After Tri: \n\n";
+		for (auto face : mesh->faces)
+		{
+			printFace(face);
+			dout << "\n";
+		}
+		dout << "Done\n\n" << std::flush;*/
+		
+		dout << mesh->faces.size() << " vs. " << meshPoints.size() << "\n\n";
+		
+		dout << "First Face:\n";
+		auto face = mesh->faces.front();
+		printFace(face);
+		dout << "\nNormal: " << to_string(face->norm()) << "\n";
+		dout << "\n\n";
 		
 		mesh.reset();
 	}

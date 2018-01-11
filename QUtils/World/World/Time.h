@@ -1,6 +1,7 @@
 #pragma once
 #include <chrono>
 #include <limits>
+#include <atomic>
 
 namespace QUtils { namespace World {
 	
@@ -91,7 +92,7 @@ namespace QUtils { namespace World {
 		}
 		
 		private:
-		rep ticks;
+		std::atomic<rep> ticks;
 		
 	};
 	
