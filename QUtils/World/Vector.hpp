@@ -41,7 +41,11 @@ namespace QUtils { namespace World {
 	template <class G>
 	constexpr Vector<T>::operator Vector<G>() const
 	{
-		return Vector<G>{x, y, z};
+		return Vector<G>{
+			static_cast<G>(x),
+			static_cast<G>(y),
+			static_cast<G>(z)
+		};
 	}
 }
 }
