@@ -46,7 +46,6 @@ namespace Genetic
 		}
 		
 		
-		const auto popSize = this->population->size();
 		const int solutionSize = this->population->at(0)->size();
 		int endIndex;
 		int seqStart;

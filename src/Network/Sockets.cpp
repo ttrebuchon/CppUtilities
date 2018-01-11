@@ -206,7 +206,7 @@ namespace QUtils::Network
 		}
 		
 		std::string str(length, '\0');
-		int count = ::recv(descriptor, &str[0], length, MSG_PEEK);
+		/*int count = */::recv(descriptor, &str[0], length, MSG_PEEK);
 		QUtils::String::RemoveAll(str, '\0');
 		return str;
 	}
@@ -220,7 +220,7 @@ namespace QUtils::Network
 		
 		int data = waitingData();
 		std::string str(data, '\0');
-		int count = ::recv(descriptor, &str[0], data, MSG_PEEK);
+		/*int count = */::recv(descriptor, &str[0], data, MSG_PEEK);
 		QUtils::String::RemoveAll(str, '\0');
 		return str;
 	}
@@ -405,7 +405,7 @@ namespace QUtils::Network
 		}
 		
 		::addrinfo hints;
-		::addrinfo *result, *rp;
+		::addrinfo *result;
 		
 		memset(&hints, 0, sizeof(::addrinfo));
 		hints.ai_family = domain;

@@ -42,7 +42,7 @@ namespace QUtils::GUI::SDL
 	{
 		std::lock_guard<std::recursive_mutex> lock(this_m);
 		View::setWindow(win);
-		auto sdlWin = dynamic_cast<SDLAppWindow*>(win);
+		
 		if (texture != NULL)
 		{
 			delete texture;

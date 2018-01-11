@@ -44,7 +44,7 @@ namespace QUtils { namespace Reddit {
 		RedditSystem() : items()
 		{}
 		
-		~RedditSystem();
+		virtual ~RedditSystem();
 		
 		Subreddit* subreddit(const std::string);
 		Link* link(const std::string);

@@ -34,6 +34,7 @@ namespace QUtils
 				case 7:
 				return 128;
 			}
+			return 1;
 		}
 		
 		char value;

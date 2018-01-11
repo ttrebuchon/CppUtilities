@@ -34,7 +34,7 @@ namespace QUtils::Drawing::SDL
 			return (*(F*)data)(ev);
 		}
 		
-		static unsigned int EventWatchersCounter = 1;
+		//static unsigned int EventWatchersCounter = 1;
 		static std::map<unsigned int, std::tuple<int(*)(void*, SDL_Event*), void*>> EventWatchers;
 	}
 	

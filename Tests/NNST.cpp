@@ -2,6 +2,7 @@
 #include "QUtils/NearestNeighborTree/NearestNeighborTree.h"
 #include <cmath>
 #include <climits>
+#include <unordered_map>
 
 template <typename ...T>
 using NNT = QUtils::NearestNeighbor<T...>;
@@ -58,8 +59,12 @@ bool Test_NNST()
 	
 	
 	
-	int count = 10000;
+	const int count = 10000;
 	Item goal(count/2, count/2, 5);
+	
+	std::unordered_map<Item*, Item*> closestItems;
+	std::vector<Item*> items;
+	items.reserve(count+5);
 	
 	double shortest_d = INT_MAX;
 	Item* shortest = NULL;
@@ -72,6 +77,7 @@ bool Test_NNST()
 		double y = count*((double)rand())/RAND_MAX;
 		int z = rand() % 10;
 		Item* newItem = new Item(x, y, z);
+		items.push_back(newItem);
 		tree.insert(newItem);
 		if (dist(*newItem, goal) < shortest_d)
 		{
@@ -87,7 +93,44 @@ bool Test_NNST()
 	assert_ex(tree.size() == count);
 	dout << "Traversing..." << endl;
 	
-	
+	{
+	static_assert(count > 1, "");
+	double tmpDist;
+	for (auto i1 : items)
+	{
+		Item* current = nullptr;
+		double distance = INT_MAX;
+		for (auto i2 : items)
+		{
+			if (i2 == i1)
+			{
+				continue;
+			}
+			if ((tmpDist = dist(*i1, *i2)) < distance)
+			{
+				current = i2;
+				distance = tmpDist;
+			}
+		}
+		assert_ex(current != nullptr);
+		closestItems[i1] = current;
+	}
+	for (auto item : items)
+	{
+		auto results = tree.traverse(item, 2);
+		assert_ex(results.size() == 2);
+		if (results.front() != item)
+		{
+			assert_ex(results.back() == item);
+			assert_ex(results.front() == closestItems[item]);
+		}
+		else
+		{
+			assert_ex(results.front() == item);
+			assert_ex(results.back() == closestItems[item]);
+		}
+	}
+	}
 	
 	
 	auto closest = tree.traverse(&goal, 1);

@@ -256,7 +256,7 @@ namespace Network_ServiceProtocol_Test
 		assert_ex(HEADER_SIZE == Protocol<>::HeaderLength);
 		const unsigned int MsgLen = 400;
 		*size = MsgLen;
-		char* data = new char[HEADER_SIZE];
+		unsigned char* data = new unsigned char[HEADER_SIZE];
 		
 		static_assert(DefaultSpec::ID_Size == 1, "Update values in test");
 		data[0] = 255;
@@ -268,7 +268,7 @@ namespace Network_ServiceProtocol_Test
 		//0x0190 == 400, so set chars manually
 		data[DefaultSpec::Length_Size-1] = 0x01;
 		data[DefaultSpec::Length_Size] = 0x90;
-		
+		return data;
 	}
 	
 	template <>
@@ -578,7 +578,7 @@ void MessengerTest()
 			unsigned long long len_out, id_out;
 			bool wideChars_out, responseRequired_out;
 			
-			unsigned char* body_out = srv->receive(len_out, wideChars_out, responseRequired_out, id_out);
+			/*unsigned char* body_out = */srv->receive(len_out, wideChars_out, responseRequired_out, id_out);
 			
 			assert_ex(len_out == body_in.length()+1);
 			assert_ex(!wideChars_out);

@@ -73,13 +73,13 @@ bool Neural_Run()
 	// 	return 0;
 	// };
 	
-	auto invSig_A= [] (auto x) {
+	/*auto invSig_A= [] (auto x) {
 		return invSigmoid<decltype(x)>(x);
-	};
+	};*/
 	
-	auto invSig_D = [] (auto x) {
+	/*auto invSig_D = [] (auto x) {
 		return invSigmoid_D<decltype(x)>(x);
-	};
+	};*/
 
 	
 	const int layers = 2;

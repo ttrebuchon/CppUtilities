@@ -3,7 +3,13 @@
 #include <future>
 #include <unistd.h>
 #include <atomic>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
 #include <Deps/json/json.hpp>
+
+#pragma GCC diagnostic pop
 
 #include <QUtils/String/String.h>
 #include <QUtils/Sleep/Sleep.h>
@@ -649,7 +655,7 @@ SOCKET_TEST(JSON)
 	
 	for (int i = 0; i < fnames.size(); ++i)
 	{
-		people.push_back({fnames[i], lnames[i], 0-i});
+		people.push_back({fnames[i], lnames[i], static_cast<unsigned long>(0-i)});
 	}
 	
 	

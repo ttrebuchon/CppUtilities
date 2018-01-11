@@ -234,7 +234,7 @@ namespace QUtils
 			return;
 		}
 		str = s;
-		const auto endSize = n*len;
+		//const auto endSize = n*len;
 		
 		unsigned int m = 1;
 		while (n >= 2*m)

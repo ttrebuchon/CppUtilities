@@ -180,7 +180,9 @@ void test2()
 	
 	for (auto& x : ran2)
 	{
-		
+		static_assert(std::is_const<std::remove_reference<decltype(x)>::type>::value, "");
+		assert_ex(x > 0);
+		assert_ex(true);
 	}
 	
 	for (int i = 0; i < vec.size(); ++i)
@@ -276,6 +278,7 @@ void copyTest()
 	for (auto x : r4)
 	{
 		assert_not_reached();
+		assert_ex(x > 0); // <-Otherwise I'll get unused variable warnings
 	}
 	
 }

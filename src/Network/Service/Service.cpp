@@ -36,7 +36,7 @@ namespace Network
 	
 	void Service::start()
 	{
-		bool go = true;
+		//bool go = true;
 		goRegister();
 		_started = true;
 		

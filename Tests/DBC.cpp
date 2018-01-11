@@ -71,42 +71,14 @@ DEF_TEST(DBC)
 			}
 		}
 	}
-	//dout << "\n\n\n\n";
+	
 	}
 	
 	dout << "\n\n\n\n";
 	
-	auto imprDrainSoulProc = spell.findRowWithValue(0, 18371);
-	auto imprDrainSoulR1 = spell.findRowWithValue(0, 18213);
+	/*auto imprDrainSoulProc = */spell.findRowWithValue(0, 18371);
+	/*auto imprDrainSoulR1 = */spell.findRowWithValue(0, 18213);
 	
-	/*dout << "Improved Drain Soul Rank 1:\n";
-	for (int i = 0; i < imprDrainSoulR1.width(); ++i)
-	{
-		if (imprDrainSoulR1.couldBeString(i))
-		{
-			dout << imprDrainSoulR1.at<uint>(i) << " - \"" << imprDrainSoulR1.at<std::string>(i) << "\"\n\n";
-		}
-		else
-		{
-			dout << imprDrainSoulR1.at<uint>(i) << " - " << imprDrainSoulR1.at<float>(i) << "\n\n";
-		}
-	}
-	dout << "\n\n\n\n";
-	
-	
-	dout << "Improved Drain Soul Proc:\n";
-	for (int i = 0; i < imprDrainSoulProc.width(); ++i)
-	{
-		if (imprDrainSoulProc.couldBeString(i))
-		{
-			dout << imprDrainSoulProc.at<uint>(i) << " - \"" << imprDrainSoulProc.at<std::string>(i) << "\"\n\n";
-		}
-		else
-		{
-			dout << imprDrainSoulProc.at<uint>(i) << " - " << imprDrainSoulProc.at<float>(i) << "\n\n";
-		}
-	}
-	dout << "\n\n\n\n";*/
 	
 	dout << "Max String Index: " << spell.maxStringIndex() << "\n";
 	

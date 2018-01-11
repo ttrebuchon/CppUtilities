@@ -23,8 +23,8 @@ DEF_TEST(Reddit)
 	assert_ex(link1->subreddit_id() == gaming->id());
 	assert_ex(link1->subreddit() == gaming);
 	
-	auto nosleep = sys->subreddit("nosleep");
-	auto scp = sys->subreddit("scp");
+	/*auto nosleep = */sys->subreddit("nosleep");
+	/*auto scp = */sys->subreddit("scp");
 	auto advAni = sys->subreddit("AdviceAnimals");
 	
 	auto testSub = advAni;
@@ -102,13 +102,11 @@ DEF_TEST(Reddit)
 		toSearch.erase(it);
 		searched.insert(pcom);
 		pcom->replies()->loadMore(true);
-		bool added = false;
 		for (auto com : *pcom->replies())
 		{
 			if (toSearch.count(com) <= 0 && searched.count(com) <= 0)
 			{
 				toSearch.insert(com);
-				added = true;
 			}
 		}
 		
@@ -167,7 +165,7 @@ DEF_TEST(Reddit)
 		toSearch.insert(com);
 	}
 	
-	search2:
+	
 	
 	for (auto it = toSearch.begin(); it != toSearch.end();)
 	{
@@ -177,13 +175,11 @@ DEF_TEST(Reddit)
 		dout << pcom->name() << ", " << std::flush;
 		pcom->refresh();
 		pcom->replies()->loadMore(true);
-		bool added = false;
 		for (auto com : *pcom->replies())
 		{
 			if (toSearch.count(com) <= 0 && searched.count(com) <= 0)
 			{
 				toSearch.insert(com);
-				added = true;
 			}
 		}
 		

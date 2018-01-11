@@ -42,8 +42,8 @@ bool Test_RucksackProblem()
 		return value;
 	};
 	
-	
-	auto verboseFitness = [&items, space](const auto& order) -> double
+	//vvvv For Debugging vvvv
+	/*auto verboseFitness = [&items, space](const auto& order) -> double
 	{
 		dout << "\n";
 		long double value = 0;
@@ -67,7 +67,8 @@ bool Test_RucksackProblem()
 		}
 		dout << "------\n" << value << "\n";
 		return value;
-	};
+	};*/
+	//^^^^ For Debugging ^^^^
 	
 	std::vector<int> order(count);
 	for (int i = 0; i < count; ++i)

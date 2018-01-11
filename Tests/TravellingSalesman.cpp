@@ -245,7 +245,7 @@ bool Test_Genetic_Module(const std::map<int, std::map<int, double>>& edges, cons
 bool Test_TravellingSalesman()
 {
 	const int count = TSData::count;//200;
-	const int bound = TSData::bound;//10;
+	//const int bound = TSData::bound;//10;
 	const int popSize = 100;
 	const int generations = 50;
 	const int genotype = count / 3;

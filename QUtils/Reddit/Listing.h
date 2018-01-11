@@ -87,6 +87,8 @@ namespace QUtils { namespace Reddit {
 		typedef typename Iterable::IIterable<T*>::iterator iterator;
 		typedef typename Iterable::IIterable<T*>::const_iterator const_iterator;
 		
+		virtual ~Listing() {}
+		
 		iterator begin()
 		{
 			return children.begin();

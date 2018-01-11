@@ -226,7 +226,7 @@ namespace QUtils { namespace Network {
 					
 
 					const std::chrono::system_clock::time_point timestamp(std::chrono::system_clock::duration(jMsg["timestamp"].get<unsigned long long>()));
-					const int priority = jMsg["priority"];
+					//const int priority = jMsg["priority"];
 					
 				}
 			}

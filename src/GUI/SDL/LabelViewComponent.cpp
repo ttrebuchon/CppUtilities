@@ -353,7 +353,6 @@ namespace QUtils::GUI::SDL
 		}
 		else
 		{
-			Drawing::SDL::Surface* surf = NULL;
 			lastNativeH = 0;
 			lastNativeW = 0;
 			int w, h;
@@ -526,17 +525,14 @@ namespace QUtils::GUI::SDL
 	void SDLLabelViewComponent::updateTextures()
 	{
 		std::lock_guard<std::recursive_mutex> lock(this_m);
-		//std::cerr << __func__ << "\n\n";
 		std::string text = QUtils::String(this->text()).replace("\r\n", "\n");
 		unsigned long newSum = Internal::calcCheckSum(text);
 		
 		if (newSum == lastStringCheckSum)
 		{
-			//std::cerr << "CheckSum same\n" << std::flush;
 			return;
 		}
 		
-		auto& lastStr = getLastString();
 		typename std::vector<Segment*>::iterator* changed = NULL;
 		auto len = text.length();
 		unsigned long sum = 0;
@@ -590,7 +586,6 @@ namespace QUtils::GUI::SDL
 		{
 			auto splits = splitString(text.substr(start));
 			unsigned int splitStart = 0;
-			//std::cerr << splits.size() << " splits\n";
 			
 			for (auto split : splits)
 			{
@@ -628,13 +623,8 @@ namespace QUtils::GUI::SDL
 		//Make surfaces
 		{
 			auto wrapW = wrapWidth();
-			int index = 1;
-			auto count = newSegments.size();
 			for (auto segment : newSegments)
 			{
-				//std::cerr << "Creating surface " << index++ << "\t/ " << count << std::endl;
-				//std::cerr << "[" << segment->start << ", " << segment->end << "]\n";
-				//std::cerr << "\"" << text.substr(segment->start, segment->end-segment->start) << "\"\n";
 				segment->surface = _font->surfaceBlendedWrapped(text.substr(segment->start, segment->end-segment->start), (Drawing::SDL::Color)color(), wrapW);
 			}
 		}
