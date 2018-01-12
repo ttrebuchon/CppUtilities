@@ -95,6 +95,7 @@ DEC_TEST(World_World);
 DEC_TEST(World_Maps);
 DEC_TEST(SpatialTree);
 DEC_TEST(Cards);
+DEC_TEST(Random);
 
 
 #undef DEC_TEST

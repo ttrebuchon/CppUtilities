@@ -164,12 +164,14 @@ void Testing::run()
 	}
 	//#endif
 	
-	RUN(World_Physics(win));
-	RUN(Settings());
 	RUN(World_Maps());
 	RUN(World_World());
 	RUN(SpatialTree());
+	RUN(NNST());
+	RUN(Random());
 	#ifndef SHORT_TEST
+	RUN(World_Physics(win));
+	RUN(Settings());
 	RUN(Cards());
 	RUN(ASM());
 	RUN(Graphs_DependencyGraph());
@@ -213,7 +215,7 @@ void Testing::run()
 	RUN(Stopwatch());
 	RUN(String());
 	RUN(Markov());
-	RUN(NNST());
+	//RUN(NNST());*/
 	#endif
 	
 	
