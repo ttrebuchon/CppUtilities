@@ -98,26 +98,53 @@ void test_Instances(QUtils::World::World_t* world)
 	
 	auto mesh = createMesh<U>([](auto x, auto y)
 	{
-		return x + y;
-	}, 0, 100, 0, 100);
+		return x + y*x;
+	}, 1, 100, 1, 100);
 	
 	assert_ex(mesh != nullptr);
+	
+	mesh->triangulate();
 	mesh->calculateNormals();
 	
 	auto map = Maps::MeshMap<U>::Create(mesh);
 	assert_ex(map != nullptr);
 	
+	Vector<U> closestPt;
 	Vector<U> target(1, 1, 0);
-	Vector<U> closestVert;
-	auto closestFace = map->mesh->closestFace(target, &closestVert);
-	dout << "Closest Vertex: " << to_string(closestVert) << "\n";
+	auto closestFace = map->mesh->closestFace(target, &closestPt);
 	assert_ex(closestFace != nullptr);
-	
-	Vector<U> closestPt = target - ((target - closestVert).dot(closestFace->norm()))*closestFace->norm();
-	
 	dout << "Closest Point: " << to_string(closestPt) << std::endl;
 	
 	
+	U totalArea = 0;
+	dout << "\nAreas:\n";
+	for (auto f : mesh->faces)
+	{
+		totalArea += f->area();
+	}
+	
+	dout << "Total Area: " << totalArea << "\n";
+	
+	const U actualArea = sqrt(2)*10000;
+	
+	dout << "Actual Total Area: " << actualArea << std::endl;
+	
+	dout << "Diff: " << (totalArea - actualArea)/actualArea*100 << "%" << std::endl;
+	
+	for (auto f : mesh->faces)
+	{
+		dout << "\nEx Area: " << f->area() << std::endl;
+		if (f->area() != 0)
+		{
+			break;
+		}
+		else
+		{
+			dout << "\t" << to_string(f->edge->vert->pos) << "\n";
+			dout << "\t" << to_string(f->edge->next->vert->pos) << "\n";
+			dout << "\t" << to_string(f->edge->next->next->vert->pos) << "\n";
+		}
+	}
 }
 
 

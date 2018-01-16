@@ -167,6 +167,25 @@ namespace QUtils { namespace World {
 	}
 	
 	
+	/*template <class G>
+	struct Vector<Vector<G>>
+	{
+		private:
+		typedef Vector<G> T;
+		
+		public:
+		T x, y, z;
+		
+		constexpr Vector() : x(), y(), z()
+		{}
+		
+		constexpr Vector(const T x, const T y, const T z) : 
+		x(x),
+		y(y),
+		z(z)
+		{}
+		
+	};*/
 }
 }
 #include "Vector.hpp"

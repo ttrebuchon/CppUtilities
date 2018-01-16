@@ -26,4 +26,20 @@ struct Face
 		}
 		return _norm;
 	}
+	
+	T area() const;
+	
+	std::vector<Vertex*> vertices() const
+	{
+		std::vector<Vertex*> v;
+		v.reserve(3);
+		Edge* e = edge;
+		do
+		{
+			v.push_back(e->vert);
+			e = e->next;
+		}
+		while (e != edge);
+		return v;
+	}
 };

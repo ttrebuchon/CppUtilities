@@ -4,23 +4,30 @@
 #include <QUtils/NearestNeighborTree/NearestNeighborTree.h>
 
 
+void TestMesh();
+
+
+using namespace QUtils::World;
+
+auto m1_func = [](auto x, auto y)
+{
+	return Vector<float>(x, y, sin(x)*sin(y) + x + y);
+};
+
+auto m2_func = [](auto x, auto y)
+{
+	return Vector<float>(x, y, 2);
+};
+	
+/*auto mWavey_func = [](auto x, auto y)
+{
+	return Vector<float>(x, y, sin(atan(1)*x));
+};*/
+
+
+
 DEF_TEST(World_Maps)
 {
-	using namespace QUtils::World;
-	//auto world = new World_t;
-	
-	auto m1_func = [](auto x, auto y)
-	{
-		return Vector<float>(x, y, sin(x)*sin(y) + x + y);
-	};
-	
-	/*auto mWavey_func = [](auto x, auto y)
-	{
-		return Vector<float>(x, y, sin(atan(1)*x));
-	};*/
-	
-	
-	
 	
 	auto m1 = Maps::FunctionalMap<float>::Create([](auto x, auto y, auto sz, auto ez)
 	{
@@ -49,6 +56,15 @@ DEF_TEST(World_Maps)
 		assert_ex(mSlope->slant(pos, dir) == mSlope->slant(pos, dir2));
 		assert_ex(m1->slant(pos, dir) == m1->slant(pos, dir2));
 	}
+	
+	
+	TestMesh();
+	return true;
+}
+	
+	
+void TestMesh()
+{
 	
 	{
 		std::vector<Vector<float>> meshPoints;
@@ -205,7 +221,7 @@ DEF_TEST(World_Maps)
 		
 		
 		assert_ex(mesh->faces.size() == 1);
-		auto face = mesh->faces.at(0);
+		auto face = mesh->faces.front();
 		assert_ex(face->norm() == Vector<double>(0,0,1));
 		
 		mesh.reset();
@@ -248,10 +264,10 @@ DEF_TEST(World_Maps)
 		
 		
 		dout << "Face: \n";
-		printFace(mesh->faces.at(0));
+		printFace(mesh->faces.front());
 		dout << std::flush;
 		
-		mesh->triangulate(mesh->faces.at(0));
+		mesh->triangulate(mesh->faces.front());
 		
 		dout << "\n\nFace(s) After Tri: \n\n";
 		for (auto face : mesh->faces)
@@ -325,14 +341,11 @@ DEF_TEST(World_Maps)
 		
 		
 		dout << "Face: \n";
-		printFace(mesh->faces.at(0));
+		printFace(mesh->faces.front());
 		dout << std::flush;
 		
 		
-		for (int i = 0; i < mesh->faces.size(); ++i)
-		{
-			mesh->triangulate(mesh->faces.at(i));
-		}
+		mesh->triangulate();
 		
 		dout << "\n\nFace(s) After Tri: \n\n";
 		for (auto face : mesh->faces)
@@ -354,10 +367,10 @@ DEF_TEST(World_Maps)
 		std::vector<std::vector<Vector<float>>> meshPoints;
 		meshPoints.reserve(xCount);
 		std::list<Vector<float>>* lastRow = nullptr;
-		for (float x = 0; x <= width; x += width/xCount)
+		for (float x = 0; x <= width; x += width/(xCount-1))
 		{
 			std::list<Vector<float>>* row = new std::list<Vector<float>>;
-			for (float y = 0; y <= height; y += height/yCount)
+			for (float y = 0; y <= height; y += height/(yCount-1))
 			{
 				row->push_front(m1_func(x, y));
 			}
@@ -400,10 +413,7 @@ DEF_TEST(World_Maps)
 		}
 		dout << "Done\n\n" << std::flush;*/
 		
-		for (int i = 0; i < mesh->faces.size(); ++i)
-		{
-			mesh->triangulate(mesh->faces.at(i));
-		}
+		mesh->triangulate();
 		
 		/*dout << "\n\nFace(s) After Tri: \n\n";
 		for (auto face : mesh->faces)
@@ -414,6 +424,7 @@ DEF_TEST(World_Maps)
 		dout << "Done\n\n" << std::flush;*/
 		
 		dout << mesh->faces.size() << " vs. " << meshPoints.size() << "\n\n";
+		assert_ex(mesh->faces.size() > meshPoints.size());
 		
 		dout << "First Face:\n";
 		auto face = mesh->faces.front();
@@ -421,8 +432,42 @@ DEF_TEST(World_Maps)
 		dout << "\nNormal: " << to_string(face->norm()) << "\n";
 		dout << "\n\n";
 		
+		
+		mesh->mergeLines();
+		mesh->triangulate();
+		
+		for (int i = 0; i < 2; ++i)
+		{
+			mesh->splitEdges();
+			mesh->triangulate();
+			mesh->mergeLines();
+		}
+		
+		{
+		long double totalA = 0;
+		for (auto f : mesh->faces)
+		{
+			totalA += f->area();
+		}
+		dout << "\n\nTotal Area: " << totalA << std::endl;
+		dout << "Average Area (Per Face): " << (totalA / mesh->faces.size()) << std::endl;
+		}
+		
+		for (auto face : mesh->faces)
+		{
+			if (!(face->area() > 0))
+			{
+				auto vertices = face->vertices();
+				assert_ex(vertices.size() > 0);
+				for (auto v : vertices)
+				{
+					dout << "\t" << to_string(v->pos) << "\n";
+				}
+			}
+			assert_ex(face->area() > 0);
+		}
+		
+		
 		mesh.reset();
 	}
-	
-	return true;
 }

@@ -6,6 +6,7 @@
 #include <QUtils/Exception/NotImplemented.h>
 #include <QUtils/Debug/dassert.h>
 #include <QUtils/NearestNeighborTree/NearestNeighborTree.h>
+#include <unordered_set>
 
 namespace QUtils { namespace World {
 namespace Maps {
@@ -71,6 +72,17 @@ namespace Maps {
 				return Tuple_To_Init_List<typename QUtils::Types::SequenceGen<sizeof...(G)>::type>::go(t);
 			}
 		};
+		
+		template <class T>
+		struct List_It_Compare
+		{
+			typedef typename std::list<T>::iterator it;
+			int operator()(const it& i1, const it& i2) const
+			{
+				throw NotImp();
+				return std::distance(i1, i2);
+			}
+		};
 	}
 	
 	template <class T>
@@ -124,6 +136,7 @@ namespace Maps {
 			{
 				
 			}
+			
 		};
 		
 		
@@ -134,12 +147,14 @@ namespace Maps {
 		
 		//protected:
 		std::map<Vec_t, Vertex*, Vec_Comparator> points;
-		std::vector<Vertex*> vertices;
-		std::vector<Edge*> edges;
-		std::vector<Face*> faces;
+		std::map<size_t, Vertex*> vertexIndices;
+		std::list<Vertex*> vertices;
+		std::list<Edge*> edges;
+		std::list<Face*> faces;
 		std::shared_ptr<QUtils::NearestNeighbor<Vertex, T, T, T>> tree;
 		
 		Mesh() : points(),
+		vertexIndices(),
 		vertices(),
 		edges(),
 		faces(), tree(std::make_shared<NearestNeighbor<Vertex, T, T, T>>(
@@ -166,6 +181,7 @@ namespace Maps {
 				Vertex* newV = new Vertex(pos, index);
 				points[pos] = newV;
 				vertices.push_back(newV);
+				vertexIndices[index] = newV;
 				tree->insert(newV);
 				dassert(points.at(pos) != nullptr);
 				dassert(tree->size() == vertices.size());
@@ -215,11 +231,11 @@ namespace Maps {
 				{
 					Edge* edge = edges[edgeIndex + i];
 					
-					edge->vert = vertices.at(vIndex);
+					edge->vert = this->vertexIndices.at(vIndex);
 					edge->vert->edge = edge;
 					edge->face = f;
 					f->edge = edge;
-					outgoing[vertices.at(vIndex)].push_back(edge);
+					outgoing[edge->vert].push_back(edge);
 					if (i > 0)
 					{
 						edge->prev = edges[edgeIndex+i-1];
@@ -247,11 +263,11 @@ namespace Maps {
 				this->faces.push_back(f);
 			}
 			
-			for (int i = 0; i < this->edges.size(); ++i)
+			for (auto it = this->edges.begin(); it != this->edges.end(); ++it)
 			{
-				if (this->edges[i]->sym == nullptr)
+				if ((*it)->sym == nullptr)
 				{
-					Edge* e = this->edges[i];
+					Edge* e = *it;
 					Vertex* v = e->next->vert;
 					for (auto& out : outgoing.at(v))
 					{
@@ -323,9 +339,9 @@ namespace Maps {
 		void triangulate(Face* face)
 		{
 			dassert(face != nullptr);
+			Edge* e[4];
 			while (true)
 			{
-				Edge* e[4];
 				e[0] = face->edge;
 				dassert(e[0] != nullptr);
 				e[1] = e[0]->next;
@@ -370,6 +386,129 @@ namespace Maps {
 				edges.push_back(symNew);
 				faces.push_back(fNew);
 			}
+		}
+		
+		void triangulate()
+		{
+			auto end = faces.end();
+			for (auto it = faces.begin(); it != end; ++it)
+			{
+				triangulate(*it);
+			}
+		}
+		
+		void mergeLines()
+		{
+			typedef typename std::list<Face*>::iterator fIt;
+			std::list<fIt> fDel;
+			std::set<Edge*> eDelElem;
+			
+			Edge *e1, *e2, *e3;
+			Edge *s1, *s2, *s3;
+			Vec_t v1, v2, cr;
+			for (auto it = faces.begin(); it != faces.end(); ++it)
+			{
+				auto& face = *it;
+				
+				e1 = face->edge;
+				e2 = e1->next;
+				e3 = e2->next;
+				
+				if (e3->next != e1 || e1 == e3 || e1 == e2 || e2 == e3)
+				{
+					continue;
+				}
+				
+				v1 = e2->vert->pos - e1->vert->pos;
+				v2 = e3->vert->pos - e2->vert->pos;
+				cr = v2.cross(v1);
+				if (cr.value() > 0)
+				{
+					continue;
+				}
+				s1 = e1->sym;
+				s2 = e2->sym;
+				s3 = e3->sym;
+				
+				if (s1 != nullptr)
+				{
+					dassert(s1->sym == e1);
+					s1->sym = nullptr;
+				}
+				if (s2 != nullptr)
+				{
+					dassert(s2->sym == e2);
+					s2->sym = nullptr;
+				}
+				if (s3 != nullptr)
+				{
+					dassert(s3->sym == e3);
+					s3->sym = nullptr;
+				}
+				
+				fDel.push_back(it);
+				eDelElem.insert(e1);
+				eDelElem.insert(e2);
+				eDelElem.insert(e3);
+				
+				if (e1->vert->edge == e1)
+				{
+					e1->vert->edge = nullptr;
+				}
+				
+				if (e2->vert->edge == e2)
+				{
+					e2->vert->edge = nullptr;
+				}
+				
+				if (e3->vert->edge == e3)
+				{
+					e3->vert->edge = nullptr;
+				}
+			}
+			
+			
+			
+			for (auto faceIt : fDel)
+			{
+				delete *faceIt;
+				faces.erase(faceIt);
+			}
+			
+			e1 = nullptr;
+			for (auto it = edges.begin(); it != edges.end();)
+			{
+				e1 = *it;
+				if (eDelElem.count(e1) <= 0)
+				{
+					if (e1->vert->edge == nullptr)
+					{
+						e1->vert->edge = e1;
+					}
+					++it;
+				}
+				else
+				{
+					delete e1;
+					it = edges.erase(it);
+				}
+			}
+			
+			//Uncomment to delete unedged vertices
+			/*for (auto it = vertices.begin(); it != vertices.end();)
+			{
+				if ((*it)->edge != nullptr)
+				{
+					++it;
+				}
+				else
+				{
+					points.erase((*it)->pos);
+					vertexIndices.erase((*it)->index);
+					delete *it;
+					it = vertices.erase(it);
+				}
+			}*/
 		}
 		
 		public:
@@ -424,7 +563,7 @@ namespace Maps {
 		
 		void faceFromPoints(const std::vector<Vec_t>&)
 		{
-			
+			throw NotImp();
 		}
 		
 		void calculateNormals()
@@ -441,20 +580,44 @@ namespace Maps {
 			{
 				return nullptr;
 			}
-			Face* closestF = nullptr;
-			//Vec_t closestPoint;
 			
+			Face* closestF = nullptr;
 			Vertex dummy(point, 0);
 			auto results = tree->traverse(&dummy, 1);
-			//closestPoint = results.front()->pos;
-			
 			closestF = results.front()->edge->face;
+			
+			Vec_t intersect = point - ((point - results.front()->pos).dot(closestF->norm()))*closestF->norm();
+			if (results.front()->edge->sym != nullptr)
+			{
+				auto e = results.front()->edge->sym;
+				Vec_t intersect2 = point - ((point - e->vert->pos).dot(e->face->norm()))*e->face->norm();
+				if ((intersect2 - point).value() < (intersect - point).value())
+				{
+					intersect = intersect2;
+					closestF = e->face;
+				}
+			}
 			
 			if (closest != nullptr)
 			{
-				*closest = results.front()->pos;
+				*closest = intersect;
 			}
+			
 			return closestF;
+		}
+		
+		void splitEdges()
+		{
+			int j = 0;
+			auto len = edges.size();
+			for (auto it = edges.begin(); it != edges.end() && j < len; ++it, ++j)
+			{
+				auto pos = ((*it)->vert->pos + (*it)->next->vert->pos)/2;
+				if (points.count(pos) == 0)
+				{
+					splitEdge(*it, pos);
+				}
+			}
 		}
 		
 	};
@@ -482,6 +645,29 @@ namespace Maps {
 		while (e != start);
 		
 		_norm = n.unit();
+	}
+	
+	template <class T>
+	T Mesh<T>::Face::area() const
+	{
+		Vec_t A, B, C;
+		T a, b, c;
+		
+		A = edge->vert->pos;
+		B = edge->next->vert->pos;
+		C = edge->next->next->vert->pos;
+		
+		a = (A - B).value();
+		b = (A - C).value();
+		c = (B - C).value();
+		
+		assert_ex(a != 0);
+		assert_ex(b != 0);
+		assert_ex(c != 0);
+		
+		
+		return std::sqrt((a+b+c)*(b+c-a)*(a+c-b)*(a+b-c))/4;
+		
 	}
 	
 }

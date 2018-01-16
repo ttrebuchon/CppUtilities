@@ -92,6 +92,35 @@ bool Test_World_Physics(QUtils::GUI::SDL::SDLAppWindow* window)
 		
 	}
 	
+	{
+		typedef Vector<Vec> Mat;
+		constexpr Mat m{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+		
+		static_assert(m.x.x == 1, "");
+		static_assert(m.x.y == 0, "");
+		static_assert(m.x.z == 0, "");
+		
+		static_assert(m.y.x == 0, "");
+		static_assert(m.y.y == 1, "");
+		static_assert(m.y.z == 0, "");
+		
+		static_assert(m.z.x == 0, "");
+		static_assert(m.z.y == 0, "");
+		static_assert(m.z.z == 1, "");
+		
+		constexpr Vec v(1, 2, 3);
+		constexpr Vec r = m.dot(v);
+		static_assert(r == v, "");
+		dout << "Matrix Math: ";
+		dout << to_string(r) << std::endl;
+		
+		dout << to_string(m) << std::endl;
+		
+		constexpr auto r2 = v.dot(m);
+		
+		dout << to_string(r2) << "\n";
+	}
+	
 	QUtils::GUI::ViewComponent* orig = NULL;
 	if (window != NULL)
 	{
