@@ -13,6 +13,7 @@ namespace QUtils
 	class Node
 	{
 		private:
+		std::tuple<Dims...> attrs;
 		Elem* elem;
 		tuple<function<Dims(Elem*)>...>* funcs;
 		
@@ -25,7 +26,7 @@ namespace QUtils
 		#define PROB 0.1
 		
 		template <int N>
-		void tryBalance();
+		inline void tryBalance();
 		
 		
 		std::vector<Elem*> flatten();
@@ -40,9 +41,10 @@ namespace QUtils
 		int size();
 		
 		template <int N>
-		int traverse(Elem*, int n, std::vector<Elem*>*, function<double(Elem*, Elem*)>* dist);
+		int traverse(Elem*, const std::tuple<Dims...>& attrs, int n, std::vector<Node*>*, const function<double(Elem*, Elem*)>& dist);
 		
-		
+		template <class, class, class...>
+		friend class NearestNeighbor;
 	};
 	
 	}

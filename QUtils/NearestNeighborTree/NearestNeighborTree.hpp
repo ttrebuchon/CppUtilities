@@ -208,6 +208,9 @@ namespace QUtils
 		
 		template <class Elem, class ...Dims>
 		using DefaultDist = Default_Dist<Elem, QUtils::Types::void_t<typename EuclideanDist<Dims...>::type>, Dims...>;
+		
+		
+		
 	}
 	
 	
@@ -256,11 +259,19 @@ namespace QUtils
 	template <typename Elem, typename Dim1, typename ...Dims>
 	std::vector<Elem*> NearestNeighbor<Elem, Dim1, Dims...>::traverse(Elem* e, int n)
 	{
-		std::vector<Elem*> results;
+		std::vector<Node*> results;
+		std::tuple<Dim1, Dims...> attrs;
+		QUtils::NN_Internal::detail::AttrEval<typename QUtils::Types::SequenceGen<sizeof...(Dims)>::type>::call(attrs, funcs, e);
 		
-		root->template traverse<0>(e, n, &results, &dist);
+		root->template traverse<0>(e, attrs, n, &results, dist);
 		
-		return results;
+		std::vector<Elem*> elems(results.size());
+		for (int i = 0; i < results.size(); ++i)
+		{
+			elems[i] = results[i]->elem;
+		}
+		
+		return elems;
 	}
 }
 

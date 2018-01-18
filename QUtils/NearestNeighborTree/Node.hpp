@@ -3,23 +3,42 @@
 
 
 #include "Node.h"
+#include <QUtils/Types/IntegerSequence.h>
 
 namespace QUtils
 {
 namespace NN_Internal
 {
-	template <typename Elem, typename ...Dims>
-	Node<Elem, Dims...>::Node(Elem* e, tuple<function<Dims(Elem*)>...>* funcs) : elem(e), funcs(funcs), left(NULL), right(NULL), _size(1)
+	namespace detail
 	{
+		template <class Seq>
+		struct AttrEval;
 		
+		template <int... I>
+		struct AttrEval<Types::Sequence<I...>>
+		{
+			template <class Elem, class... Dims>
+			static void call(std::tuple<Dims...>& attrs, auto& funcs, Elem* e)
+			{
+				attrs = std::tuple<Dims...>((std::get<I>(funcs))(e)...);
+			}
+		};
+	}
+	
+	
+	template <typename Elem, typename ...Dims>
+	Node<Elem, Dims...>::Node(Elem* e, tuple<function<Dims(Elem*)>...>* funcs) : attrs(), elem(e), funcs(funcs), left(NULL), right(NULL), _size(1)
+	{
+		typedef typename Types::SequenceGen<sizeof...(Dims)-1>::type Seq;
+		detail::AttrEval<Seq>::call(attrs, *funcs, e);
 	}
 	
 	template <typename Elem, typename ...Dims>
 	template <int N>
 	Node<Elem, Dims...>* Node<Elem, Dims...>::insert(Node<Elem, Dims...>* n)
 	{
-		auto v1 = std::get<N>(*funcs)(elem);
-		auto v2 = std::get<N>(*funcs)(n->elem);
+		auto v1 = std::get<N>(attrs);//(*funcs)(elem);
+		auto v2 = std::get<N>(n->attrs);//(*funcs)(n->elem);
 		
 		auto child = &right;
 		
@@ -76,7 +95,7 @@ namespace NN_Internal
 	
 	template <typename Elem, typename ...Dims>
 	template <int N>
-	void Node<Elem, Dims...>::tryBalance()
+	inline void Node<Elem, Dims...>::tryBalance()
 	{
 		if (((double)rand())/RAND_MAX*100 < PROB*100)
 		{
@@ -86,15 +105,15 @@ namespace NN_Internal
 	
 	template <typename Elem, typename ...Dims>
 	template <int N>
-	int Node<Elem, Dims...>::traverse(Elem* e, int n, std::vector<Elem*>* vec, function<double(Elem*, Elem*)>* dist)
+	int Node<Elem, Dims...>::traverse(Elem* e, const std::tuple<Dims...>& attrs, int n, std::vector<Node<Elem, Dims...>*>* vec, const function<double(Elem*, Elem*)>& dist)
 	{
 		tryBalance<N>();
 		
 		auto first = left;
 		auto second = right;
 		
-		auto v1 = std::get<N>(*funcs)(elem);
-		auto v2 = std::get<N>(*funcs)(e);
+		auto v1 = std::get<N>(this->attrs);//(*funcs)(elem);
+		auto v2 = std::get<N>(attrs);
 		
 		if (v2 > v1)
 		{
@@ -106,14 +125,14 @@ namespace NN_Internal
 		
 		if (first != NULL)
 		{
-			found += first->template traverse<(N+1)%(sizeof...(Dims))>(e, n, vec, dist);
+			found += first->template traverse<(N+1)%(sizeof...(Dims))>(e, attrs, n, vec, dist);
 		}
 		
 		double d = 0;
 		int ind = -1;
 		for (int i = 0; i < vec->size(); i++)
 		{
-			auto tmp = (*dist)((*vec)[i], e);
+			auto tmp = dist((*vec)[i]->elem, e);
 			if (tmp > d)
 			{
 				d = tmp;
@@ -123,12 +142,12 @@ namespace NN_Internal
 		
 		if (vec->size() < n)
 		{
-			vec->push_back(elem);
+			vec->push_back(this);
 			found++;
 		}
-		else if (d > (*dist)(elem, e))
+		else if (d > dist(elem, e))
 		{
-			(*vec)[ind] = elem;
+			(*vec)[ind] = this;
 			found++;
 		}
 		
@@ -137,7 +156,7 @@ namespace NN_Internal
 		ind = -1;
 		for (int i = 0; i < vec->size(); i++)
 		{
-			auto tmp = (*dist)((*vec)[i], e);
+			auto tmp = dist((*vec)[i]->elem, e);
 			if (tmp > d)
 			{
 				d = tmp;
@@ -150,7 +169,7 @@ namespace NN_Internal
 		if (second != NULL)
 		if (((v2-v1)*(v2-v1) < d*d) || (vec->size() < n))
 		{
-			found += second->template traverse<(N+1)%(sizeof...(Dims))>(e, n, vec, dist);
+			found += second->template traverse<(N+1)%(sizeof...(Dims))>(e, attrs, n, vec, dist);
 		}
 		
 		return found;
