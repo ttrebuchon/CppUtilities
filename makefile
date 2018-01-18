@@ -83,8 +83,10 @@ Reddit = $(call getobjs,$(SRC)/Reddit/)
 
 Cards = $(call getobjs,$(SRC)/Cards/)
 
+BareMetal = $(call getobjs,$(SRC)/BareMetal/)
 
-objects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen) $(Genetic) $(Serialization) $(Graphs) $(World) $(DBC) $(Reddit) $(Cards)
+
+objects = $(Func) $(NNST) $(DebugOut) $(Markov) $(Stopwatch) $(String) $(Math) $(LazyLoad) $(Sleep) $(NeuralNet) $(CSV) $(Raytracer) $(Rules) $(English) $(CLIPS) $(SQL) $(Multi) $(Network) $(Graphics) $(Guid) $(GUI) $(Output) $(Drawing_SDL) $(CodeGen) $(Genetic) $(Serialization) $(Graphs) $(World) $(DBC) $(Reddit) $(Cards) $(BareMetal)
 
 
 #Namespace name, used once (Not important)
@@ -240,6 +242,5 @@ QUtils/Graphics/Images/JPG_PCH.h.gch: QUtils/Graphics/Images/JPG_PCH.h
 %.o: %.cpp
 	@echo $@ ' < ' $<
 	@$(CXX) $(CXXFLAGS) -c -o $@ $< $(DEPS)
-	
 
 -include $(deps)
