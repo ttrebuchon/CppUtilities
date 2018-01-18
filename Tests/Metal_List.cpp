@@ -26,8 +26,5 @@ DEF_TEST(Metal_List)
 		assert_ex(l1.size() == 2);
 	}
 	
-	::operator new(100);
-	assert_ex(metal_build_test() == 0);
-	
 	return true;
 }

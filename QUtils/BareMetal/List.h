@@ -220,7 +220,5 @@ namespace QUtils { namespace Metal {
 		
 	};
 	
-	int metal_build_test();
-	
 }
 }
