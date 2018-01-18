@@ -96,6 +96,7 @@ DEC_TEST(World_Maps);
 DEC_TEST(SpatialTree);
 DEC_TEST(Cards);
 DEC_TEST(Random);
+DEC_TEST(Metal_List);
 
 
 #undef DEC_TEST

@@ -169,7 +169,13 @@ void Testing::run()
 	RUN(SpatialTree());
 	RUN(NNST());
 	RUN(Random());
+	RUN(Metal_List());
 	#ifndef SHORT_TEST
+	//RUN(World_World());
+	//RUN(World_Maps());
+	//RUN(SpatialTree());
+	//RUN(Random());
+	//RUN(Metal_List());
 	RUN(World_Physics(win));
 	RUN(Settings());
 	RUN(Cards());
