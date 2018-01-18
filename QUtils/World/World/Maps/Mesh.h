@@ -294,6 +294,7 @@ namespace Maps {
 			size_t index = vertices.size();
 			Vertex* vNew = new Vertex(pos, index);
 			vertices.push_back(vNew);
+			tree->insert(vNew);
 			if (points.count(pos) > 0)
 			{
 				//TODO
@@ -504,6 +505,7 @@ namespace Maps {
 				else
 				{
 					points.erase((*it)->pos);
+					tree->erase(*it);
 					vertexIndices.erase((*it)->index);
 					delete *it;
 					it = vertices.erase(it);

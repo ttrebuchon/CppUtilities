@@ -441,6 +441,8 @@ void TestMesh()
 			mesh->splitEdges();
 			mesh->triangulate();
 			mesh->mergeLines();
+			dout << mesh->vertices.size() << " vs " << mesh->tree->size() << std::endl;
+			assert_ex(mesh->vertices.size() == mesh->tree->size());
 		}
 		
 		{
