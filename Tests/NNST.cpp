@@ -4,6 +4,8 @@
 #include <climits>
 #include <unordered_map>
 
+void test_Erase();
+
 template <typename ...T>
 using NNT = QUtils::NearestNeighbor<T...>;
 
@@ -255,6 +257,10 @@ bool Test_NNST()
 	}
 	dout << "Test 2 Error: " << test2Err << "%" << std::endl;
 	
+	
+	dout << "\n\n";
+	test_Erase();
+	
 	return true;
 }
 
@@ -363,4 +369,62 @@ double Test2()
 	
 	
 	return relErr;
+}
+
+void test_Erase()
+{
+	std::vector<std::pair<float, float>*> points;
+	points.reserve(100*100);
+	{
+	QUtils::NearestNeighbor<std::pair<float, float>, float, float> tree(
+	[](auto x)
+	{ return x->first; },
+	[] (auto x)
+	{ return x->second; }
+	);
+	
+	std::pair<float, float>* ptr = nullptr;
+	for (int x = 0; x < 100; ++x)
+	{
+		for (int y = 0; y < 100; ++y)
+		{
+			
+			auto tmp = new std::pair<float, float>(x, y);
+			if (x == 50 && y == 50)
+			{
+				ptr = tmp;
+			}
+			tree.insert(tmp);
+			points.push_back(tmp);
+		}
+	}
+	
+	const auto size = tree.size();
+	
+	auto t = tree.traverse(ptr, 5);
+	bool found = false;
+	for (auto x : t)
+	{
+		dout << "(" << x->first << ", " << x->second << ")\n";
+		if (x == ptr)
+		{
+			found = true;
+		}
+	}
+	assert_ex(found);
+	
+	tree.erase(ptr);
+	assert_ex(tree.size() == size-1);
+	dout << "\n\n";
+	t = tree.traverse(ptr, 5);
+	for (auto x : t)
+	{
+		dout << "(" << x->first << ", " << x->second << ")\n";
+		assert_ex(x != ptr);
+	}
+	}
+	for (auto p : points)
+	{
+		delete p;
+	}
 }

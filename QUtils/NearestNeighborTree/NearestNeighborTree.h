@@ -5,6 +5,7 @@
 #include <tuple>
 #include <vector>
 #include <functional>
+#include <unordered_set>
 
 
 //using std::tuple;
@@ -32,6 +33,7 @@ namespace QUtils
 		std::tuple<std::function<Dim1(Elem*)>, std::function<Dims(Elem*)>...> funcs;
 		
 		Node* root;
+		std::unordered_set<Node*> nodes;
 		
 		public:
 		
@@ -44,6 +46,8 @@ namespace QUtils
 		int size();
 		
 		std::vector<Elem*> traverse(Elem*, int n);
+		
+		void erase(Elem*);
 		
 		
 	};

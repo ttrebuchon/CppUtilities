@@ -6,6 +6,7 @@
 #include <QUtils/Types/Void_t.h>
 #include <QUtils/Types/IntegerSequence.h>
 #include <cmath>
+#include <list>
 
 namespace QUtils
 {
@@ -236,6 +237,7 @@ namespace QUtils
 	void NearestNeighbor<Elem, Dim1, Dims...>::insert(Elem* e)
 	{
 		Node* n = new Node(e, &funcs);
+		nodes.insert(n);
 		if (root == NULL)
 		{
 			root = n;
@@ -272,6 +274,89 @@ namespace QUtils
 		}
 		
 		return elems;
+	}
+	
+	template <typename Elem, typename Dim1, typename ...Dims>
+	void NearestNeighbor<Elem, Dim1, Dims...>::erase(Elem* e)
+	{
+		Node *node = nullptr;
+		std::list<Node*> children;
+		
+		if (root != nullptr)
+		{
+			if (root->elem == e)
+			{
+				node = root;
+				root = nullptr;
+			}
+		}
+		
+		for (auto n : nodes)
+		{
+			if (n->left != nullptr)
+			{
+				if (n->left->elem == e)
+				{
+					node = n->left;
+					n->left = nullptr;
+					break;
+				}
+			}
+			if (n->right != nullptr)
+			{
+				if (n->right->elem == e)
+				{
+					node = n->right;
+					n->right = nullptr;
+					break;
+				}
+			}
+		}
+		
+		if (node == nullptr)
+		{
+			return;
+		}
+		
+		if (node->left != nullptr)
+		{
+			children.push_back(node->left);
+			node->left = nullptr;
+		}
+				
+		if (node->right != nullptr)
+		{
+			children.push_back(node->right);
+			node->right = nullptr;
+		}
+		
+		nodes.erase(node);
+		
+		for (auto it = children.begin(); it != children.end(); ++it)
+		{
+			if ((*it)->left != nullptr)
+			{
+				children.push_back((*it)->left);
+				(*it)->left = nullptr;
+			}
+			if ((*it)->right != nullptr)
+			{
+				children.push_back((*it)->right);
+				(*it)->right = nullptr;
+			}
+		}
+		
+		for (auto n : children)
+		{
+			if (root == nullptr)
+			{
+				root = n;
+			}
+			else
+			{
+				root->template insert<0>(n);
+			}
+		}
 	}
 }
 
