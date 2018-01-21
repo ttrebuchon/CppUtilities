@@ -1,5 +1,6 @@
 #pragma once
-#include <math.h>
+#include <cmath>
+#include <string>
 
 
 namespace QUtils { namespace World {
