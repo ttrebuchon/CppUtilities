@@ -64,12 +64,12 @@ namespace QUtils { namespace World {
 		typedef std::chrono::time_point<WorldClock_R<Ratio>> time_point;
 		constexpr static bool is_steady = true;
 		
-		static time_point min()
+		constexpr static time_point min()
 		{
 			return time_point(duration(0));
 		}
 		
-		static time_point max()
+		constexpr static time_point max()
 		{
 			return time_point(duration(std::numeric_limits<rep>::max()));
 		}
@@ -91,21 +91,27 @@ namespace QUtils { namespace World {
 			++ticks;
 		}
 		
+		void advance(unsigned long long ticks)
+		{
+			this->ticks += ticks;
+		}
+		
 		private:
 		std::atomic<rep> ticks;
 		
 	};
 	
 	
+	typedef WorldClock_R<1000> WorldClock;
 	
-	
-	typedef std::chrono::steady_clock Clock;
+	//typedef std::chrono::steady_clock Clock;
+	typedef WorldClock Clock;
 	static_assert(Clock::is_steady, "Clock must be a steady type");
 	typedef typename Clock::time_point Time;
 	typedef typename Clock::duration Duration;
 	typedef Clock_Timespan<Clock> Timespan;
 	
 	
-	typedef WorldClock_R<1000> WorldClock;
+	
 }
 }
