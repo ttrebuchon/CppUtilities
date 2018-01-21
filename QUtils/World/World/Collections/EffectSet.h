@@ -3,6 +3,7 @@
 #include "../Effect.h"
 #include <set>
 #include <QUtils/Iterable/IIterable.h>
+#include "ObservableSet.h"
 
 namespace QUtils { namespace World {
 	
@@ -41,19 +42,38 @@ namespace QUtils { namespace World {
 		};
 	}
 	
-	
-	
-	
-	class EffectSet : public std::set<Effect::Ptr, Helpers::Effect_Compare>
+	/*class EffectSet_Obs
 	{
-		protected:
-		typedef std::set<Effect::Ptr, Helpers::Effect_Compare> Base;
-		
+		typedef typename Effect::Ptr T;
 		
 		public:
 		
+		static void insert(const T&)
+		{
+			std::cerr << "Inserting!!!\n\n\n" << std::endl;
+		}
+	};*/
+	
+	
+	/*class EffectSet : std::set<Effect::Ptr, Helpers::Effect_Compare>
+	{
+		protected:
+		typedef std::set<Effect::Ptr, Helpers::Effect_Compare> Base;
+		typedef Effect::Ptr T;
 		
+		public:
+		typedef typename Base::iterator iterator;
 		
-	};
+		void clear();
+		void insert(const T);
+		size_t size() const;
+		size_t count(const T) const;
+		
+		iterator begin() const;
+		iterator end() const;
+	};*/
+	
+	//typedef Collections::ObservableSet<Effect::Ptr, Collections::SetObservers<Effect::Ptr, &EffectSet_Obs::insert>, Helpers::Effect_Compare> EffectSet;
+	typedef Collections::ObservableSet<Effect::Ptr, Helpers::Effect_Compare> EffectSet;
 }
 }
