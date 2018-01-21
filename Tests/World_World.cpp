@@ -8,8 +8,13 @@
 template <class T>
 typename QUtils::World::Maps::Mesh<T>::Ptr createMesh(const std::function<T(T, T)>, T xmin, T xmax, T ymin, T ymax);
 
+typename QUtils::World::Actor::Ptr createTestActor(QUtils::World::World_t*);
+
 void test_EffectSet();
 void test_Instances(QUtils::World::World_t*);
+
+
+void printFace(auto f);
 
 DEF_TEST(World_World)
 {
@@ -19,12 +24,22 @@ DEF_TEST(World_World)
 	
 	auto world = new World_t;
 	
-	auto mFlat = Maps::FunctionalMap<float>::Create([](auto x, auto y, auto sz, auto ez)
+	auto mFlat = Maps::FunctionalMap<double>::Create([](auto x, auto y, auto sz, auto ez)
 	{
-		return Vector<float>(1, 1, 0);
+		return Vector<double>(1, 1, 0);
 	});
 	
 	auto inst = Instance::Create(world, mFlat);
+	
+	world->resumed += []()
+	{
+		dout << "World Resumed." << std::endl;
+	};
+	
+	world->paused += []()
+	{
+		dout << "World Paused." << std::endl;
+	};
 	
 	//auto ent = Entity::Create(world);
 	assert_ex(world->go(10s) == 10s);
@@ -45,9 +60,20 @@ void test_EffectSet()
 {
 	using namespace QUtils::World;
 	
+	auto w = new World_t;
+	
 	class Eff : public Effect
 	{
+		protected:
+		virtual void activate(Entity::Ptr, bool& remove)
+		{
+			remove = false;
+		}
+		
 		public:
+		Eff(World_t* world) : Effect(world)
+		{}
+		
 		int x;
 		Timespan t;
 		
@@ -57,8 +83,8 @@ void test_EffectSet()
 		}
 	};
 	
-	auto e1 = std::make_shared<Eff>();
-	auto e2 = std::make_shared<Eff>();
+	auto e1 = std::make_shared<Eff>(w);
+	auto e2 = std::make_shared<Eff>(w);
 	e1->x = 0;
 	e2->x = 1;
 	
@@ -74,8 +100,8 @@ void test_EffectSet()
 	
 	
 	es.clear();
-	e1->t = Timespan(Clock::now(), 100s);
-	e2->t = Timespan(Clock::now(), 10s);
+	e1->t = Timespan(w->clock.now(), 100s);
+	e2->t = Timespan(w->clock.now(), 10s);
 	es.insert(e1);
 	assert_ex(es.size() == 1);
 	es.insert(e1);
@@ -88,12 +114,14 @@ void test_EffectSet()
 		assert_ex(e == e2);
 		break;
 	}
+	
+	delete w;
 }
 
 void test_Instances(QUtils::World::World_t* world)
 {
 	using namespace QUtils::World;
-	typedef float U;
+	typedef double U;
 	
 	
 	auto mesh = createMesh<U>([](auto x, auto y)
@@ -102,9 +130,6 @@ void test_Instances(QUtils::World::World_t* world)
 	}, 1, 100, 1, 100);
 	
 	assert_ex(mesh != nullptr);
-	
-	mesh->triangulate();
-	mesh->calculateNormals();
 	
 	auto map = Maps::MeshMap<U>::Create(mesh);
 	assert_ex(map != nullptr);
@@ -115,36 +140,26 @@ void test_Instances(QUtils::World::World_t* world)
 	assert_ex(closestFace != nullptr);
 	dout << "Closest Point: " << to_string(closestPt) << std::endl;
 	
+	auto inst = Instance::Create(world, map);
+	assert_ex(inst != nullptr);
 	
-	U totalArea = 0;
-	dout << "\nAreas:\n";
-	for (auto f : mesh->faces)
-	{
-		totalArea += f->area();
-	}
+	auto actor1 = createTestActor(world);
 	
-	dout << "Total Area: " << totalArea << "\n";
+	inst->addEntity(actor1);
+	assert_ex(inst->entities.size() == 1);
 	
-	const U actualArea = sqrt(2)*10000;
+	auto fmove = Effects::ForceMove::Create(world, Vector<double>(1,1,0), 1s, world->clock.now() + 10s);
 	
-	dout << "Actual Total Area: " << actualArea << std::endl;
+	actor1->effects.insert(fmove);
 	
-	dout << "Diff: " << (totalArea - actualArea)/actualArea*100 << "%" << std::endl;
+	auto fmove2 = Effects::ForceMove::Create(world, Vector<double>(-1,-1,0), 1s, world->clock.now() + 10s);
 	
-	for (auto f : mesh->faces)
-	{
-		dout << "\nEx Area: " << f->area() << std::endl;
-		if (f->area() != 0)
-		{
-			break;
-		}
-		else
-		{
-			dout << "\t" << to_string(f->edge->vert->pos) << "\n";
-			dout << "\t" << to_string(f->edge->next->vert->pos) << "\n";
-			dout << "\t" << to_string(f->edge->next->next->vert->pos) << "\n";
-		}
-	}
+	actor1->effects.insert(fmove2);
+	
+	
+	world->go(fmove->time().duration());
+	
+	dout << to_string(actor1->pos()) << std::endl;
 }
 
 
@@ -183,5 +198,49 @@ typename QUtils::World::Maps::Mesh<T>::Ptr createMesh(const std::function<T(T, T
 	}
 	
 	
-	return QUtils::World::Maps::Mesh<T>::FromPoints(faces);
+	auto m = QUtils::World::Maps::Mesh<T>::FromPoints(faces);
+	m->triangulate();
+	m->mergeLines();
+	m->triangulate();
+	bool cont = true;
+	while (cont)
+	{
+		cont = false;
+		for (auto f : m->faces)
+		{
+			assert_ex(f->perimeterSize() == 3);
+			if (!(f->area() > 0))
+			{
+				m->mergeLines();
+				m->triangulate();
+				cont = true;
+				break;
+			}
+		}
+	}
+	m->calculateNormals();
+	
+	return m;
+}
+
+typename QUtils::World::Actor::Ptr createTestActor(QUtils::World::World_t* world)
+{
+	using namespace QUtils::World;
+	
+	auto act = Actor::Create(world, Vector<double>{0,0,0});
+	
+	return act;
+}
+
+
+void printFace(auto f)
+{
+	auto e = f->edge;
+	do
+	{
+		dout << to_string(e->vert->pos) << "\n";
+		e = e->next;
+	}
+	while (e != f->edge);
+	dout << std::flush;
 }
