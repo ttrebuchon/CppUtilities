@@ -42,4 +42,21 @@ struct Face
 		while (e != edge);
 		return v;
 	}
+	
+	long perimeterSize() const
+	{
+		if (edge == nullptr)
+		{
+			return -1;
+		}
+		long p = 0;
+		Edge* e = edge;
+		do
+		{
+			++p;
+			e = e->next;
+		}
+		while (e != edge);
+		return p;
+	}
 };

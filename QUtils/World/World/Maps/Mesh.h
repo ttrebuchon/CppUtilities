@@ -663,10 +663,9 @@ namespace Maps {
 		b = (A - C).value();
 		c = (B - C).value();
 		
-		assert_ex(a != 0);
-		assert_ex(b != 0);
-		assert_ex(c != 0);
-		
+		dassert(a != 0);
+		dassert(b != 0);
+		dassert(c != 0);
 		
 		return std::sqrt((a+b+c)*(b+c-a)*(a+c-b)*(a+b-c))/4;
 		
